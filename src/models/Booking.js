@@ -1,0 +1,1 @@
+import mongoose from "mongoose"; const schema=new mongoose.Schema({name:String,phone:String}); export default mongoose.models.Booking||mongoose.model("Booking",schema);
