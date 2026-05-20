@@ -7,7 +7,7 @@ import Navbar from "../../components/Navbar";
 import PackageCard from "../../components/PackageCard";
 import { blogs } from "../../data/travelData";
 
-const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:8000";
+const BACKEND_URL = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
 
 const normalize = (value) => value.toLowerCase().trim();
 
