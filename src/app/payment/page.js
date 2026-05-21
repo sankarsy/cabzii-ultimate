@@ -33,6 +33,7 @@ export default function PaymentPage({ searchParams }) {
   const discountAmount = Number(searchParams?.discountAmount ?? Math.max(0, listPrice - baseFare));
   const packageLabel = firstParam(searchParams?.package);
   const serviceTab = firstParam(searchParams?.service);
+  const tourPersons = Number(searchParams?.persons) || 1;
 
   const [selectedItem, setSelectedItem] = useState(null);
 
@@ -76,9 +77,11 @@ export default function PaymentPage({ searchParams }) {
       ? `/cabs/${itemId}`
       : type === "driver" && itemId
         ? `/drivers/${itemId}`
-        : type === "tour"
-          ? "/packages"
-          : "/drivers";
+        : type === "tour" && itemId
+          ? `/tour-booking?id=${itemId}`
+          : type === "tour"
+            ? "/packages"
+            : "/drivers";
 
   const bookingType = type === "tour" ? "tour" : type === "driver" ? "driver" : "cab";
 
@@ -107,10 +110,16 @@ export default function PaymentPage({ searchParams }) {
           email: email.trim(),
           type: bookingType,
           itemId,
-          pickup,
-          drop,
+          pickup:
+            type === "tour" && tourPersons > 1
+              ? `${pickup.trim()} (${tourPersons} persons)`.trim()
+              : pickup,
+          drop: type === "tour" ? "" : drop,
           date,
-          routeType: serviceTab || firstParam(searchParams?.routeType),
+          routeType:
+            type === "tour"
+              ? `${tourPersons} persons`
+              : serviceTab || firstParam(searchParams?.routeType),
           tripType: firstParam(searchParams?.tripType),
           amount: total
         })
@@ -171,12 +180,14 @@ export default function PaymentPage({ searchParams }) {
                   value={pickup}
                   onChange={(e) => setPickup(e.target.value)}
                 />
-                <input
-                  className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-[#0056D2]"
-                  placeholder="Drop"
-                  value={drop}
-                  onChange={(e) => setDrop(e.target.value)}
-                />
+                {type !== "tour" ? (
+                  <input
+                    className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-[#0056D2]"
+                    placeholder="Drop"
+                    value={drop}
+                    onChange={(e) => setDrop(e.target.value)}
+                  />
+                ) : null}
                 <input
                   type="date"
                   className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-[#0056D2] sm:col-span-2"
@@ -291,6 +302,32 @@ export default function PaymentPage({ searchParams }) {
                 cab={type === "cab" ? selectedItem : undefined}
                 selection={bookingSelection}
                 showExtrasNote
+              />
+            ) : type === "tour" && selectedItem ? (
+              <PaymentBreakdown
+                item={{
+                  title: selectedItem.name,
+                  type: "Tour",
+                  vendor: selectedItem.vendor
+                }}
+                selection={{
+                  packageLabel: selectedItem.duration || selectedItem.name,
+                  serviceTab: "tour",
+                  listPrice: Number(searchParams?.listPrice) || baseFare,
+                  discountPct,
+                  discountAmount,
+                  baseFare,
+                  total,
+                  persons: tourPersons,
+                  pickup: firstParam(searchParams?.pickup),
+                  date: firstParam(searchParams?.date),
+                  note:
+                    tourPersons > 1
+                      ? `${tourPersons} travellers — tour package total`
+                      : "Tour package total"
+                }}
+                showExtrasNote={false}
+                footerNote="Tour fare is per person × number of travellers. No extra km/hour charges."
               />
             ) : (
               <aside className="rounded-2xl border border-slate-200 bg-white p-5 shadow-md md:p-6">

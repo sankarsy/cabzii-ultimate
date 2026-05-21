@@ -16,7 +16,13 @@ export default function Footer() {
               <li><a href="/packages" className="hover:text-sky-300">Tours</a></li>
               <li><a href="/drivers" className="hover:text-sky-300">Drivers</a></li>
               <li><a href="/locations" className="hover:text-sky-300">Locations</a></li>
-              <li><a href="/admin" className="hover:text-sky-300">Admin</a></li>
+            </ul>
+            <h4 className="mt-5 text-sm font-semibold text-white">Popular cities</h4>
+            <ul className="mt-3 space-y-2 text-sm text-slate-400">
+              <li><a href="/cab-booking/chennai" className="hover:text-sky-300">Cab booking Chennai</a></li>
+              <li><a href="/acting-driver/chennai" className="hover:text-sky-300">Acting driver Chennai</a></li>
+              <li><a href="/cab-booking/bengaluru" className="hover:text-sky-300">Cab booking Bengaluru</a></li>
+              <li><a href="/acting-driver/mumbai" className="hover:text-sky-300">Acting driver Mumbai</a></li>
             </ul>
           </div>
 
@@ -24,8 +30,8 @@ export default function Footer() {
             <h4 className="text-sm font-semibold text-white">Contact Details</h4>
             <ul className="mt-3 space-y-2 text-sm text-slate-400">
               <li>Email: support@cabzii.com</li>
-              <li>Phone: +91 99999 88888</li>
-              <li>Address: MG Road, Bengaluru</li>
+              <li>Phone: +91 99441 97416</li>
+              <li>Address: maduravoyal,chennai, Tamil Nadu</li>
               <li>Mon-Sun: 24x7 Support</li>
             </ul>
           </div>

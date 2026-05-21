@@ -1,9 +1,15 @@
+import { SITE_URL } from "../lib/seo";
+
 export default function robots() {
   return {
-    rules: {
-      userAgent: "*",
-      allow: "/"
-    },
-    sitemap: "https://cabzii.example.com/sitemap.xml"
+    rules: [
+      {
+        userAgent: "*",
+        allow: "/",
+        disallow: ["/admin", "/api/", "/payment"]
+      }
+    ],
+    sitemap: `${SITE_URL}/sitemap.xml`,
+    host: SITE_URL
   };
 }

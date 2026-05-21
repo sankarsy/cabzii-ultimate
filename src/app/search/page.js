@@ -5,9 +5,9 @@ import DriverCard from "../../components/DriverCard";
 import Footer from "../../components/Footer";
 import Navbar from "../../components/Navbar";
 import PackageCard from "../../components/PackageCard";
-import { blogs } from "../../data/travelData";
+import { getBackendUrl } from "../../lib/seo";
 
-const BACKEND_URL = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
+const BACKEND_URL = getBackendUrl();
 
 const normalize = (value) => value.toLowerCase().trim();
 
@@ -50,13 +50,16 @@ export default async function SearchPage({ searchParams }) {
   packageQs.set("limit", "50");
   if (query) packageQs.set("q", rawQuery.trim());
 
-  const [matchingCabs, matchingDrivers, matchingPackages] = await Promise.all([
+  const [matchingCabs, matchingDrivers, matchingPackages, allBlogs] = await Promise.all([
     fetchList(`/api/v1/cabs?${cabQs.toString()}`),
     query ? fetchList(`/api/v1/drivers?${driverQs.toString()}`) : Promise.resolve([]),
-    query ? fetchList(`/api/v1/packages?${packageQs.toString()}`) : Promise.resolve([])
+    query ? fetchList(`/api/v1/packages?${packageQs.toString()}`) : Promise.resolve([]),
+    query ? fetchList("/api/v1/blogs?limit=50&page=1") : Promise.resolve([])
   ]);
 
-  const matchingBlogs = query ? blogs.filter((blog) => includesQuery(query, [blog.title, blog.excerpt, blog.author])) : [];
+  const matchingBlogs = query
+    ? allBlogs.filter((blog) => includesQuery(query, [blog.title, blog.excerpt, blog.author, blog.seo]))
+    : [];
 
   const showOnlyInstantBookingResults = hasInstantBookingFilters;
   const visibleDrivers = showOnlyInstantBookingResults ? [] : matchingDrivers;
@@ -159,7 +162,7 @@ export default async function SearchPage({ searchParams }) {
                   <h2 className="text-2xl font-bold text-slate-900">Blogs</h2>
                   <div className="mt-4 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                     {visibleBlogs.map((post) => (
-                      <BlogCard key={post.id} post={post} />
+                      <BlogCard key={String(post._id ?? post.slug ?? post.id)} post={post} />
                     ))}
                   </div>
                 </section>

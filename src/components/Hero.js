@@ -18,8 +18,13 @@ export default function HeroSection({
   setSearchTab,
   quickForm,
   setQuickForm,
+  pickupSuggestions = [],
+  dropSuggestions = [],
+  onPickupSelect,
+  onDropSelect,
   onSearch
 }) {
+  const isTour = searchTab === "tour";
   return (
     <section className="mt-4 relative overflow-hidden bg-[#f5f9ff] pb-4">
       <div className="mx-auto max-w-7xl px-4 lg:px-8">
@@ -35,21 +40,16 @@ export default function HeroSection({
             className="relative z-10 py-4 lg:py-5"
           >
             <p className="mb-2 text-[11px] font-semibold tracking-wide text-[#0056D2] md:text-xs">
-              Comfort. Safety. Reliability.
+              Cabzii — cabzii.in | Book online across India
             </p>
 
-            <h1 className="max-w-md text-[1.9rem] font-extrabold leading-[1.02] text-[#081028] sm:text-[2.3rem] lg:text-[3.4rem]">
-              Your Journey,
-              <br />
-              Our{" "}
-              <span className="text-[#0056D2]">
-                Priority
-              </span>
+            <h1 className="max-w-lg text-[1.75rem] font-extrabold leading-[1.08] text-[#081028] sm:text-[2.1rem] lg:text-[3rem]">
+              Book Cabs, Taxis &{" "}
+              <span className="text-[#0056D2]">Acting Drivers</span> Online
             </h1>
 
-            <p className="mt-3 max-w-sm text-[13px] leading-6 text-slate-600 md:text-sm">
-              Book cabs, tour packages and professional drivers
-              at the best prices.
+            <p className="mt-3 max-w-md text-[13px] leading-6 text-slate-600 md:text-sm">
+              Cabs, acting drivers and tour packages in Chennai, Bengaluru, Mumbai and across India — transparent fares, instant booking.
             </p>
           </motion.div>
 
@@ -86,7 +86,7 @@ export default function HeroSection({
                 </h3>
 
                 <p className="mt-1 text-[11px] text-slate-500">
-                  Tour Packages
+                  Cabs &amp; Tours
                 </p>
               </div>
             </div>
@@ -115,7 +115,7 @@ export default function HeroSection({
         >
 
           {/* TABS */}
-          <div className="flex overflow-x-auto border-b border-slate-100 px-2 py-2 scrollbar-hide">
+          <div className="flex flex-wrap justify-start overflow-x-auto border-b border-slate-100 px-2 py-2 scrollbar-hide">
 
             {TABS.map((tab) => {
               const active = searchTab === tab.id;
@@ -141,44 +141,26 @@ export default function HeroSection({
           <div className="grid grid-cols-1 gap-3 p-3 md:grid-cols-2 lg:grid-cols-12 lg:items-end">
 
             {/* FROM */}
-            <div className="lg:col-span-3">
-              <label className="mb-1.5 block text-[11px] font-semibold text-slate-500">
-                From
-              </label>
-
-              <input
-                type="text"
-                placeholder="Pickup location"
-                value={quickForm.pickup}
-                onChange={(e) =>
-                  setQuickForm((p) => ({
-                    ...p,
-                    pickup: e.target.value
-                  }))
-                }
-                className={inputClass}
-              />
-            </div>
+            <PlaceField
+              className="lg:col-span-3"
+              label={isTour ? "Pickup / City" : "From"}
+              placeholder={isTour ? "City or pickup for tour" : "Pickup location"}
+              value={quickForm.pickup}
+              onChange={(value) => setQuickForm((p) => ({ ...p, pickup: value }))}
+              suggestions={pickupSuggestions}
+              onSelect={onPickupSelect}
+            />
 
             {/* TO */}
-            <div className="lg:col-span-3">
-              <label className="mb-1.5 block text-[11px] font-semibold text-slate-500">
-                To
-              </label>
-
-              <input
-                type="text"
-                placeholder="Drop location"
-                value={quickForm.drop}
-                onChange={(e) =>
-                  setQuickForm((p) => ({
-                    ...p,
-                    drop: e.target.value
-                  }))
-                }
-                className={inputClass}
-              />
-            </div>
+            <PlaceField
+              className={`lg:col-span-3 ${isTour ? "hidden md:block md:opacity-0 md:pointer-events-none" : ""}`}
+              label="To"
+              placeholder="Drop location"
+              value={quickForm.drop}
+              onChange={(value) => setQuickForm((p) => ({ ...p, drop: value }))}
+              suggestions={dropSuggestions}
+              onSelect={onDropSelect}
+            />
 
             {/* DATE */}
             <div className="lg:col-span-2">
@@ -199,8 +181,8 @@ export default function HeroSection({
               />
             </div>
 
-            {/* CAB */}
-            <div className="lg:col-span-2">
+            {/* CAB / TOUR */}
+            <div className={`lg:col-span-2 ${isTour ? "hidden md:block md:opacity-0 md:pointer-events-none" : ""}`}>
               <label className="mb-1.5 block text-[11px] font-semibold text-slate-500">
                 Cab
               </label>
@@ -225,10 +207,11 @@ export default function HeroSection({
             {/* BUTTON */}
             <div className="lg:col-span-2">
               <button
+                type="button"
                 onClick={onSearch}
                 className="h-[40px] w-full rounded-xl bg-[#0056D2] text-sm font-bold text-white shadow-md transition hover:bg-[#0047b3]"
               >
-                Search
+                {isTour ? "Find Tours" : "Search"}
               </button>
             </div>
           </div>
@@ -249,3 +232,34 @@ export default function HeroSection({
 
 const inputClass =
   "h-[40px] w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-[#0056D2] focus:ring-4 focus:ring-blue-100";
+
+function PlaceField({ className = "", label, placeholder, value, onChange, suggestions, onSelect }) {
+  return (
+    <div className={`relative ${className}`}>
+      <label className="mb-1.5 block text-[11px] font-semibold text-slate-500">{label}</label>
+      <input
+        type="text"
+        placeholder={placeholder}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className={inputClass}
+        autoComplete="off"
+      />
+      {suggestions?.length > 0 ? (
+        <ul className="absolute z-30 mt-1 max-h-36 w-full overflow-auto rounded-xl border border-slate-200 bg-white py-1 text-sm shadow-lg">
+          {suggestions.map((place) => (
+            <li key={place}>
+              <button
+                type="button"
+                className="w-full px-3 py-2 text-left text-slate-700 hover:bg-blue-50"
+                onClick={() => onSelect?.(place)}
+              >
+                {place}
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+    </div>
+  );
+}

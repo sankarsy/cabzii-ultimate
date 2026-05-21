@@ -13,7 +13,8 @@ export default function PaymentBreakdown({
   payHref,
   proceedLabel = "Proceed to Payment",
   compact = false,
-  showExtrasNote = true
+  showExtrasNote = true,
+  footerNote
 }) {
   const product = item ?? (cab ? { title: cab.title, type: cab.type, vendor: cab.vendor } : null);
   const baseFare = selection?.baseFare ?? selection?.fare ?? 0;
@@ -25,7 +26,9 @@ export default function PaymentBreakdown({
   return (
     <div className={`rounded-2xl border border-slate-200 bg-white shadow-sm ${compact ? "p-4" : "p-5 md:p-6"}`}>
       <h3 className={`font-bold text-slate-900 ${compact ? "text-sm" : "text-lg"}`}>Payment breakdown</h3>
-      <p className={`text-slate-500 ${compact ? "mt-0.5 text-[10px]" : "mt-1 text-xs"}`}>Review fare before you pay. Toll, parking & extra km/hr billed separately.</p>
+      <p className={`text-slate-500 ${compact ? "mt-0.5 text-[10px]" : "mt-1 text-xs"}`}>
+        {footerNote ?? "Review fare before you pay. Toll, parking & extra km/hr billed separately."}
+      </p>
 
       {product ? (
         <div className={`mt-4 rounded-lg bg-slate-50 ${compact ? "p-2.5" : "p-3"}`}>
@@ -45,6 +48,24 @@ export default function PaymentBreakdown({
           <dt>Service type</dt>
           <dd className="text-right font-medium capitalize">{selection?.serviceTab ?? "—"}</dd>
         </div>
+        {selection?.persons != null ? (
+          <div className="flex justify-between gap-2">
+            <dt>Travellers</dt>
+            <dd className="text-right font-medium">{selection.persons}</dd>
+          </div>
+        ) : null}
+        {selection?.pickup ? (
+          <div className="flex justify-between gap-2">
+            <dt>Pickup</dt>
+            <dd className="max-w-[55%] text-right font-medium leading-snug">{selection.pickup}</dd>
+          </div>
+        ) : null}
+        {selection?.perPersonPay != null && selection.persons > 1 ? (
+          <div className="flex justify-between gap-2 text-slate-500">
+            <dt>Per person</dt>
+            <dd>{inr(selection.perPersonPay)}</dd>
+          </div>
+        ) : null}
         {discountPct > 0 ? (
           <>
             <div className="flex justify-between gap-2 text-slate-500">
@@ -62,6 +83,12 @@ export default function PaymentBreakdown({
           <dd className="font-semibold">{inr(baseFare)}</dd>
         </div>
       </dl>
+
+      {!showExtrasNote && selection?.note ? (
+        <p className="mt-3 rounded-lg border border-slate-100 bg-slate-50/80 p-2.5 text-[11px] text-slate-600">
+          {selection.note}
+        </p>
+      ) : null}
 
       {showExtrasNote && selection?.extraKm != null ? (
         <ul className="mt-3 space-y-1 rounded-lg border border-slate-100 bg-slate-50/80 p-2.5 text-[11px] text-slate-600">

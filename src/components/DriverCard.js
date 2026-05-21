@@ -1,194 +1,187 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import PackageOptionCard from "./PackageOptionCard";
-import { num } from "../lib/cabFare";
+import { num, packageYouPay } from "../lib/cabFare";
 import {
-  buildDriverChargeItems,
   buildDriverFareSlabs,
   formatDriverRating,
-  isOutstationDriver,
+  getDriverPricing,
+  isOutstationDriver
 } from "../lib/driverFare";
+import {
+  CARD_ARTICLE_CLASS,
+  CARD_BOOK_BTN_CLASS,
+  MetaPill,
+  PriceSummaryCard,
+  ProductImageFrame,
+  ProductMetaBlock
+} from "./productCardShared";
 
 const FALLBACK_DRIVER_IMAGE =
   "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=900&q=80";
 
-function formatRating(driver) {
-  return formatDriverRating(driver);
-}
-
 export default function DriverCard({ driver, onBook, bookHref }) {
   const discount = num(driver.discountPercentage, 0);
   const imageSrc = (driver.image && String(driver.image).trim()) || FALLBACK_DRIVER_IMAGE;
-  const ratingText = formatRating(driver);
-  const reviewCount = driver.reviewCount ?? driver.reviews ?? 0;
+  const ratingText = formatDriverRating(driver);
+  const reviewCountRaw = driver.reviewCount ?? driver.reviews;
+  const reviewCount =
+    reviewCountRaw != null && Number.isFinite(Number(reviewCountRaw)) ? Number(reviewCountRaw) : null;
   const typeLabel = driver.type
     ? String(driver.type).replace(/\b\w/g, (c) => c.toUpperCase())
     : isOutstationDriver(driver)
-    ? "Outstation"
-    : "Driver";
+      ? "Outstation"
+      : "Driver";
   const vehicles = Array.isArray(driver.supportedVehicles) ? driver.supportedVehicles : [];
   const vehicleLabel = vehicles[0] ? String(vehicles[0]) : "All vehicles";
+  const displayName = driver.serviceTitle || driver.name || "Driver";
+  const displayVendor = driver.vendor || driver.serviceSubtitle || "Cabzii Partner";
 
-  const fareSlabs = useMemo(
-    () => buildDriverFareSlabs(driver),
-    [driver._id, driver.pricing, driver.type]
-  );
-  const chargeItems = useMemo(() => buildDriverChargeItems(driver).slice(0, 4), [driver]);
+  const fareSlabs = useMemo(() => buildDriverFareSlabs(driver), [driver._id, driver.pricing, driver.type]);
+  const { extraKm, extraHr, nightCharge } = useMemo(() => getDriverPricing(driver), [driver]);
   const defaultTab = isOutstationDriver(driver) ? "outstation" : "local";
   const defaultPkg = defaultTab === "outstation" ? "outstation_12hr" : "local_4hr";
+
   const [selectedPackageId, setSelectedPackageId] = useState(defaultPkg);
-  const [serviceTab, setServiceTab] = useState(defaultTab);
+
+  useEffect(() => {
+    const preferred = fareSlabs.find((p) => p.id === defaultPkg) || fareSlabs[0];
+    if (preferred) setSelectedPackageId(preferred.id);
+  }, [fareSlabs, defaultPkg]);
+
+  const localPackages = fareSlabs.filter((pkg) => pkg.group === "local");
+  const outstationPackages = fareSlabs.filter((pkg) => pkg.group === "outstation");
+  const selectedPackage = fareSlabs.find((pkg) => pkg.id === selectedPackageId);
+
+  const d = Math.min(99, Math.max(0, discount));
+  const listPrice = selectedPackage ? num(selectedPackage.list) : 0;
+  const finalPrice = packageYouPay(listPrice > 0 ? listPrice : 1, d);
+  const originalPrice = listPrice > 0 ? listPrice : finalPrice;
+  const savedAmount = Math.max(0, originalPrice - finalPrice);
+  const extraKmCharge = selectedPackage?.extraKm ?? extraKm;
+  const extraHourCharge = selectedPackage?.extraHr ?? extraHr;
+
   const driverPk = String(driver._id ?? driver.id ?? "");
   const detailHref = bookHref ?? (driverPk ? `/drivers/${driverPk}` : undefined);
 
-  const visiblePackages = fareSlabs.filter((pkg) => pkg.group === serviceTab);
-  const d = Math.min(99, Math.max(0, discount));
-
-  const handleServiceTab = (tab) => {
-    setServiceTab(tab);
-    const first = fareSlabs.find((p) => p.group === tab);
-    if (first) setSelectedPackageId(first.id);
-  };
-
-  const bookButtonClass =
-    "inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2.5 text-xs font-semibold text-white tracking-wide shadow-sm transition-all duration-150 hover:bg-blue-700 hover:shadow-md active:scale-[0.98]";
-
   const BookAction = detailHref ? (
-    <Link href={detailHref} className={bookButtonClass}>
-      Book Now <ArrowRightIcon className="h-3 w-3" />
+    <Link href={detailHref} className={CARD_BOOK_BTN_CLASS}>
+      Book Now <ArrowRightIcon className="h-3.5 w-3.5" />
     </Link>
   ) : (
-    <button type="button" onClick={() => onBook?.(driver)} className={bookButtonClass}>
-      Book Now <ArrowRightIcon className="h-3 w-3" />
+    <button type="button" onClick={() => onBook?.(driver)} className={CARD_BOOK_BTN_CLASS}>
+      Book Now <ArrowRightIcon className="h-3.5 w-3.5" />
     </button>
   );
 
-  return (
-    <article className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm ring-1 ring-slate-900/5 transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5">
-
-      {/* ── Image Section ── */}
-      <div className="relative shrink-0 overflow-hidden">
-        <img
-          src={imageSrc}
-          alt={driver.name || "Driver"}
-          className="h-36 w-full object-cover object-center transition-transform duration-300 group-hover:scale-[1.03]"
-        />
-
-        {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/30 via-transparent to-transparent" />
-
-        {/* Type badge — top left */}
-        <span className="absolute left-3 top-3 inline-flex items-center gap-1 rounded-full bg-blue-600 px-2.5 py-1 text-[10px] font-semibold text-white shadow">
-          <UserIcon className="h-3 w-3" />
-          {typeLabel}
-        </span>
-
-        {/* Rating — top right */}
-        {ratingText && (
-          <span className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-semibold text-slate-700 shadow backdrop-blur-sm">
-            <StarIcon className="h-3 w-3 text-amber-400" />
-            {ratingText}
-            {reviewCount ? (
-              <span className="font-normal text-slate-400">({reviewCount})</span>
-            ) : null}
-          </span>
-        )}
-
-        {/* Discount — bottom left */}
+  const imageBadges = (
+    <>
+      <div className="absolute left-1.5 top-1.5 flex items-center gap-1">
         {d > 0 && (
-          <span className="absolute bottom-3 left-3 rounded-full bg-emerald-500 px-2.5 py-0.5 text-[10px] font-bold text-white shadow">
+          <span className="rounded-md bg-orange-500 px-1.5 py-0.5 text-[8px] font-bold text-white shadow">
             {d}% OFF
           </span>
         )}
+        <span className="rounded-md bg-white/10 px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-wide text-white backdrop-blur">
+          {typeLabel}
+        </span>
       </div>
-
-      {/* ── Body ── */}
-      <div className="flex flex-1 flex-col gap-3 p-3.5">
-
-        {/* Name + vendor + verified */}
-        <div>
-          <h3 className="line-clamp-1 text-sm font-bold leading-snug text-slate-900">
-            {driver.serviceTitle || driver.name}
-          </h3>
-          <div className="mt-0.5 flex items-center justify-between">
-            <p className="line-clamp-1 text-[11px] text-blue-600/80">
-              by {driver.vendor || driver.serviceSubtitle || "Cabzii Partner"}
-            </p>
-            <span className="flex items-center gap-0.5 text-[10px] font-medium text-emerald-600">
-              <CheckIcon className="h-3 w-3" />
-              Verified
-            </span>
-          </div>
+      {ratingText && (
+        <div className="absolute right-1.5 top-1.5 flex items-center gap-0.5 rounded-full bg-white px-1.5 py-0.5 text-[8px] font-semibold text-slate-700 shadow-sm">
+          <StarIcon className="h-2.5 w-2.5 text-amber-400" />
+          {ratingText}
+          {reviewCount != null ? <span className="text-slate-400">({reviewCount})</span> : null}
         </div>
+      )}
+    </>
+  );
 
-        {/* Stat pills */}
-        <div className="flex flex-wrap items-center gap-1.5">
-          <Pill icon={<BriefcaseIcon className="h-3 w-3" />} label={driver.experience ?? "—"} />
-          <Pill icon={<RouteIcon className="h-3 w-3" />} label={`${driver.trips ?? 0} trips`} />
-          <Pill icon={<CarIcon className="h-3 w-3" />} label={vehicleLabel} />
-        </div>
+  return (
+    <article className={CARD_ARTICLE_CLASS}>
+      <ProductImageFrame
+        src={imageSrc}
+        alt={displayName}
+        badges={imageBadges}
+        imageClassName="h-[185px] w-full object-cover object-top p-0"
+      />
 
-        {/* Service toggle */}
-        <div className="flex rounded-lg border border-slate-200 bg-slate-50 p-0.5 text-[10px] font-semibold">
-          {["local", "outstation"].map((tab) => (
-            <button
-              key={tab}
-              type="button"
-              onClick={() => handleServiceTab(tab)}
-              className={`flex-1 rounded-md py-1.5 capitalize transition-all duration-150 ${
-                serviceTab === tab
-                  ? "bg-blue-600 text-white shadow-sm"
-                  : "text-slate-500 hover:text-slate-700"
-              }`}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
+      <ProductMetaBlock title={displayName} vendor={displayVendor} vendorFallback="Cabzii Partner">
+        <MetaPill icon={<BriefcaseIcon className="h-2.5 w-2.5" />} label={driver.experience ?? "Experienced"} />
+        <MetaPill icon={<RouteIcon className="h-2.5 w-2.5" />} label={`${driver.trips ?? 0} trips`} />
+        <MetaPill icon={<CarIcon className="h-2.5 w-2.5" />} label={vehicleLabel} />
+      </ProductMetaBlock>
 
-        {/* Package cards */}
-        {visiblePackages.length > 0 && (
-          <div className="grid grid-cols-2 gap-1.5">
-            {visiblePackages.map((pkg) => (
-              <PackageOptionCard
-                key={pkg.id}
-                pkg={pkg}
-                selected={selectedPackageId === pkg.id}
-                discount={d}
-                compact
-                onSelect={() => setSelectedPackageId(pkg.id)}
-              />
-            ))}
-          </div>
+      <div className="flex flex-1 flex-col px-2.5 pb-2.5">
+        {localPackages.length > 0 && (
+          <>
+            <h4 className="mt-1 text-[9px] font-semibold uppercase tracking-wide text-slate-500">Local Packages</h4>
+            <div className="mt-1.5 flex flex-wrap gap-1.5">
+              {localPackages.map((pkg) => (
+                <PackagePill
+                  key={pkg.id}
+                  pkg={pkg}
+                  selected={selectedPackageId === pkg.id}
+                  onSelect={() => setSelectedPackageId(pkg.id)}
+                />
+              ))}
+            </div>
+          </>
         )}
 
-    
-        {/* Book button — pinned to bottom */}
-        <div className="mt-auto pt-1">{BookAction}</div>
+        {outstationPackages.length > 0 && (
+          <>
+            <h4 className="mt-2 text-[9px] font-semibold uppercase tracking-wide text-slate-500">
+              Outstation Packages
+            </h4>
+            <div className="mt-1.5 flex flex-wrap gap-1.5">
+              {outstationPackages.map((pkg) => (
+                <PackagePill
+                  key={pkg.id}
+                  pkg={pkg}
+                  selected={selectedPackageId === pkg.id}
+                  onSelect={() => setSelectedPackageId(pkg.id)}
+                />
+              ))}
+            </div>
+          </>
+        )}
+
+        {selectedPackage && (
+          <PriceSummaryCard
+            finalPrice={finalPrice}
+            originalPrice={originalPrice}
+            savedAmount={savedAmount}
+            discountPct={d}
+            extraKmCharge={extraKmCharge}
+            extraHourCharge={extraHourCharge}
+            extraBadges={
+              nightCharge != null && nightCharge > 0 ? (
+                <span className="rounded-full bg-white px-2 py-1 text-[9px] font-medium text-slate-600">
+                  Night ₹{nightCharge}
+                </span>
+              ) : null
+            }
+          />
+        )}
+
+        <div className="mt-2">{BookAction}</div>
       </div>
     </article>
   );
 }
 
-/* ── Shared Pill ── */
-function Pill({ icon, label }) {
+function PackagePill({ pkg, selected, onSelect }) {
   return (
-    <span className="inline-flex items-center gap-1 rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-600">
-      <span className="text-blue-500">{icon}</span>
-      {label}
-    </span>
-  );
-}
-
-/* ── Icons ── */
-function UserIcon({ className }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className={className} stroke="currentColor" strokeWidth="2">
-      <circle cx="12" cy="8" r="3" />
-      <path d="M5 20a7 7 0 0 1 14 0" />
-    </svg>
+    <button
+      type="button"
+      onClick={onSelect}
+      className={`rounded-lg border px-2.5 py-1.5 text-center transition-all duration-200 ${
+        selected ? "border-blue-600 bg-blue-50 shadow-sm" : "border-slate-200 bg-white hover:border-blue-300"
+      }`}
+    >
+      <span className="text-[10px] font-bold text-slate-900">{pkg.label}</span>
+    </button>
   );
 }
 
@@ -216,14 +209,6 @@ function CarIcon({ className }) {
       <path d="M3 11h18v6a1 1 0 0 1-1 1h-1M3 11v6a1 1 0 0 0 1 1h1" />
       <circle cx="7.5" cy="17.5" r="1.5" />
       <circle cx="16.5" cy="17.5" r="1.5" />
-    </svg>
-  );
-}
-
-function CheckIcon({ className }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className={className} stroke="currentColor" strokeWidth="2">
-      <path d="M20 6L9 17l-5-5" />
     </svg>
   );
 }

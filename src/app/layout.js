@@ -1,5 +1,6 @@
 import "./globals.css";
 import { Manrope } from "next/font/google";
+import { DEFAULT_KEYWORDS, SITE_URL, organizationJsonLd, websiteJsonLd } from "../lib/seo";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -8,55 +9,50 @@ const manrope = Manrope({
 });
 
 export const metadata = {
-  metadataBase: new URL("https://cabzii.in"),
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: "cabzii.in | Online Taxi, Tour & Driver Booking",
-    template: "%s | cabzii.in"
+    default: "Cabzii — Online Cab, Taxi & Acting Driver Booking",
+    template: "%s | Cabzii"
   },
   description:
-    "Book cabs, drivers, and tour packages online with transparent fares, verified service, and instant confirmation across popular routes.",
+    "Cabzii (cabzii.in) — book cabs, taxis, acting drivers and tour packages online in Chennai, Bengaluru, Mumbai and across India. Transparent fares and instant confirmation.",
   alternates: {
     canonical: "/"
   },
   category: "travel",
-  keywords: [
-    "cabzii.in",
-    "cab booking",
-    "taxi booking online",
-    "outstation cab booking",
-    "airport transfer booking",
-    "bus booking",
-    "travel packages",
-    "tour booking online",
-    "driver on rent",
-    "one way cab",
-    "round trip cab",
-    "intercity taxi"
-  ],
+  keywords: DEFAULT_KEYWORDS,
   openGraph: {
-    title: "cabzii.in",
+    title: "Cabzii — cabzii.in",
     description:
-      "Online taxi, driver, and tour booking platform with transparent fares and quick confirmation.",
+      "India's online platform for cab booking, acting driver hire and tour packages with transparent pricing.",
     url: "/",
-    siteName: "cabzii.in",
+    siteName: "Cabzii",
     locale: "en_IN",
     type: "website"
   },
   twitter: {
     card: "summary_large_image",
-    title: "cabzii.in",
-    description:
-      "Book cabs, tours, and drivers online with fair pricing and reliable support."
+    title: "Cabzii",
+    description: "Book cabs, acting drivers and tours on cabzii.in."
   },
   robots: {
     index: true,
-    follow: true
+    follow: true,
+    googleBot: { index: true, follow: true, "max-image-preview": "large" }
   }
 };
 
+const structuredData = [organizationJsonLd(), websiteJsonLd()];
+
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en-IN">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
+      </head>
       <body className={manrope.variable}>{children}</body>
     </html>
   );

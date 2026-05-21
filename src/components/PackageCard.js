@@ -1,148 +1,119 @@
 "use client";
 
 import Link from "next/link";
+import { num, packageYouPay } from "../lib/cabFare";
+import {
+  CARD_ARTICLE_CLASS,
+  CARD_BOOK_BTN_CLASS,
+  MetaPill,
+  PriceSummaryCard,
+  ProductImageFrame,
+  ProductMetaBlock
+} from "./productCardShared";
 
-export default function PackageCard({ pkg, actionText = "View Details", onAction, actionHref }) {
-  const discount = pkg.discountPercentage ?? 0;
-  const originalPrice = pkg.originalPrice ?? pkg.price;
-  const hasDiscount = discount > 0 && originalPrice !== pkg.price;
+const FALLBACK_TOUR_IMAGE =
+  "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1200&q=60";
 
-  const btnClass =
-    "inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-[11px] font-bold text-white tracking-wide shadow-sm transition-all duration-150 hover:bg-blue-700 hover:shadow-md active:scale-[0.98] whitespace-nowrap";
+export default function PackageCard({ pkg, actionText = "Book Now", onAction, actionHref }) {
+  const discount = num(pkg.discountPercentage, 0);
+  const basePrice = num(pkg.price);
+  const originalPrice = num(pkg.originalPrice) > 0 ? num(pkg.originalPrice) : basePrice;
+  const d = Math.min(99, Math.max(0, discount));
+  const perPersonPay = packageYouPay(basePrice, d);
+  const perPersonOriginal = originalPrice;
+  const savedAmount = Math.max(0, perPersonOriginal - perPersonPay);
+  const tagLabel = pkg.tag || (Array.isArray(pkg.tags) && pkg.tags[0] ? String(pkg.tags[0]) : "Tour");
+
+  const imageSrc = (pkg.image && String(pkg.image).trim()) || FALLBACK_TOUR_IMAGE;
+
+  const imageBadges = (
+    <>
+      <div className="absolute left-1.5 top-1.5 flex items-center gap-1">
+        {d > 0 && (
+          <span className="rounded-md bg-orange-500 px-1.5 py-0.5 text-[8px] font-bold text-white shadow">
+            {d}% OFF
+          </span>
+        )}
+        <span className="rounded-md bg-white/10 px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-wide text-white backdrop-blur">
+          {tagLabel}
+        </span>
+      </div>
+      {pkg.duration ? (
+        <span className="absolute right-1.5 top-1.5 inline-flex items-center gap-0.5 rounded-full bg-white px-1.5 py-0.5 text-[8px] font-semibold text-slate-700 shadow-sm">
+          <ClockIcon className="h-2.5 w-2.5 text-[#0056D2]" />
+          {pkg.duration}
+        </span>
+      ) : null}
+    </>
+  );
+
+  const BookAction = actionHref ? (
+    <Link href={actionHref} className={CARD_BOOK_BTN_CLASS}>
+      {actionText} <ArrowRightIcon className="h-3.5 w-3.5" />
+    </Link>
+  ) : (
+    <button type="button" onClick={() => onAction?.(pkg)} className={CARD_BOOK_BTN_CLASS}>
+      {actionText} <ArrowRightIcon className="h-3.5 w-3.5" />
+    </button>
+  );
 
   return (
-    <article className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm ring-1 ring-slate-900/5 transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5">
+    <article className={CARD_ARTICLE_CLASS}>
+      <ProductImageFrame
+        src={imageSrc}
+        alt={pkg.name || "Tour"}
+        badges={imageBadges}
+        imageClassName="h-[185px] w-full object-cover object-center"
+      />
 
-      {/* ── Image ── */}
-      <div className="relative shrink-0 overflow-hidden h-36">
-        <img
-          src={pkg.image ?? "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1200&q=60"}
-          alt={`${pkg.name} tour`}
-          className="h-full w-full object-cover object-center transition-transform duration-300 group-hover:scale-[1.03]"
+      <ProductMetaBlock title={pkg.name} vendor={pkg.vendor} vendorFallback="Tour Partner">
+        {pkg.duration ? (
+          <MetaPill icon={<CalendarIcon className="h-2.5 w-2.5" />} label={pkg.duration} />
+        ) : null}
+        <MetaPill icon={<UsersIcon className="h-2.5 w-2.5" />} label="Per person pricing" />
+        <MetaPill icon={<MapPinIcon className="h-2.5 w-2.5" />} label="Pickup on booking" />
+      </ProductMetaBlock>
+
+      <div className="flex flex-1 flex-col px-2.5 pb-2.5">
+        {pkg.originNote ? (
+          <div className="mb-1.5 flex items-start gap-1 rounded-lg border border-amber-200 bg-amber-50 px-2 py-1">
+            <AlertIcon className="mt-0.5 h-2.5 w-2.5 shrink-0 text-amber-500" />
+            <p className="text-[9px] font-medium leading-tight text-amber-800">{pkg.originNote}</p>
+          </div>
+        ) : null}
+
+        <PriceSummaryCard
+          finalPrice={perPersonPay}
+          originalPrice={perPersonOriginal}
+          savedAmount={savedAmount}
+          discountPct={d}
+          priceSuffix="/person"
         />
 
-        {/* gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 via-transparent to-transparent pointer-events-none" />
-
-        {/* category tag — top left */}
-        {pkg.tag && (
-          <span className="absolute left-2.5 top-2.5 rounded-full bg-blue-600 px-2.5 py-0.5 text-[10px] font-bold text-white shadow">
-            {pkg.tag}
-          </span>
-        )}
-
-        {/* discount badge — top right */}
-        {discount > 0 && (
-          <span className="absolute right-2.5 top-2.5 rounded-full bg-emerald-500 px-2.5 py-0.5 text-[10px] font-bold text-white shadow">
-            {discount}% OFF
-          </span>
-        )}
-
-        {/* duration chip — bottom left */}
-        {pkg.duration && (
-          <span className="absolute bottom-2 left-2.5 inline-flex items-center gap-1 rounded-md bg-black/55 px-2 py-0.5 text-[10px] font-semibold text-white backdrop-blur-sm">
-            <ClockIcon className="h-3 w-3" />
-            {pkg.duration}
-          </span>
-        )}
-
-        {/* vendor — bottom right */}
-        {pkg.vendor && (
-          <span className="absolute bottom-2 right-2.5 rounded-md bg-white/90 px-2 py-0.5 text-[10px] font-semibold text-slate-800 shadow backdrop-blur-sm">
-            {pkg.vendor}
-          </span>
-        )}
-      </div>
-
-      {/* ── Body ── */}
-      <div className="flex flex-1 flex-col gap-2.5 p-3.5">
-
-        {/* Title */}
-        <h3 className="line-clamp-1 text-sm font-extrabold leading-snug text-slate-900">
-          {pkg.name}
-        </h3>
-
-        {/* Feature pills */}
-        <div className="flex flex-wrap gap-1.5">
-          {pkg.duration && (
-            <Pill icon={<CalendarIcon className="h-3 w-3" />} label={`${pkg.duration} · per person`} />
-          )}
-          <Pill icon={<MapPinIcon className="h-3 w-3" />} label="100 km included" />
-          <Pill icon={<InfoIcon className="h-3 w-3" />} label="Extra km charges apply" />
-        </div>
-
-        {/* Origin notice — shown only when customer city differs from base city */}
-        {pkg.originNote && (
-          <div className="flex items-start gap-1.5 rounded-lg border border-amber-200 bg-amber-50 px-2.5 py-1.5">
-            <AlertIcon className="mt-0.5 h-3 w-3 shrink-0 text-amber-500" />
-            <p className="text-[10px] font-medium leading-tight text-amber-800">
-              {pkg.originNote}
-            </p>
-          </div>
-        )}
-
-        {/* Divider */}
-        <div className="h-px bg-slate-100" />
-
-        {/* Price + CTA */}
-        <div className="flex items-end justify-between gap-2 mt-auto">
-          <div className="flex flex-col leading-tight">
-            <span className="text-[9px] font-bold uppercase tracking-widest text-slate-400">
-              Starting from
-            </span>
-            {hasDiscount && (
-              <span className="text-[11px] text-slate-400 line-through">
-                ₹{originalPrice.toLocaleString("en-IN")}
-              </span>
-            )}
-            <div className="flex items-baseline gap-1">
-              <span className="text-[17px] font-extrabold text-blue-700">
-                ₹{pkg.price.toLocaleString("en-IN")}
-              </span>
-              <span className="text-[10px] font-medium text-slate-400">/person</span>
-            </div>
-          </div>
-
-          {actionHref ? (
-            <Link href={actionHref} className={btnClass}>
-              {actionText} <ArrowRightIcon className="h-3 w-3" />
-            </Link>
-          ) : (
-            <button type="button" onClick={() => onAction?.(pkg)} className={btnClass}>
-              {actionText} <ArrowRightIcon className="h-3 w-3" />
-            </button>
-          )}
-        </div>
+        <div className="mt-2">{BookAction}</div>
       </div>
     </article>
   );
 }
 
-/* ── Shared Pill ── */
-function Pill({ icon, label }) {
-  return (
-    <span className="inline-flex items-center gap-1 rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-600">
-      <span className="text-blue-500">{icon}</span>
-      {label}
-    </span>
-  );
-}
-
-/* ── Icons ── */
 function ClockIcon({ className }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={className} stroke="currentColor" strokeWidth="2.2">
-      <circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" />
+      <circle cx="12" cy="12" r="10" />
+      <path d="M12 6v6l4 2" />
     </svg>
   );
 }
+
 function CalendarIcon({ className }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={className} stroke="currentColor" strokeWidth="2">
-      <rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" />
+      <rect x="3" y="4" width="18" height="18" rx="2" />
+      <path d="M16 2v4M8 2v4M3 10h18" />
     </svg>
   );
 }
+
 function MapPinIcon({ className }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={className} stroke="currentColor" strokeWidth="2">
@@ -151,13 +122,17 @@ function MapPinIcon({ className }) {
     </svg>
   );
 }
-function InfoIcon({ className }) {
+
+function UsersIcon({ className }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={className} stroke="currentColor" strokeWidth="2">
-      <circle cx="12" cy="12" r="10" /><path d="M12 16v-4M12 8h.01" />
+      <circle cx="9" cy="8" r="3" />
+      <circle cx="17" cy="9" r="2.5" />
+      <path d="M3 20a6 6 0 0 1 12 0M14 20a5 5 0 0 1 8 0" />
     </svg>
   );
 }
+
 function AlertIcon({ className }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={className} stroke="currentColor" strokeWidth="2">
@@ -166,6 +141,7 @@ function AlertIcon({ className }) {
     </svg>
   );
 }
+
 function ArrowRightIcon({ className }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={className} stroke="currentColor" strokeWidth="2.5">
