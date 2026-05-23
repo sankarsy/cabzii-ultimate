@@ -1,50 +1,54 @@
-import { mkdir, writeFile } from "fs/promises";
-import path from "path";
+import { resolveMediaUrl } from "../../../lib/media";
 
-const allowedMimeTypes = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
+const BACKEND_URL = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
 
 export async function POST(req) {
   try {
     const formData = await req.formData();
-    const file = formData.get("file");
+    const authHeader = req.headers.get("authorization") || "";
 
-    if (!file || typeof file === "string") {
-      return Response.json({ success: false, message: "Image file is required." }, { status: 400 });
+    const response = await fetch(`${BACKEND_URL}/api/v1/upload`, {
+      method: "POST",
+      headers: authHeader ? { authorization: authHeader } : {},
+      body: formData
+    });
+
+    const text = await response.text();
+    let data = {};
+    try {
+      data = text ? JSON.parse(text) : {};
+    } catch {
+      return Response.json({ success: false, message: text || "Upload failed" }, { status: response.status });
     }
 
-    if (!allowedMimeTypes.has(file.type)) {
+    if (!response.ok || !data?.success) {
       return Response.json(
-        { success: false, message: "Only jpg, png, webp, and gif files are allowed." },
-        { status: 400 }
+        { success: false, message: data?.message || "Upload failed" },
+        { status: response.status }
       );
     }
 
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    const uploadsDir = path.join(process.cwd(), "public", "uploads");
-    await mkdir(uploadsDir, { recursive: true });
-
-    const safeName = file.name.replace(/\s+/g, "-").replace(/[^a-zA-Z0-9._-]/g, "");
-    const fileName = `${Date.now()}-${safeName || "upload-image"}`;
-    const filePath = path.join(uploadsDir, fileName);
-
-    await writeFile(filePath, buffer);
+    const relativeUrl = data.data?.url || "";
+    const absoluteUrl = resolveMediaUrl(relativeUrl);
 
     return Response.json({
       success: true,
       data: {
-        fileName,
-        url: `/uploads/${fileName}`
+        ...data.data,
+        url: absoluteUrl,
+        relativeUrl
       }
     });
   } catch (error) {
     return Response.json(
       {
         success: false,
-        message: "Failed to upload image.",
-        error: error instanceof Error ? error.message : "Unknown error"
+        message:
+          error?.cause?.code === "ECONNREFUSED"
+            ? "Backend is not running. Start cabzii-ultimate-backend on port 8000."
+            : "Failed to upload image."
       },
-      { status: 500 }
+      { status: 503 }
     );
   }
 }

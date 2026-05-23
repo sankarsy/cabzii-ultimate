@@ -22,18 +22,30 @@ const SECTION_LINKS = [
   { href: "#similar-cabs", label: "Alternatives" }
 ];
 
-export default function CabDetailPage({ cabId }) {
+function applyCabData(data, setCab, setSelection) {
+  setCab(data);
+  const slabs = buildFareSlabs(data);
+  const first = slabs.find((p) => p.id === "local_4hr") || slabs[0];
+  if (first) setSelection(selectionFromPackage(first, first.group, data.discountPercentage));
+}
+
+export default function CabDetailPage({ cabId, initialCab = null }) {
   const id = firstParam(cabId);
-  const [cab, setCab] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [cab, setCab] = useState(initialCab);
+  const [loading, setLoading] = useState(!initialCab);
   const [loadError, setLoadError] = useState("");
   const [selection, setSelection] = useState(null);
 
   useEffect(() => {
+    if (initialCab) {
+      applyCabData(initialCab, setCab, setSelection);
+      setLoading(false);
+      return undefined;
+    }
     if (!id) {
       setLoadError("Missing cab id.");
       setLoading(false);
-      return;
+      return undefined;
     }
     let cancelled = false;
     (async () => {
@@ -48,11 +60,7 @@ export default function CabDetailPage({ cabId }) {
             setLoadError(json?.message || "Cab not found.");
           }
         } else if (!cancelled) {
-          const data = json.data;
-          setCab(data);
-          const slabs = buildFareSlabs(data);
-          const first = slabs.find((p) => p.id === "local_4hr") || slabs[0];
-          if (first) setSelection(selectionFromPackage(first, first.group, data.discountPercentage));
+          applyCabData(json.data, setCab, setSelection);
         }
       } catch {
         if (!cancelled) {
@@ -66,7 +74,7 @@ export default function CabDetailPage({ cabId }) {
     return () => {
       cancelled = true;
     };
-  }, [id]);
+  }, [id, initialCab]);
 
   const cabPk = cab ? String(cab._id ?? cab.id ?? "") : "";
   const payHref = useMemo(() => {

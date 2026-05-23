@@ -1,57 +1,27 @@
 import CabDetailPage from "../../../components/CabDetailPage";
-
-const BACKEND_URL = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
+import { fetchCabById } from "../../../lib/serverCatalog";
+import { cabDetailMetadata } from "../../../lib/metadataHelpers";
 
 export async function generateMetadata({ params }) {
   const id = params?.id;
   if (!id) {
-    return {
-      title: "Cab Booking",
-      description: "Book local and outstation cabs online with transparent fares on cabzii.in."
-    };
+    return { title: "Cab Booking", description: "Book cabs on cabzii.in." };
   }
-
-  try {
-    const res = await fetch(`${BACKEND_URL}/api/v1/cabs/${encodeURIComponent(id)}`, {
-      next: { revalidate: 300 }
-    });
-    const json = await res.json();
-    const cab = json?.data;
-    if (!cab) {
-      return { title: "Cab Not Found" };
-    }
-
-    const title = cab.seoTitle || `${cab.title} – ${cab.type} Cab Booking`;
-    const description =
-      cab.seoDescription ||
-      `Book ${cab.title} by ${cab.vendor}. Local & outstation packages, verified drivers, secure payment on cabzii.in.`;
-    const keywords = (cab.seo || "")
-      .split(",")
-      .map((s) => s.trim())
-      .filter(Boolean);
-
-    return {
-      title,
-      description,
-      keywords: keywords.length ? keywords : undefined,
-      alternates: {
-        canonical: `/cabs/${id}`
-      },
-      openGraph: {
-        title,
-        description,
-        url: `/cabs/${id}`,
-        images: cab.image ? [{ url: cab.image, alt: cab.title }] : undefined
-      }
-    };
-  } catch {
-    return {
-      title: "Cab Booking",
-      description: "Book cabs online on cabzii.in."
-    };
-  }
+  const cab = await fetchCabById(id);
+  return cabDetailMetadata(cab, id).metadata;
 }
 
-export default function CabDetailRoutePage({ params }) {
-  return <CabDetailPage cabId={params.id} />;
+export default async function CabDetailRoutePage({ params }) {
+  const id = params?.id;
+  const cab = id ? await fetchCabById(id) : null;
+  const { jsonLd } = cab ? cabDetailMetadata(cab, id) : { jsonLd: null };
+
+  return (
+    <>
+      {jsonLd ? (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      ) : null}
+      <CabDetailPage cabId={id} initialCab={cab} />
+    </>
+  );
 }

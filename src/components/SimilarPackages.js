@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { num, packageYouPay } from "../lib/cabFare";
+import { resolveMediaUrl } from "../lib/media";
 
 const FALLBACK_IMAGE =
   "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=600&q=60";
@@ -71,7 +72,7 @@ export default function SimilarPackages({ currentPackageId, duration, vendor }) 
             const price = num(pkg.price);
             const discount = num(pkg.discountPercentage);
             const youPay = packageYouPay(price, discount);
-            const img = (pkg.image && String(pkg.image).trim()) || FALLBACK_IMAGE;
+            const img = resolveMediaUrl(pkg.image) || FALLBACK_IMAGE;
             return (
               <Link
                 key={id}

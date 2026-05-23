@@ -1,29 +1,33 @@
 "use client";
 
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Footer from "../../components/Footer";
 import Navbar from "../../components/Navbar";
 import AdminMasterData from "../../components/admin/AdminMasterData";
+import AdminSiteSettings from "../../components/admin/AdminSiteSettings";
+import { clearSession, getToken } from "../../lib/auth";
 
 const endpointMap = {
   cabs: "/api/cabs",
   drivers: "/api/drivers",
   packages: "/api/packages",
-  bookings: "/api/bookings"
+  bookings: "/api/bookings",
+  blogs: "/api/blogs?admin=1",
+  testimonials: "/api/testimonials?admin=1"
 };
 
-const catalogTabs = ["cabs", "drivers", "packages", "bookings"];
+const catalogTabs = ["cabs", "drivers", "packages", "bookings", "blogs", "testimonials"];
 
 export default function AdminPage() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState("master");
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [token, setToken] = useState("");
   const [user, setUser] = useState(null);
-  const [phone, setPhone] = useState("");
-  const [name, setName] = useState("");
-  const [password, setPassword] = useState("");
-  const [authMessage, setAuthMessage] = useState("");
+  const [authChecked, setAuthChecked] = useState(false);
   const [formJson, setFormJson] = useState("{}");
   const [editingId, setEditingId] = useState("");
   const [saving, setSaving] = useState(false);
@@ -50,10 +54,9 @@ export default function AdminPage() {
   };
 
   useEffect(() => {
-    const localToken = localStorage.getItem("cabzii_admin_token") || "";
-    if (localToken) {
-      setToken(localToken);
-    }
+    const localToken = getToken() || "";
+    if (localToken) setToken(localToken);
+    setAuthChecked(true);
   }, []);
 
   useEffect(() => {
@@ -64,40 +67,29 @@ export default function AdminPage() {
       });
       const data = await res.json();
       if (res.ok && data?.data) {
+        const role = data.data.role;
+        if (role !== "super_admin" && role !== "vendor_admin") {
+          setToken("");
+          setUser(null);
+          clearSession();
+          return;
+        }
         setUser(data.data);
       } else {
         setToken("");
         setUser(null);
-        localStorage.removeItem("cabzii_admin_token");
+        clearSession();
       }
     };
     loadMe();
   }, [token]);
 
   useEffect(() => {
-    if (!token || activeTab === "master") return;
+    if (!token || activeTab === "master" || activeTab === "settings") return;
     loadData();
   }, [activeTab, token]);
 
   const isSuperAdmin = user?.role === "super_admin";
-
-  const adminLogin = async () => {
-    setAuthMessage("");
-    const res = await fetch("/api/auth/admin-login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ phone, password, name })
-    });
-    const data = await res.json();
-    if (!res.ok || !data?.data?.token) {
-      setAuthMessage(data?.message || "Login failed");
-      return;
-    }
-    setToken(data.data.token);
-    setUser(data.data.user);
-    localStorage.setItem("cabzii_admin_token", data.data.token);
-    setAuthMessage("Login successful.");
-  };
 
   const handleUploadImage = async () => {
     if (!selectedImage) {
@@ -115,6 +107,7 @@ export default function AdminPage() {
 
       const res = await fetch("/api/upload", {
         method: "POST",
+        headers: authHeaders,
         body: formData
       });
       const data = await res.json();
@@ -123,7 +116,22 @@ export default function AdminPage() {
         throw new Error(data?.message || "Upload failed");
       }
 
+      const imagePath = data.data.relativeUrl || data.data.url;
       setUploadedUrl(data.data.url);
+
+      try {
+        const parsed = formJson.trim() ? JSON.parse(formJson) : {};
+        parsed.image = imagePath.startsWith("/") ? imagePath : data.data.relativeUrl || `/uploads/${data.data.fileName}`;
+        setFormJson(JSON.stringify(parsed, null, 2));
+      } catch {
+        setFormJson(
+          JSON.stringify(
+            { image: data.data.relativeUrl || data.data.url },
+            null,
+            2
+          )
+        );
+      }
     } catch (error) {
       setUploadError(error instanceof Error ? error.message : "Upload failed");
     } finally {
@@ -146,16 +154,18 @@ export default function AdminPage() {
     setFormJson("{}");
   };
 
+  const tabBase = (tab) => (endpointMap[tab] || "").split("?")[0];
+
   const saveItem = async () => {
     if (!token) return;
     setSaving(true);
     try {
       const parsed = JSON.parse(formJson);
       const isBookingsTab = activeTab === "bookings";
-      const saveEndpoint = isBookingsTab && !editingId ? "/api/book" : endpointMap[activeTab];
-      const endpoint = editingId ? `${endpointMap[activeTab]}/${editingId}` : saveEndpoint;
+      const base = tabBase(activeTab);
+      const saveEndpoint = isBookingsTab && !editingId ? "/api/book" : base;
       const method = editingId ? (isBookingsTab ? "PATCH" : "PUT") : "POST";
-      const url = isBookingsTab && editingId ? `${endpointMap[activeTab]}/${editingId}/status` : endpoint;
+      const url = isBookingsTab && editingId ? `${base}/${editingId}/status` : editingId ? `${base}/${editingId}` : saveEndpoint;
 
       const body = isBookingsTab && editingId ? { status: parsed.status || "pending" } : parsed;
 
@@ -184,7 +194,7 @@ export default function AdminPage() {
     if (!token || !id || activeTab === "bookings") return;
     const ok = window.confirm("Delete this item?");
     if (!ok) return;
-    const res = await fetch(`${endpointMap[activeTab]}/${id}`, {
+    const res = await fetch(`${tabBase(activeTab)}/${id}`, {
       method: "DELETE",
       headers: authHeaders
     });
@@ -196,10 +206,12 @@ export default function AdminPage() {
     await loadData();
   };
 
-  const logout = () => {
+  const logout = async () => {
+    clearSession();
+    await fetch("/api/auth/session", { method: "DELETE" });
     setToken("");
     setUser(null);
-    localStorage.removeItem("cabzii_admin_token");
+    router.push("/login");
   };
 
   return (
@@ -210,46 +222,32 @@ export default function AdminPage() {
           <h1 className="text-3xl font-bold text-slate-900">Admin Panel</h1>
           <p className="mt-2 text-sm text-slate-600">Role-based control for super admin and vendor admin operations.</p>
 
-          {!token ? (
-            <div className="mt-6 rounded-xl border border-slate-200 bg-white p-4 shadow-md">
-              <h2 className="text-lg font-bold text-slate-900">Admin Login</h2>
-              <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-3">
-                <input
-                  value={name}
-                  onChange={(event) => setName(event.target.value)}
-                  placeholder="Name (optional)"
-                  className="rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder-slate-500 outline-none focus:border-sky-600"
-                />
-                <input
-                  value={phone}
-                  onChange={(event) => setPhone(event.target.value)}
-                  placeholder="Admin mobile number"
-                  className="rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder-slate-500 outline-none focus:border-sky-600"
-                />
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(event) => setPassword(event.target.value)}
-                  placeholder="Password"
-                  className="rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder-slate-500 outline-none focus:border-sky-600"
-                />
-              </div>
-              <div className="mt-3">
-                <button
-                  type="button"
-                  onClick={adminLogin}
-                  className="rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700"
+          {authChecked && !token ? (
+            <div className="mt-6 rounded-xl border border-slate-200 bg-white p-6 shadow-md">
+              <h2 className="text-lg font-bold text-slate-900">Sign in required</h2>
+              <p className="mt-2 text-sm text-slate-600">
+                Choose Travel Partner or Admin login on the sign-in page to access this panel.
+              </p>
+              <div className="mt-4 flex flex-wrap gap-3">
+                <Link
+                  href="/login?role=partner"
+                  className="rounded-lg bg-[#0056D2] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#0047b3]"
                 >
-                  Login
-                </button>
+                  Travel Partner Login
+                </Link>
+                <Link
+                  href="/login?role=admin"
+                  className="rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-800 hover:bg-slate-50"
+                >
+                  Admin Login
+                </Link>
               </div>
-              {authMessage ? <p className="mt-3 text-sm text-slate-700">{authMessage}</p> : null}
             </div>
-          ) : (
+          ) : token ? (
             <>
               <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white p-3 text-sm text-slate-700">
                 <p>
-                  Logged in as <span className="font-semibold">{user?.name || user?.phone}</span> ({user?.role})
+                  Logged in as <span className="font-semibold">{user?.mobileNumber || user?.phone}</span> ({user?.role})
                   {user?.vendorName ? ` - ${user.vendorName}` : ""}
                 </p>
                 <button
@@ -271,6 +269,15 @@ export default function AdminPage() {
                 >
                   Vendors & locations
                 </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("settings")}
+                  className={`rounded-lg px-4 py-2 text-sm font-semibold ${
+                    activeTab === "settings" ? "bg-sky-600 text-white" : "border border-slate-300 bg-white text-slate-700"
+                  }`}
+                >
+                  Site settings
+                </button>
                 {catalogTabs.map((tab) => (
                   <button
                     key={tab}
@@ -288,6 +295,10 @@ export default function AdminPage() {
               {activeTab === "master" ? (
                 <div className="mt-6">
                   <AdminMasterData token={token} isSuperAdmin={isSuperAdmin} />
+                </div>
+              ) : activeTab === "settings" ? (
+                <div className="mt-6">
+                  <AdminSiteSettings token={token} isSuperAdmin={isSuperAdmin} />
                 </div>
               ) : (
               <div className="mt-6 rounded-xl border border-slate-200 bg-white p-4 shadow-md">
@@ -358,7 +369,9 @@ export default function AdminPage() {
                       const id = item._id || item.id;
                       return (
                         <div key={id} className="rounded-lg border border-slate-200 p-3">
-                          <p className="font-semibold text-slate-900">{item.title || item.name || item.customerName}</p>
+                          <p className="font-semibold text-slate-900">
+                            {item.title || item.name || item.customerName || item.slug}
+                          </p>
                           <p className="text-sm text-slate-600">{item.vendor || item.experience || item.phone || "N/A"}</p>
                           <div className="mt-2 flex flex-wrap gap-2">
                             <button
@@ -387,7 +400,7 @@ export default function AdminPage() {
               </div>
               )}
             </>
-          )}
+          ) : null}
         </div>
       </section>
       <Footer />

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { buildDriverFareSlabs, num } from "../lib/driverFare";
+import { resolveMediaUrl } from "../lib/media";
 
 const FALLBACK_IMAGE =
   "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=60";
@@ -60,7 +61,7 @@ export default function SimilarDrivers({ currentDriverId, vendor }) {
             const fromPrice = num(slabs[0]?.list);
             const discount = num(driver.discountPercentage);
             const youPay = discount > 0 ? Math.round(fromPrice * (1 - discount / 100)) : fromPrice;
-            const img = (driver.image && String(driver.image).trim()) || FALLBACK_IMAGE;
+            const img = resolveMediaUrl(driver.image) || FALLBACK_IMAGE;
             return (
               <Link
                 key={id}

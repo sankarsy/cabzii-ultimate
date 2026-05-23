@@ -6,7 +6,15 @@ export default function robots() {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/admin", "/api/", "/payment"]
+        disallow: [
+          "/admin",
+          "/api/",
+          "/payment",
+          "/login",
+          "/my-bookings",
+          "/signin",
+          "/booking?"
+        ]
       }
     ],
     sitemap: `${SITE_URL}/sitemap.xml`,

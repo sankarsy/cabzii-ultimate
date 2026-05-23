@@ -1,6 +1,8 @@
 import "./globals.css";
 import { Manrope } from "next/font/google";
-import { DEFAULT_KEYWORDS, SITE_URL, organizationJsonLd, websiteJsonLd } from "../lib/seo";
+import SiteSettingsProvider from "../components/SiteSettingsProvider";
+import { fetchSiteSettings } from "../lib/serverSiteSettings";
+import { DEFAULT_KEYWORDS, SITE_URL, faqJsonLd, organizationJsonLd, taxiServiceJsonLd, websiteJsonLd } from "../lib/seo";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -42,9 +44,11 @@ export const metadata = {
   }
 };
 
-const structuredData = [organizationJsonLd(), websiteJsonLd()];
+const structuredData = [organizationJsonLd(), websiteJsonLd(), taxiServiceJsonLd(), faqJsonLd()];
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  const siteSettings = await fetchSiteSettings();
+
   return (
     <html lang="en-IN">
       <head>
@@ -53,7 +57,9 @@ export default function RootLayout({ children }) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
       </head>
-      <body className={manrope.variable}>{children}</body>
+      <body className={manrope.variable}>
+        <SiteSettingsProvider initialSettings={siteSettings}>{children}</SiteSettingsProvider>
+      </body>
     </html>
   );
 }

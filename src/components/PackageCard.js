@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { resolveMediaUrl } from "../lib/media";
 import { num, packageYouPay } from "../lib/cabFare";
 import {
   CARD_ARTICLE_CLASS,
@@ -24,7 +25,7 @@ export default function PackageCard({ pkg, actionText = "Book Now", onAction, ac
   const savedAmount = Math.max(0, perPersonOriginal - perPersonPay);
   const tagLabel = pkg.tag || (Array.isArray(pkg.tags) && pkg.tags[0] ? String(pkg.tags[0]) : "Tour");
 
-  const imageSrc = (pkg.image && String(pkg.image).trim()) || FALLBACK_TOUR_IMAGE;
+  const imageSrc = resolveMediaUrl(pkg.image) || FALLBACK_TOUR_IMAGE;
 
   const imageBadges = (
     <>

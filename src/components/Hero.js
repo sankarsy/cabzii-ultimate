@@ -2,10 +2,10 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { useSiteSettings } from "./SiteSettingsProvider";
 
-const HERO_IMAGE = "/images/hero-banner.png";
-
-const TABS = [
+const FALLBACK_HERO_IMAGE = "/images/hero-banner.png";
+const FALLBACK_TABS = [
   { id: "outstation", label: "Outstation", icon: "🚖" },
   { id: "local", label: "Local", icon: "📍" },
   { id: "airport", label: "Airport", icon: "✈️" },
@@ -24,7 +24,30 @@ export default function HeroSection({
   onDropSelect,
   onSearch
 }) {
+  const settings = useSiteSettings();
+  const hero = settings.hero || {};
+  const heroImage = hero.image || FALLBACK_HERO_IMAGE;
+  const tabs = hero.tabs?.length ? hero.tabs : FALLBACK_TABS;
+  const cabTypes = hero.cabTypes?.length ? hero.cabTypes : ["Sedan", "SUV", "Innova"];
+  const trustBadges = hero.trustBadges?.length
+    ? hero.trustBadges
+    : ["Verified Drivers", "Best Price", "24/7 Support", "Secure", "Free Cancellation"];
+  const brandColor = settings.brandColor || "#0056D2";
   const isTour = searchTab === "tour";
+
+  const renderTitle = () => {
+    const title = hero.title || "Book Cabs, Taxis & Acting Drivers Online";
+    const highlight = hero.titleHighlight || "Acting Drivers";
+    if (!title.includes(highlight)) return title;
+    const parts = title.split(highlight);
+    return parts.map((part, index) => (
+      <span key={index}>
+        {part}
+        {index < parts.length - 1 ? <span style={{ color: brandColor }}>{highlight}</span> : null}
+      </span>
+    ));
+  };
+
   return (
     <section className="mt-4 relative overflow-hidden bg-[#f5f9ff] pb-4">
       <div className="mx-auto max-w-7xl px-4 lg:px-8">
@@ -39,17 +62,17 @@ export default function HeroSection({
             transition={{ duration: 0.5 }}
             className="relative z-10 py-4 lg:py-5"
           >
-            <p className="mb-2 text-[11px] font-semibold tracking-wide text-[#0056D2] md:text-xs">
-              Cabzii — cabzii.in | Book online across India
+            <p className="mb-2 text-[11px] font-semibold tracking-wide md:text-xs" style={{ color: brandColor }}>
+              {hero.eyebrow || "Cabzii — cabzii.in | Book online across India"}
             </p>
 
             <h1 className="max-w-lg text-[1.75rem] font-extrabold leading-[1.08] text-[#081028] sm:text-[2.1rem] lg:text-[3rem]">
-              Book Cabs, Taxis &{" "}
-              <span className="text-[#0056D2]">Acting Drivers</span> Online
+              {renderTitle()}
             </h1>
 
             <p className="mt-3 max-w-md text-[13px] leading-6 text-slate-600 md:text-sm">
-              Cabs, acting drivers and tour packages in Chennai, Bengaluru, Mumbai and across India — transparent fares, instant booking.
+              {hero.subtitle ||
+                "Cabs, acting drivers and tour packages in Chennai, Bengaluru, Mumbai and across India — transparent fares, instant booking."}
             </p>
           </motion.div>
 
@@ -63,7 +86,7 @@ export default function HeroSection({
             <div className="relative h-full w-full overflow-hidden rounded-tr-2xl">
 
               <Image
-                src={HERO_IMAGE}
+                src={heroImage}
                 alt="Cabzii Hero"
                 fill
                 priority
@@ -77,17 +100,14 @@ export default function HeroSection({
               {/* OFFER CARD */}
               <div className="absolute right-6 top-6 rounded-2xl bg-white px-4 py-3 shadow-2xl">
                 <p className="text-[10px] font-bold uppercase tracking-wide text-slate-400">
-                  Up To
+                  {hero.promoBadge || "Up To"}
                 </p>
 
                 <h3 className="text-3xl font-extrabold leading-none text-green-600">
-                  20%
-                  <span className="ml-1 text-sm">OFF</span>
+                  {hero.promoTitle || "20% OFF"}
                 </h3>
 
-                <p className="mt-1 text-[11px] text-slate-500">
-                  Cabs &amp; Tours
-                </p>
+                <p className="mt-1 text-[11px] text-slate-500">{hero.promoSubtitle || "Cabs & Tours"}</p>
               </div>
             </div>
           </motion.div>
@@ -96,7 +116,7 @@ export default function HeroSection({
         {/* MOBILE IMAGE */}
         <div className="relative mb-3 h-[160px] overflow-hidden rounded-2xl lg:hidden">
           <Image
-            src={HERO_IMAGE}
+            src={heroImage}
             alt="Cabzii"
             fill
             priority
@@ -117,7 +137,7 @@ export default function HeroSection({
           {/* TABS */}
           <div className="flex flex-wrap justify-start overflow-x-auto border-b border-slate-100 px-2 py-2 scrollbar-hide">
 
-            {TABS.map((tab) => {
+            {tabs.map((tab) => {
               const active = searchTab === tab.id;
 
               return (
@@ -198,9 +218,9 @@ export default function HeroSection({
                 className={inputClass}
               >
                 <option value="">Select cab</option>
-                <option>Sedan</option>
-                <option>SUV</option>
-                <option>Innova</option>
+                {cabTypes.map((type) => (
+                  <option key={type}>{type}</option>
+                ))}
               </select>
             </div>
 
@@ -209,7 +229,8 @@ export default function HeroSection({
               <button
                 type="button"
                 onClick={onSearch}
-                className="h-[40px] w-full rounded-xl bg-[#0056D2] text-sm font-bold text-white shadow-md transition hover:bg-[#0047b3]"
+                className="h-[40px] w-full rounded-xl text-sm font-bold text-white shadow-md transition hover:opacity-90"
+                style={{ backgroundColor: brandColor }}
               >
                 {isTour ? "Find Tours" : "Search"}
               </button>
@@ -218,11 +239,9 @@ export default function HeroSection({
 
           {/* TRUST SECTION */}
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-slate-100 px-4 py-3 text-[11px] text-slate-600 md:text-xs">
-            <span>✅ Verified Drivers</span>
-            <span>💰 Best Price</span>
-            <span>🎧 24/7 Support</span>
-            <span>🔒 Secure</span>
-            <span>❌ Free Cancellation</span>
+            {trustBadges.map((badge) => (
+              <span key={badge}>✅ {badge}</span>
+            ))}
           </div>
         </motion.div>
       </div>

@@ -1,4 +1,11 @@
-import { SEO_CITIES, SITE_URL, getBackendUrl } from "../lib/seo";
+import {
+  SEO_CITIES,
+  SEO_ROUTES,
+  SEO_SERVICES,
+  SITE_URL,
+  getBackendUrl,
+  servicePath
+} from "../lib/seo";
 
 async function fetchIds(path) {
   const backend = getBackendUrl();
@@ -24,6 +31,8 @@ export default async function sitemap() {
     { url: `${base}/drivers`, lastModified: now, changeFrequency: "daily", priority: 0.95 },
     { url: `${base}/packages`, lastModified: now, changeFrequency: "daily", priority: 0.9 },
     { url: `${base}/locations`, lastModified: now, changeFrequency: "weekly", priority: 0.85 },
+    { url: `${base}/blogs`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
+    { url: `${base}/testimonials`, lastModified: now, changeFrequency: "weekly", priority: 0.75 },
     { url: `${base}/booking`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
     { url: `${base}/search`, lastModified: now, changeFrequency: "daily", priority: 0.75 },
     { url: `${base}/terms-and-conditions`, lastModified: now, changeFrequency: "yearly", priority: 0.4 },
@@ -36,20 +45,37 @@ export default async function sitemap() {
       url: `${base}/cab-booking/${city.slug}`,
       lastModified: now,
       changeFrequency: "weekly",
-      priority: 0.88
+      priority: 0.92
     },
     {
       url: `${base}/acting-driver/${city.slug}`,
       lastModified: now,
       changeFrequency: "weekly",
-      priority: 0.88
+      priority: 0.9
     }
   ]);
 
-  const [cabs, drivers, packages] = await Promise.all([
+  const serviceRoutes = SEO_CITIES.flatMap((city) =>
+    SEO_SERVICES.map((service) => ({
+      url: `${base}${servicePath(service, city)}`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.88
+    }))
+  );
+
+  const routePages = SEO_ROUTES.map((route) => ({
+    url: `${base}/routes/${route.slug}`,
+    lastModified: now,
+    changeFrequency: "weekly",
+    priority: 0.87
+  }));
+
+  const [cabs, drivers, packages, blogPosts] = await Promise.all([
     fetchIds("/cabs"),
     fetchIds("/drivers"),
-    fetchIds("/packages")
+    fetchIds("/packages"),
+    fetchIds("/blogs")
   ]);
 
   const cabRoutes = cabs.map((item) => ({
@@ -67,11 +93,29 @@ export default async function sitemap() {
   }));
 
   const packageRoutes = packages.map((item) => ({
-    url: `${base}/packages/${item._id}`,
+    url: `${base}/tour-booking?id=${item._id}`,
     lastModified: item.updatedAt ? new Date(item.updatedAt) : now,
     changeFrequency: "weekly",
     priority: 0.65
   }));
 
-  return [...staticRoutes, ...cityRoutes, ...cabRoutes, ...driverRoutes, ...packageRoutes];
+  const blogRoutes = blogPosts
+    .filter((item) => item.slug)
+    .map((item) => ({
+      url: `${base}/blog/${item.slug}`,
+      lastModified: item.updatedAt ? new Date(item.updatedAt) : now,
+      changeFrequency: "monthly",
+      priority: 0.6
+    }));
+
+  return [
+    ...staticRoutes,
+    ...cityRoutes,
+    ...serviceRoutes,
+    ...routePages,
+    ...cabRoutes,
+    ...driverRoutes,
+    ...packageRoutes,
+    ...blogRoutes
+  ];
 }

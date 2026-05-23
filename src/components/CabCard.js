@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { buildFareSlabs, formatRating, num, packageYouPay } from "../lib/cabFare";
+import { resolveMediaUrl } from "../lib/media";
 import {
   CARD_ARTICLE_CLASS,
   CARD_BOOK_BTN_CLASS,
@@ -19,8 +20,7 @@ export default function CabCard({ cab, onBook, bookHref }) {
   const discount = num(cab.discountPercentage, 0);
   const basePrice = num(cab.price);
 
-  const imageSrc =
-    (cab.image && String(cab.image).trim()) || FALLBACK_CAB_IMAGE;
+  const imageSrc = resolveMediaUrl(cab.image) || FALLBACK_CAB_IMAGE;
 
   const features = Array.isArray(cab.features) ? cab.features : [];
 

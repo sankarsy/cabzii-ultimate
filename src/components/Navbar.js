@@ -2,23 +2,51 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { clearSession, formatMobileDisplay, getUser, isLoggedIn } from "../lib/auth";
+import { useSiteSettings } from "./SiteSettingsProvider";
 
-const navLinks = [
+const fallbackNavLinks = [
   { href: "/", label: "Home" },
   { href: "/cabs", label: "Cabs" },
   { href: "/packages", label: "Tours" },
   { href: "/drivers", label: "Drivers" },
-  { href: "/search?q=offers", label: "Offers" },
- 
+  { href: "/search?q=offers", label: "Offers" }
 ];
 
 export default function Navbar() {
+  const settings = useSiteSettings();
   const router = useRouter();
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [user, setUser] = useState(null);
+  const userMenuRef = useRef(null);
+
+  useEffect(() => {
+    const sync = () => {
+      setLoggedIn(isLoggedIn());
+      setUser(getUser());
+    };
+    sync();
+    window.addEventListener("storage", sync);
+    window.addEventListener("cabzii-auth", sync);
+    return () => {
+      window.removeEventListener("storage", sync);
+      window.removeEventListener("cabzii-auth", sync);
+    };
+  }, [pathname]);
+
+  useEffect(() => {
+    const onDoc = (e) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target)) setUserMenuOpen(false);
+    };
+    document.addEventListener("click", onDoc);
+    return () => document.removeEventListener("click", onDoc);
+  }, []);
 
   const handleSearch = () => {
     const query = searchTerm.trim();
@@ -27,9 +55,19 @@ export default function Navbar() {
     setMenuOpen(false);
   };
 
+  const handleLogout = async () => {
+    clearSession();
+    await fetch("/api/auth/session", { method: "DELETE" });
+    setUserMenuOpen(false);
+    setMenuOpen(false);
+    setLoggedIn(false);
+    setUser(null);
+    router.push("/");
+    router.refresh();
+  };
+
   const isActive = (href) => {
     if (href === "/") return pathname === "/";
-    if (href.startsWith("/#")) return false;
     if (href.startsWith("/search")) return false;
     return pathname === href || pathname.startsWith(`${href}/`);
   };
@@ -39,17 +77,23 @@ export default function Navbar() {
       isActive(href) ? "bg-blue-50 text-[#0056D2]" : "text-slate-700 hover:text-[#0056D2]"
     }`;
 
+  const navLinks = (settings.navbar?.length ? settings.navbar : fallbackNavLinks)
+    .filter((link) => link.visible !== false)
+    .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
+
+  const brandName = settings.siteName || "cabzii.in";
+  const brandColor = settings.brandColor || "#0056D2";
+  const searchPlaceholder = settings.hero?.searchPlaceholder || "Search cabs or tours...";
+
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200 bg-white shadow-sm">
       <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-8">
         <div className="flex h-[72px] items-center justify-between gap-3">
           <Link href="/" className="inline-flex shrink-0 items-center gap-2.5">
-            <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-[#0056D2] text-white shadow-sm">
+            <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-white shadow-sm" style={{ backgroundColor: brandColor }}>
               <BrandIcon className="h-5 w-5" />
             </span>
-            <span className="text-xl font-bold tracking-tight text-slate-900">
-              cabzii<span className="text-[#0056D2]">.in</span>
-            </span>
+            <span className="text-xl font-bold tracking-tight text-slate-900">{brandName}</span>
           </Link>
 
           <nav className="hidden flex-1 items-center justify-center gap-0.5 lg:flex xl:gap-1">
@@ -60,19 +104,15 @@ export default function Navbar() {
             ))}
           </nav>
 
-          <motion.div
-            initial={{ opacity: 0, x: 8 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="hidden items-center gap-2 md:flex lg:gap-3"
-          >
+          <div className="hidden items-center gap-2 md:flex lg:gap-3">
             <div className="hidden items-center gap-1.5 xl:flex">
               <input
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                placeholder="Search cabs or tours..."
+                placeholder={searchPlaceholder}
                 className="w-40 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-[#0056D2] focus:bg-white lg:w-48"
-                aria-label="Search cabs, drivers and tour packages"
+                aria-label="Search"
               />
               <button
                 type="button"
@@ -83,22 +123,64 @@ export default function Navbar() {
               </button>
             </div>
 
-            <a
-              href="tel:+919944197416"
-              className="hidden items-center gap-1.5 whitespace-nowrap text-sm font-medium text-slate-700 hover:text-[#0056D2] lg:inline-flex"
-            >
-              <PhoneIcon className="h-4 w-4 text-[#0056D2]" />
-              Call Us 24/7
-            </a>
-
-            <Link
-              href="/signin"
-              className="inline-flex items-center gap-2 rounded-lg bg-[#0056D2] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#0047b3]"
-            >
-              <UserIcon className="h-4 w-4" />
-              <span className="hidden sm:inline">Login</span>
-            </Link>
-          </motion.div>
+            {loggedIn && user ? (
+              <div className="relative" ref={userMenuRef}>
+                <button
+                  type="button"
+                  onClick={() => setUserMenuOpen((p) => !p)}
+                  className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:border-[#0056D2]/40"
+                >
+                  <UserIcon className="h-4 w-4 text-[#0056D2]" />
+                  <span className="hidden max-w-[100px] truncate sm:inline">
+                    {formatMobileDisplay(user.mobileNumber)}
+                  </span>
+                  <ChevronDown className="h-3.5 w-3.5 text-slate-500" />
+                </button>
+                <AnimatePresence>
+                  {userMenuOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 6 }}
+                      className="absolute right-0 mt-2 w-48 overflow-hidden rounded-xl border border-slate-200 bg-white py-1 shadow-lg"
+                    >
+                      <Link
+                        href="/my-bookings"
+                        className="block px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50"
+                        onClick={() => setUserMenuOpen(false)}
+                      >
+                        My Bookings
+                      </Link>
+                      {["super_admin", "vendor_admin"].includes(user.role) ? (
+                        <Link
+                          href="/admin"
+                          className="block px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50"
+                          onClick={() => setUserMenuOpen(false)}
+                        >
+                          Admin
+                        </Link>
+                      ) : null}
+                      <button
+                        type="button"
+                        onClick={handleLogout}
+                        className="block w-full px-4 py-2.5 text-left text-sm font-medium text-rose-600 hover:bg-rose-50"
+                      >
+                        Logout
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                className="inline-flex items-center gap-2 rounded-lg bg-[#0056D2] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#0047b3]"
+              >
+                <UserIcon className="h-4 w-4" />
+                <span className="hidden sm:inline">Login</span>
+              </Link>
+            )}
+          </div>
 
           <button
             type="button"
@@ -110,21 +192,6 @@ export default function Navbar() {
               <path d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
-        </div>
-
-        <div className="hidden border-t border-slate-100 pb-3 pt-2 md:block xl:hidden">
-          <div className="flex items-center gap-2">
-            <input
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-              placeholder="Search cabs or tours..."
-              className="flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none focus:border-[#0056D2]"
-            />
-            <button type="button" onClick={handleSearch} className="rounded-lg bg-slate-800 px-4 py-2 text-sm font-semibold text-white">
-              Search
-            </button>
-          </div>
         </div>
 
         <AnimatePresence>
@@ -140,18 +207,21 @@ export default function Navbar() {
                   {link.label}
                 </Link>
               ))}
-              <div className="mt-3 flex gap-2">
-                <input
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                  placeholder="Search cabs or tours..."
-                  className="flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm"
-                />
-                <button type="button" onClick={handleSearch} className="rounded-lg bg-[#0056D2] px-4 py-2 text-sm font-semibold text-white">
-                  Go
-                </button>
-              </div>
+              {loggedIn && user ? (
+                <div className="mt-3 space-y-1 border-t border-slate-100 pt-3">
+                  <p className="px-2 text-xs text-slate-500">{formatMobileDisplay(user.mobileNumber)}</p>
+                  <Link href="/my-bookings" onClick={() => setMenuOpen(false)} className="block px-2 py-2 text-sm font-medium text-slate-700">
+                    My Bookings
+                  </Link>
+                  <button type="button" onClick={handleLogout} className="block w-full px-2 py-2 text-left text-sm font-medium text-rose-600">
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <Link href="/login" onClick={() => setMenuOpen(false)} className="mt-3 block rounded-lg bg-[#0056D2] px-4 py-2 text-center text-sm font-semibold text-white">
+                  Login
+                </Link>
+              )}
             </motion.nav>
           )}
         </AnimatePresence>
@@ -167,23 +237,6 @@ function BrandIcon({ className }) {
       <path d="M3 12h18v5a1 1 0 0 1-1 1h-1M3 12v5a1 1 0 0 0 1 1h1" />
       <circle cx="7.5" cy="17" r="1.3" />
       <circle cx="16.5" cy="17" r="1.3" />
-    </svg>
-  );
-}
-
-function PhoneIcon({ className }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className={className} stroke="currentColor" strokeWidth="2">
-      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
-    </svg>
-  );
-}
-
-function GlobeIcon({ className }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className={className} stroke="currentColor" strokeWidth="2">
-      <circle cx="12" cy="12" r="10" />
-      <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
     </svg>
   );
 }

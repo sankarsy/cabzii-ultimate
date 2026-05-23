@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import Footer from "../../components/Footer";
 import Navbar from "../../components/Navbar";
 import PaymentBreakdown from "../../components/PaymentBreakdown";
+import { authHeaders, getToken, getUser, normalizeMobileInput } from "../../lib/auth";
 
 function firstParam(value) {
   if (Array.isArray(value)) return String(value[0] ?? "").trim();
@@ -36,6 +37,15 @@ export default function PaymentPage({ searchParams }) {
   const tourPersons = Number(searchParams?.persons) || 1;
 
   const [selectedItem, setSelectedItem] = useState(null);
+
+  useEffect(() => {
+    const user = getUser();
+    if (user?.mobileNumber) setPhone(user.mobileNumber);
+    if (!getToken()) {
+      const next = typeof window !== "undefined" ? window.location.pathname + window.location.search : "/payment";
+      router.replace(`/login?next=${encodeURIComponent(next)}`);
+    }
+  }, [router]);
 
   useEffect(() => {
     if (!itemId) return;
@@ -90,30 +100,25 @@ export default function PaymentPage({ searchParams }) {
       setSubmitError("Missing booking item. Go back and select again.");
       return;
     }
-    if (!customerName.trim() || !phone.trim()) {
-      setSubmitError("Please enter your name and mobile number.");
+    const mobileNumber = normalizeMobileInput(phone) || getUser()?.mobileNumber;
+    if (!mobileNumber) {
+      setSubmitError("Please enter a valid 10-digit mobile number.");
       return;
     }
     setSubmitting(true);
     setSubmitError("");
     try {
-      const token = typeof window !== "undefined" ? localStorage.getItem("cabzii_admin_token") : "";
       const res = await fetch("/api/book", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { authorization: `Bearer ${token}` } : {})
-        },
+        headers: authHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify({
-          customerName: customerName.trim(),
-          phone: phone.trim(),
+          customerName: customerName.trim() || "Cabzii User",
+          mobileNumber,
+          phone: mobileNumber,
           email: email.trim(),
           type: bookingType,
           itemId,
-          pickup:
-            type === "tour" && tourPersons > 1
-              ? `${pickup.trim()} (${tourPersons} persons)`.trim()
-              : pickup,
+          pickup: pickup.trim(),
           drop: type === "tour" ? "" : drop,
           date,
           routeType:

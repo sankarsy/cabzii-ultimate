@@ -1,0 +1,20 @@
+# Cabzii — cabzii.in
+
+> Online cab, taxi, airport transfer, outstation, acting driver and tour booking across South India.
+
+## Primary pages
+- https://cabzii.in/
+- https://cabzii.in/cab-booking/chennai
+- https://cabzii.in/cab-booking/bengaluru
+- https://cabzii.in/services/airport-taxi/chennai
+- https://cabzii.in/routes/chennai-to-bangalore-cab
+- https://cabzii.in/acting-driver/chennai
+- https://cabzii.in/blogs
+- https://cabzii.in/testimonials
+
+## Services
+Cab booking, taxi booking, airport taxi, outstation cab, one way cab, driver on hire, acting driver, chauffeur service, tempo traveller, car rental, local taxi, hourly rental, tour packages.
+
+## Contact
+Phone: +91 9944197416
+Website: https://cabzii.in

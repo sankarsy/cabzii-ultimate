@@ -26,18 +26,30 @@ const SECTION_LINKS = [
   { href: "#similar-drivers", label: "Alternatives" }
 ];
 
-export default function DriverDetailPage({ driverId }) {
+function applyDriverData(data, setDriver, setSelection) {
+  setDriver(data);
+  const slabs = buildDriverFareSlabs(data);
+  const first = slabs.find((p) => p.id === "local_4hr") || slabs[0];
+  if (first) setSelection(selectionFromDriverPackage(first, first.group, data.discountPercentage));
+}
+
+export default function DriverDetailPage({ driverId, initialDriver = null }) {
   const id = firstParam(driverId);
-  const [driver, setDriver] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [driver, setDriver] = useState(initialDriver);
+  const [loading, setLoading] = useState(!initialDriver);
   const [loadError, setLoadError] = useState("");
   const [selection, setSelection] = useState(null);
 
   useEffect(() => {
+    if (initialDriver) {
+      applyDriverData(initialDriver, setDriver, setSelection);
+      setLoading(false);
+      return undefined;
+    }
     if (!id) {
       setLoadError("Missing driver id.");
       setLoading(false);
-      return;
+      return undefined;
     }
     let cancelled = false;
     (async () => {
@@ -52,11 +64,7 @@ export default function DriverDetailPage({ driverId }) {
             setLoadError(json?.message || "Driver not found.");
           }
         } else if (!cancelled) {
-          const data = json.data;
-          setDriver(data);
-          const slabs = buildDriverFareSlabs(data);
-          const first = slabs.find((p) => p.id === "local_4hr") || slabs[0];
-          if (first) setSelection(selectionFromDriverPackage(first, first.group, data.discountPercentage));
+          applyDriverData(json.data, setDriver, setSelection);
         }
       } catch {
         if (!cancelled) {
@@ -70,7 +78,7 @@ export default function DriverDetailPage({ driverId }) {
     return () => {
       cancelled = true;
     };
-  }, [id]);
+  }, [id, initialDriver]);
 
   const driverPk = driver ? String(driver._id ?? driver.id ?? "") : "";
   const payHref = useMemo(() => {

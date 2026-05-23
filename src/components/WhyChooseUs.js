@@ -1,53 +1,41 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useSiteSettings } from "./SiteSettingsProvider";
 
-const FEATURES = [
-  {
-    title: "Sanitized Cabs",
-    subtitle: "Clean & hygienic vehicles",
-    icon: ShieldCheckIcon,
-    iconBg: "bg-blue-50",
-    iconColor: "text-blue-600"
-  },
-  {
-    title: "Live Tracking",
-    subtitle: "Real-time trip tracking",
-    icon: TrackingIcon,
-    iconBg: "bg-emerald-50",
-    iconColor: "text-emerald-600"
-  },
-  {
-    title: "Transparent Pricing",
-    subtitle: "No hidden charges",
-    icon: TagIcon,
-    iconBg: "bg-orange-50",
-    iconColor: "text-orange-600"
-  },
-  {
-    title: "24/7 Customer Support",
-    subtitle: "We are here to help",
-    icon: HeadsetIcon,
-    iconBg: "bg-violet-50",
-    iconColor: "text-violet-600"
-  },
-  {
-    title: "Doorstep Pickup",
-    subtitle: "On-time pickup",
-    icon: CarPickupIcon,
-    iconBg: "bg-rose-50",
-    iconColor: "text-rose-600"
-  },
-  {
-    title: "Safe & Secure",
-    subtitle: "Your safety is our priority",
-    icon: LockIcon,
-    iconBg: "bg-sky-50",
-    iconColor: "text-sky-600"
-  }
+const FALLBACK_FEATURES = [
+  { title: "Sanitized Cabs", subtitle: "Clean & hygienic vehicles", iconKey: "shield" },
+  { title: "Live Tracking", subtitle: "Real-time trip tracking", iconKey: "tracking" },
+  { title: "Transparent Pricing", subtitle: "No hidden charges", iconKey: "tag" },
+  { title: "24/7 Customer Support", subtitle: "We are here to help", iconKey: "headset" },
+  { title: "Doorstep Pickup", subtitle: "On-time pickup", iconKey: "pickup" },
+  { title: "Safe & Secure", subtitle: "Your safety is our priority", iconKey: "lock" }
 ];
 
+const ICONS = {
+  shield: ShieldCheckIcon,
+  tracking: TrackingIcon,
+  tag: TagIcon,
+  headset: HeadsetIcon,
+  pickup: CarPickupIcon,
+  lock: LockIcon
+};
+
+const ICON_STYLES = {
+  shield: { iconBg: "bg-blue-50", iconColor: "text-blue-600" },
+  tracking: { iconBg: "bg-emerald-50", iconColor: "text-emerald-600" },
+  tag: { iconBg: "bg-orange-50", iconColor: "text-orange-600" },
+  headset: { iconBg: "bg-violet-50", iconColor: "text-violet-600" },
+  pickup: { iconBg: "bg-rose-50", iconColor: "text-rose-600" },
+  lock: { iconBg: "bg-sky-50", iconColor: "text-sky-600" }
+};
+
+const FEATURES = FALLBACK_FEATURES;
+
 export default function WhyChooseUs() {
+  const settings = useSiteSettings();
+  const features = settings.whyChooseUs?.length ? settings.whyChooseUs : FALLBACK_FEATURES;
+
   return (
     <section aria-label="Why choose Cabzii" className="py-6 md:py-8">
       <motion.div
@@ -59,8 +47,9 @@ export default function WhyChooseUs() {
       >
         <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
           <div className="flex flex-col divide-y divide-slate-100 lg:flex-row lg:divide-x lg:divide-y-0">
-            {FEATURES.map((feature, index) => {
-              const Icon = feature.icon;
+            {features.map((feature, index) => {
+              const Icon = ICONS[feature.iconKey] || ShieldCheckIcon;
+              const style = ICON_STYLES[feature.iconKey] || ICON_STYLES.shield;
               return (
                 <motion.div
                   key={feature.title}
@@ -71,7 +60,7 @@ export default function WhyChooseUs() {
                   className="flex flex-1 items-center gap-3 px-4 py-4 sm:px-5 sm:py-5"
                 >
                   <span
-                    className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full ${feature.iconBg} ${feature.iconColor}`}
+                    className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full ${style.iconBg} ${style.iconColor}`}
                   >
                     <Icon className="h-5 w-5" />
                   </span>

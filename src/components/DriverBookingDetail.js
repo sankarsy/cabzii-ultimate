@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { resolveMediaUrl } from "../lib/media";
 import AdditionalChargesGrid from "./AdditionalChargesGrid";
 import PackageOptionCard from "./PackageOptionCard";
 import {
@@ -22,7 +23,7 @@ export default function DriverBookingDetail({ driver, onSelectionChange }) {
   const discount = num(driver.discountPercentage, 0);
   const { hourly, day } = getDriverPricing(driver);
   const chargeItems = useMemo(() => buildDriverChargeItems(driver), [driver]);
-  const imageSrc = (driver.image && String(driver.image).trim()) || FALLBACK_DRIVER_IMAGE;
+  const imageSrc = resolveMediaUrl(driver.image) || FALLBACK_DRIVER_IMAGE;
   const vehicles = Array.isArray(driver.supportedVehicles) ? driver.supportedVehicles : [];
   const languages = Array.isArray(driver.languages) ? driver.languages : [];
   const ratingText = formatDriverRating(driver);

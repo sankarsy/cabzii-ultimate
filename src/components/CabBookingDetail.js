@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { resolveMediaUrl } from "../lib/media";
 import PackageOptionCard from "./PackageOptionCard";
 import {
   buildFareSlabs,
@@ -24,7 +25,7 @@ export default function CabBookingDetail({ cab, onSelectionChange }) {
     rawExtra != null && rawExtra !== "" && Number.isFinite(Number(rawExtra)) ? num(rawExtra) : num(cab.price);
   const extraKmRate = Math.max(12, Math.floor(price / 10) || 12);
   const nightCharge = extraHour > 0 ? Math.max(0, Math.round(extraHour * 0.25)) : null;
-  const imageSrc = (cab.image && String(cab.image).trim()) || FALLBACK_CAB_IMAGE;
+  const imageSrc = resolveMediaUrl(cab.image) || FALLBACK_CAB_IMAGE;
   const features = Array.isArray(cab.features) ? cab.features : [];
   const hasAc = features.some((f) => /^(ac|a\/c|air\s*condition)/i.test(String(f).trim()));
   const amenityLabel = hasAc ? "AC" : features[0] ? String(features[0]) : "—";

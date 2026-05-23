@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { resolveMediaUrl } from "../lib/media";
 import { num, packageYouPay } from "../lib/cabFare";
 import {
   buildDriverFareSlabs,
@@ -23,7 +24,7 @@ const FALLBACK_DRIVER_IMAGE =
 
 export default function DriverCard({ driver, onBook, bookHref }) {
   const discount = num(driver.discountPercentage, 0);
-  const imageSrc = (driver.image && String(driver.image).trim()) || FALLBACK_DRIVER_IMAGE;
+  const imageSrc = resolveMediaUrl(driver.image) || FALLBACK_DRIVER_IMAGE;
   const ratingText = formatDriverRating(driver);
   const reviewCountRaw = driver.reviewCount ?? driver.reviews;
   const reviewCount =

@@ -1,46 +1,38 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useSiteSettings } from "./SiteSettingsProvider";
 
-const STATS = [
-  {
-    value: "50K+",
-    label: "Happy Customers",
-    icon: UsersIcon,
-    iconBg: "bg-blue-50",
-    iconColor: "text-blue-600"
-  },
-  {
-    value: "10K+",
-    label: "Trips Completed",
-    icon: CarIcon,
-    iconBg: "bg-emerald-50",
-    iconColor: "text-emerald-600"
-  },
-  {
-    value: "500+",
-    label: "Verified Drivers",
-    icon: DriverIcon,
-    iconBg: "bg-orange-50",
-    iconColor: "text-orange-600"
-  },
-  {
-    value: "150+",
-    label: "Cities Covered",
-    icon: PinIcon,
-    iconBg: "bg-violet-50",
-    iconColor: "text-violet-600"
-  },
-  {
-    value: "4.9/5",
-    label: "Customer Rating",
-    icon: StarIcon,
-    iconBg: "bg-amber-50",
-    iconColor: "text-amber-600"
-  }
+const FALLBACK_STATS = [
+  { value: "50K+", label: "Happy Customers", iconKey: "users" },
+  { value: "10K+", label: "Trips Completed", iconKey: "car" },
+  { value: "500+", label: "Verified Drivers", iconKey: "driver" },
+  { value: "150+", label: "Cities Covered", iconKey: "pin" },
+  { value: "4.9/5", label: "Customer Rating", iconKey: "star" }
 ];
 
+const ICONS = {
+  users: UsersIcon,
+  car: CarIcon,
+  driver: DriverIcon,
+  pin: PinIcon,
+  star: StarIcon
+};
+
+const ICON_STYLES = {
+  users: { iconBg: "bg-blue-50", iconColor: "text-blue-600" },
+  car: { iconBg: "bg-emerald-50", iconColor: "text-emerald-600" },
+  driver: { iconBg: "bg-orange-50", iconColor: "text-orange-600" },
+  pin: { iconBg: "bg-violet-50", iconColor: "text-violet-600" },
+  star: { iconBg: "bg-amber-50", iconColor: "text-amber-600" }
+};
+
+const STATS = FALLBACK_STATS;
+
 export default function HeroStats() {
+  const settings = useSiteSettings();
+  const stats = settings.heroStats?.length ? settings.heroStats : FALLBACK_STATS;
+
   return (
     <section
       aria-label="Company statistics"
@@ -55,8 +47,9 @@ export default function HeroStats() {
       >
         <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
           <div className="grid grid-cols-2 divide-x divide-y divide-slate-100 sm:grid-cols-3 lg:grid-cols-5 lg:divide-y-0">
-            {STATS.map((stat, index) => {
-              const Icon = stat.icon;
+            {stats.map((stat, index) => {
+              const Icon = ICONS[stat.iconKey] || UsersIcon;
+              const style = ICON_STYLES[stat.iconKey] || ICON_STYLES.users;
 
               return (
                 <motion.div
@@ -68,7 +61,7 @@ export default function HeroStats() {
                   className="flex items-center gap-3 px-4 py-5 sm:px-5"
                 >
                   <span
-                    className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full ${stat.iconBg} ${stat.iconColor}`}
+                    className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full ${style.iconBg} ${style.iconColor}`}
                   >
                     <Icon className="h-5 w-5" />
                   </span>
