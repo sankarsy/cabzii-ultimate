@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
+import { resolveSeoAliasPath } from "./lib/seo/urlAliases";
 
 const PROTECTED_PREFIXES = ["/payment", "/booking", "/my-bookings"];
 
-/** SEO-friendly redirects for legacy or alias URLs. */
-const SEO_REDIRECTS = {
+/** Prefix redirects: /taxi-booking/chennai → /cab-booking/chennai */
+const SEO_PREFIX_REDIRECTS = {
   "/taxi-booking": "/cab-booking"
 };
 
@@ -16,11 +17,18 @@ export function middleware(request) {
     return NextResponse.redirect(lower, 301);
   }
 
-  for (const [prefix, target] of Object.entries(SEO_REDIRECTS)) {
+  for (const [prefix, target] of Object.entries(SEO_PREFIX_REDIRECTS)) {
     if (pathname === prefix || pathname.startsWith(`${prefix}/`)) {
       const rest = pathname.slice(prefix.length);
       return NextResponse.redirect(new URL(`${target}${rest}`, request.url), 301);
     }
+  }
+
+  const aliasTarget = resolveSeoAliasPath(pathname);
+  if (aliasTarget && aliasTarget !== pathname) {
+    const url = new URL(aliasTarget, request.url);
+    url.search = request.nextUrl.search;
+    return NextResponse.redirect(url, 301);
   }
 
   const isProtected = PROTECTED_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
@@ -40,6 +48,11 @@ export const config = {
     "/booking/:path*",
     "/my-bookings/:path*",
     "/taxi-booking/:path*",
-    "/((?!_next/static|_next/image|favicon.ico|images).*)"
+    "/car-rental/:path*",
+    "/cab-rental/:path*",
+    "/travels/:path*",
+    "/travel/:path*",
+    "/travel-agency/:path*",
+    "/((?!_next/static|_next/image|favicon.ico|images|api).*)"
   ]
 };

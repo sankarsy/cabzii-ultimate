@@ -50,7 +50,13 @@ export const DEFAULT_SITE_SETTINGS = {
       { id: "tour", label: "Tours", icon: "🗺️" }
     ],
     cabTypes: ["Sedan", "SUV", "Innova"],
-    trustBadges: ["Verified Drivers", "Best Price", "24/7 Support", "Secure", "Free Cancellation"]
+    trustBadges: [
+      { label: "Verified Drivers", iconKey: "verified", icon: "✅" },
+      { label: "Best Price", iconKey: "price", icon: "💰" },
+      { label: "24/7 Support", iconKey: "support", icon: "🎧" },
+      { label: "Secure", iconKey: "secure", icon: "🔒" },
+      { label: "Free Cancellation", iconKey: "cancel", icon: "🔄" }
+    ]
   },
   heroStats: [
     { value: "50K+", label: "Happy Customers", iconKey: "users" },

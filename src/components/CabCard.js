@@ -2,12 +2,18 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { buildFareSlabs, formatRating, num, packageYouPay } from "../lib/cabFare";
+import {
+  buildFareSlabs,
+  formatRating,
+  num,
+  packageYouPay
+} from "../lib/cabFare";
 import { resolveMediaUrl } from "../lib/media";
 import {
   CARD_ARTICLE_CLASS,
   CARD_BOOK_BTN_CLASS,
   MetaPill,
+  PackagePill,
   PriceSummaryCard,
   ProductImageFrame,
   ProductMetaBlock
@@ -20,12 +26,17 @@ export default function CabCard({ cab, onBook, bookHref }) {
   const discount = num(cab.discountPercentage, 0);
   const basePrice = num(cab.price);
 
-  const imageSrc = resolveMediaUrl(cab.image) || FALLBACK_CAB_IMAGE;
+  const imageSrc =
+    resolveMediaUrl(cab.image) || FALLBACK_CAB_IMAGE;
 
-  const features = Array.isArray(cab.features) ? cab.features : [];
+  const features = Array.isArray(cab.features)
+    ? cab.features
+    : [];
 
   const hasAc = features.some((f) =>
-    /^(ac|a\/c|air\s*condition)/i.test(String(f).trim())
+    /^(ac|a\/c|air\s*condition)/i.test(
+      String(f).trim()
+    )
   );
 
   const amenityLabel = hasAc
@@ -35,48 +46,117 @@ export default function CabCard({ cab, onBook, bookHref }) {
     : "—";
 
   const ratingText = formatRating(cab);
-  const reviewCountRaw = cab.reviewCount ?? cab.reviews;
+
+  const reviewCountRaw =
+    cab.reviewCount ?? cab.reviews;
+
   const reviewCount =
-    reviewCountRaw != null && Number.isFinite(Number(reviewCountRaw)) ? Number(reviewCountRaw) : null;
+    reviewCountRaw != null &&
+    Number.isFinite(Number(reviewCountRaw))
+      ? Number(reviewCountRaw)
+      : null;
 
   const fareSlabs = useMemo(
     () => buildFareSlabs(cab),
-    [cab._id, cab.hourlyRate, cab.dayRate, cab.price, cab.extraHourRate, cab.discountPercentage]
+    [
+      cab._id,
+      cab.hourlyRate,
+      cab.dayRate,
+      cab.price,
+      cab.extraHourRate,
+      cab.discountPercentage,
+      cab.farePackages
+    ]
   );
 
-  const localPackages = fareSlabs.filter((pkg) => pkg.group === "local");
-  const outstationPackages = fareSlabs.filter((pkg) => pkg.group === "outstation");
+  const localPackages = fareSlabs.filter(
+    (pkg) => pkg.group === "local"
+  );
 
-  const [selectedPackageId, setSelectedPackageId] = useState("local_4hr");
+  const outstationPackages = fareSlabs.filter(
+    (pkg) => pkg.group === "outstation"
+  );
+
+  const [selectedPackageId, setSelectedPackageId] =
+    useState("local_4hr");
 
   useEffect(() => {
-    const preferred = fareSlabs.find((p) => p.id === "local_4hr") || fareSlabs[0];
-    if (preferred) setSelectedPackageId(preferred.id);
+    const preferred =
+      fareSlabs.find(
+        (p) => p.id === "local_4hr"
+      ) || fareSlabs[0];
+
+    if (preferred) {
+      setSelectedPackageId(preferred.id);
+    }
   }, [fareSlabs]);
 
-  const selectedPackage = fareSlabs.find((pkg) => pkg.id === selectedPackageId);
+  const selectedPackage = fareSlabs.find(
+    (pkg) => pkg.id === selectedPackageId
+  );
 
-  const d = Math.min(99, Math.max(0, discount));
+  const d = Math.min(
+    99,
+    Math.max(0, discount)
+  );
 
-  const listPrice = selectedPackage ? num(selectedPackage.list) : basePrice;
-  const finalPrice = packageYouPay(listPrice > 0 ? listPrice : basePrice, d);
+  const packageDiscount = selectedPackage?.discountPercentage ?? d;
+
+  const listPrice = selectedPackage
+    ? num(selectedPackage.originalPrice ?? selectedPackage.list)
+    : basePrice;
+
+  const finalPrice = selectedPackage?.price
+    ? num(selectedPackage.price)
+    : packageYouPay(listPrice > 0 ? listPrice : basePrice, packageDiscount);
+
   const originalPrice =
-    listPrice > 0 ? listPrice : num(cab.originalPrice) > 0 ? num(cab.originalPrice) : basePrice;
-  const savedAmount = Math.max(0, originalPrice - finalPrice);
+    listPrice > 0
+      ? listPrice
+      : num(cab.originalPrice) > 0
+      ? num(cab.originalPrice)
+      : basePrice;
+
+  const savedAmount = Math.max(
+    0,
+    originalPrice - finalPrice
+  );
 
   const extraKmCharge =
-    selectedPackage?.extraKm ?? Math.max(12, Math.floor(basePrice / 10) || 12);
+    selectedPackage?.extraKm ??
+    Math.max(
+      12,
+      Math.floor(basePrice / 10) || 12
+    );
+
   const rawExtraHour = cab.extraHourRate;
+
   const extraHourCharge =
     selectedPackage?.extraHr ??
-    (rawExtraHour != null && rawExtraHour !== "" && Number.isFinite(Number(rawExtraHour))
+    (rawExtraHour != null &&
+    rawExtraHour !== "" &&
+    Number.isFinite(Number(rawExtraHour))
       ? num(rawExtraHour)
-      : Math.max(12, Math.floor(basePrice / 12) || 12));
+      : Math.max(
+          12,
+          Math.floor(basePrice / 12) || 12
+        ));
+
   const nightCharge =
-    extraHourCharge > 0 ? Math.max(0, Math.round(extraHourCharge * 0.25)) : null;
+    extraHourCharge > 0
+      ? Math.max(
+          0,
+          Math.round(
+            extraHourCharge * 0.25
+          )
+        )
+      : null;
 
   const BookAction = bookHref ? (
-    <Link href={bookHref} className={CARD_BOOK_BTN_CLASS}>
+    <Link
+      href={bookHref}
+      className={CARD_BOOK_BTN_CLASS}
+    >
       Book Now
       <ArrowRightIcon className="h-4 w-4" />
     </Link>
@@ -99,15 +179,23 @@ export default function CabCard({ cab, onBook, bookHref }) {
             {d}% OFF
           </span>
         )}
+
         <span className="rounded-md bg-white/10 px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-wide text-white backdrop-blur">
           {cab.type || "Cab"}
         </span>
       </div>
+
       {ratingText && (
         <div className="absolute right-1.5 top-1.5 flex items-center gap-0.5 rounded-full bg-white px-1.5 py-0.5 text-[8px] font-semibold text-slate-700 shadow-sm">
           <StarIcon className="h-2.5 w-2.5 text-yellow-400" />
+
           {ratingText}
-          {reviewCount != null ? <span className="text-slate-400">({reviewCount})</span> : null}
+
+          {reviewCount != null ? (
+            <span className="text-slate-400">
+              ({reviewCount})
+            </span>
+          ) : null}
         </div>
       )}
     </>
@@ -120,107 +208,109 @@ export default function CabCard({ cab, onBook, bookHref }) {
           Driver ₹{num(cab.driverAllowance)}
         </span>
       ) : null}
-      {nightCharge != null && nightCharge > 0 ? (
+
+      {nightCharge != null &&
+      nightCharge > 0 ? (
         <span className="rounded-full bg-white px-2 py-1 text-[9px] font-medium text-slate-600">
           Night ₹{nightCharge}
         </span>
       ) : null}
+
       {cab.tollCharge ? (
-        <span className="rounded-full bg-white px-2 py-1 text-[9px] font-medium text-slate-600">Toll Extra</span>
+        <span className="rounded-full bg-white px-2 py-1 text-[9px] font-medium text-slate-600">
+          Toll Extra
+        </span>
       ) : null}
+
       {cab.airportCharge ? (
-        <span className="rounded-full bg-white px-2 py-1 text-[9px] font-medium text-slate-600">Airport Extra</span>
+        <span className="rounded-full bg-white px-2 py-1 text-[9px] font-medium text-slate-600">
+          Airport Extra
+        </span>
       ) : null}
     </>
   );
 
   return (
     <article className={CARD_ARTICLE_CLASS}>
-      <ProductImageFrame src={imageSrc} alt={cab.title || "Cab"} badges={imageBadges} />
+      <ProductImageFrame
+        src={imageSrc}
+        alt={cab.title || "Cab"}
+        badges={imageBadges}
+        imageClassName="h-[185px] w-full object-cover object-top p-0"
+      />
 
-      <ProductMetaBlock title={cab.title} vendor={cab.vendor}>
-        <MetaPill icon={<SeatIcon className="h-2.5 w-2.5" />} label={`${cab.seats ?? "4"} Seats`} />
-        <MetaPill icon={<SnowflakeIcon className="h-2.5 w-2.5" />} label={amenityLabel} />
-        <MetaPill icon={<PersonIcon className="h-2.5 w-2.5" />} label="Driver" />
+      <ProductMetaBlock
+        title={cab.title}
+        vendor={cab.vendor}
+      >
+        <MetaPill
+          icon={
+            <SeatIcon className="h-2.5 w-2.5" />
+          }
+          label={`${cab.seats ?? "4"} Seats`}
+        />
+
+        <MetaPill
+          icon={
+            <SnowflakeIcon className="h-2.5 w-2.5" />
+          }
+          label={amenityLabel}
+        />
+
+        <MetaPill
+          icon={
+            <PersonIcon className="h-2.5 w-2.5" />
+          }
+          label="Driver"
+        />
       </ProductMetaBlock>
 
       <div className="flex flex-1 flex-col px-2.5 pb-2.5">
+        {/* PACKAGE SECTION */}
 
-        {/* LOCAL PACKAGES */}
+        <div className="mt-2 flex items-start justify-between gap-2">
+          {/* LOCAL PACKAGES */}
 
-        {localPackages.length > 0 && (
-          <>
-            <div className="mt-1">
-              <h4 className="text-[9px] font-semibold uppercase tracking-wide text-slate-500">
+          {localPackages.length > 0 && (
+            <div className="flex-1">
+              <h4 className="mb-1 text-center text-[9px] font-semibold uppercase tracking-wide text-slate-500">
                 Local Packages
               </h4>
-            </div>
 
-            <div className="mt-1.5 flex flex-wrap gap-1.5">
-
-              {localPackages.map((pkg) => {
-                const isSelected =
-                  selectedPackageId === pkg.id;
-
-                return (
-                  <button
+              <div className="flex justify-center gap-1.5">
+                {localPackages.map((pkg) => (
+                  <PackagePill
                     key={pkg.id}
-                    onClick={() =>
-                      setSelectedPackageId(pkg.id)
-                    }
-                    className={`rounded-lg border px-2.5 py-1.5 text-center transition-all duration-200 ${
-                      isSelected
-                        ? "border-blue-600 bg-blue-50 shadow-sm"
-                        : "border-slate-200 bg-white hover:border-blue-300"
-                    }`}
-                  >
-                    <span className="text-[10px] font-bold text-slate-900">
-                      {pkg.label}
-                    </span>
-                  </button>
-                );
-              })}
+                    pkg={pkg}
+                    selected={selectedPackageId === pkg.id}
+                    onSelect={() => setSelectedPackageId(pkg.id)}
+                  />
+                ))}
+              </div>
             </div>
-          </>
-        )}
+          )}
 
-        {/* OUTSTATION PACKAGES */}
+          {/* OUTSTATION PACKAGES */}
 
-        {outstationPackages.length > 0 && (
-          <>
-            <div className="mt-3">
-              <h4 className="text-[9px] font-semibold uppercase tracking-wide text-slate-500">
+          {outstationPackages.length > 0 && (
+            <div className="flex-1">
+              <h4 className="mb-1 text-center text-[9px] font-semibold uppercase tracking-wide text-slate-500">
                 Outstation Packages
               </h4>
-            </div>
 
-            <div className="mt-1.5 flex flex-wrap gap-1.5">
-
-              {outstationPackages.map((pkg) => {
-                const isSelected =
-                  selectedPackageId === pkg.id;
-
-                return (
-                  <button
+              <div className="flex justify-center gap-1.5">
+                {outstationPackages.map((pkg) => (
+                  <PackagePill
                     key={pkg.id}
-                    onClick={() =>
-                      setSelectedPackageId(pkg.id)
-                    }
-                    className={`rounded-lg border px-2.5 py-1.5 text-center transition-all duration-200 ${
-                      isSelected
-                        ? "border-blue-600 bg-blue-50 shadow-sm"
-                        : "border-slate-200 bg-white hover:border-blue-300"
-                    }`}
-                  >
-                    <span className="text-[10px] font-bold text-slate-900">
-                      {pkg.label}
-                    </span>
-                  </button>
-                );
-              })}
+                    pkg={pkg}
+                    selected={selectedPackageId === pkg.id}
+                    onSelect={() => setSelectedPackageId(pkg.id)}
+                  />
+                ))}
+              </div>
             </div>
-          </>
-        )}
+          )}
+        </div>
 
         {/* PRICE CARD */}
 
@@ -229,7 +319,7 @@ export default function CabCard({ cab, onBook, bookHref }) {
             finalPrice={finalPrice}
             originalPrice={originalPrice}
             savedAmount={savedAmount}
-            discountPct={d}
+            discountPct={packageDiscount}
             extraKmCharge={extraKmCharge}
             extraHourCharge={extraHourCharge}
             extraBadges={extraBadges}

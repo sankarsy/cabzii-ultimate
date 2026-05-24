@@ -5,12 +5,13 @@ import {
   SEO_CITIES,
   breadcrumbJsonLd,
   buildPageMetadata,
-  cabBookingDescription,
-  cabBookingTitle,
   cityBySlug,
   faqFromPairs,
   getCityFaqs,
-  localBusinessJsonLd
+  localBusinessJsonLd,
+  tunedCabBookingDescription,
+  tunedCabBookingKeywords,
+  tunedCabBookingTitle
 } from "../../../lib/seo";
 
 export function generateStaticParams() {
@@ -22,16 +23,10 @@ export async function generateMetadata({ params }) {
   if (!city) return {};
   const path = `/cab-booking/${city.slug}`;
   return buildPageMetadata({
-    title: cabBookingTitle(city.name),
-    description: cabBookingDescription(city.name, city.state),
+    title: tunedCabBookingTitle(city),
+    description: tunedCabBookingDescription(city),
     path,
-    keywords: [
-      `cab booking ${city.name.toLowerCase()}`,
-      `taxi ${city.name.toLowerCase()}`,
-      `outstation cab ${city.name.toLowerCase()}`,
-      `airport taxi ${city.name.toLowerCase()}`,
-      "cabzii"
-    ]
+    keywords: tunedCabBookingKeywords(city)
   });
 }
 

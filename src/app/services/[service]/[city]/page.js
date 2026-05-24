@@ -10,11 +10,11 @@ import {
   faqFromPairs,
   getServiceFaqs,
   serviceBySlug,
-  serviceDescription,
-  serviceKeywords,
   servicePageJsonLd,
   servicePath,
-  serviceTitle
+  tunedServiceDescription,
+  tunedServiceKeywords,
+  tunedServiceTitle
 } from "../../../../lib/seo";
 
 export function generateStaticParams() {
@@ -30,10 +30,10 @@ export async function generateMetadata({ params }) {
 
   const path = servicePath(service, city);
   return buildPageMetadata({
-    title: serviceTitle(service, city.name),
-    description: serviceDescription(service, city),
+    title: tunedServiceTitle(service, city),
+    description: tunedServiceDescription(service, city),
     path,
-    keywords: serviceKeywords(service, city)
+    keywords: tunedServiceKeywords(service, city)
   });
 }
 
@@ -53,7 +53,7 @@ export default function ServiceCityPage({ params }) {
     servicePageJsonLd({
       serviceName: service.name,
       cityName: city.name,
-      description: serviceDescription(service, city),
+      description: tunedServiceDescription(service, city),
       urlPath: path,
       priceFrom: service.priceFrom
     }),

@@ -38,7 +38,7 @@ export default function CabBookingDetail({ cab, onSelectionChange }) {
 
   const fareSlabs = useMemo(
     () => buildFareSlabs(cab),
-    [cab._id, cab.hourlyRate, cab.dayRate, cab.price, cab.extraHourRate, cab.discountPercentage]
+    [cab._id, cab.hourlyRate, cab.dayRate, cab.price, cab.extraHourRate, cab.discountPercentage, cab.farePackages]
   );
   const [selectedPackageId, setSelectedPackageId] = useState("local_4hr");
   const [serviceTab, setServiceTab] = useState("local");

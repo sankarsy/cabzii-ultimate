@@ -4,3 +4,5 @@ export * from "./services";
 export * from "./routes";
 export * from "./schema";
 export * from "./content";
+export * from "./metadataTuning";
+export * from "./urlAliases";

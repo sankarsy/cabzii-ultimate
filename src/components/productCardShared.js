@@ -110,6 +110,26 @@ export function PriceSummaryCard({
   );
 }
 
+export function PackagePill({ pkg, selected, onSelect, showPrice = true }) {
+  const price = pkg?.price ?? pkg?.list;
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      className={`rounded-xl border px-2.5 py-1.5 text-center transition-all duration-200 ${
+        selected ? "border-blue-600 bg-blue-50 shadow-sm" : "border-slate-200 bg-white hover:border-blue-300"
+      }`}
+    >
+      <span className="block text-[10px] font-bold text-slate-900">{pkg.label}</span>
+      {showPrice && price > 0 ? (
+        <span className="mt-0.5 block text-[9px] font-semibold text-blue-700">
+          ₹{Number(price).toLocaleString("en-IN")}
+        </span>
+      ) : null}
+    </button>
+  );
+}
+
 function CheckIcon({ className }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={className} stroke="currentColor" strokeWidth="2">

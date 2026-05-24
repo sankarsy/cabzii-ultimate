@@ -22,6 +22,10 @@ export const DEFAULT_KEYWORDS = [
   "chauffeur service Chennai",
   "cheap taxi booking",
   "best cab service in Chennai",
+  "car rental in chennai",
+  "car rental near me",
+  "travels in chennai",
+  "travels near me",
   "tour packages South India"
 ];
 

@@ -4,6 +4,7 @@ import Navbar from "../Navbar";
 import Breadcrumbs from "./Breadcrumbs";
 import FaqSection from "./FaqSection";
 import { cityAreas } from "../../lib/seo/content";
+import { tunedServiceDescription } from "../../lib/seo/metadataTuning";
 import { servicePath } from "../../lib/seo/services";
 import { routesForCity } from "../../lib/seo/routes";
 
@@ -12,6 +13,11 @@ export default function ServiceLandingPage({ city, service, faqs }) {
   const areas = cityAreas(city.slug);
   const cityRoutes = routesForCity(city.slug).slice(0, 6);
   const searchHref = `/search?q=${encodeURIComponent(`${service.searchQuery} ${city.name}`)}&pickup=${encodeURIComponent(city.name)}`;
+  const h1 =
+    service.slug === "car-rental" && city.slug === "chennai"
+      ? "Car Rental in Chennai"
+      : `${service.name} in ${city.name}`;
+  const lead = tunedServiceDescription(service, city);
 
   return (
     <main className="min-h-screen bg-linear-to-b from-slate-50 via-sky-50/60 to-violet-50/40">
@@ -28,14 +34,8 @@ export default function ServiceLandingPage({ city, service, faqs }) {
         <p className="text-xs font-bold uppercase tracking-[0.2em] text-sky-600">
           {city.state} · {service.name}
         </p>
-        <h1 className="mt-3 text-3xl font-extrabold text-slate-900 md:text-4xl">
-          {service.name} in {city.name}
-        </h1>
-        <p className="mt-4 text-base leading-relaxed text-slate-700 md:text-lg">
-          Book {service.name.toLowerCase()} in {city.name} with transparent fares, verified drivers and instant OTP
-          confirmation on Cabzii. Packages from ₹{service.priceFrom.toLocaleString("en-IN")}+ depending on vehicle and
-          trip type.
-        </p>
+        <h1 className="mt-3 text-3xl font-extrabold text-slate-900 md:text-4xl">{h1}</h1>
+        <p className="mt-4 text-base leading-relaxed text-slate-700 md:text-lg">{lead}</p>
 
         <div className="mt-6 flex flex-wrap gap-3">
           <Link

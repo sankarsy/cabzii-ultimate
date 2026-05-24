@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useSiteSettings } from "./SiteSettingsProvider";
+import TrustBadges from "./TrustBadges";
 
 const FALLBACK_HERO_IMAGE = "/images/hero-banner.png";
 const FALLBACK_TABS = [
@@ -29,9 +30,7 @@ export default function HeroSection({
   const heroImage = hero.image || FALLBACK_HERO_IMAGE;
   const tabs = hero.tabs?.length ? hero.tabs : FALLBACK_TABS;
   const cabTypes = hero.cabTypes?.length ? hero.cabTypes : ["Sedan", "SUV", "Innova"];
-  const trustBadges = hero.trustBadges?.length
-    ? hero.trustBadges
-    : ["Verified Drivers", "Best Price", "24/7 Support", "Secure", "Free Cancellation"];
+  const trustBadges = hero.trustBadges;
   const brandColor = settings.brandColor || "#0056D2";
   const isTour = searchTab === "tour";
 
@@ -237,12 +236,7 @@ export default function HeroSection({
             </div>
           </div>
 
-          {/* TRUST SECTION */}
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-slate-100 px-4 py-3 text-[11px] text-slate-600 md:text-xs">
-            {trustBadges.map((badge) => (
-              <span key={badge}>✅ {badge}</span>
-            ))}
-          </div>
+          <TrustBadges badges={trustBadges} />
         </motion.div>
       </div>
     </section>

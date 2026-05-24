@@ -5,15 +5,19 @@ import Breadcrumbs from "./seo/Breadcrumbs";
 import FaqSection from "./seo/FaqSection";
 import { SEO_CITIES, SEO_SERVICES } from "../lib/seo";
 import { getCityFaqs } from "../lib/seo/content";
+import { tunedCabBookingDescription } from "../lib/seo/metadataTuning";
 import { routesForCity } from "../lib/seo/routes";
 import { servicePath } from "../lib/seo/services";
 
 export default function CitySeoPage({ city, variant }) {
   const isCab = variant === "cab";
-  const title = isCab ? `Cab & Taxi Booking in ${city.name}` : `Acting Driver in ${city.name}`;
-  const lead = isCab
-    ? `Book outstation cabs, airport taxis, local rentals and tempo travellers in ${city.name}, ${city.state} with transparent pricing on Cabzii.`
-    : `Hire verified acting drivers and chauffeurs in ${city.name} for hourly, daily and outstation trips on Cabzii.`;
+  const title =
+    isCab && city.slug === "chennai"
+      ? "Travels in Chennai — Cab, Taxi & Car Rental"
+      : isCab
+        ? `Cab & Taxi Booking in ${city.name}`
+        : `Acting Driver in ${city.name}`;
+  const lead = isCab ? tunedCabBookingDescription(city) : `Hire verified acting drivers and chauffeurs in ${city.name} for hourly, daily and outstation trips on Cabzii.`;
 
   const hubPath = isCab ? `/cab-booking/${city.slug}` : `/acting-driver/${city.slug}`;
   const faqs = getCityFaqs(city, isCab ? "cab" : "driver");

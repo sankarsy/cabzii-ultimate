@@ -15,7 +15,6 @@ import { PreviewCardGrid, SectionViewAll } from "../components/PreviewCardSectio
 import TestimonialCard from "../components/TestimonialCard";
 import { useSiteSettings } from "./SiteSettingsProvider";
 import { getHomeSection } from "../lib/siteSettingsDefaults";
-import WhatsAppIcon from "../components/WhatsAppIcon";
 import { motion } from "framer-motion";
 export default function HomePage({ initial = null }) {
   const router = useRouter();
@@ -25,7 +24,6 @@ export default function HomePage({ initial = null }) {
   const toursSection = getHomeSection(settings, "tours");
   const testimonialsSection = getHomeSection(settings, "testimonials");
   const blogsSection = getHomeSection(settings, "blogs");
-  const whatsapp = settings.whatsappFab;
   const hasInitial = Boolean(initial);
   const [loading, setLoading] = useState(!hasInitial);
   const [previewCabs, setPreviewCabs] = useState(initial?.cabs ?? []);
@@ -396,17 +394,6 @@ export default function HomePage({ initial = null }) {
         </div>
       </section>
 
-      {whatsapp?.enabled !== false ? (
-      <a
-        href={`https://wa.me/${whatsapp?.number || settings.contact?.whatsapp || "9944197416"}`}
-        target="_blank"
-        rel="noreferrer"
-        className="fixed bottom-5 right-5 z-40 inline-flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500 text-xl text-white shadow-xl transition hover:scale-105 hover:bg-emerald-600"
-        aria-label="Contact on WhatsApp"
-      >
-        <WhatsAppIcon className="h-6 w-6 text-white" />
-      </a>
-      ) : null}
       <Footer />
     </main>
   );

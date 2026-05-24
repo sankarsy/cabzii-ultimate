@@ -1,6 +1,7 @@
 import "./globals.css";
 import { Manrope } from "next/font/google";
 import SiteSettingsProvider from "../components/SiteSettingsProvider";
+import ContactFab from "../components/ContactFab";
 import { fetchSiteSettings } from "../lib/serverSiteSettings";
 import { DEFAULT_KEYWORDS, SITE_URL, faqJsonLd, organizationJsonLd, taxiServiceJsonLd, websiteJsonLd } from "../lib/seo";
 
@@ -41,7 +42,10 @@ export const metadata = {
     index: true,
     follow: true,
     googleBot: { index: true, follow: true, "max-image-preview": "large" }
-  }
+  },
+  ...(process.env.GOOGLE_SITE_VERIFICATION
+    ? { verification: { google: process.env.GOOGLE_SITE_VERIFICATION } }
+    : {})
 };
 
 const structuredData = [organizationJsonLd(), websiteJsonLd(), taxiServiceJsonLd(), faqJsonLd()];
@@ -58,7 +62,10 @@ export default async function RootLayout({ children }) {
         />
       </head>
       <body className={manrope.variable}>
-        <SiteSettingsProvider initialSettings={siteSettings}>{children}</SiteSettingsProvider>
+        <SiteSettingsProvider initialSettings={siteSettings}>
+          {children}
+          <ContactFab />
+        </SiteSettingsProvider>
       </body>
     </html>
   );
