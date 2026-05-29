@@ -1,9 +1,13 @@
 import Footer from "../../components/Footer";
 import Navbar from "../../components/Navbar";
+import { buildPageMetadata } from "../../lib/seo";
 
-export const metadata = {
-  title: "Cancellation Policy | Cabzii Travels"
-};
+export const metadata = buildPageMetadata({
+  title: "Cancellation Policy",
+  description:
+    "Cancellation and refund policy for cab, taxi, acting driver and tour bookings made through Cabzii (cabzii.in).",
+  path: "/cancellation-policy"
+});
 
 export default function CancellationPolicyPage() {
   return (

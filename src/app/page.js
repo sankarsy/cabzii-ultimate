@@ -1,6 +1,7 @@
 import HomePage from "../components/HomePage";
+import JsonLd from "../components/seo/JsonLd";
 import { fetchCatalogList } from "../lib/serverCatalog";
-import { homeMetadata } from "../lib/seo";
+import { faqJsonLd, homeMetadata } from "../lib/seo";
 
 export const metadata = homeMetadata;
 
@@ -14,14 +15,17 @@ export default async function Page() {
   ]);
 
   return (
-    <HomePage
-      initial={{
-        cabs,
-        packages,
-        drivers,
-        blogs,
-        testimonials
-      }}
-    />
+    <>
+      <JsonLd data={faqJsonLd()} />
+      <HomePage
+        initial={{
+          cabs,
+          packages,
+          drivers,
+          blogs,
+          testimonials
+        }}
+      />
+    </>
   );
 }

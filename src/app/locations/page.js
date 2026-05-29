@@ -33,15 +33,18 @@ export default function LocationsPage() {
   }, []);
 
   useEffect(() => {
-    const saved = typeof window !== "undefined" ? localStorage.getItem("cabzii_selected_city") : "";
-    if (saved) setSelectedCity(saved);
+    const saved = typeof window !== "undefined" ? localStorage.getItem("cabzii-selected-location") : "";
+    if (saved) setSelectedCity(saved.includes(",") ? saved : `${saved}, Tamil Nadu, India`);
     loadLocations(saved || "");
   }, [loadLocations]);
 
   const handleCityChange = (label) => {
     setSelectedCity(label);
-    if (label) localStorage.setItem("cabzii_selected_city", label);
-    else localStorage.removeItem("cabzii_selected_city");
+    const name = cityQueryFromLabel(label);
+    if (name) {
+      localStorage.setItem("cabzii-selected-location", name);
+      window.dispatchEvent(new CustomEvent("cabzii-city-change", { detail: { city: name } }));
+    } else localStorage.removeItem("cabzii-selected-location");
     loadLocations(label);
   };
 

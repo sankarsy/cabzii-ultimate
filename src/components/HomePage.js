@@ -13,9 +13,44 @@ import PackageCard from "../components/PackageCard";
 import BlogCard from "../components/BlogCard";
 import { PreviewCardGrid, SectionViewAll } from "../components/PreviewCardSection";
 import TestimonialCard from "../components/TestimonialCard";
+import FaqSection from "../components/seo/FaqSection";
+import InternalLinksHub from "../components/seo/InternalLinksHub";
+import SectionIntro from "../components/ui/SectionIntro";
 import { useSiteSettings } from "./SiteSettingsProvider";
 import { getHomeSection } from "../lib/siteSettingsDefaults";
+import {
+  catalogPriorityParams,
+  matchesSelectedCity,
+  sortBySelectedCity,
+  writeSelectedCity
+} from "../lib/locationPriority";
+import { useSelectedCity } from "../lib/useSelectedCity";
 import { motion } from "framer-motion";
+
+function CatalogGrid({ loading, empty, emptyMessage, skeletonCount, children }) {
+  if (loading) {
+    return (
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {Array.from({ length: skeletonCount }).map((_, index) => (
+          <div key={index} className="animate-pulse rounded-2xl border border-slate-100 bg-slate-50 p-4">
+            <div className="h-40 rounded-xl bg-slate-200" />
+            <div className="mt-4 h-4 rounded bg-slate-200" />
+            <div className="mt-2 h-4 w-2/3 rounded bg-slate-200" />
+          </div>
+        ))}
+      </div>
+    );
+  }
+  if (empty) {
+    return (
+      <p className="rounded-xl border border-dashed border-slate-200 bg-slate-50/80 p-6 text-center text-sm text-slate-600">
+        {emptyMessage}
+      </p>
+    );
+  }
+  return children;
+}
+
 export default function HomePage({ initial = null }) {
   const router = useRouter();
   const settings = useSiteSettings();
@@ -40,21 +75,33 @@ export default function HomePage({ initial = null }) {
     tripType: "One Way"
   });
   const [searchTab, setSearchTab] = useState("outstation");
-  const [pickupSuggestions, setPickupSuggestions] = useState([]);
-  const [dropSuggestions, setDropSuggestions] = useState([]);
+  const { city: selectedCity } = useSelectedCity();
+
+  const displayCity = selectedCity || "Chennai";
+  const nearCabs = previewCabs.filter((item) => matchesSelectedCity(item, displayCity));
+  const nearTours = previewTours.filter((item) => matchesSelectedCity(item, displayCity));
+  const nearDrivers = previewDrivers.filter((item) => matchesSelectedCity(item, displayCity));
+  const cabsForDisplay = previewCabs;
+  const toursForDisplay = previewTours;
+  const driversForDisplay = previewDrivers;
 
   useEffect(() => {
-    if (hasInitial) {
-      setLoading(false);
-      return undefined;
-    }
     let cancelled = false;
+    setLoading(true);
+    if (hasInitial) {
+      setPreviewCabs(sortBySelectedCity(initial?.cabs ?? [], selectedCity));
+      setPreviewTours(sortBySelectedCity(initial?.packages ?? [], selectedCity));
+      setPreviewDrivers(sortBySelectedCity(initial?.drivers ?? [], selectedCity));
+      setPreviewBlogs(initial?.blogs ?? []);
+      setPreviewTestimonials(initial?.testimonials ?? []);
+    }
+    const priorityQ = catalogPriorityParams(selectedCity);
     (async () => {
       try {
         const [cabsRes, pkgRes, drvRes, blogRes, testRes] = await Promise.all([
-          fetch("/api/cabs?limit=6&page=1", { cache: "no-store" }),
-          fetch("/api/packages?limit=6&page=1", { cache: "no-store" }),
-          fetch("/api/drivers?limit=3&page=1", { cache: "no-store" }),
+          fetch(`/api/cabs?limit=6&page=1${priorityQ}`, { cache: "no-store" }),
+          fetch(`/api/packages?limit=6&page=1${priorityQ}`, { cache: "no-store" }),
+          fetch(`/api/drivers?limit=3&page=1${priorityQ}`, { cache: "no-store" }),
           fetch("/api/blogs?limit=6&page=1", { cache: "no-store" }),
           fetch("/api/testimonials?limit=6&page=1", { cache: "no-store" })
         ]);
@@ -65,15 +112,16 @@ export default function HomePage({ initial = null }) {
           blogRes.json(),
           testRes.json()
         ]);
-        if (!cancelled) {
-          setPreviewCabs(Array.isArray(cabsJson?.data) ? cabsJson.data : []);
-          setPreviewTours(Array.isArray(pkgJson?.data) ? pkgJson.data : []);
-          setPreviewDrivers(Array.isArray(drvJson?.data) ? drvJson.data : []);
+        if (cancelled) return;
+        setPreviewCabs(sortBySelectedCity(Array.isArray(cabsJson?.data) ? cabsJson.data : [], selectedCity));
+        setPreviewTours(sortBySelectedCity(Array.isArray(pkgJson?.data) ? pkgJson.data : [], selectedCity));
+        setPreviewDrivers(sortBySelectedCity(Array.isArray(drvJson?.data) ? drvJson.data : [], selectedCity));
+        if (!hasInitial) {
           setPreviewBlogs(Array.isArray(blogJson?.data) ? blogJson.data : []);
           setPreviewTestimonials(Array.isArray(testJson?.data) ? testJson.data : []);
         }
       } catch {
-        if (!cancelled) {
+        if (!cancelled && !hasInitial) {
           setPreviewCabs([]);
           setPreviewTours([]);
           setPreviewDrivers([]);
@@ -87,134 +135,89 @@ export default function HomePage({ initial = null }) {
     return () => {
       cancelled = true;
     };
-  }, [hasInitial]);
+  }, [hasInitial, selectedCity]);
 
-  useEffect(() => {
-    let cancelled = false;
-    const timer = setTimeout(async () => {
-      if (!quickForm.pickup || quickForm.pickup.trim().length < 2) {
-        setPickupSuggestions([]);
-        return;
-      }
-      try {
-        const response = await fetch(`/api/places?input=${encodeURIComponent(quickForm.pickup)}`);
-        const data = await response.json();
-        if (!cancelled) setPickupSuggestions(data?.predictions ?? []);
-      } catch {
-        if (!cancelled) setPickupSuggestions([]);
-      }
-    }, 250);
-    return () => {
-      cancelled = true;
-      clearTimeout(timer);
-    };
-  }, [quickForm.pickup]);
-
-  useEffect(() => {
-    let cancelled = false;
-    const timer = setTimeout(async () => {
-      if (!quickForm.drop || quickForm.drop.trim().length < 2) {
-        setDropSuggestions([]);
-        return;
-      }
-      try {
-        const response = await fetch(`/api/places?input=${encodeURIComponent(quickForm.drop)}`);
-        const data = await response.json();
-        if (!cancelled) setDropSuggestions(data?.predictions ?? []);
-      } catch {
-        if (!cancelled) setDropSuggestions([]);
-      }
-    }, 250);
-    return () => {
-      cancelled = true;
-      clearTimeout(timer);
-    };
-  }, [quickForm.drop]);
+  const homeFaqs = [
+    ["How do I book a cab near me in Bangalore?", "Allow location access on homepage and choose pickup/drop. We prioritize nearby cabs and packages first when city is detected."],
+    ["Can I compare local and outstation fare packages?", "Yes. Each cab and driver shows package-wise pricing with custom package names and extra km/hour rates."],
+    ["Can I book airport pickup and one-way trips?", "Yes. Use Airport or Outstation search tabs and choose the package that fits your trip type."],
+    ["Is instant confirmation available?", "Yes. Most bookings are confirmed quickly after OTP and payment confirmation."],
+    ["Can I contact support 24x7?", "Yes. Use WhatsApp or phone support from the contact options available on the website."]
+  ];
 
   const handleQuickSearch = () => {
+    const pickup = quickForm.pickup.trim();
+    const drop = quickForm.drop.trim();
+
     if (searchTab === "tour") {
-      const q = quickForm.pickup.trim();
-      if (q) {
-        router.push(`/search?q=${encodeURIComponent(q)}`);
-      } else {
-        router.push("/packages");
-      }
+      router.push(pickup ? `/search?q=${encodeURIComponent(pickup)}` : "/packages");
       return;
     }
+
     const routeMap = {
       outstation: "Outstation",
       local: "Local",
       airport: "Airport",
       rental: "Rental"
     };
-    const params = new URLSearchParams({
-      q: quickForm.cabType || routeMap[searchTab] || "cab",
-      pickup: quickForm.pickup,
-      drop: quickForm.drop,
-      date: quickForm.date,
-      cabType: quickForm.cabType,
-      routeType: routeMap[searchTab] || quickForm.routeType,
-      tripType: quickForm.tripType
-    });
-    router.push(`/search?${params.toString()}`);
+    const params = new URLSearchParams();
+    const q = quickForm.cabType || routeMap[searchTab] || "cab";
+    if (q) params.set("q", q);
+    if (pickup) params.set("pickup", pickup);
+    if (drop) params.set("drop", drop);
+    if (quickForm.date) params.set("date", quickForm.date);
+    if (quickForm.cabType) params.set("cabType", quickForm.cabType);
+    params.set("routeType", routeMap[searchTab] || quickForm.routeType);
+    if (quickForm.tripType) params.set("tripType", quickForm.tripType);
+
+    const query = params.toString();
+    router.push(query ? `/search?${query}` : "/cabs");
   };
 
   return (
-    <main className="min-h-screen bg-linear-to-b from-slate-50 via-sky-50/60 to-violet-50/40">
+    <main className="min-h-screen">
       <Navbar />
       <Hero
         searchTab={searchTab}
         setSearchTab={setSearchTab}
         quickForm={quickForm}
         setQuickForm={setQuickForm}
-        pickupSuggestions={pickupSuggestions}
-        dropSuggestions={dropSuggestions}
-        onPickupSelect={(place) => {
-          setQuickForm((prev) => ({ ...prev, pickup: place }));
-          setPickupSuggestions([]);
+        selectedCity={selectedCity}
+        onPickupResolved={(area) => {
+          if (area?.label) setQuickForm((prev) => ({ ...prev, pickup: area.label }));
+          if (area?.city) writeSelectedCity(area.city);
         }}
-        onDropSelect={(place) => {
-          setQuickForm((prev) => ({ ...prev, drop: place }));
-          setDropSuggestions([]);
+        onDropResolved={(area) => {
+          if (area?.label) setQuickForm((prev) => ({ ...prev, drop: area.label }));
         }}
         onSearch={handleQuickSearch}
       />
       <HeroStats />
 
       <section id="cabs" className="py-8 md:py-12">
-        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
-          <div className="mb-5 flex items-start justify-between gap-3">
+        <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-8">
+          <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <SectionHeading
-              eyebrow={cabsSection?.eyebrow || "Available Cabs"}
-              title={cabsSection?.title || "Premium Fleet Options"}
-              subtitle={cabsSection?.subtitle || "Search, filter and compare best rates for your next trip."}
+              eyebrow={displayCity ? `In ${displayCity}` : cabsSection?.eyebrow || "Available Cabs"}
+              title={displayCity ? `Cabs in ${displayCity}${nearCabs.length ? ` (${nearCabs.length})` : ""}` : cabsSection?.title || "Premium Fleet Options"}
+              subtitle={displayCity ? `Vendors and cabs for ${displayCity} are listed first.` : cabsSection?.subtitle || "Search, filter and compare best rates for your next trip."}
             />
             <button
               type="button"
               onClick={() => router.push("/cabs")}
-              className="shrink-0 rounded-full border border-slate-300 px-4 py-2 text-xs font-semibold text-slate-700 transition hover:border-sky-300 hover:text-sky-700 md:text-sm"
+              className="shrink-0 rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50 sm:px-4 sm:py-2 sm:text-sm"
             >
               Show All
             </button>
           </div>
-          {loading ? (
+          <CatalogGrid
+            loading={loading}
+            empty={!previewCabs.length}
+            emptyMessage="No cabs in the catalog yet. Add listings in admin or run the seed script when the API is running."
+            skeletonCount={6}
+          >
             <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {Array.from({ length: 6 }).map((_, index) => (
-                <div key={index} className="animate-pulse rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-                  <div className="h-40 rounded-xl bg-slate-200" />
-                  <div className="mt-4 h-4 rounded bg-slate-200" />
-                  <div className="mt-2 h-4 w-2/3 rounded bg-slate-200" />
-                  <div className="mt-6 h-10 rounded bg-slate-200" />
-                </div>
-              ))}
-            </div>
-          ) : previewCabs.length === 0 ? (
-            <p className="mt-6 rounded-xl border border-dashed border-slate-300 bg-white p-6 text-sm text-slate-600 shadow-sm">
-              No cabs in the catalog yet. Add listings in admin or run the seed script when the API is running.
-            </p>
-          ) : (
-            <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {previewCabs.map((cab, index) => (
+              {cabsForDisplay.map((cab, index) => (
                 <motion.article
                   key={String(cab._id ?? cab.id)}
                   initial={{ opacity: 0, y: 12 }}
@@ -227,42 +230,34 @@ export default function HomePage({ initial = null }) {
                 </motion.article>
               ))}
             </div>
-          )}
+          </CatalogGrid>
         </div>
       </section>
 
       <section id="drivers" className="py-8 md:py-12">
-        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
-          <div className="mb-5 flex items-start justify-between gap-3">
+        <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-8">
+          <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <SectionHeading
-              eyebrow={driversSection?.eyebrow || "Top Drivers"}
-              title={driversSection?.title || "Verified Driver Partners"}
-              subtitle={driversSection?.subtitle || "Experienced drivers available now for safe and smooth rides."}
+              eyebrow={displayCity ? `Drivers in ${displayCity}` : driversSection?.eyebrow || "Top Drivers"}
+              title={displayCity ? `Driver partners${nearDrivers.length ? ` (${nearDrivers.length})` : ""}` : driversSection?.title || "Verified Driver Partners"}
+              subtitle={displayCity ? `${displayCity} drivers and vendors shown first.` : driversSection?.subtitle || "Experienced drivers available now for safe and smooth rides."}
             />
             <button
               type="button"
               onClick={() => router.push("/drivers")}
-              className="shrink-0 rounded-full border border-slate-300 px-4 py-2 text-xs font-semibold text-slate-700 transition hover:border-sky-300 hover:text-sky-700 md:text-sm"
+              className="shrink-0 rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50 sm:px-4 sm:py-2 sm:text-sm"
             >
               Show All
             </button>
           </div>
-          {loading ? (
+          <CatalogGrid
+            loading={loading}
+            empty={!previewDrivers.length}
+            emptyMessage="No drivers listed yet. Data loads from your MongoDB-backed API."
+            skeletonCount={3}
+          >
             <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
-              {Array.from({ length: 3 }).map((_, index) => (
-                <div key={index} className="animate-pulse rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-                  <div className="h-28 rounded-xl bg-slate-200" />
-                  <div className="mt-4 h-4 rounded bg-slate-200" />
-                </div>
-              ))}
-            </div>
-          ) : previewDrivers.length === 0 ? (
-            <p className="mt-6 rounded-xl border border-dashed border-slate-300 bg-white p-6 text-sm text-slate-600 shadow-sm">
-              No drivers listed yet. Data loads from your MongoDB-backed API.
-            </p>
-          ) : (
-            <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
-              {previewDrivers.map((driver, index) => (
+              {driversForDisplay.map((driver, index) => (
                 <motion.div
                   key={String(driver._id ?? driver.id)}
                   initial={{ opacity: 0, y: 12 }}
@@ -275,43 +270,34 @@ export default function HomePage({ initial = null }) {
                 </motion.div>
               ))}
             </div>
-          )}
+          </CatalogGrid>
         </div>
       </section>
 
       <section id="packages" className="py-8 md:py-12">
-        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
-          <div className="mb-5 flex items-start justify-between gap-3">
+        <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-8">
+          <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <SectionHeading
-              eyebrow={toursSection?.eyebrow || "Available Tours"}
-              title={toursSection?.title || "Curated Tour Packages"}
-              subtitle={toursSection?.subtitle || "Top destinations with premium transport and custom package pricing."}
+              eyebrow={displayCity ? `Tours in ${displayCity}` : toursSection?.eyebrow || "Available Tours"}
+              title={displayCity ? `Tour packages${nearTours.length ? ` (${nearTours.length})` : ""}` : toursSection?.title || "Curated Tour Packages"}
+              subtitle={displayCity ? `Vendor packages for ${displayCity} are prioritized at the top.` : toursSection?.subtitle || "Top destinations with premium transport and custom package pricing."}
             />
             <button
               type="button"
               onClick={() => router.push("/packages")}
-              className="shrink-0 rounded-full border border-slate-300 px-4 py-2 text-xs font-semibold text-slate-700 transition hover:border-sky-300 hover:text-sky-700 md:text-sm"
+              className="shrink-0 rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50 sm:px-4 sm:py-2 sm:text-sm"
             >
               Show All
             </button>
           </div>
-          {loading ? (
-            <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {Array.from({ length: 3 }).map((_, index) => (
-                <div key={index} className="animate-pulse rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-                  <div className="h-40 rounded-xl bg-slate-200" />
-                  <div className="mt-4 h-4 rounded bg-slate-200" />
-                  <div className="mt-2 h-4 w-2/3 rounded bg-slate-200" />
-                </div>
-              ))}
-            </div>
-          ) : previewTours.length === 0 ? (
-            <p className="mt-6 rounded-xl border border-dashed border-slate-300 bg-white p-6 text-sm text-slate-600 shadow-sm">
-              No tour packages yet. Data loads from your MongoDB-backed API.
-            </p>
-          ) : (
+          <CatalogGrid
+            loading={loading}
+            empty={!previewTours.length}
+            emptyMessage="No tour packages yet. Data loads from your MongoDB-backed API."
+            skeletonCount={3}
+          >
             <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {previewTours.map((tour, index) => (
+              {toursForDisplay.map((tour, index) => (
                 <motion.div
                   key={String(tour._id ?? tour.id)}
                   initial={{ opacity: 0, y: 12 }}
@@ -320,18 +306,18 @@ export default function HomePage({ initial = null }) {
                   transition={{ delay: index * 0.03 }}
                   className="transition hover:-translate-y-1"
                 >
-                  <PackageCard pkg={tour} actionText="Book Now" actionHref={`/tour-booking?id=${String(tour._id ?? tour.id)}`} />
+                  <PackageCard pkg={tour} actionText="Book Now" actionHref={`/packages/${String(tour._id ?? tour.id)}`} />
                 </motion.div>
               ))}
             </div>
-          )}
+          </CatalogGrid>
         </div>
       </section>
 
       <WhyChooseUs />
 
       <section id="testimonials" className="py-8 md:py-12">
-        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-8">
           <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <SectionHeading
               eyebrow={testimonialsSection?.eyebrow || "Happy Travelers"}
@@ -363,7 +349,7 @@ export default function HomePage({ initial = null }) {
       </section>
 
       <section id="blogs" className="py-8 md:py-12">
-        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-8">
           <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <SectionHeading
               eyebrow={blogsSection?.eyebrow || "Latest Insights"}
@@ -394,6 +380,19 @@ export default function HomePage({ initial = null }) {
         </div>
       </section>
 
+      <InternalLinksHub />
+
+      <section id="faqs" className="py-8 md:py-12">
+        <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-8">
+          <FaqSection
+            eyebrow="Help & support"
+            title="Frequently asked questions"
+            subtitle="Quick answers about booking cabs, drivers and tour packages on Cabzii."
+            faqs={homeFaqs}
+          />
+        </div>
+      </section>
+
       <Footer />
     </main>
   );
@@ -402,9 +401,7 @@ export default function HomePage({ initial = null }) {
 function SectionHeading({ eyebrow, title, subtitle }) {
   return (
     <motion.div initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-      <p className="text-xs font-bold uppercase tracking-[0.2em] text-sky-600">{eyebrow}</p>
-      <h2 className="mt-2 text-2xl font-extrabold text-slate-900 md:text-3xl">{title}</h2>
-      <p className="mt-2 text-sm text-slate-600 md:text-base">{subtitle}</p>
+      <SectionIntro eyebrow={eyebrow} title={title} subtitle={subtitle} />
     </motion.div>
   );
 }

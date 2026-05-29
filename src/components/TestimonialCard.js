@@ -1,43 +1,40 @@
-import { avatarHue, getInitials } from "../lib/avatar";
+import { getInitials } from "../lib/avatar";
+import { typo } from "../lib/typography";
 
 export default function TestimonialCard({ item }) {
   const rating = Math.min(5, Math.max(1, Number(item.rating) || 5));
   const name = item.name || "Guest";
-  const hue = avatarHue(name);
   const initials = getInitials(name);
 
   return (
-    <article className="group relative flex h-full min-h-[220px] flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
-      <div className="h-1 bg-gradient-to-r from-[#0056D2] via-sky-500 to-cyan-400" />
+    <article className="group relative flex h-full min-h-[200px] flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
+      <div className="h-1 bg-[#0056D2]" />
 
       <div className="flex flex-1 flex-col p-4">
-        <span className="inline-flex w-fit rounded-full bg-[#0056D2]/8 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-[#0056D2]">
+        <span className={`inline-flex w-fit rounded-full bg-[#0056D2]/10 px-2 py-0.5 ${typo.eyebrow}`}>
           Customer review
         </span>
 
-        <h3 className="mt-2 line-clamp-1 text-base font-bold leading-snug text-slate-900">{name}</h3>
+        <h3 className={`mt-2 line-clamp-1 ${typo.h3}`}>{name}</h3>
 
         <div className="mt-1.5">
           <StarRating rating={rating} />
         </div>
 
-        <p className="mt-2 line-clamp-4 flex-1 text-xs leading-relaxed text-slate-600">&ldquo;{item.message}&rdquo;</p>
+        <p className={`mt-2 line-clamp-4 flex-1 ${typo.bodySm}`}>&ldquo;{item.message}&rdquo;</p>
 
         <div className="mt-3 flex items-center gap-2.5 border-t border-slate-100 pt-3">
           <div
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[10px] font-bold text-white shadow-sm"
-            style={{
-              background: `linear-gradient(135deg, hsl(${hue} 65% 48%), hsl(${hue} 55% 38%))`
-            }}
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-200 text-xs font-bold text-slate-700"
             aria-hidden
           >
             {initials}
           </div>
           <div className="min-w-0 flex-1">
             <p className="truncate text-xs font-semibold text-slate-800">{name}</p>
-            {item.location ? <p className="text-[10px] text-slate-500">{item.location}</p> : null}
+            {item.location ? <p className={typo.caption}>{item.location}</p> : null}
           </div>
-          <span className="shrink-0 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700">
+          <span className="shrink-0 rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">
             Verified
           </span>
         </div>

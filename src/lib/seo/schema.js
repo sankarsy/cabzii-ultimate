@@ -1,4 +1,18 @@
-import { SITE_URL, SITE_NAME } from "./constants";
+import {
+  SITE_URL,
+  SITE_NAME,
+  SITE_LOGO,
+  ORG_EMAIL,
+  ORG_PHONE,
+  ORG_ADDRESS,
+  SOCIAL_PROFILES,
+  WIKIDATA_URL,
+  KNOWLEDGE_GRAPH_ID
+} from "./constants";
+
+/** Stable @id for the Organization entity, referenced by other schema nodes. */
+export const ORG_ID = `${SITE_URL}/#organization`;
+export const WEBSITE_ID = `${SITE_URL}/#website`;
 
 export function breadcrumbJsonLd(items) {
   return {
@@ -93,20 +107,48 @@ export function routeServiceJsonLd({ fromCity, toCity, urlPath, description, pri
 }
 
 export function organizationJsonLd() {
+  const sameAs = [...SOCIAL_PROFILES];
+  if (WIKIDATA_URL) sameAs.push(WIKIDATA_URL);
+
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
+    "@id": ORG_ID,
     name: SITE_NAME,
+    legalName: "Cabzii",
+    alternateName: ["cabzii.in", "Cabzii Cabs", "Cabzii Travels"],
     url: SITE_URL,
-    logo: `${SITE_URL}/images/hero-banner.png`,
-    sameAs: [],
-    contactPoint: {
-      "@type": "ContactPoint",
-      telephone: "+91-9944197416",
-      contactType: "customer service",
-      areaServed: "IN",
-      availableLanguage: ["English", "Hindi", "Tamil", "Kannada", "Telugu"]
-    }
+    logo: {
+      "@type": "ImageObject",
+      url: SITE_LOGO,
+      width: 1200,
+      height: 630
+    },
+    image: SITE_LOGO,
+    description:
+      "Online cab, taxi, airport transfer, outstation, acting driver and tour package booking platform across South India.",
+    email: ORG_EMAIL,
+    telephone: ORG_PHONE,
+    foundingDate: "2024",
+    areaServed: { "@type": "Country", name: "India" },
+    address: {
+      "@type": "PostalAddress",
+      ...ORG_ADDRESS
+    },
+    ...(sameAs.length ? { sameAs } : {}),
+    ...(KNOWLEDGE_GRAPH_ID
+      ? { identifier: { "@type": "PropertyValue", propertyID: "googleKnowledgeGraph", value: KNOWLEDGE_GRAPH_ID } }
+      : {}),
+    contactPoint: [
+      {
+        "@type": "ContactPoint",
+        telephone: ORG_PHONE,
+        email: ORG_EMAIL,
+        contactType: "customer service",
+        areaServed: "IN",
+        availableLanguage: ["English", "Hindi", "Tamil", "Kannada", "Telugu"]
+      }
+    ]
   };
 }
 
@@ -114,13 +156,29 @@ export function websiteJsonLd() {
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
+    "@id": WEBSITE_ID,
     name: SITE_NAME,
     url: SITE_URL,
+    publisher: { "@id": ORG_ID },
+    inLanguage: "en-IN",
     potentialAction: {
       "@type": "SearchAction",
       target: `${SITE_URL}/search?q={search_term_string}`,
       "query-input": "required name=search_term_string"
     }
+  };
+}
+
+/** Author/Person markup — helps AI answer engines attribute content. */
+export function personJsonLd({ name, url, sameAs, jobTitle }) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: name || SITE_NAME,
+    ...(jobTitle ? { jobTitle } : {}),
+    ...(url ? { url } : {}),
+    ...(sameAs?.length ? { sameAs } : {}),
+    worksFor: { "@id": ORG_ID }
   };
 }
 
@@ -170,20 +228,39 @@ export function localBusinessJsonLd(cityName, cityRegion) {
   };
 }
 
+export function articleJsonLd({ title, description, urlPath, author, datePublished, image }) {
+  const url = `${SITE_URL}${urlPath.startsWith("/") ? urlPath : `/${urlPath}`}`;
+  return {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: title,
+    description,
+    url,
+    mainEntityOfPage: url,
+    author: { "@type": "Person", name: author || SITE_NAME, worksFor: { "@id": ORG_ID } },
+    publisher: { "@id": ORG_ID },
+    ...(datePublished ? { datePublished } : {}),
+    ...(image ? { image } : {})
+  };
+}
+
 export function productJsonLd({ name, description, urlPath, image, price, currency = "INR" }) {
+  const url = `${SITE_URL}${urlPath.startsWith("/") ? urlPath : `/${urlPath}`}`;
   return {
     "@context": "https://schema.org",
     "@type": "Product",
     name,
     description,
-    url: `${SITE_URL}${urlPath.startsWith("/") ? urlPath : `/${urlPath}`}`,
+    url,
+    brand: { "@type": "Brand", name: SITE_NAME },
     ...(image ? { image } : {}),
     offers: {
       "@type": "Offer",
       priceCurrency: currency,
-      price: price != null ? String(price) : undefined,
+      ...(price != null ? { price: String(price) } : {}),
       availability: "https://schema.org/InStock",
-      url: `${SITE_URL}${urlPath.startsWith("/") ? urlPath : `/${urlPath}`}`
+      url,
+      seller: { "@id": ORG_ID }
     }
   };
 }

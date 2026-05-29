@@ -39,15 +39,15 @@ export default function DriverServiceCard({ driver, onBook }) {
   return (
     <article className="rounded-xl border border-slate-200 bg-white p-2.5 text-slate-900 shadow-sm">
       <div className="flex items-center justify-between gap-1.5">
-        <span className="inline-flex items-center gap-1 rounded-full bg-sky-50 px-2 py-0.5 text-[10px] font-semibold text-sky-700">
+        <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-700">
           <span aria-hidden="true">O</span>
           Call Driver
         </span>
         <div className="flex items-center gap-1">
-          <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${hasLuxury ? "bg-violet-50 text-violet-700" : "bg-slate-100 text-slate-700"}`}>
+          <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-700">
             {typeTag}
           </span>
-          <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700">Available 24/7</span>
+          <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-700">Available 24/7</span>
         </div>
       </div>
 
@@ -75,7 +75,7 @@ export default function DriverServiceCard({ driver, onBook }) {
       </div>
 
       <p className="mt-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Choose Package</p>
-      <div className="mt-1.5 grid grid-cols-1 gap-1.5 md:grid-cols-4">
+      <div className="mt-1.5 grid auto-rows-fr grid-cols-2 gap-1.5 md:grid-cols-4">
         {packageOptions.map((pkg) => (
           <PackageBox
             key={pkg.id}
@@ -122,15 +122,23 @@ function PackageBox({ label, price, discountPercentage, selected = false, onClic
     <button
       type="button"
       onClick={onClick}
-      className={`w-full rounded-lg border p-2 text-left ${selected ? "border-sky-500 bg-sky-50/40" : "border-slate-200 bg-white"}`}
+      className={`flex h-full min-h-[4.5rem] w-full flex-col justify-center rounded-lg border p-2 text-left ${
+        selected ? "border-[#0056D2] bg-slate-50" : "border-slate-200 bg-white"
+      }`}
     >
-      <div className="flex items-start justify-between gap-1">
-        <p className="text-xs font-semibold leading-tight text-slate-700">{label}</p>
+      <div className="flex min-h-[2rem] items-start justify-between gap-1">
+        <p className="line-clamp-2 text-xs font-semibold leading-tight text-slate-700">{label}</p>
         {d > 0 ? (
-          <span className="rounded-full bg-emerald-50 px-1.5 py-0.5 text-[10px] font-bold text-emerald-700">{d}% off</span>
+          <span className="shrink-0 rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] font-bold text-slate-700">
+            {d}% off
+          </span>
         ) : null}
       </div>
-      {strike ? <p className="mt-0.5 text-[11px] font-semibold text-slate-400 line-through">₹{strike.toLocaleString("en-IN")}</p> : null}
+      <div className="min-h-[0.875rem]">
+        {strike ? (
+          <p className="text-[11px] font-semibold text-slate-400 line-through">₹{strike.toLocaleString("en-IN")}</p>
+        ) : null}
+      </div>
       <p className="mt-0.5 text-lg font-bold text-sky-700">{p > 0 ? `₹${p.toLocaleString("en-IN")}` : "—"}</p>
     </button>
   );

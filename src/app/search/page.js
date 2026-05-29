@@ -33,6 +33,7 @@ export default async function SearchPage({ searchParams }) {
   const date = (searchParams?.date ?? "").trim();
   const routeType = (searchParams?.routeType ?? "").trim();
   const tripType = (searchParams?.tripType ?? "").trim();
+  const city = (searchParams?.city ?? searchParams?.priorityCity ?? "").trim();
   const hasInstantBookingFilters = Boolean(cabTypeFilter || pickup || drop || date || routeType || tripType);
 
   const shouldApplyKeywordToCabs = Boolean(query && !["cab", "cabs", "local", "outstation"].includes(query));
@@ -40,20 +41,23 @@ export default async function SearchPage({ searchParams }) {
   const cabQs = new URLSearchParams();
   cabQs.set("limit", "50");
   if (cabTypeFilter) cabQs.set("type", cabTypeFilter);
+  if (city) cabQs.set("priorityCity", city);
   if (shouldApplyKeywordToCabs && rawQuery.trim()) cabQs.set("q", rawQuery.trim());
 
   const driverQs = new URLSearchParams();
   driverQs.set("limit", "50");
+  if (city) driverQs.set("priorityCity", city);
   if (query) driverQs.set("q", rawQuery.trim());
 
   const packageQs = new URLSearchParams();
   packageQs.set("limit", "50");
+  if (city) packageQs.set("priorityCity", city);
   if (query) packageQs.set("q", rawQuery.trim());
 
   const [matchingCabs, matchingDrivers, matchingPackages, allBlogs] = await Promise.all([
     fetchList(`/api/v1/cabs?${cabQs.toString()}`),
-    query ? fetchList(`/api/v1/drivers?${driverQs.toString()}`) : Promise.resolve([]),
-    query ? fetchList(`/api/v1/packages?${packageQs.toString()}`) : Promise.resolve([]),
+    query || city ? fetchList(`/api/v1/drivers?${driverQs.toString()}`) : Promise.resolve([]),
+    query || city ? fetchList(`/api/v1/packages?${packageQs.toString()}`) : Promise.resolve([]),
     query ? fetchList("/api/v1/blogs?limit=50&page=1") : Promise.resolve([])
   ]);
 
@@ -84,6 +88,7 @@ export default async function SearchPage({ searchParams }) {
           </p>
           {hasInstantBookingFilters ? (
             <div className="mt-3 flex flex-wrap gap-2 text-xs text-slate-600">
+              {city ? <span className="rounded-full bg-white px-3 py-1 shadow-sm">City: {city}</span> : null}
               {pickup ? <span className="rounded-full bg-white px-3 py-1 shadow-sm">Pickup: {pickup}</span> : null}
               {drop ? <span className="rounded-full bg-white px-3 py-1 shadow-sm">Drop: {drop}</span> : null}
               {date ? <span className="rounded-full bg-white px-3 py-1 shadow-sm">Date: {date}</span> : null}
@@ -150,7 +155,7 @@ export default async function SearchPage({ searchParams }) {
                         key={String(pkg._id ?? pkg.id)}
                         pkg={pkg}
                         actionText="Book Now"
-                        actionHref={`/tour-booking?id=${String(pkg._id ?? pkg.id)}`}
+                        actionHref={`/packages/${String(pkg._id ?? pkg.id)}`}
                       />
                     ))}
                   </div>

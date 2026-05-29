@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useSiteSettings } from "./SiteSettingsProvider";
+import { getIcon, STAT_ICON_STYLES, UsersIcon } from "./icons";
 
 const FALLBACK_STATS = [
   { value: "50K+", label: "Happy Customers", iconKey: "users" },
@@ -11,33 +12,12 @@ const FALLBACK_STATS = [
   { value: "4.9/5", label: "Customer Rating", iconKey: "star" }
 ];
 
-const ICONS = {
-  users: UsersIcon,
-  car: CarIcon,
-  driver: DriverIcon,
-  pin: PinIcon,
-  star: StarIcon
-};
-
-const ICON_STYLES = {
-  users: { iconBg: "bg-blue-50", iconColor: "text-blue-600" },
-  car: { iconBg: "bg-emerald-50", iconColor: "text-emerald-600" },
-  driver: { iconBg: "bg-orange-50", iconColor: "text-orange-600" },
-  pin: { iconBg: "bg-violet-50", iconColor: "text-violet-600" },
-  star: { iconBg: "bg-amber-50", iconColor: "text-amber-600" }
-};
-
-const STATS = FALLBACK_STATS;
-
 export default function HeroStats() {
   const settings = useSiteSettings();
   const stats = settings.heroStats?.length ? settings.heroStats : FALLBACK_STATS;
 
   return (
-    <section
-      aria-label="Company statistics"
-      className="relative z-10 py-6 md:py-8"
-    >
+    <section aria-label="Company statistics" className="relative z-10 py-6 md:py-8">
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -48,8 +28,8 @@ export default function HeroStats() {
         <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
           <div className="grid grid-cols-2 divide-x divide-y divide-slate-100 sm:grid-cols-3 lg:grid-cols-5 lg:divide-y-0">
             {stats.map((stat, index) => {
-              const Icon = ICONS[stat.iconKey] || UsersIcon;
-              const style = ICON_STYLES[stat.iconKey] || ICON_STYLES.users;
+              const Icon = getIcon(stat.iconKey) || UsersIcon;
+              const style = STAT_ICON_STYLES[stat.iconKey] || STAT_ICON_STYLES.users;
 
               return (
                 <motion.div
@@ -58,22 +38,17 @@ export default function HeroStats() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.05, duration: 0.35 }}
-                  className="flex items-center gap-3 px-4 py-5 sm:px-5"
+                  className="flex items-center gap-2.5 px-3 py-4 sm:px-4 sm:py-5"
                 >
                   <span
-                    className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full ${style.iconBg} ${style.iconColor}`}
+                    className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full sm:h-10 sm:w-10 ${style.iconBg} ${style.iconColor}`}
                   >
-                    <Icon className="h-5 w-5" />
+                    <Icon className="h-4 w-4 sm:h-[18px] sm:w-[18px]" />
                   </span>
 
                   <div className="min-w-0">
-                    <p className="text-lg font-bold leading-tight text-slate-900">
-                      {stat.value}
-                    </p>
-
-                    <p className="mt-0.5 text-xs leading-snug text-slate-500">
-                      {stat.label}
-                    </p>
+                    <p className="text-base font-bold leading-tight text-slate-900 sm:text-lg">{stat.value}</p>
+                    <p className="mt-0.5 text-xs leading-snug text-slate-500">{stat.label}</p>
                   </div>
                 </motion.div>
               );
@@ -82,81 +57,5 @@ export default function HeroStats() {
         </div>
       </motion.div>
     </section>
-  );
-}
-
-function UsersIcon({ className }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      className={className}
-      stroke="currentColor"
-      strokeWidth="2"
-    >
-      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-      <circle cx="9" cy="7" r="4" />
-      <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
-    </svg>
-  );
-}
-
-function CarIcon({ className }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      className={className}
-      stroke="currentColor"
-      strokeWidth="2"
-    >
-      <path d="M5 11l1.5-4.5A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.5L19 11" />
-      <circle cx="7.5" cy="17.5" r="1.5" />
-      <circle cx="16.5" cy="17.5" r="1.5" />
-    </svg>
-  );
-}
-
-function DriverIcon({ className }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      className={className}
-      stroke="currentColor"
-      strokeWidth="2"
-    >
-      <path d="M12 3a3 3 0 0 0-3 3v1H8a2 2 0 0 0-2 2v2h12v-2a2 2 0 0 0-2-2h-1V6a3 3 0 0 0-3-3z" />
-      <path d="M6 14h12v2a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2v-2z" />
-    </svg>
-  );
-}
-
-function PinIcon({ className }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      className={className}
-      stroke="currentColor"
-      strokeWidth="2"
-    >
-      <path d="M12 21s7-4.5 7-10a7 7 0 1 0-14 0c0 5.5 7 10 7 10z" />
-      <circle cx="12" cy="11" r="2.5" />
-    </svg>
-  );
-}
-
-function StarIcon({ className }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      className={className}
-      stroke="currentColor"
-      strokeWidth="2"
-    >
-      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14l-5-4.87 6.91-1.01L12 2z" />
-    </svg>
   );
 }

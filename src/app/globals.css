@@ -1,14 +1,36 @@
 @import "tailwindcss";
 
+:root {
+  --cabzii-brand: #0056d2;
+  --cabzii-brand-hover: #0046b0;
+  --cabzii-surface: #ffffff;
+  --cabzii-muted: #64748b;
+  --cabzii-border: #e2e8f0;
+}
+
 html {
   scroll-behavior: smooth;
+  font-size: 16px;
 }
 
 body {
   font-family: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
-  @apply bg-slate-50 text-slate-900 antialiased;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  @apply bg-white text-slate-900 antialiased;
 }
 
-::selection {
-  @apply bg-sky-200 text-slate-900;
+h1,
+h2,
+h3 {
+  @apply text-slate-900;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }

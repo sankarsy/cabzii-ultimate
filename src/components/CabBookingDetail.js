@@ -11,6 +11,23 @@ import {
   vendorInitials
 } from "../lib/cabFare";
 import { MetaPill, ProductImageFrame, ProductMetaBlock } from "./productCardShared";
+import {
+  CalendarIcon,
+  CheckIcon,
+  ClockIcon,
+  HeadsetIcon,
+  LockIcon,
+  MapPinIcon,
+  PersonIcon,
+  RoadIcon,
+  RupeeIcon,
+  SeatIcon,
+  ShieldIcon,
+  SnowflakeIcon,
+  TagIcon
+} from "./icons";
+
+const PinIcon = MapPinIcon;
 
 const FALLBACK_CAB_IMAGE =
   "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=1200&q=80";
@@ -69,7 +86,7 @@ export default function CabBookingDetail({ cab, onSelectionChange }) {
     <>
       <div className="absolute left-1.5 top-1.5 flex items-center gap-1">
         {d > 0 && (
-          <span className="rounded-md bg-orange-500 px-1.5 py-0.5 text-[8px] font-bold text-white shadow">
+          <span className="rounded-md bg-[#0056D2] px-1.5 py-0.5 text-[8px] font-bold text-white shadow">
             {d}% OFF
           </span>
         )}
@@ -152,9 +169,9 @@ function ServiceToggle({ serviceTab, setServiceTab }) {
 function PackageSection({ visiblePackages, selectedPackageId, onSelectPackage, discount }) {
   return (
     <div className="mt-5">
-      <div className="-mx-1 flex gap-3 overflow-x-auto pb-2 pt-1 [-ms-overflow-style:none] [scrollbar-width:none] sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:pb-0 lg:grid-cols-2 xl:grid-cols-2 [&::-webkit-scrollbar]:hidden">
+      <div className="-mx-1 flex gap-3 overflow-x-auto pb-2 pt-1 [-ms-overflow-style:none] [scrollbar-width:none] sm:mx-0 sm:grid sm:auto-rows-fr sm:grid-cols-2 sm:overflow-visible sm:pb-0 lg:grid-cols-2 xl:grid-cols-2 [&::-webkit-scrollbar]:hidden">
         {visiblePackages.map((pkg) => (
-          <div key={pkg.id} className="min-w-[13rem] shrink-0 snap-start sm:min-w-0">
+          <div key={pkg.id} className="flex min-h-[8.75rem] min-w-[13rem] shrink-0 snap-start sm:min-h-0 sm:min-w-0">
             <PackageOptionCard
               pkg={pkg}
               selected={selectedPackageId === pkg.id}
@@ -207,12 +224,12 @@ function VendorBox({ vendor }) {
   return (
     <div className="mt-3 rounded-xl border border-slate-100 bg-white p-3 shadow-sm">
       <div className="flex items-center gap-2.5">
-        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-violet-100 text-sm font-bold text-violet-700">
+        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-sm font-bold text-[#0056D2]">
           {vendorInitials(vendor)}
         </span>
         <div>
           <p className="text-sm font-bold text-slate-900">{vendor}</p>
-          <p className="mt-0.5 flex items-center gap-1 text-xs font-medium text-emerald-600">
+          <p className="mt-0.5 flex items-center gap-1 text-xs font-medium text-slate-600">
             <CheckIcon className="h-3.5 w-3.5" />
             Verified Vendor
           </p>
@@ -251,116 +268,5 @@ function TrustGrid() {
     </div>
   );
 }
-
-function SeatIcon({ className }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className={className} stroke="currentColor" strokeWidth="2">
-      <path d="M7 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
-      <path d="M5 13h4a3 3 0 0 1 3 3v3H5v-6zM12 16h6l1 3h-7" />
-    </svg>
-  );
-}
-
-function PersonIcon({ className }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className={className} stroke="currentColor" strokeWidth="2">
-      <circle cx="12" cy="8" r="3" />
-      <path d="M5 20a7 7 0 0 1 14 0" />
-    </svg>
-  );
-}
-
-function SnowflakeIcon({ className }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className={className} stroke="currentColor" strokeWidth="2">
-      <path d="M12 2v20M12 2l3 4M12 2L9 6M12 22l3-4M12 22l-3-4M2 12h20M2 12l4 3M2 12l4-3M22 12l-4 3M22 12l-4-3" />
-    </svg>
-  );
-}
-
-function RupeeIcon({ className }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className={className} stroke="currentColor" strokeWidth="2">
-      <path d="M6 3h12M6 8h12M8 21l8-10H6" />
-    </svg>
-  );
-}
-
-function PinIcon({ className }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className={className} stroke="currentColor" strokeWidth="2">
-      <path d="M12 21s7-4.5 7-10a7 7 0 1 0-14 0c0 5.5 7 10 7 10z" />
-      <circle cx="12" cy="11" r="2.5" />
-    </svg>
-  );
-}
-
-function RoadIcon({ className }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className={className} stroke="currentColor" strokeWidth="2">
-      <path d="M4 19l4-14M16 5l4 14M9 19h6M10 12h4" />
-    </svg>
-  );
-}
-
-function ClockIcon({ className }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className={className} stroke="currentColor" strokeWidth="2">
-      <circle cx="12" cy="12" r="9" />
-      <path d="M12 7v5l3 2" />
-    </svg>
-  );
-}
-
-function LockIcon({ className }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className={className} stroke="currentColor" strokeWidth="2">
-      <rect x="3" y="11" width="18" height="11" rx="2" />
-      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-    </svg>
-  );
-}
-
-function CheckIcon({ className }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className={className} stroke="currentColor" strokeWidth="2">
-      <path d="M20 6L9 17l-5-5" />
-    </svg>
-  );
-}
-
-function ShieldIcon({ className }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className={className} stroke="currentColor" strokeWidth="2">
-      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-    </svg>
-  );
-}
-
-function TagIcon({ className }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className={className} stroke="currentColor" strokeWidth="2">
-      <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
-    </svg>
-  );
-}
-
-function HeadsetIcon({ className }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className={className} stroke="currentColor" strokeWidth="2">
-      <path d="M3 11v2a7 7 0 0 0 7 7h1M21 11v2a7 7 0 0 1-7 7h-1" />
-    </svg>
-  );
-}
-
-function CalendarIcon({ className }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className={className} stroke="currentColor" strokeWidth="2">
-      <rect x="3" y="4" width="18" height="18" rx="2" />
-      <path d="M16 2v4M8 2v4M3 10h18" />
-    </svg>
-  );
-}
-
 
 

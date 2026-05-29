@@ -1,4 +1,14 @@
+import { filterTamilNaduCities } from "../../../lib/tamilNaduCities";
+
 const BACKEND_URL = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
+
+function tamilNaduPredictions(input) {
+  return filterTamilNaduCities(input).slice(0, 12).map((label) => ({
+    label,
+    source: "tamilnadu",
+    placeId: null
+  }));
+}
 
 async function fetchDbCities(input) {
   const predictions = [];
@@ -99,15 +109,19 @@ export async function GET(request) {
   const types = searchParams.get("types") || "address";
 
   if (input.length < 2) {
+    if (types === "cities") {
+      return Response.json({ predictions: tamilNaduPredictions("") });
+    }
     return Response.json({ predictions: [] });
   }
 
   const apiKey = process.env.GOOGLE_MAPS_API_KEY;
 
   if (types === "cities") {
+    const tn = tamilNaduPredictions(input);
     const db = await fetchDbCities(input);
     const google = await fetchGoogleCities(input, apiKey);
-    const predictions = mergeUnique([...db, ...google], 10);
+    const predictions = mergeUnique([...tn, ...db, ...google], 14);
     return Response.json({ predictions });
   }
 
@@ -120,7 +134,5 @@ export async function GET(request) {
     predictions = mergeUnique([...predictions, ...google], 8);
   }
 
-  return Response.json({
-    predictions: predictions.map((p) => p.label)
-  });
+  return Response.json({ predictions });
 }

@@ -5,7 +5,14 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { clearSession, formatMobileDisplay, getUser, isLoggedIn } from "../lib/auth";
+import { writeSelectedCity, readSelectedCity } from "../lib/locationPriority";
+import { filterTamilNaduCities } from "../lib/tamilNaduCities";
 import { useSiteSettings } from "./SiteSettingsProvider";
+import { CarIcon, ChevronDownIcon, UserIcon } from "./icons";
+
+function BrandIcon(props) {
+  return <CarIcon {...props} />;
+}
 
 const fallbackNavLinks = [
   { href: "/", label: "Home" },
@@ -24,7 +31,13 @@ export default function Navbar() {
   const [searchTerm, setSearchTerm] = useState("");
   const [loggedIn, setLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
+  const [selectedLocation, setSelectedLocation] = useState("");
+  const [cityInput, setCityInput] = useState("");
+  const [citySuggestions, setCitySuggestions] = useState([]);
+  const [cityOpen, setCityOpen] = useState(false);
+  const [locations, setLocations] = useState([]);
   const userMenuRef = useRef(null);
+  const cityRef = useRef(null);
 
   useEffect(() => {
     const sync = () => {
@@ -41,17 +54,99 @@ export default function Navbar() {
   }, [pathname]);
 
   useEffect(() => {
+    const saved = readSelectedCity();
+    setSelectedLocation(saved);
+    setCityInput(saved);
+    fetch("/api/cities?active=1", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((d) => {
+        const list = Array.isArray(d?.data) ? d.data.map((c) => c.name).filter(Boolean) : [];
+        ["Chennai", "Bangalore", "Tirupati", "Coimbatore"].forEach((city) => {
+          if (!list.includes(city)) list.push(city);
+        });
+        setLocations(Array.from(new Set(list)));
+      })
+      .catch(() => setLocations([]));
+  }, []);
+
+  useEffect(() => {
+    const hasSaved = localStorage.getItem("cabzii-selected-location");
+    if (hasSaved || !navigator.geolocation) return;
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          try {
+            const res = await fetch(
+              `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`
+            );
+            const data = await res.json();
+            const city = data?.address?.city || data?.address?.town || data?.address?.county || "Chennai";
+            if (city) {
+              setSelectedLocation(city);
+              setCityInput(city);
+              writeSelectedCity(city);
+            }
+          } catch {
+            setSelectedLocation("Chennai");
+            setCityInput("Chennai");
+            writeSelectedCity("Chennai");
+          }
+        },
+        () => {
+          setSelectedLocation("Chennai");
+          setCityInput("Chennai");
+          writeSelectedCity("Chennai");
+        }
+      );
+  }, []);
+
+  useEffect(() => {
+    const q = cityInput.trim();
+    if (!cityOpen) return;
+    if (q.length < 2) {
+      const tn = filterTamilNaduCities(q).map((label) => label.split(",")[0]);
+      const merged = Array.from(new Set([...tn, ...locations])).slice(0, 12);
+      setCitySuggestions(merged);
+      return;
+    }
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/places?input=${encodeURIComponent(q)}&types=cities`, { cache: "no-store" });
+        const data = await res.json();
+        const list = (data?.predictions || []).map((x) => (typeof x === "string" ? x : x.label)).filter(Boolean);
+        setCitySuggestions(list.slice(0, 8));
+      } catch {
+        setCitySuggestions([]);
+      }
+    }, 250);
+    return () => clearTimeout(timer);
+  }, [cityInput, cityOpen, locations]);
+
+  useEffect(() => {
     const onDoc = (e) => {
       if (userMenuRef.current && !userMenuRef.current.contains(e.target)) setUserMenuOpen(false);
+      if (cityRef.current && !cityRef.current.contains(e.target)) setCityOpen(false);
     };
     document.addEventListener("click", onDoc);
     return () => document.removeEventListener("click", onDoc);
   }, []);
 
+  const applyCity = (value) => {
+    const city = String(value || "")
+      .split(",")[0]
+      .trim();
+    if (!city) return;
+    setSelectedLocation(city);
+    setCityInput(city);
+    writeSelectedCity(city);
+    setCityOpen(false);
+  };
+
   const handleSearch = () => {
     const query = searchTerm.trim();
     if (!query) return;
-    router.push(`/search?q=${encodeURIComponent(query)}`);
+    const params = new URLSearchParams({ q: query });
+    if (selectedLocation) params.set("city", selectedLocation);
+    router.push(`/search?${params.toString()}`);
     setMenuOpen(false);
   };
 
@@ -74,7 +169,7 @@ export default function Navbar() {
 
   const linkClasses = (href) =>
     `whitespace-nowrap rounded-md px-2.5 py-1.5 text-sm font-medium transition ${
-      isActive(href) ? "bg-blue-50 text-[#0056D2]" : "text-slate-700 hover:text-[#0056D2]"
+      isActive(href) ? "bg-slate-100 text-[#0056D2]" : "text-slate-700 hover:text-[#0056D2]"
     }`;
 
   const navLinks = (settings.navbar?.length ? settings.navbar : fallbackNavLinks)
@@ -88,12 +183,12 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200 bg-white shadow-sm">
       <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-8">
-        <div className="flex h-[72px] items-center justify-between gap-3">
+        <div className="flex h-16 items-center justify-between gap-3 sm:h-[4.25rem]">
           <Link href="/" className="inline-flex shrink-0 items-center gap-2.5">
             <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-white shadow-sm" style={{ backgroundColor: brandColor }}>
               <BrandIcon className="h-5 w-5" />
             </span>
-            <span className="text-xl font-bold tracking-tight text-slate-900">{brandName}</span>
+            <span className="text-lg font-bold tracking-tight text-slate-900">{brandName}</span>
           </Link>
 
           <nav className="hidden flex-1 items-center justify-center gap-0.5 lg:flex xl:gap-1">
@@ -105,6 +200,36 @@ export default function Navbar() {
           </nav>
 
           <div className="hidden items-center gap-2 md:flex lg:gap-3">
+            <div className="relative hidden items-center gap-2 lg:flex" ref={cityRef}>
+              <span className="text-xs font-semibold text-slate-500">📍</span>
+              <input
+                className="w-44 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 outline-none focus:border-[#0056D2] focus:bg-white"
+                value={cityInput}
+                onFocus={() => {
+                  setCityOpen(true);
+                  setCitySuggestions(locations.slice(0, 8));
+                }}
+                onChange={(e) => {
+                  setCityInput(e.target.value);
+                  setCityOpen(true);
+                }}
+                placeholder="Select city"
+              />
+              {cityOpen && citySuggestions.length ? (
+                <div className="absolute left-5 top-11 z-80 max-h-60 w-60 overflow-auto rounded-lg border border-slate-200 bg-white p-1 shadow-xl">
+                  {citySuggestions.map((loc) => (
+                    <button
+                      key={loc}
+                      type="button"
+                      onClick={() => applyCity(loc)}
+                      className="block w-full rounded-md px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-50"
+                    >
+                      {loc}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
+            </div>
             <div className="hidden items-center gap-1.5 xl:flex">
               <input
                 value={searchTerm}
@@ -134,7 +259,7 @@ export default function Navbar() {
                   <span className="hidden max-w-[100px] truncate sm:inline">
                     {formatMobileDisplay(user.mobileNumber)}
                   </span>
-                  <ChevronDown className="h-3.5 w-3.5 text-slate-500" />
+                  <ChevronDownIcon className="h-3.5 w-3.5 text-slate-500" />
                 </button>
                 <AnimatePresence>
                   {userMenuOpen && (
@@ -202,6 +327,52 @@ export default function Navbar() {
               exit={{ opacity: 0, height: 0 }}
               className="border-t border-slate-100 py-3 md:hidden"
             >
+              <div className="mb-3 flex gap-2 px-2">
+                <div className="relative w-32" ref={cityRef}>
+                  <input
+                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-2 py-2 text-xs text-slate-700"
+                    value={cityInput}
+                    onFocus={() => {
+                      setCityOpen(true);
+                      setCitySuggestions(locations.slice(0, 8));
+                    }}
+                    onChange={(e) => {
+                      setCityInput(e.target.value);
+                      setCityOpen(true);
+                    }}
+                    placeholder="City"
+                  />
+                  {cityOpen && citySuggestions.length ? (
+                    <div className="absolute left-0 top-9 z-90 max-h-56 w-56 overflow-auto rounded-lg border border-slate-200 bg-white p-1 shadow-xl">
+                      {citySuggestions.map((loc) => (
+                        <button
+                          key={loc}
+                          type="button"
+                          onClick={() => applyCity(loc)}
+                          className="block w-full rounded-md px-3 py-2 text-left text-xs text-slate-700 hover:bg-slate-50"
+                        >
+                          {loc}
+                        </button>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
+                <input
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                  placeholder={searchPlaceholder}
+                  className="min-w-0 flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 outline-none focus:border-[#0056D2] focus:bg-white"
+                  aria-label="Search"
+                />
+                <button
+                  type="button"
+                  onClick={handleSearch}
+                  className="shrink-0 rounded-lg bg-slate-800 px-3 py-2 text-sm font-semibold text-white"
+                >
+                  Search
+                </button>
+              </div>
               {navLinks.map((link) => (
                 <Link key={link.href} href={link.href} onClick={() => setMenuOpen(false)} className={`block ${linkClasses(link.href)}`}>
                   {link.label}
@@ -230,30 +401,3 @@ export default function Navbar() {
   );
 }
 
-function BrandIcon({ className }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className={className} stroke="currentColor" strokeWidth="2">
-      <path d="M5 12l1.4-4.1A2 2 0 0 1 8.3 6h7.4a2 2 0 0 1 1.9 1.4L19 12" />
-      <path d="M3 12h18v5a1 1 0 0 1-1 1h-1M3 12v5a1 1 0 0 0 1 1h1" />
-      <circle cx="7.5" cy="17" r="1.3" />
-      <circle cx="16.5" cy="17" r="1.3" />
-    </svg>
-  );
-}
-
-function UserIcon({ className }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className={className} stroke="currentColor" strokeWidth="2">
-      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-      <circle cx="12" cy="7" r="4" />
-    </svg>
-  );
-}
-
-function ChevronDown({ className }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className={className} stroke="currentColor" strokeWidth="2">
-      <path d="M6 9l6 6 6-6" />
-    </svg>
-  );
-}

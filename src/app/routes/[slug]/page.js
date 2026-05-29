@@ -19,7 +19,14 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }) {
   const route = routeBySlug(params.slug);
-  if (!route) return {};
+  if (!route) {
+    return buildPageMetadata({
+      title: "Route Not Found",
+      description: "This cab route page is not available on Cabzii.",
+      path: `/routes/${params.slug}`,
+      noindex: true
+    });
+  }
 
   const path = `/routes/${route.slug}`;
   return buildPageMetadata({

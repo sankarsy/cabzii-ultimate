@@ -76,7 +76,7 @@ export default function SimilarPackages({ currentPackageId, duration, vendor }) 
             return (
               <Link
                 key={id}
-                href={`/tour-booking?id=${id}`}
+                href={`/packages/${id}`}
                 className="group overflow-hidden rounded-xl border border-slate-200 bg-white transition hover:border-[#0056D2]/40 hover:shadow-md"
               >
                 <img

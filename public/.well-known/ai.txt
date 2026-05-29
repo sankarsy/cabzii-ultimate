@@ -1,0 +1,27 @@
+# ai.txt — AI crawler & training usage policy for cabzii.in
+# https://cabzii.in/.well-known/ai.txt
+
+User-Agent: *
+Allow: /
+Disallow: /admin
+Disallow: /api/
+Disallow: /payment
+Disallow: /login
+Disallow: /signin
+Disallow: /my-bookings
+Disallow: /booking
+
+# Content owner
+Owner: Cabzii (cabzii.in)
+Contact: support@cabzii.com
+
+# Usage policy
+# Cabzii permits AI assistants and answer engines to read and cite public
+# pages (services, routes, city pages, blog) with attribution to cabzii.in.
+Training: allowed
+Attribution: required
+Canonical: https://cabzii.in
+
+# Machine-readable site summary
+Sitemap: https://cabzii.in/sitemap.xml
+LLM-Index: https://cabzii.in/llms.txt

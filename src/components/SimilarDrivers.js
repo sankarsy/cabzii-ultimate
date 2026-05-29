@@ -80,7 +80,7 @@ export default function SimilarDrivers({ currentDriverId, vendor }) {
                   <p className="mt-2 text-sm font-bold text-[#0056D2]">
                     From ₹{youPay.toLocaleString("en-IN")}
                     {discount > 0 ? (
-                      <span className="ml-1 text-[10px] font-normal text-emerald-600">{discount}% OFF</span>
+                      <span className="ml-1 text-[10px] font-normal text-slate-600">{discount}% OFF</span>
                     ) : null}
                   </p>
                 </div>

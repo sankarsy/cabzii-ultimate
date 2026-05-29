@@ -1,0 +1,11 @@
+# ads.txt for cabzii.in — Authorized Digital Sellers (IAB Tech Lab)
+# https://cabzii.in/ads.txt
+#
+# Cabzii does not currently sell programmatic display advertising.
+# When you onboard an ad network or exchange, add one authorized-seller
+# record per line in the format:
+#   <exchange-domain>, <publisher-account-id>, <DIRECT|RESELLER>, <cert-authority-id>
+# Example:
+#   google.com, pub-0000000000000000, DIRECT, f08c47fec0942fa0
+#
+# Contact: support@cabzii.com

@@ -20,7 +20,14 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }) {
   const city = cityBySlug(params.city);
-  if (!city) return {};
+  if (!city) {
+    return buildPageMetadata({
+      title: "Cab Booking",
+      description: "City cab booking page on Cabzii.",
+      path: `/cab-booking/${params.city}`,
+      noindex: true
+    });
+  }
   const path = `/cab-booking/${city.slug}`;
   return buildPageMetadata({
     title: tunedCabBookingTitle(city),

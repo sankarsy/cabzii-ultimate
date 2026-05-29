@@ -88,7 +88,7 @@ export default function PaymentPage({ searchParams }) {
       : type === "driver" && itemId
         ? `/drivers/${itemId}`
         : type === "tour" && itemId
-          ? `/tour-booking?id=${itemId}`
+          ? `/packages/${itemId}`
           : type === "tour"
             ? "/packages"
             : "/drivers";

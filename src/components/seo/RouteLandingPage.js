@@ -12,7 +12,7 @@ export default function RouteLandingPage({ route, faqs }) {
   const reversePath = `/routes/${reverseSlug}`;
 
   return (
-    <main className="min-h-screen bg-linear-to-b from-slate-50 via-sky-50/60 to-violet-50/40">
+    <main className="min-h-screen bg-white">
       <Navbar />
       <article className="mx-auto max-w-4xl px-4 py-10 md:py-14">
         <Breadcrumbs

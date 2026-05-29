@@ -5,6 +5,10 @@ import CabCard from "../../components/CabCard";
 import FilterSidebar from "../../components/FilterSidebar";
 import Footer from "../../components/Footer";
 import Navbar from "../../components/Navbar";
+import PageBanner from "../../components/PageBanner";
+import RelatedSeoLinks from "../../components/seo/RelatedSeoLinks";
+import { sortBySelectedCity } from "../../lib/locationPriority";
+import { useSelectedCity } from "../../lib/useSelectedCity";
 import { motion } from "framer-motion";
 
 function buildCabQuery(filters, page) {
@@ -14,6 +18,7 @@ function buildCabQuery(filters, page) {
   if (filters.vehicleType) p.set("type", filters.vehicleType);
   if (filters.priceRange) p.set("maxPrice", filters.priceRange);
   filters.amenities.forEach((a) => p.append("features", a));
+  if (filters.city) p.set("priorityCity", filters.city);
   return p.toString();
 }
 
@@ -26,8 +31,11 @@ export default function Cabs() {
   const [filters, setFilters] = useState({
     priceRange: "",
     vehicleType: "",
-    amenities: []
+    amenities: [],
+    city: ""
   });
+  const [detectedCity, setDetectedCity] = useState("");
+  const { city: selectedCity } = useSelectedCity();
 
   const loadCabs = useCallback(async () => {
     setLoading(true);
@@ -35,14 +43,15 @@ export default function Cabs() {
       const qs = buildCabQuery(filters, page);
       const res = await fetch(`/api/cabs?${qs}`, { cache: "no-store" });
       const data = await res.json();
-      setCabs(Array.isArray(data?.data) ? data.data : []);
+      const rows = Array.isArray(data?.data) ? data.data : [];
+      setCabs(sortBySelectedCity(rows, filters.city || selectedCity));
       if (data?.meta && typeof data.meta.page === "number") {
         setMeta(data.meta);
       }
     } finally {
       setLoading(false);
     }
-  }, [filters, page]);
+  }, [filters, page, selectedCity]);
 
   useEffect(() => {
     loadCabs();
@@ -51,14 +60,45 @@ export default function Cabs() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const type = params.get("type");
+    const city = params.get("city");
     if (type && ["Sedan", "SUV", "Van", "Bus"].includes(type)) {
       setFilters((prev) => ({ ...prev, vehicleType: type }));
     }
+    if (city) setFilters((prev) => ({ ...prev, city }));
   }, []);
 
   useEffect(() => {
+    if (selectedCity) setFilters((prev) => ({ ...prev, city: selectedCity }));
+  }, [selectedCity]);
+
+  useEffect(() => {
+    if (filters.city) return;
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        try {
+          const { latitude, longitude } = pos.coords;
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`
+          );
+          const data = await res.json();
+          const city = data?.address?.city || data?.address?.town || data?.address?.county || "";
+          if (city) {
+            setDetectedCity(city);
+            setFilters((prev) => ({ ...prev, city }));
+          }
+        } catch {
+          // ignore
+        }
+      },
+      () => {},
+      { enableHighAccuracy: false, timeout: 7000, maximumAge: 1000 * 60 * 20 }
+    );
+  }, [filters.city]);
+
+  useEffect(() => {
     setPage(1);
-  }, [filters.priceRange, filters.vehicleType, filters.amenities]);
+  }, [filters.priceRange, filters.vehicleType, filters.amenities, filters.city]);
 
   const paginationLabel = useMemo(() => {
     const { total, page: p, limit } = meta;
@@ -69,15 +109,21 @@ export default function Cabs() {
   }, [meta]);
 
   return (
-    <main className="min-h-screen bg-linear-to-b from-slate-50 via-sky-50/60 to-violet-50/40">
+    <main className="min-h-screen">
       <Navbar />
       <section className="py-10 md:py-14">
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
-          <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-slate-900">All Cabs</h1>
-              <p className="mt-2 text-sm text-slate-600">Filter, compare and book trusted cabs across vendors.</p>
-            </div>
+          <PageBanner
+            title="All Cabs"
+            subtitle={`Filter, compare and book trusted cabs across vendors.${filters.city ? ` Priority: ${filters.city}.` : ""}`}
+            breadcrumbs={[
+              { name: "Home", path: "/" },
+              { name: "Cabs", path: "/cabs" }
+            ]}
+          />
+
+          <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-end">
+            <div className="hidden md:block" />
             <button
               type="button"
               onClick={() => setMobileFilterOpen(true)}
@@ -98,6 +144,28 @@ export default function Cabs() {
             </aside>
 
             <div className="w-full">
+              {filters.city ? (
+                <div className="mb-3 flex flex-wrap items-center gap-2 text-xs">
+                  <span className="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 font-semibold text-sky-700">
+                    Nearby city: {filters.city}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setFilters((prev) => ({ ...prev, city: "" }))}
+                    className="rounded-full border border-slate-300 px-3 py-1 font-semibold text-slate-700"
+                  >
+                    Clear
+                  </button>
+                </div>
+              ) : detectedCity ? (
+                <button
+                  type="button"
+                  onClick={() => setFilters((prev) => ({ ...prev, city: detectedCity }))}
+                  className="mb-3 rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-xs font-semibold text-sky-700"
+                >
+                  Show near {detectedCity}
+                </button>
+              ) : null}
               {loading ? (
                 <div className="rounded-xl border border-slate-200 bg-white p-8 text-sm text-slate-600 shadow-md">Loading cabs...</div>
               ) : cabs.length ? (
@@ -149,6 +217,8 @@ export default function Cabs() {
               )}
             </div>
           </div>
+
+          <RelatedSeoLinks page="cabs" />
         </div>
 
         <FilterSidebar

@@ -4,7 +4,11 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Footer from "../../components/Footer";
 import Navbar from "../../components/Navbar";
+import PageBanner from "../../components/PageBanner";
 import DriverCard from "../../components/DriverCard";
+import RelatedSeoLinks from "../../components/seo/RelatedSeoLinks";
+import { catalogPriorityParams, sortBySelectedCity } from "../../lib/locationPriority";
+import { useSelectedCity } from "../../lib/useSelectedCity";
 import { motion } from "framer-motion";
 
 export default function DriversPage() {
@@ -15,6 +19,7 @@ export default function DriversPage() {
   const [q, setQ] = useState("");
   const [page, setPage] = useState(1);
   const [meta, setMeta] = useState({ page: 1, limit: 24, total: 0, totalPages: 1 });
+  const { city: selectedCity } = useSelectedCity();
 
   useEffect(() => {
     const t = setTimeout(() => setQ(searchInput.trim()), 400);
@@ -33,10 +38,12 @@ export default function DriversPage() {
         p.set("page", String(page));
         p.set("limit", "24");
         if (q.trim()) p.set("q", q.trim());
-        const res = await fetch(`/api/drivers?${p.toString()}`, { cache: "no-store" });
+        const res = await fetch(`/api/drivers?${p.toString()}${catalogPriorityParams(selectedCity)}`, {
+          cache: "no-store"
+        });
         const data = await res.json();
         const list = Array.isArray(data?.data) ? data.data : [];
-        setDrivers(list);
+        setDrivers(sortBySelectedCity(list, selectedCity));
         if (data?.meta && typeof data.meta.page === "number") {
           setMeta(data.meta);
         }
@@ -45,17 +52,27 @@ export default function DriversPage() {
       }
     };
     load();
-  }, [page, q]);
+  }, [page, q, selectedCity]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [selectedCity]);
 
   return (
-    <main className="min-h-screen bg-linear-to-b from-slate-50 via-sky-50/60 to-violet-50/40">
+    <main className="min-h-screen">
       <Navbar />
       <section className="py-10 md:py-14">
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
-          <h1 className="text-3xl font-bold text-slate-900">All Active Drivers</h1>
-          <p className="mt-2 text-sm text-slate-600">Verified professional drivers with strong ratings and trip history.</p>
+          <PageBanner
+            title="All Active Drivers"
+            subtitle="Verified driver partners — your city is prioritized in results."
+            breadcrumbs={[
+              { name: "Home", path: "/" },
+              { name: "Drivers", path: "/drivers" }
+            ]}
+          />
 
-          <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-end">
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-end">
             <div className="flex-1">
               <label htmlFor="driver-search" className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                 Search (name, vendor, vehicles, SEO)
@@ -128,6 +145,7 @@ export default function DriversPage() {
               ) : null}
             </>
           )}
+          <RelatedSeoLinks page="drivers" />
         </div>
       </section>
       <Footer />

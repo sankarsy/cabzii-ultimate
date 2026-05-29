@@ -8,6 +8,7 @@ import PaymentBreakdown from "./PaymentBreakdown";
 import PickupPlaceInput from "./PickupPlaceInput";
 import SimilarPackages from "./SimilarPackages";
 import { resolveMediaUrl } from "../lib/media";
+import { CalendarIcon, MapPinIcon, UsersGroupIcon } from "./icons";
 import {
   CARD_BOOK_BTN_CLASS,
   MetaPill,
@@ -125,7 +126,7 @@ export default function TourBookingPage({ searchParams, initialPackage = null })
     <>
       <div className="absolute left-1.5 top-1.5 flex items-center gap-1">
         {d > 0 && (
-          <span className="rounded-md bg-orange-500 px-1.5 py-0.5 text-[8px] font-bold text-white shadow">
+          <span className="rounded-md bg-[#0056D2] px-1.5 py-0.5 text-[8px] font-bold text-white shadow">
             {d}% OFF
           </span>
         )}
@@ -152,7 +153,7 @@ export default function TourBookingPage({ searchParams, initialPackage = null })
   };
 
   return (
-    <main className="min-h-screen bg-linear-to-b from-slate-50 via-sky-50/60 to-violet-50/40">
+    <main className="min-h-screen bg-white">
       <Navbar />
       <section className="py-8 md:py-10">
         <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-8">
@@ -215,7 +216,7 @@ export default function TourBookingPage({ searchParams, initialPackage = null })
                       {pkg.duration ? (
                         <MetaPill icon={<CalendarIcon className="h-2.5 w-2.5" />} label={pkg.duration} />
                       ) : null}
-                      <MetaPill icon={<UsersIcon className="h-2.5 w-2.5" />} label="Per person fare" />
+                      <MetaPill icon={<UsersGroupIcon className="h-2.5 w-2.5" />} label="Per person fare" />
                       <MetaPill icon={<MapPinIcon className="h-2.5 w-2.5" />} label="Flexible pickup" />
                     </ProductMetaBlock>
                   </article>
@@ -354,30 +355,3 @@ export default function TourBookingPage({ searchParams, initialPackage = null })
   );
 }
 
-function CalendarIcon({ className }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className={className} stroke="currentColor" strokeWidth="2">
-      <rect x="3" y="4" width="18" height="18" rx="2" />
-      <path d="M16 2v4M8 2v4M3 10h18" />
-    </svg>
-  );
-}
-
-function MapPinIcon({ className }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className={className} stroke="currentColor" strokeWidth="2">
-      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
-      <circle cx="12" cy="9" r="2.5" />
-    </svg>
-  );
-}
-
-function UsersIcon({ className }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className={className} stroke="currentColor" strokeWidth="2">
-      <circle cx="9" cy="8" r="3" />
-      <circle cx="17" cy="9" r="2.5" />
-      <path d="M3 20a6 6 0 0 1 12 0M14 20a5 5 0 0 1 8 0" />
-    </svg>
-  );
-}

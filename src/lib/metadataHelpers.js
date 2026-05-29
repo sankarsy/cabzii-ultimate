@@ -91,13 +91,14 @@ export function packageDetailMetadata(pkg, id) {
       metadata: buildPageMetadata({
         title: "Tour Package Not Found",
         description: "This tour package is not available on Cabzii.",
-        path: `/tour-booking?id=${id}`,
+        path: `/packages/${id}`,
         noindex: true
       }),
       jsonLd: null
     };
   }
 
+  const path = `/packages/${id}`;
   const title = pkg.seoTitle || `${pkg.name} – Tour Package`;
   const description =
     pkg.seoDescription ||
@@ -112,7 +113,7 @@ export function packageDetailMetadata(pkg, id) {
     metadata: buildPageMetadata({
       title,
       description,
-      path: `/tour-booking?id=${id}`,
+      path,
       keywords: keywords.length ? keywords : undefined,
       image,
       imageAlt: pkg.name
@@ -120,7 +121,7 @@ export function packageDetailMetadata(pkg, id) {
     jsonLd: productJsonLd({
       name: pkg.name,
       description,
-      urlPath: `/tour-booking?id=${id}`,
+      urlPath: path,
       image: image || undefined,
       price: pkg.price
     })

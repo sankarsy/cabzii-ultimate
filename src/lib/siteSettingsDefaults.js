@@ -36,18 +36,18 @@ export const DEFAULT_SITE_SETTINGS = {
     title: "Book Cabs, Taxis & Acting Drivers Online",
     titleHighlight: "Acting Drivers",
     subtitle:
-      "Cabs, acting drivers and tour packages in Chennai, Bengaluru, Mumbai and across India — transparent fares, instant booking.",
+      "Compare sedan, SUV and Innova fares from verified vendors. Airport, local, outstation and acting driver booking with instant OTP confirmation.",
     image: "/images/hero-banner.png",
     promoBadge: "Up To",
     promoTitle: "20% OFF",
     promoSubtitle: "Cabs & Tours",
     searchPlaceholder: "Search cabs or tours...",
     tabs: [
-      { id: "outstation", label: "Outstation", icon: "🚖" },
-      { id: "local", label: "Local", icon: "📍" },
-      { id: "airport", label: "Airport", icon: "✈️" },
-      { id: "rental", label: "Rental", icon: "🗓️" },
-      { id: "tour", label: "Tours", icon: "🗺️" }
+      { id: "outstation", label: "Outstation" },
+      { id: "local", label: "Local" },
+      { id: "airport", label: "Airport" },
+      { id: "rental", label: "Rental" },
+      { id: "tour", label: "Tours" }
     ],
     cabTypes: ["Sedan", "SUV", "Innova"],
     trustBadges: [

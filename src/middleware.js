@@ -31,6 +31,14 @@ export function middleware(request) {
     return NextResponse.redirect(url, 301);
   }
 
+  if (pathname === "/tour-booking") {
+    const id = request.nextUrl.searchParams.get("id");
+    if (id) {
+      return NextResponse.redirect(new URL(`/packages/${id}`, request.url), 301);
+    }
+    return NextResponse.redirect(new URL("/packages", request.url), 301);
+  }
+
   const isProtected = PROTECTED_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
   if (!isProtected) return NextResponse.next();
 

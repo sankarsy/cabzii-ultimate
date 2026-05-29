@@ -1,17 +1,27 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   buildCatalogListUrl,
+  CAB_PACKAGE_FIELDS,
   CATALOG_TABS,
   cabFormFromItem,
   cabFormToPayload,
+  driverFormFromItem,
+  driverFormToPayload,
   emptyBlogForm,
   emptyCabForm,
+  emptyDriverForm,
   emptyTestimonialForm,
-  FARE_PACKAGE_FIELDS,
-  formatCabPackageSummary
+  emptyTourPackageForm,
+  DRIVER_PACKAGE_FIELDS,
+  formatCabPackageSummary,
+  formatDriverPackageSummary,
+  tourPackageFormFromItem,
+  tourPackageFormToPayload
 } from "../../lib/adminCatalogConfig";
+import FarePackagesEditor from "./FarePackagesEditor";
 
 function Field({ label, children, hint }) {
   return (
@@ -38,13 +48,29 @@ function itemSubtitle(item, tabKey) {
   if (tabKey === "blogs") return `${item.slug || "—"} · ${item.published === false ? "Draft" : "Published"}`;
   if (tabKey === "testimonials") return `${item.location || "—"} · ${item.rating ?? 5}★`;
   if (tabKey === "bookings") return `${item.status || "pending"} · ${item.phone || ""}`;
-  if (tabKey === "cabs") return `${item.vendor || "—"} · ${item.type || "Cab"} · ${formatCabPackageSummary(item)}`;
+  if (tabKey === "cabs") return `${item.vendor || "—"} · ${item.city || "No city"} · ${item.location || "No location"} · ${formatCabPackageSummary(item)}`;
+  if (tabKey === "drivers") return `${item.vendor || "—"} · ${item.city || "No city"} · ${item.location || "No location"} · ${formatDriverPackageSummary(item)}`;
+  if (tabKey === "packages") return `${item.vendor || "—"} · ${item.city || "No city"} · ${item.duration || "—"} · ₹${item.price ?? "—"}`;
   return item.vendor || item.experience || item.type || "N/A";
 }
 
-export default function AdminCatalogPanel({ tabKey, token, isSuperAdmin }) {
+export default function AdminCatalogPanel({
+  tabKey,
+  token,
+  isSuperAdmin,
+  initialEditId = "",
+  pageMode = "list",
+  viewId = ""
+}) {
+  const router = useRouter();
   const tab = CATALOG_TABS[tabKey];
   const canEdit = isSuperAdmin || !tab?.superAdminOnly;
+  const isListMode = pageMode === "list";
+  const singularLabel = tab?.label?.endsWith("s") ? tab.label.slice(0, -1) : "Item";
+  const navigateAdmin = (url) => {
+    if (typeof window !== "undefined") window.location.assign(url);
+    else router.push(url);
+  };
 
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -54,15 +80,27 @@ export default function AdminCatalogPanel({ tabKey, token, isSuperAdmin }) {
   const [blogForm, setBlogForm] = useState(emptyBlogForm);
   const [testimonialForm, setTestimonialForm] = useState(emptyTestimonialForm);
   const [cabForm, setCabForm] = useState(emptyCabForm());
+  const [driverForm, setDriverForm] = useState(emptyDriverForm());
+  const [tourPackageForm, setTourPackageForm] = useState(emptyTourPackageForm());
   const [selectedImage, setSelectedImage] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [uploadedUrl, setUploadedUrl] = useState("");
   const [uploadError, setUploadError] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [query, setQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [sortKey, setSortKey] = useState("latest");
+  const [listPage, setListPage] = useState(1);
+  const [viewingId, setViewingId] = useState("");
 
   const authHeaders = token ? { authorization: `Bearer ${token}` } : {};
-  const usesStructuredForm = tab?.form === "blog" || tab?.form === "testimonial" || tab?.form === "cab";
+  const usesStructuredForm =
+    tab?.form === "blog" ||
+    tab?.form === "testimonial" ||
+    tab?.form === "cab" ||
+    tab?.form === "driver" ||
+    tab?.form === "tourPackage";
 
   const resetForm = useCallback(() => {
     setEditingId("");
@@ -70,6 +108,8 @@ export default function AdminCatalogPanel({ tabKey, token, isSuperAdmin }) {
     setBlogForm(emptyBlogForm());
     setTestimonialForm(emptyTestimonialForm());
     setCabForm(emptyCabForm());
+    setDriverForm(emptyDriverForm());
+    setTourPackageForm(emptyTourPackageForm());
     setErrorMessage("");
     setStatusMessage("");
   }, []);
@@ -104,10 +144,42 @@ export default function AdminCatalogPanel({ tabKey, token, isSuperAdmin }) {
     loadData();
   }, [loadData]);
 
+  useEffect(() => {
+    if (!initialEditId || !items.length) return;
+    const target = items.find((it) => String(it._id || it.id) === String(initialEditId));
+    if (target) startEdit(target);
+  }, [initialEditId, items]);
+
+  useEffect(() => {
+    if (!items.length) return;
+    if (pageMode === "create") {
+      resetForm();
+      setViewingId("");
+      return;
+    }
+    if ((pageMode === "edit" || pageMode === "view") && viewId) {
+      const target = items.find((it) => String(it._id || it.id) === String(viewId));
+      if (!target) return;
+      if (pageMode === "edit") {
+        startEdit(target);
+        setViewingId("");
+      } else {
+        setEditingId("");
+        setViewingId(String(viewId));
+      }
+    }
+  }, [items, pageMode, viewId, resetForm]);
+
+  useEffect(() => {
+    setListPage(1);
+  }, [query, statusFilter, sortKey, tabKey]);
+
   const getPayload = () => {
     if (tab?.form === "blog") return { ...blogForm };
     if (tab?.form === "testimonial") return { ...testimonialForm };
     if (tab?.form === "cab") return cabFormToPayload(cabForm);
+    if (tab?.form === "driver") return driverFormToPayload(driverForm);
+    if (tab?.form === "tourPackage") return tourPackageFormToPayload(tourPackageForm);
     return JSON.parse(formJson);
   };
 
@@ -148,6 +220,16 @@ export default function AdminCatalogPanel({ tabKey, token, isSuperAdmin }) {
       return;
     }
 
+    if (tab?.form === "driver") {
+      setDriverForm(driverFormFromItem(item));
+      return;
+    }
+
+    if (tab?.form === "tourPackage") {
+      setTourPackageForm(tourPackageFormFromItem(item));
+      return;
+    }
+
     const cleanItem = { ...item };
     delete cleanItem._id;
     delete cleanItem.__v;
@@ -159,30 +241,100 @@ export default function AdminCatalogPanel({ tabKey, token, isSuperAdmin }) {
 
   const insertSample = () => {
     if (!tab?.sample) return;
-    if (tab?.form === "cab") {
-      setCabForm(cabFormFromItem(tab.sample));
-    } else {
-      setFormJson(JSON.stringify(tab.sample, null, 2));
-    }
+    if (tab?.form === "cab") setCabForm(cabFormFromItem(tab.sample));
+    else if (tab?.form === "driver") setDriverForm(driverFormFromItem(tab.sample));
+    else if (tab?.form === "tourPackage") setTourPackageForm(tourPackageFormFromItem(tab.sample));
+    else setFormJson(JSON.stringify(tab.sample, null, 2));
     setErrorMessage("");
   };
 
-  const updateCabPackageField = (packageKey, field, value) => {
+  const patchFormImage = (imagePath, fileName) => {
+    const path = imagePath.startsWith("/") ? imagePath : `/uploads/${fileName}`;
+    if (tab?.form === "cab") {
+      setCabForm((p) => {
+        const gallery = String(p.gallery || "")
+          .split(",")
+          .map((x) => x.trim())
+          .filter(Boolean);
+        if (!gallery.includes(path)) gallery.push(path);
+        return { ...p, image: path, gallery: gallery.slice(0, 3).join(", ") };
+      });
+    } else if (tab?.form === "driver") {
+      setDriverForm((p) => {
+        const gallery = String(p.gallery || "")
+          .split(",")
+          .map((x) => x.trim())
+          .filter(Boolean);
+        if (!gallery.includes(path)) gallery.push(path);
+        return { ...p, image: path, gallery: gallery.slice(0, 3).join(", ") };
+      });
+    } else if (tab?.form === "tourPackage") {
+      setTourPackageForm((p) => {
+        const gallery = String(p.gallery || "")
+          .split(",")
+          .map((x) => x.trim())
+          .filter(Boolean);
+        if (!gallery.includes(path)) gallery.push(path);
+        return { ...p, image: path, gallery: gallery.slice(0, 3).join(", ") };
+      });
+    }
+    else {
+      try {
+        const parsed = formJson.trim() ? JSON.parse(formJson) : {};
+        parsed.image = path;
+        setFormJson(JSON.stringify(parsed, null, 2));
+      } catch {
+        setFormJson(JSON.stringify({ image: path }, null, 2));
+      }
+    }
+  };
+
+  const updateCabFare = (packageKey, field, value) => {
     setCabForm((prev) => ({
       ...prev,
       farePackages: {
         ...prev.farePackages,
-        [packageKey]: {
-          ...prev.farePackages[packageKey],
-          [field]: value
-        }
+        [packageKey]: { ...prev.farePackages[packageKey], [field]: value }
       }
+    }));
+  };
+
+  const updateCabLabel = (packageKey, value) => {
+    setCabForm((prev) => ({
+      ...prev,
+      farePackageLabels: { ...prev.farePackageLabels, [packageKey]: value }
+    }));
+  };
+
+  const updateDriverFare = (packageKey, field, value) => {
+    setDriverForm((prev) => ({
+      ...prev,
+      farePackages: {
+        ...prev.farePackages,
+        [packageKey]: { ...prev.farePackages[packageKey], [field]: value }
+      }
+    }));
+  };
+
+  const updateDriverLabel = (packageKey, value) => {
+    setDriverForm((prev) => ({
+      ...prev,
+      farePackageLabels: { ...prev.farePackageLabels, [packageKey]: value }
     }));
   };
 
   const handleUploadImage = async () => {
     if (!selectedImage) {
       setUploadError("Please choose an image first.");
+      return;
+    }
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+    if (!allowedTypes.includes(selectedImage.type)) {
+      setUploadError("Only jpg, jpeg, png, and webp are allowed.");
+      return;
+    }
+    if (selectedImage.size > 5 * 1024 * 1024) {
+      setUploadError("Image must be less than 5MB.");
       return;
     }
 
@@ -209,23 +361,11 @@ export default function AdminCatalogPanel({ tabKey, token, isSuperAdmin }) {
       setUploadedUrl(data.data.url);
 
       if (usesStructuredForm) {
-        if (tab?.form === "cab") {
-          setCabForm((prev) => ({
-            ...prev,
-            image: imagePath.startsWith("/") ? imagePath : data.data.relativeUrl || `/uploads/${data.data.fileName}`
-          }));
-          return;
-        }
+        patchFormImage(imagePath, data.data.fileName);
         return;
       }
 
-      try {
-        const parsed = formJson.trim() ? JSON.parse(formJson) : {};
-        parsed.image = imagePath.startsWith("/") ? imagePath : data.data.relativeUrl || `/uploads/${data.data.fileName}`;
-        setFormJson(JSON.stringify(parsed, null, 2));
-      } catch {
-        setFormJson(JSON.stringify({ image: data.data.relativeUrl || data.data.url }, null, 2));
-      }
+      patchFormImage(imagePath, data.data.fileName);
     } catch (error) {
       setUploadError(error instanceof Error ? error.message : "Upload failed");
     } finally {
@@ -274,12 +414,19 @@ export default function AdminCatalogPanel({ tabKey, token, isSuperAdmin }) {
       });
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data?.message || "Save failed");
+        const detail = data?.message || data?.error || "Save failed";
+        throw new Error(typeof detail === "string" ? detail : JSON.stringify(detail));
       }
       const wasEditing = Boolean(editingId);
-      resetForm();
+      if (wasEditing && tab?.form === "cab") setCabForm(cabFormFromItem(data.data));
+      else if (wasEditing && tab?.form === "driver") setDriverForm(driverFormFromItem(data.data));
+      else if (wasEditing && tab?.form === "tourPackage") setTourPackageForm(tourPackageFormFromItem(data.data));
+      else resetForm();
       setStatusMessage(wasEditing ? "Updated successfully." : "Created successfully.");
       await loadData();
+      if (!isListMode) {
+        navigateAdmin(`/admin?tab=${tabKey}`);
+      }
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : "Invalid JSON or save failed");
     } finally {
@@ -307,6 +454,35 @@ export default function AdminCatalogPanel({ tabKey, token, isSuperAdmin }) {
   };
 
   if (!tab) return null;
+  const filteredItems = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    const searched = items.filter((item) => {
+      if (!q) return true;
+      const hay = JSON.stringify(item).toLowerCase();
+      return hay.includes(q);
+    });
+    const byStatus = searched.filter((item) => {
+      if (statusFilter === "all") return true;
+      if (tabKey === "bookings") return (item.status || "").toLowerCase() === statusFilter;
+      if (tabKey === "blogs" || tabKey === "testimonials") {
+        return statusFilter === "active" ? item.published !== false : item.published === false;
+      }
+      return statusFilter === "active";
+    });
+    const sorted = [...byStatus];
+    if (sortKey === "name") {
+      sorted.sort((a, b) => itemTitle(a, tabKey).localeCompare(itemTitle(b, tabKey)));
+    } else if (sortKey === "price") {
+      sorted.sort((a, b) => Number(b.price || 0) - Number(a.price || 0));
+    } else {
+      sorted.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+    }
+    return sorted;
+  }, [items, query, statusFilter, sortKey, tabKey]);
+  const pageSize = 10;
+  const totalPages = Math.max(1, Math.ceil(filteredItems.length / pageSize));
+  const pagedItems = filteredItems.slice((listPage - 1) * pageSize, listPage * pageSize);
+  const viewingItem = viewingId ? items.find((x) => String(x._id || x.id) === viewingId) : null;
 
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-md">
@@ -323,14 +499,14 @@ export default function AdminCatalogPanel({ tabKey, token, isSuperAdmin }) {
         <div className="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">{statusMessage}</div>
       ) : null}
 
-      {tabKey !== "bookings" && tabKey !== "testimonials" ? (
+      {!isListMode && tabKey !== "bookings" && tabKey !== "testimonials" ? (
         <div className="mb-5 rounded-lg border border-slate-200 bg-slate-50 p-3">
           <p className="text-sm font-semibold text-slate-800">Image upload</p>
           <p className="mt-1 text-xs text-slate-600">Upload a photo and use the returned path in your JSON or content.</p>
           <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center">
             <input
               type="file"
-              accept="image/png,image/jpeg,image/webp,image/gif"
+              accept="image/png,image/jpeg,image/webp"
               onChange={(event) => setSelectedImage(event.target.files?.[0] ?? null)}
               className="block w-full text-xs text-slate-700 file:mr-3 file:rounded-md file:border-0 file:bg-sky-600 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-white hover:file:bg-sky-700"
             />
@@ -354,11 +530,23 @@ export default function AdminCatalogPanel({ tabKey, token, isSuperAdmin }) {
         </div>
       ) : null}
 
+      {!isListMode ? (
       <div className="mb-5 rounded-lg border border-slate-200 bg-slate-50 p-3">
         <p className="text-sm font-semibold text-slate-800">
-          {editingId ? `Edit ${tab.label.slice(0, -1)}` : `Create ${tab.label.slice(0, -1)}`}
+          {pageMode === "view" ? `View ${singularLabel}` : editingId ? `Edit ${singularLabel}` : `Create ${singularLabel}`}
         </p>
+        <div className="mt-2">
+          <button
+            type="button"
+            onClick={() => navigateAdmin(`/admin?tab=${tabKey}`)}
+            className="rounded-md border border-slate-300 px-3 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-100"
+          >
+            Back to list
+          </button>
+        </div>
 
+        {pageMode === "view" ? null : (
+        <>
         {tab.form === "blog" ? (
           <div className="mt-3 grid gap-3 sm:grid-cols-2">
             <Field label="Slug *" hint="URL-friendly, e.g. chennai-airport-taxi-tips">
@@ -443,6 +631,17 @@ export default function AdminCatalogPanel({ tabKey, token, isSuperAdmin }) {
               <Field label="Image path">
                 <input className={inputCls()} value={cabForm.image} onChange={(e) => setCabForm((p) => ({ ...p, image: e.target.value }))} placeholder="/uploads/cab.jpg" />
               </Field>
+              <Field label="City">
+                <input className={inputCls()} value={cabForm.city} onChange={(e) => setCabForm((p) => ({ ...p, city: e.target.value }))} placeholder="Bengaluru" />
+              </Field>
+              <Field label="Location">
+                <input className={inputCls()} value={cabForm.location} onChange={(e) => setCabForm((p) => ({ ...p, location: e.target.value }))} placeholder="Airport, Indiranagar, etc." />
+              </Field>
+              <div className="sm:col-span-2">
+                <Field label="Gallery images (max 3)" hint="Comma-separated image paths">
+                  <input className={inputCls()} value={cabForm.gallery} onChange={(e) => setCabForm((p) => ({ ...p, gallery: e.target.value }))} placeholder="/uploads/cab1.jpg, /uploads/cab2.jpg, /uploads/cab3.jpg" />
+                </Field>
+              </div>
               <div className="sm:col-span-2">
                 <Field label="Features" hint="Comma-separated, e.g. AC, GPS, Music">
                   <input className={inputCls()} value={cabForm.features} onChange={(e) => setCabForm((p) => ({ ...p, features: e.target.value }))} />
@@ -450,39 +649,15 @@ export default function AdminCatalogPanel({ tabKey, token, isSuperAdmin }) {
               </div>
             </div>
 
-            <div className="rounded-lg border border-sky-200 bg-sky-50/60 p-3">
-              <p className="text-sm font-semibold text-slate-900">Fare packages</p>
-              <p className="mt-1 text-xs text-slate-600">
-                Set local (4hr/40km, 8hr/80km) and outstation (one-way, round-trip) prices. These are saved in the database under <code className="rounded bg-white px-1">farePackages</code>.
-              </p>
-              <div className="mt-3 space-y-4">
-                {FARE_PACKAGE_FIELDS.map(({ key, label }) => {
-                  const pkg = cabForm.farePackages[key] || {};
-                  return (
-                    <div key={key} className="rounded-lg border border-slate-200 bg-white p-3">
-                      <p className="text-xs font-bold text-slate-800">{label}</p>
-                      <div className="mt-2 grid gap-2 sm:grid-cols-3 lg:grid-cols-5">
-                        <Field label="Original ₹">
-                          <input type="number" min={0} className={inputCls()} value={pkg.originalPrice} onChange={(e) => updateCabPackageField(key, "originalPrice", Number(e.target.value))} />
-                        </Field>
-                        <Field label="Price ₹">
-                          <input type="number" min={0} className={inputCls()} value={pkg.price} onChange={(e) => updateCabPackageField(key, "price", Number(e.target.value))} />
-                        </Field>
-                        <Field label="Discount %">
-                          <input type="number" min={0} max={99} className={inputCls()} value={pkg.discountPercentage} onChange={(e) => updateCabPackageField(key, "discountPercentage", Number(e.target.value))} />
-                        </Field>
-                        <Field label="Extra km ₹">
-                          <input type="number" min={0} className={inputCls()} value={pkg.extraKmRate} onChange={(e) => updateCabPackageField(key, "extraKmRate", Number(e.target.value))} />
-                        </Field>
-                        <Field label="Extra hr ₹">
-                          <input type="number" min={0} className={inputCls()} value={pkg.extraHourRate} onChange={(e) => updateCabPackageField(key, "extraHourRate", Number(e.target.value))} />
-                        </Field>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
+            <FarePackagesEditor
+              title="Cab fare packages"
+              hint="Edit package names and prices. Names appear on cab cards."
+              packageFields={CAB_PACKAGE_FIELDS}
+              farePackages={cabForm.farePackages}
+              farePackageLabels={cabForm.farePackageLabels}
+              onUpdateFare={updateCabFare}
+              onUpdateLabel={updateCabLabel}
+            />
 
             <div className="grid gap-3 sm:grid-cols-2">
               <Field label="SEO title">
@@ -501,6 +676,165 @@ export default function AdminCatalogPanel({ tabKey, token, isSuperAdmin }) {
                 className="rounded-md border border-slate-300 px-3 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-100 disabled:opacity-50"
               >
                 Load sample cab
+              </button>
+            ) : null}
+          </div>
+        ) : tab.form === "driver" ? (
+          <div className="mt-3 space-y-4">
+            <div className="grid gap-3 sm:grid-cols-2">
+              <Field label="Name *">
+                <input className={inputCls()} value={driverForm.name} onChange={(e) => setDriverForm((p) => ({ ...p, name: e.target.value }))} />
+              </Field>
+              <Field label="Vendor">
+                <input className={inputCls()} value={driverForm.vendor} onChange={(e) => setDriverForm((p) => ({ ...p, vendor: e.target.value }))} />
+              </Field>
+              <Field label="Type">
+                <select className={inputCls()} value={driverForm.type} onChange={(e) => setDriverForm((p) => ({ ...p, type: e.target.value }))}>
+                  <option value="local">Local</option>
+                  <option value="outstation">Outstation</option>
+                </select>
+              </Field>
+              <Field label="Experience">
+                <input className={inputCls()} value={driverForm.experience} onChange={(e) => setDriverForm((p) => ({ ...p, experience: e.target.value }))} placeholder="5 Years" />
+              </Field>
+              <Field label="Trips">
+                <input type="number" min={0} className={inputCls()} value={driverForm.trips} onChange={(e) => setDriverForm((p) => ({ ...p, trips: Number(e.target.value) }))} />
+              </Field>
+              <Field label="Rating">
+                <input className={inputCls()} value={driverForm.rating} onChange={(e) => setDriverForm((p) => ({ ...p, rating: e.target.value }))} placeholder="4.9" />
+              </Field>
+              <Field label="Discount %">
+                <input type="number" min={0} max={99} className={inputCls()} value={driverForm.discountPercentage} onChange={(e) => setDriverForm((p) => ({ ...p, discountPercentage: Number(e.target.value) }))} />
+              </Field>
+              <Field label="Image path">
+                <input className={inputCls()} value={driverForm.image} onChange={(e) => setDriverForm((p) => ({ ...p, image: e.target.value }))} placeholder="/uploads/driver.jpg" />
+              </Field>
+              <Field label="City">
+                <input className={inputCls()} value={driverForm.city} onChange={(e) => setDriverForm((p) => ({ ...p, city: e.target.value }))} placeholder="Bengaluru" />
+              </Field>
+              <Field label="Location">
+                <input className={inputCls()} value={driverForm.location} onChange={(e) => setDriverForm((p) => ({ ...p, location: e.target.value }))} placeholder="Koramangala, Whitefield, etc." />
+              </Field>
+              <div className="sm:col-span-2">
+                <Field label="Gallery images (max 3)" hint="Comma-separated image paths">
+                  <input className={inputCls()} value={driverForm.gallery} onChange={(e) => setDriverForm((p) => ({ ...p, gallery: e.target.value }))} placeholder="/uploads/driver1.jpg, /uploads/driver2.jpg, /uploads/driver3.jpg" />
+                </Field>
+              </div>
+              <Field label="Languages" hint="Comma-separated">
+                <input className={inputCls()} value={driverForm.languages} onChange={(e) => setDriverForm((p) => ({ ...p, languages: e.target.value }))} placeholder="English, Tamil" />
+              </Field>
+              <Field label="Supported vehicles" hint="Comma-separated">
+                <input className={inputCls()} value={driverForm.supportedVehicles} onChange={(e) => setDriverForm((p) => ({ ...p, supportedVehicles: e.target.value }))} placeholder="Sedan, SUV" />
+              </Field>
+              <Field label="Pricing — hourly ₹">
+                <input type="number" min={0} className={inputCls()} value={driverForm.pricingHourly} onChange={(e) => setDriverForm((p) => ({ ...p, pricingHourly: Number(e.target.value) }))} />
+              </Field>
+              <Field label="Pricing — day ₹">
+                <input type="number" min={0} className={inputCls()} value={driverForm.pricingDay} onChange={(e) => setDriverForm((p) => ({ ...p, pricingDay: Number(e.target.value) }))} />
+              </Field>
+              <Field label="Pricing — extra hour ₹">
+                <input type="number" min={0} className={inputCls()} value={driverForm.pricingExtraHour} onChange={(e) => setDriverForm((p) => ({ ...p, pricingExtraHour: Number(e.target.value) }))} />
+              </Field>
+            </div>
+
+            <FarePackagesEditor
+              title="Driver fare packages"
+              hint="Edit package names and prices shown on driver cards."
+              packageFields={DRIVER_PACKAGE_FIELDS}
+              farePackages={driverForm.farePackages}
+              farePackageLabels={driverForm.farePackageLabels}
+              onUpdateFare={updateDriverFare}
+              onUpdateLabel={updateDriverLabel}
+            />
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              <Field label="SEO title">
+                <input className={inputCls()} value={driverForm.seoTitle} onChange={(e) => setDriverForm((p) => ({ ...p, seoTitle: e.target.value }))} />
+              </Field>
+              <Field label="SEO description">
+                <input className={inputCls()} value={driverForm.seoDescription} onChange={(e) => setDriverForm((p) => ({ ...p, seoDescription: e.target.value }))} />
+              </Field>
+            </div>
+
+            {tab.sample ? (
+              <button
+                type="button"
+                onClick={insertSample}
+                disabled={!canEdit}
+                className="rounded-md border border-slate-300 px-3 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-100 disabled:opacity-50"
+              >
+                Load sample driver
+              </button>
+            ) : null}
+          </div>
+        ) : tab.form === "tourPackage" ? (
+          <div className="mt-3 space-y-4">
+            <div className="grid gap-3 sm:grid-cols-2">
+              <Field label="Name *">
+                <input className={inputCls()} value={tourPackageForm.name} onChange={(e) => setTourPackageForm((p) => ({ ...p, name: e.target.value }))} />
+              </Field>
+              <Field label="Vendor *">
+                <input className={inputCls()} value={tourPackageForm.vendor} onChange={(e) => setTourPackageForm((p) => ({ ...p, vendor: e.target.value }))} />
+              </Field>
+              <Field label="Duration *">
+                <input className={inputCls()} value={tourPackageForm.duration} onChange={(e) => setTourPackageForm((p) => ({ ...p, duration: e.target.value }))} placeholder="2 Days" />
+              </Field>
+              <Field label="Price ₹ *">
+                <input type="number" min={0} className={inputCls()} value={tourPackageForm.price} onChange={(e) => setTourPackageForm((p) => ({ ...p, price: Number(e.target.value) }))} />
+              </Field>
+              <Field label="Original price ₹">
+                <input type="number" min={0} className={inputCls()} value={tourPackageForm.originalPrice} onChange={(e) => setTourPackageForm((p) => ({ ...p, originalPrice: Number(e.target.value) }))} />
+              </Field>
+              <Field label="Discount %">
+                <input type="number" min={0} max={99} className={inputCls()} value={tourPackageForm.discountPercentage} onChange={(e) => setTourPackageForm((p) => ({ ...p, discountPercentage: Number(e.target.value) }))} />
+              </Field>
+              <Field label="Hourly rate ₹">
+                <input type="number" min={0} className={inputCls()} value={tourPackageForm.hourlyRate} onChange={(e) => setTourPackageForm((p) => ({ ...p, hourlyRate: Number(e.target.value) }))} />
+              </Field>
+              <Field label="Day rate ₹">
+                <input type="number" min={0} className={inputCls()} value={tourPackageForm.dayRate} onChange={(e) => setTourPackageForm((p) => ({ ...p, dayRate: Number(e.target.value) }))} />
+              </Field>
+              <Field label="Extra hour rate ₹">
+                <input type="number" min={0} className={inputCls()} value={tourPackageForm.extraHourRate} onChange={(e) => setTourPackageForm((p) => ({ ...p, extraHourRate: Number(e.target.value) }))} />
+              </Field>
+              <Field label="Image path">
+                <input className={inputCls()} value={tourPackageForm.image} onChange={(e) => setTourPackageForm((p) => ({ ...p, image: e.target.value }))} placeholder="/uploads/package.jpg" />
+              </Field>
+              <Field label="City">
+                <input className={inputCls()} value={tourPackageForm.city} onChange={(e) => setTourPackageForm((p) => ({ ...p, city: e.target.value }))} placeholder="Bengaluru" />
+              </Field>
+              <Field label="Location">
+                <input className={inputCls()} value={tourPackageForm.location} onChange={(e) => setTourPackageForm((p) => ({ ...p, location: e.target.value }))} placeholder="Pickup / destination hub" />
+              </Field>
+              <div className="sm:col-span-2">
+                <Field label="Gallery images (max 3)" hint="Comma-separated image paths">
+                  <input className={inputCls()} value={tourPackageForm.gallery} onChange={(e) => setTourPackageForm((p) => ({ ...p, gallery: e.target.value }))} placeholder="/uploads/pkg1.jpg, /uploads/pkg2.jpg, /uploads/pkg3.jpg" />
+                </Field>
+              </div>
+              <div className="sm:col-span-2">
+                <Field label="Tags" hint="Comma-separated, e.g. Family, Outstation">
+                  <input className={inputCls()} value={tourPackageForm.tags} onChange={(e) => setTourPackageForm((p) => ({ ...p, tags: e.target.value }))} />
+                </Field>
+              </div>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              <Field label="SEO title">
+                <input className={inputCls()} value={tourPackageForm.seoTitle} onChange={(e) => setTourPackageForm((p) => ({ ...p, seoTitle: e.target.value }))} />
+              </Field>
+              <Field label="SEO description">
+                <input className={inputCls()} value={tourPackageForm.seoDescription} onChange={(e) => setTourPackageForm((p) => ({ ...p, seoDescription: e.target.value }))} />
+              </Field>
+            </div>
+
+            {tab.sample ? (
+              <button
+                type="button"
+                onClick={insertSample}
+                disabled={!canEdit}
+                className="rounded-md border border-slate-300 px-3 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-100 disabled:opacity-50"
+              >
+                Load sample tour package
               </button>
             ) : null}
           </div>
@@ -544,28 +878,128 @@ export default function AdminCatalogPanel({ tabKey, token, isSuperAdmin }) {
             Reset
           </button>
         </div>
+        </>
+        )}
       </div>
+      ) : null}
+
+      {!isListMode && pageMode === "view" ? (
+        viewingItem ? (
+          <div className="mb-3 rounded-lg border border-sky-200 bg-sky-50 p-3 text-sm">
+            <p className="font-semibold text-slate-900">View details</p>
+            <pre className="mt-2 max-h-[32rem] overflow-auto rounded-md bg-white p-3 text-xs text-slate-700">
+              {JSON.stringify(viewingItem, null, 2)}
+            </pre>
+          </div>
+        ) : (
+          <p className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm text-slate-600">
+            Loading details...
+          </p>
+        )
+      ) : null}
+
+      {isListMode ? (
+      <>
+      <div className="mb-3 flex items-center justify-between gap-3 rounded-lg border border-slate-200 bg-slate-50 p-3">
+        <p className="text-sm font-semibold text-slate-800">{tab.label}</p>
+        {canEdit ? (
+          <button
+            type="button"
+            onClick={() => navigateAdmin(`/admin/${tabKey}/create`)}
+            className="rounded-md bg-sky-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-sky-700"
+          >
+            Create {singularLabel}
+          </button>
+        ) : null}
+      </div>
+      <div className="mb-3 grid gap-2 rounded-lg border border-slate-200 bg-slate-50 p-3 sm:grid-cols-4">
+        <input
+          className={inputCls()}
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder={`Search ${tab.label.toLowerCase()}...`}
+        />
+        <select className={inputCls()} value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+          <option value="all">All status</option>
+          <option value="active">Active</option>
+          <option value="draft">Draft/Inactive</option>
+          {tabKey === "bookings" ? (
+            <>
+              <option value="pending">Pending</option>
+              <option value="confirmed">Confirmed</option>
+              <option value="cancelled">Cancelled</option>
+            </>
+          ) : null}
+        </select>
+        <select className={inputCls()} value={sortKey} onChange={(e) => setSortKey(e.target.value)}>
+          <option value="latest">Latest first</option>
+          <option value="name">Name A-Z</option>
+          <option value="price">Price high-low</option>
+        </select>
+        <div className="text-xs text-slate-600 sm:self-center">Rows: {filteredItems.length}</div>
+      </div>
+
+      {viewingItem ? (
+        <div className="mb-3 rounded-lg border border-sky-200 bg-sky-50 p-3 text-sm">
+          <div className="flex items-center justify-between">
+            <p className="font-semibold text-slate-900">View details</p>
+            <button type="button" onClick={() => setViewingId("")} className="text-xs font-semibold text-sky-700">Close</button>
+          </div>
+          <pre className="mt-2 max-h-64 overflow-auto rounded-md bg-white p-2 text-xs text-slate-700">{JSON.stringify(viewingItem, null, 2)}</pre>
+        </div>
+      ) : null}
 
       {loading ? (
         <p className="text-sm text-slate-600">Loading {tab.label.toLowerCase()}...</p>
       ) : (
-        <div className="space-y-3">
-          {items.map((item) => {
+        <div className="overflow-hidden rounded-lg border border-slate-200 bg-white">
+          <div className="max-h-[28rem] overflow-auto">
+            <table className="min-w-full text-left text-sm">
+              <thead className="sticky top-0 z-10 bg-slate-100 text-xs uppercase tracking-wide text-slate-600">
+                <tr>
+                  <th className="px-3 py-2">Image</th>
+                  <th className="px-3 py-2">Name</th>
+                  <th className="px-3 py-2">Details</th>
+                  <th className="px-3 py-2">Status</th>
+                  <th className="px-3 py-2">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+          {pagedItems.map((item) => {
             const id = item._id || item.id;
             const isEditing = editingId === id;
             return (
-              <div
-                key={id}
-                className={`rounded-lg border p-3 ${isEditing ? "border-sky-300 bg-sky-50/50" : "border-slate-200 bg-white"}`}
-              >
-                <p className="font-semibold text-slate-900">{itemTitle(item, tabKey)}</p>
-                <p className="text-sm text-slate-600">{itemSubtitle(item, tabKey)}</p>
-                <div className="mt-2 flex flex-wrap gap-2">
+              <tr key={id} className={`border-t border-slate-100 hover:bg-slate-50 ${isEditing ? "bg-sky-50/70" : ""}`}>
+                <td className="px-3 py-2">
+                  {item.image ? <img src={item.image} alt={itemTitle(item, tabKey)} className="h-10 w-14 rounded object-cover" /> : <span className="text-xs text-slate-400">—</span>}
+                </td>
+                <td className="px-3 py-2 font-semibold text-slate-900">{itemTitle(item, tabKey)}</td>
+                <td className="px-3 py-2 text-xs text-slate-600">{itemSubtitle(item, tabKey)}</td>
+                <td className="px-3 py-2">
+                  <span className={`rounded-full px-2 py-1 text-[11px] font-semibold ${
+                    tabKey === "bookings"
+                      ? item.status === "confirmed" ? "bg-emerald-100 text-emerald-700" : item.status === "cancelled" ? "bg-rose-100 text-rose-700" : "bg-amber-100 text-amber-700"
+                      : (item.published === false ? "bg-slate-200 text-slate-700" : "bg-emerald-100 text-emerald-700")
+                  }`}>
+                    {tabKey === "bookings" ? item.status || "pending" : item.published === false ? "draft" : "active"}
+                  </span>
+                </td>
+                <td className="px-3 py-2">
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={() => navigateAdmin(`/admin/${tabKey}/${id}/view`)}
+                      className="rounded-md border border-slate-300 px-2 py-1 text-[11px] font-semibold text-slate-700 hover:bg-slate-100"
+                      title="View"
+                    >
+                      View
+                    </button>
                   <button
                     type="button"
-                    onClick={() => startEdit(item)}
+                    onClick={() => navigateAdmin(`/admin/${tabKey}/${id}/edit`)}
                     disabled={!canEdit}
-                    className="rounded-md border border-slate-300 px-3 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-100 disabled:opacity-50"
+                    className="rounded-md border border-slate-300 px-2 py-1 text-[11px] font-semibold text-slate-700 hover:bg-slate-100 disabled:opacity-50"
+                    title="Edit"
                   >
                     Edit
                   </button>
@@ -574,18 +1008,32 @@ export default function AdminCatalogPanel({ tabKey, token, isSuperAdmin }) {
                       type="button"
                       onClick={() => deleteItem(id)}
                       disabled={!canEdit}
-                      className="rounded-md border border-rose-300 px-3 py-1 text-xs font-semibold text-rose-700 hover:bg-rose-50 disabled:opacity-50"
+                      className="rounded-md border border-rose-300 px-2 py-1 text-[11px] font-semibold text-rose-700 hover:bg-rose-50 disabled:opacity-50"
+                      title="Delete"
                     >
                       Delete
                     </button>
                   ) : null}
-                </div>
-              </div>
+                  </div>
+                </td>
+              </tr>
             );
           })}
-          {!items.length && <p className="text-sm text-slate-500">No {tab.label.toLowerCase()} found.</p>}
+              </tbody>
+            </table>
+          </div>
+          {!filteredItems.length && <p className="p-3 text-sm text-slate-500">No {tab.label.toLowerCase()} found.</p>}
+          <div className="flex items-center justify-between border-t border-slate-200 px-3 py-2 text-xs">
+            <span className="text-slate-500">Page {listPage} of {totalPages}</span>
+            <div className="flex gap-2">
+              <button type="button" onClick={() => setListPage((p) => Math.max(1, p - 1))} disabled={listPage <= 1} className="rounded border border-slate-300 px-2 py-1 disabled:opacity-40">Prev</button>
+              <button type="button" onClick={() => setListPage((p) => Math.min(totalPages, p + 1))} disabled={listPage >= totalPages} className="rounded border border-slate-300 px-2 py-1 disabled:opacity-40">Next</button>
+            </div>
+          </div>
         </div>
       )}
+      </>
+      ) : null}
     </div>
   );
 }

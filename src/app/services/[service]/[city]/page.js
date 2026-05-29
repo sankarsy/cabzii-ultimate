@@ -26,7 +26,14 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }) {
   const city = cityBySlug(params.city);
   const service = serviceBySlug(params.service);
-  if (!city || !service) return {};
+  if (!city || !service) {
+    return buildPageMetadata({
+      title: "Service Not Found",
+      description: "This cab service page is not available on Cabzii.",
+      path: `/services/${params.service}/${params.city}`,
+      noindex: true
+    });
+  }
 
   const path = servicePath(service, city);
   return buildPageMetadata({

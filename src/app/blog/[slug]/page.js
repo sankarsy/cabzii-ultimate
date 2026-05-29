@@ -2,13 +2,19 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import Footer from "../../../components/Footer";
 import Navbar from "../../../components/Navbar";
+import JsonLd from "../../../components/seo/JsonLd";
 import { fetchBlogBySlug } from "../../../lib/serverCatalog";
-import { buildPageMetadata } from "../../../lib/seo";
+import { buildPageMetadata, articleJsonLd } from "../../../lib/seo";
 
 export async function generateMetadata({ params }) {
   const post = await fetchBlogBySlug(params.slug);
   if (!post) {
-    return { title: "Blog Post Not Found" };
+    return buildPageMetadata({
+      title: "Blog Post Not Found",
+      description: "This blog post could not be found on Cabzii.",
+      path: `/blog/${params.slug}`,
+      noindex: true
+    });
   }
   return buildPageMetadata({
     title: post.seoTitle || post.title,
@@ -27,8 +33,17 @@ export default async function BlogPostPage({ params }) {
     .map((s) => s.trim())
     .filter(Boolean);
 
+  const articleLd = articleJsonLd({
+    title: post.title,
+    description: post.seoDescription || post.excerpt,
+    urlPath: `/blog/${params.slug}`,
+    author: post.author,
+    datePublished: post.date || undefined
+  });
+
   return (
     <main className="min-h-screen bg-linear-to-b from-slate-50 via-sky-50/60 to-white">
+      <JsonLd data={articleLd} />
       <Navbar />
       <article className="mx-auto max-w-3xl px-4 py-10 md:py-14">
         <nav className="mb-4 text-xs text-slate-500">

@@ -3,12 +3,14 @@ import Footer from "../../components/Footer";
 import Navbar from "../../components/Navbar";
 import LoginHub from "../../components/LoginHub";
 
-export const metadata = {
+import { buildPageMetadata } from "../../lib/seo";
+
+export const metadata = buildPageMetadata({
   title: "Login",
   description: "Sign in to Cabzii as a customer, travel partner, or admin.",
-  alternates: { canonical: "/login" },
-  robots: { index: false, follow: false }
-};
+  path: "/login",
+  noindex: true
+});
 
 export default function LoginPage() {
   return (

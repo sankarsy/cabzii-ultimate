@@ -3,7 +3,11 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Footer from "../../components/Footer";
 import Navbar from "../../components/Navbar";
+import PageBanner from "../../components/PageBanner";
 import PackageCard from "../../components/PackageCard";
+import RelatedSeoLinks from "../../components/seo/RelatedSeoLinks";
+import { catalogPriorityParams, sortBySelectedCity } from "../../lib/locationPriority";
+import { useSelectedCity } from "../../lib/useSelectedCity";
 import { motion } from "framer-motion";
 
 export default function PackagesPage() {
@@ -15,6 +19,7 @@ export default function PackagesPage() {
   const [vendor, setVendor] = useState("All");
   const [duration, setDuration] = useState("All");
   const [page, setPage] = useState(1);
+  const { city: selectedCity } = useSelectedCity();
 
   useEffect(() => {
     const loadFacets = async () => {
@@ -41,16 +46,19 @@ export default function PackagesPage() {
       p.set("limit", "12");
       if (vendor !== "All") p.set("vendor", vendor);
       if (duration !== "All") p.set("duration", duration);
-      const res = await fetch(`/api/packages?${p.toString()}`, { cache: "no-store" });
+      const res = await fetch(`/api/packages?${p.toString()}${catalogPriorityParams(selectedCity)}`, {
+        cache: "no-store"
+      });
       const data = await res.json();
-      setPackages(Array.isArray(data?.data) ? data.data : []);
+      const rows = Array.isArray(data?.data) ? data.data : [];
+      setPackages(sortBySelectedCity(rows, selectedCity));
       if (data?.meta && typeof data.meta.page === "number") {
         setMeta(data.meta);
       }
     } finally {
       setLoading(false);
     }
-  }, [duration, page, vendor]);
+  }, [duration, page, selectedCity, vendor]);
 
   useEffect(() => {
     loadPackages();
@@ -58,7 +66,7 @@ export default function PackagesPage() {
 
   useEffect(() => {
     setPage(1);
-  }, [vendor, duration]);
+  }, [vendor, duration, selectedCity]);
 
   const paginationLabel = useMemo(() => {
     const { total, page: pg, limit } = meta;
@@ -69,14 +77,20 @@ export default function PackagesPage() {
   }, [meta]);
 
   return (
-    <main className="min-h-screen bg-linear-to-b from-slate-50 via-sky-50/60 to-violet-50/40">
+    <main className="min-h-screen">
       <Navbar />
       <section className="py-10 md:py-14">
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
-          <h1 className="text-3xl font-bold text-slate-900">All Tour Packages</h1>
-          <p className="mt-2 text-sm text-slate-600">Explore all curated packages and filter by vendor and duration.</p>
+          <PageBanner
+            title="All Tour Packages"
+            subtitle="Explore curated tours — packages for your selected city are shown first."
+            breadcrumbs={[
+              { name: "Home", path: "/" },
+              { name: "Tour packages", path: "/packages" }
+            ]}
+          />
 
-          <div className="mt-6 flex flex-col gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-md md:flex-row md:items-center">
+          <div className="mt-8 flex flex-col gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-md md:flex-row md:items-center">
             <select
               className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 outline-none focus:border-blue-600 disabled:opacity-50"
               value={vendor}
@@ -130,7 +144,7 @@ export default function PackagesPage() {
                     transition={{ delay: index * 0.03 }}
                     className="transition hover:-translate-y-1"
                   >
-                    <PackageCard pkg={tour} actionText="Book Now" actionHref={`/tour-booking?id=${String(tour._id ?? tour.id)}`} />
+                    <PackageCard pkg={tour} actionText="Book Now" actionHref={`/packages/${String(tour._id ?? tour.id)}`} />
                   </motion.div>
                 ))}
               </div>
@@ -164,6 +178,7 @@ export default function PackagesPage() {
               ) : null}
             </>
           )}
+          <RelatedSeoLinks page="packages" />
         </div>
       </section>
       <Footer />

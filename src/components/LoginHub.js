@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import OtpLogin from "./OtpLogin";
 import { normalizeMobileInput, sanitizeMobileInput, setSession } from "../lib/auth";
+import { BriefcaseIcon, ChevronRightIcon, ShieldIcon, UserIcon } from "./icons";
 
 const ROLES = [
   {
@@ -81,7 +82,7 @@ export default function LoginHub() {
                   <span className="block text-base font-bold text-slate-900">{role.title}</span>
                   <span className="mt-0.5 block text-sm text-slate-600">{role.description}</span>
                 </span>
-                <ChevronRight className="mt-2 h-5 w-5 shrink-0 text-slate-400" />
+                <ChevronRightIcon className="mt-2 h-5 w-5 shrink-0 text-slate-400" />
               </button>
             );
           })}
@@ -205,36 +206,3 @@ function PasswordLoginForm({ mode, onBack }) {
   );
 }
 
-function UserIcon({ className }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className={className} stroke="currentColor" strokeWidth="2">
-      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-      <circle cx="12" cy="7" r="4" />
-    </svg>
-  );
-}
-
-function BriefcaseIcon({ className }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className={className} stroke="currentColor" strokeWidth="2">
-      <rect x="2" y="7" width="20" height="14" rx="2" />
-      <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
-    </svg>
-  );
-}
-
-function ShieldIcon({ className }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className={className} stroke="currentColor" strokeWidth="2">
-      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-    </svg>
-  );
-}
-
-function ChevronRight({ className }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className={className} stroke="currentColor" strokeWidth="2">
-      <path d="M9 18l6-6-6-6" />
-    </svg>
-  );
-}

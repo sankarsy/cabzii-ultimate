@@ -19,7 +19,14 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }) {
   const city = cityBySlug(params.city);
-  if (!city) return {};
+  if (!city) {
+    return buildPageMetadata({
+      title: "Acting Driver",
+      description: "Acting driver hire on Cabzii.",
+      path: `/acting-driver/${params.city}`,
+      noindex: true
+    });
+  }
   const path = `/acting-driver/${city.slug}`;
   return buildPageMetadata({
     title: actingDriverTitle(city.name),

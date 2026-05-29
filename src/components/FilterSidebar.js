@@ -26,7 +26,7 @@ export default function FilterSidebar({ filters, setFilters, mobileOpen, setMobi
           <button
             type="button"
             onClick={() => setFilters({ priceRange: "", vehicleType: "", amenities: [] })}
-            className="text-sm font-semibold text-orange-500 transition-all duration-300 ease-in-out hover:text-orange-600"
+            className="text-sm font-semibold text-[#0056D2] transition-all duration-300 ease-in-out hover:text-[#0046b0]"
           >
             Reset
           </button>

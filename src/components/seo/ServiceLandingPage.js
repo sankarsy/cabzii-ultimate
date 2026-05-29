@@ -20,7 +20,7 @@ export default function ServiceLandingPage({ city, service, faqs }) {
   const lead = tunedServiceDescription(service, city);
 
   return (
-    <main className="min-h-screen bg-linear-to-b from-slate-50 via-sky-50/60 to-violet-50/40">
+    <main className="min-h-screen bg-white">
       <Navbar />
       <article className="mx-auto max-w-4xl px-4 py-10 md:py-14">
         <Breadcrumbs
@@ -54,7 +54,7 @@ export default function ServiceLandingPage({ city, service, faqs }) {
             href="https://wa.me/9944197416"
             target="_blank"
             rel="noreferrer"
-            className="rounded-full border border-emerald-200 bg-emerald-50 px-5 py-2.5 text-sm font-semibold text-emerald-800 hover:bg-emerald-100"
+            className="rounded-full border border-[#25D366]/40 bg-[#25D366] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#20BA5A]"
           >
             WhatsApp support
           </a>

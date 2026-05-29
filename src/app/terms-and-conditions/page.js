@@ -1,9 +1,13 @@
 import Footer from "../../components/Footer";
 import Navbar from "../../components/Navbar";
+import { buildPageMetadata } from "../../lib/seo";
 
-export const metadata = {
-  title: "Terms and Conditions | Cabzii Travels"
-};
+export const metadata = buildPageMetadata({
+  title: "Terms and Conditions",
+  description:
+    "Terms and conditions governing cab, taxi, acting driver and tour bookings on Cabzii (cabzii.in).",
+  path: "/terms-and-conditions"
+});
 
 export default function TermsAndConditionsPage() {
   return (

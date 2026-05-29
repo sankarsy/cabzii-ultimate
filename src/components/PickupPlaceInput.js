@@ -22,7 +22,8 @@ export default function PickupPlaceInput({
       try {
         const res = await fetch(`/api/places?input=${encodeURIComponent(value)}`);
         const data = await res.json();
-        if (!cancelled) setSuggestions(data?.predictions ?? []);
+        const list = (data?.predictions ?? []).map((p) => (typeof p === "string" ? p : p.label));
+        if (!cancelled) setSuggestions(list);
       } catch {
         if (!cancelled) setSuggestions([]);
       }

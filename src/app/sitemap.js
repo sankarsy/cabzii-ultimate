@@ -6,6 +6,17 @@ import {
   getBackendUrl,
   servicePath
 } from "../lib/seo";
+import { resolveMediaUrl } from "../lib/media";
+
+const HERO_IMAGE = `${SITE_URL}/images/hero-banner.png`;
+
+/** Return an absolute image URL for the sitemap, or null when unavailable. */
+function absoluteImage(path) {
+  const resolved = resolveMediaUrl(path);
+  if (!resolved) return null;
+  if (/^https?:\/\//i.test(resolved)) return resolved;
+  return `${SITE_URL}${resolved.startsWith("/") ? resolved : `/${resolved}`}`;
+}
 
 async function fetchIds(path) {
   const backend = getBackendUrl();
@@ -26,15 +37,13 @@ export default async function sitemap() {
   const now = new Date();
 
   const staticRoutes = [
-    { url: `${base}/`, lastModified: now, changeFrequency: "daily", priority: 1 },
-    { url: `${base}/cabs`, lastModified: now, changeFrequency: "daily", priority: 0.95 },
-    { url: `${base}/drivers`, lastModified: now, changeFrequency: "daily", priority: 0.95 },
-    { url: `${base}/packages`, lastModified: now, changeFrequency: "daily", priority: 0.9 },
+    { url: `${base}/`, lastModified: now, changeFrequency: "daily", priority: 1, images: [HERO_IMAGE] },
+    { url: `${base}/cabs`, lastModified: now, changeFrequency: "daily", priority: 0.95, images: [HERO_IMAGE] },
+    { url: `${base}/drivers`, lastModified: now, changeFrequency: "daily", priority: 0.95, images: [HERO_IMAGE] },
+    { url: `${base}/packages`, lastModified: now, changeFrequency: "daily", priority: 0.9, images: [HERO_IMAGE] },
     { url: `${base}/locations`, lastModified: now, changeFrequency: "weekly", priority: 0.85 },
     { url: `${base}/blogs`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
     { url: `${base}/testimonials`, lastModified: now, changeFrequency: "weekly", priority: 0.75 },
-    { url: `${base}/booking`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
-    { url: `${base}/search`, lastModified: now, changeFrequency: "daily", priority: 0.75 },
     { url: `${base}/terms-and-conditions`, lastModified: now, changeFrequency: "yearly", priority: 0.4 },
     { url: `${base}/legal-declaration`, lastModified: now, changeFrequency: "yearly", priority: 0.4 },
     { url: `${base}/cancellation-policy`, lastModified: now, changeFrequency: "yearly", priority: 0.4 }
@@ -78,26 +87,40 @@ export default async function sitemap() {
     fetchIds("/blogs")
   ]);
 
-  const cabRoutes = cabs.map((item) => ({
-    url: `${base}/cabs/${item._id}`,
-    lastModified: item.updatedAt ? new Date(item.updatedAt) : now,
-    changeFrequency: "weekly",
-    priority: 0.7
-  }));
+  const cabRoutes = cabs.map((item) => {
+    const image = absoluteImage(item.image);
+    return {
+      url: `${base}/cabs/${item._id}`,
+      lastModified: item.updatedAt ? new Date(item.updatedAt) : now,
+      changeFrequency: "weekly",
+      priority: 0.7,
+      ...(image ? { images: [image] } : {})
+    };
+  });
 
-  const driverRoutes = drivers.map((item) => ({
-    url: `${base}/drivers/${item._id}`,
-    lastModified: item.updatedAt ? new Date(item.updatedAt) : now,
-    changeFrequency: "weekly",
-    priority: 0.7
-  }));
+  const driverRoutes = drivers.map((item) => {
+    const image = absoluteImage(item.image);
+    return {
+      url: `${base}/drivers/${item._id}`,
+      lastModified: item.updatedAt ? new Date(item.updatedAt) : now,
+      changeFrequency: "weekly",
+      priority: 0.7,
+      ...(image ? { images: [image] } : {})
+    };
+  });
 
-  const packageRoutes = packages.map((item) => ({
-    url: `${base}/tour-booking?id=${item._id}`,
-    lastModified: item.updatedAt ? new Date(item.updatedAt) : now,
-    changeFrequency: "weekly",
-    priority: 0.65
-  }));
+  const packageRoutes = packages
+    .filter((item) => item._id)
+    .map((item) => {
+      const image = absoluteImage(item.image);
+      return {
+        url: `${base}/packages/${item._id}`,
+        lastModified: item.updatedAt ? new Date(item.updatedAt) : now,
+        changeFrequency: "weekly",
+        priority: 0.65,
+        ...(image ? { images: [image] } : {})
+      };
+    });
 
   const blogRoutes = blogPosts
     .filter((item) => item.slug)

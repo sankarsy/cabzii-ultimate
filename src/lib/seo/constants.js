@@ -1,6 +1,38 @@
 export const SITE_URL = "https://cabzii.in";
 export const SITE_NAME = "Cabzii";
 export const BRAND = "cabzii";
+export const SITE_LOGO = `${SITE_URL}/images/hero-banner.png`;
+/** Default social / OG image (absolute URL for crawlers). */
+export const DEFAULT_OG_IMAGE = `${SITE_URL}/images/hero-banner.png`;
+
+export const ORG_EMAIL = "support@cabzii.com";
+export const ORG_PHONE = "+91-9944197416";
+export const ORG_ADDRESS = {
+  streetAddress: "Maduravoyal",
+  addressLocality: "Chennai",
+  addressRegion: "Tamil Nadu",
+  postalCode: "600095",
+  addressCountry: "IN"
+};
+
+/**
+ * Verified public profiles for the Organization `sameAs` (entity reconciliation
+ * for Google Knowledge Graph + AI answer engines). Update these to your real
+ * handles, or override via env without code changes. Empty values are dropped.
+ */
+export const SOCIAL_PROFILES = [
+  process.env.NEXT_PUBLIC_FACEBOOK_URL || "https://www.facebook.com/cabzii",
+  process.env.NEXT_PUBLIC_INSTAGRAM_URL || "https://www.instagram.com/cabzii",
+  process.env.NEXT_PUBLIC_TWITTER_URL || "https://x.com/cabzii",
+  process.env.NEXT_PUBLIC_LINKEDIN_URL || "https://www.linkedin.com/company/cabzii",
+  process.env.NEXT_PUBLIC_YOUTUBE_URL || "https://www.youtube.com/@cabzii"
+].filter(Boolean);
+
+/** Wikidata entity URI for this organization, if one exists (e.g. https://www.wikidata.org/wiki/Q123). */
+export const WIKIDATA_URL = process.env.NEXT_PUBLIC_WIKIDATA_URL || "";
+
+/** Google Knowledge Graph entity id (kg:/g/...) once Google assigns one. */
+export const KNOWLEDGE_GRAPH_ID = process.env.NEXT_PUBLIC_KNOWLEDGE_GRAPH_ID || "";
 
 export const DEFAULT_KEYWORDS = [
   "cabzii",
@@ -49,7 +81,7 @@ export function buildPageMetadata({
     ? image
     : image
       ? `${SITE_URL}${image.startsWith("/") ? image : `/${image}`}`
-      : undefined;
+      : DEFAULT_OG_IMAGE;
 
   return {
     title,
@@ -59,7 +91,9 @@ export function buildPageMetadata({
       canonical: canonicalPath,
       ...(languages ? { languages } : {})
     },
-    robots: noindex ? { index: false, follow: false } : { index: true, follow: true },
+    robots: noindex
+      ? { index: false, follow: false, googleBot: { index: false, follow: false } }
+      : { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large" } },
     openGraph: {
       title,
       description,
@@ -67,13 +101,13 @@ export function buildPageMetadata({
       siteName: SITE_NAME,
       locale: "en_IN",
       type: "website",
-      ...(ogImage ? { images: [{ url: ogImage, alt: imageAlt || title }] } : {})
+      images: [{ url: ogImage, alt: imageAlt || title, width: 1200, height: 630 }]
     },
     twitter: {
-      card: ogImage ? "summary_large_image" : "summary",
+      card: "summary_large_image",
       title,
       description,
-      ...(ogImage ? { images: [ogImage] } : {})
+      images: [ogImage]
     }
   };
 }
@@ -99,6 +133,8 @@ export const homeMetadata = buildPageMetadata({
   description:
     "Book cabs, taxis, airport transfers, outstation trips, acting drivers and tempo travellers in Chennai, Bengaluru, Hyderabad and 20+ cities. Transparent fares. Instant OTP booking on cabzii.in.",
   path: "/",
+  image: "/images/hero-banner.png",
+  imageAlt: "Book cabs and taxis online with Cabzii",
   keywords: [
     ...DEFAULT_KEYWORDS,
     "book cab online India",

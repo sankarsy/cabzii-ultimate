@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { filterTamilNaduCities } from "../lib/tamilNaduCities";
 
 /**
  * Google + database city picker.
@@ -32,8 +33,15 @@ export default function CityAutocomplete({
   }, []);
 
   useEffect(() => {
-    if (!open || query.trim().length < 2) {
+    if (!open) {
       setSuggestions([]);
+      return;
+    }
+    const trimmed = query.trim();
+    if (trimmed.length < 2) {
+      setSuggestions(
+        filterTamilNaduCities("").slice(0, 12).map((label) => ({ label, source: "tamilnadu" }))
+      );
       return;
     }
     let cancelled = false;
@@ -41,13 +49,20 @@ export default function CityAutocomplete({
       setLoading(true);
       try {
         const res = await fetch(
-          `/api/places?input=${encodeURIComponent(query.trim())}&types=cities`,
+          `/api/places?input=${encodeURIComponent(trimmed)}&types=cities`,
           { cache: "no-store" }
         );
         const data = await res.json();
-        if (!cancelled) setSuggestions(data?.predictions ?? []);
+        const fromApi = (data?.predictions ?? []).map((p) =>
+          typeof p === "string" ? { label: p, source: "api" } : p
+        );
+        if (!cancelled) setSuggestions(fromApi);
       } catch {
-        if (!cancelled) setSuggestions([]);
+        if (!cancelled) {
+          setSuggestions(
+            filterTamilNaduCities(trimmed).slice(0, 10).map((label) => ({ label, source: "tamilnadu" }))
+          );
+        }
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -78,7 +93,14 @@ export default function CityAutocomplete({
           setOpen(true);
           if (!e.target.value.trim()) onChange("");
         }}
-        onFocus={() => setOpen(true)}
+        onFocus={() => {
+          setOpen(true);
+          if (!query.trim()) {
+            setSuggestions(
+              filterTamilNaduCities("").slice(0, 12).map((label) => ({ label, source: "tamilnadu" }))
+            );
+          }
+        }}
         placeholder={placeholder}
         className={inputClassName || defaultInput}
         autoComplete="off"
@@ -90,10 +112,10 @@ export default function CityAutocomplete({
       {open && suggestions.length > 0 ? (
         <ul className="absolute z-40 mt-1 max-h-48 w-full overflow-auto rounded-lg border border-slate-200 bg-white py-1 shadow-lg">
           {suggestions.map((item) => (
-            <li key={item}>
+            <li key={item.label || item}>
               <button
                 type="button"
-                onClick={() => pick(item.label, item.placeId)}
+                onClick={() => pick(item.label || item, item.placeId)}
                 className="flex w-full flex-col px-3 py-2 text-left text-sm hover:bg-slate-50"
               >
                 <span className="font-medium text-slate-800">{item.label}</span>

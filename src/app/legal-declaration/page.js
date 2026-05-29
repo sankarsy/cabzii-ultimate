@@ -1,9 +1,13 @@
 import Footer from "../../components/Footer";
 import Navbar from "../../components/Navbar";
+import { buildPageMetadata } from "../../lib/seo";
 
-export const metadata = {
-  title: "Legal Declaration | Cabzii Travels"
-};
+export const metadata = buildPageMetadata({
+  title: "Legal Declaration",
+  description:
+    "Legal declaration for taxi, driver hire and tour services offered through Cabzii Travels on cabzii.in.",
+  path: "/legal-declaration"
+});
 
 export default function LegalDeclarationPage() {
   return (

@@ -47,13 +47,12 @@ function buildLegacySlabs(cab) {
 }
 
 const SLAB_META = [
-  { id: "local_4hr", group: "local", label: "4 Hrs / 40 Km", shortLabel: "4 Hrs / 40 Km", key: "local4hr", legacy: "local4", popular: true },
-  { id: "local_1day", group: "local", label: "8 Hrs / 80 Km", shortLabel: "8 Hrs / 80 Km", key: "local8hr", legacy: "local8" },
+  { id: "local_4hr", group: "local", defaultLabel: "4 Hrs / 40 Km", key: "local4hr", legacy: "local4", popular: true },
+  { id: "local_1day", group: "local", defaultLabel: "8 Hrs / 80 Km", key: "local8hr", legacy: "local8" },
   {
     id: "outstation_oneway",
     group: "outstation",
-    label: "One Way",
-    shortLabel: "One Way",
+    defaultLabel: "One Way",
     key: "outstationOneWay",
     legacy: "outOne",
     note: "Per Trip Quote"
@@ -61,28 +60,34 @@ const SLAB_META = [
   {
     id: "outstation_twoway",
     group: "outstation",
-    label: "Two Way",
-    shortLabel: "Two Way",
+    defaultLabel: "Two Way",
     key: "outstationRoundTrip",
     legacy: "outTwo",
     note: "Round Trip Quote"
   }
 ];
 
+function labelForKey(labels, key, fallback) {
+  const custom = labels?.[key];
+  return typeof custom === "string" && custom.trim() ? custom.trim() : fallback;
+}
+
 export function buildFareSlabs(cab) {
   const packages = cab?.farePackages || {};
+  const labels = cab?.farePackageLabels || {};
   const legacy = buildLegacySlabs(cab);
 
   return SLAB_META.map((meta) => {
     const stored = packages[meta.key];
     const fallbackList = legacy[meta.legacy];
     const fare = resolvePackageFare(stored, cab, fallbackList);
+    const label = labelForKey(labels, meta.key, meta.defaultLabel);
 
     return {
       id: meta.id,
       group: meta.group,
-      label: meta.label,
-      shortLabel: meta.shortLabel,
+      label,
+      shortLabel: label,
       list: fare.originalPrice,
       originalPrice: fare.originalPrice,
       price: fare.price,
