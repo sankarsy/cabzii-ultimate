@@ -62,7 +62,9 @@ export const DEFAULT_KEYWORDS = [
 ];
 
 export function getBackendUrl() {
-  return process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
+  const url =
+    process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
+  return url.trim().replace(/\/+$/, "");
 }
 
 /** Shared Next.js metadata (title, description, canonical, OG, Twitter). */

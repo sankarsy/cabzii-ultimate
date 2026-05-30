@@ -2,14 +2,19 @@ import { getBackendUrl } from "./seo";
 
 async function fetchJson(path, revalidate = 300) {
   const backend = getBackendUrl();
+  const url = `${backend}/api/v1${path}`;
   try {
-    const res = await fetch(`${backend}/api/v1${path}`, {
+    const res = await fetch(url, {
       next: { revalidate }
     });
-    if (!res.ok) return null;
+    if (!res.ok) {
+      console.error(`[serverCatalog] ${res.status} ${res.statusText} from ${url}`);
+      return null;
+    }
     const json = await res.json();
     return json?.data ?? null;
-  } catch {
+  } catch (error) {
+    console.error(`[serverCatalog] fetch failed for ${url}: ${error?.cause?.code || error?.message}`);
     return null;
   }
 }

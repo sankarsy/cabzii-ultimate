@@ -1,4 +1,10 @@
-const BACKEND_URL = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
+const BACKEND_URL = (
+  process.env.BACKEND_URL ||
+  process.env.NEXT_PUBLIC_BACKEND_URL ||
+  "http://localhost:8000"
+)
+  .trim()
+  .replace(/\/+$/, "");
 
 export function backendUrl(path, searchParams) {
   const qs = searchParams?.toString();
