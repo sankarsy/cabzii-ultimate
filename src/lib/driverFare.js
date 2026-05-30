@@ -128,6 +128,24 @@ export function formatDriverRating(driver) {
   return n.toFixed(1);
 }
 
+export function buildDriverPaymentSearchParams(driverId, selection) {
+  if (!driverId || !selection) return null;
+  const q = new URLSearchParams({
+    type: "driver",
+    id: String(driverId),
+    baseFare: String(selection.baseFare ?? selection.fare ?? 0),
+    taxes: String(selection.taxes ?? 0),
+    total: String(selection.total ?? 0),
+    listPrice: String(selection.listPrice ?? selection.baseFare ?? 0),
+    discountPct: String(selection.discountPct ?? 0),
+    discountAmount: String(selection.discountAmount ?? 0)
+  });
+  if (selection.packageId) q.set("packageId", selection.packageId);
+  if (selection.packageLabel) q.set("package", selection.packageLabel);
+  if (selection.serviceTab) q.set("service", selection.serviceTab);
+  return q;
+}
+
 export function selectionFromDriverPackage(pkg, tab, discountPct) {
   const listPrice = num(pkg?.originalPrice) > 0 ? num(pkg.originalPrice) : num(pkg?.list ?? 0);
   const d =
