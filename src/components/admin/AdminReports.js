@@ -59,7 +59,7 @@ export default function AdminReports({ token, isSuperAdmin }) {
     : [];
   const typeData = data
     ? [
-        { label: "Cabs", value: data.typeCounts.cab, color: "#0056D2" },
+        { label: "Cabs", value: data.typeCounts.cab, color: "var(--cabzii-brand)" },
         { label: "Drivers", value: data.typeCounts.driver, color: "#7c3aed" },
         { label: "Tours", value: data.typeCounts.tour, color: "#06b6d4" }
       ]

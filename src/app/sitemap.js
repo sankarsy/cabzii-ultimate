@@ -40,7 +40,10 @@ export default async function sitemap() {
     { url: `${base}/`, lastModified: now, changeFrequency: "daily", priority: 1, images: [HERO_IMAGE] },
     { url: `${base}/cabs`, lastModified: now, changeFrequency: "daily", priority: 0.95, images: [HERO_IMAGE] },
     { url: `${base}/drivers`, lastModified: now, changeFrequency: "daily", priority: 0.95, images: [HERO_IMAGE] },
-    { url: `${base}/packages`, lastModified: now, changeFrequency: "daily", priority: 0.9, images: [HERO_IMAGE] },
+    { url: `${base}/holidays`, lastModified: now, changeFrequency: "daily", priority: 0.92, images: [HERO_IMAGE] },
+    { url: `${base}/flights`, lastModified: now, changeFrequency: "daily", priority: 0.88 },
+    { url: `${base}/hotels`, lastModified: now, changeFrequency: "daily", priority: 0.88 },
+    { url: `${base}/holidays?category=pilgrimage`, lastModified: now, changeFrequency: "weekly", priority: 0.85 },
     { url: `${base}/locations`, lastModified: now, changeFrequency: "weekly", priority: 0.85 },
     { url: `${base}/blogs`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
     { url: `${base}/testimonials`, lastModified: now, changeFrequency: "weekly", priority: 0.75 },
@@ -49,20 +52,23 @@ export default async function sitemap() {
     { url: `${base}/cancellation-policy`, lastModified: now, changeFrequency: "yearly", priority: 0.4 }
   ];
 
-  const cityRoutes = SEO_CITIES.flatMap((city) => [
-    {
-      url: `${base}/cab-booking/${city.slug}`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.92
-    },
-    {
-      url: `${base}/acting-driver/${city.slug}`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.9
-    }
-  ]);
+  const cityRoutes = SEO_CITIES.flatMap((city) => {
+    const isChennai = city.slug === "chennai";
+    return [
+      {
+        url: `${base}/cab-booking/${city.slug}`,
+        lastModified: now,
+        changeFrequency: "weekly",
+        priority: isChennai ? 0.98 : 0.92
+      },
+      {
+        url: `${base}/acting-driver/${city.slug}`,
+        lastModified: now,
+        changeFrequency: "weekly",
+        priority: city.slug === "tirupati" ? 0.95 : 0.9
+      }
+    ];
+  });
 
   const serviceRoutes = SEO_CITIES.flatMap((city) =>
     SEO_SERVICES.map((service) => ({
@@ -114,7 +120,7 @@ export default async function sitemap() {
     .map((item) => {
       const image = absoluteImage(item.image);
       return {
-        url: `${base}/packages/${item._id}`,
+        url: `${base}/holidays/${item._id}`,
         lastModified: item.updatedAt ? new Date(item.updatedAt) : now,
         changeFrequency: "weekly",
         priority: 0.65,

@@ -287,4 +287,3 @@ export default function OtpLogin({ mode = "customer", nextUrl: nextUrlProp, onBa
     </div>
   );
 }
-

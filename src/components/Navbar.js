@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { clearSession, formatMobileDisplay, getUser, isLoggedIn } from "../lib/auth";
 import { writeSelectedCity, readSelectedCity } from "../lib/locationPriority";
 import { filterTamilNaduCities } from "../lib/tamilNaduCities";
+import { isTravelShellPath } from "../lib/travelShellPaths";
 import { useSiteSettings } from "./SiteSettingsProvider";
 import { CarIcon, ChevronDownIcon, UserIcon } from "./icons";
 
@@ -17,15 +18,18 @@ function BrandIcon(props) {
 const fallbackNavLinks = [
   { href: "/", label: "Home" },
   { href: "/cabs", label: "Cabs" },
-  { href: "/packages", label: "Tours" },
   { href: "/drivers", label: "Drivers" },
-  { href: "/search?q=offers", label: "Offers" }
+  { href: "/holidays", label: "Holidays" },
+  { href: "/hotels", label: "Hotels" },
+  { href: "/flights", label: "Flights" }
 ];
 
-export default function Navbar() {
+export default function Navbar({ variant = "default" }) {
+  const pathname = usePathname();
+  const hideOnTravelShell = variant !== "mmt" && isTravelShellPath(pathname);
+  const isMmt = variant === "mmt";
   const settings = useSiteSettings();
   const router = useRouter();
-  const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -37,7 +41,8 @@ export default function Navbar() {
   const [cityOpen, setCityOpen] = useState(false);
   const [locations, setLocations] = useState([]);
   const userMenuRef = useRef(null);
-  const cityRef = useRef(null);
+  const desktopCityRef = useRef(null);
+  const mobileCityRef = useRef(null);
 
   useEffect(() => {
     const sync = () => {
@@ -124,7 +129,9 @@ export default function Navbar() {
   useEffect(() => {
     const onDoc = (e) => {
       if (userMenuRef.current && !userMenuRef.current.contains(e.target)) setUserMenuOpen(false);
-      if (cityRef.current && !cityRef.current.contains(e.target)) setCityOpen(false);
+      const inCity =
+        desktopCityRef.current?.contains(e.target) || mobileCityRef.current?.contains(e.target);
+      if (!inCity) setCityOpen(false);
     };
     document.addEventListener("click", onDoc);
     return () => document.removeEventListener("click", onDoc);
@@ -168,9 +175,13 @@ export default function Navbar() {
   };
 
   const linkClasses = (href) =>
-    `whitespace-nowrap rounded-md px-2.5 py-1.5 text-sm font-medium transition ${
-      isActive(href) ? "bg-slate-100 text-[#0056D2]" : "text-slate-700 hover:text-[#0056D2]"
-    }`;
+    isMmt
+      ? `whitespace-nowrap rounded-md px-2.5 py-1.5 text-sm font-medium transition ${
+          isActive(href) ? "bg-white/15 text-white" : "text-white/90 hover:bg-white/10 hover:text-white"
+        }`
+      : `whitespace-nowrap rounded-md px-2.5 py-1.5 text-sm font-medium transition ${
+          isActive(href) ? "bg-slate-100 text-[#0056D2]" : "text-slate-700 hover:text-[#0056D2]"
+        }`;
 
   const navLinks = (settings.navbar?.length ? settings.navbar : fallbackNavLinks)
     .filter((link) => link.visible !== false)
@@ -178,17 +189,29 @@ export default function Navbar() {
 
   const brandName = settings.siteName || "cabzii.in";
   const brandColor = settings.brandColor || "#0056D2";
-  const searchPlaceholder = settings.hero?.searchPlaceholder || "Search cabs or tours...";
+  const searchPlaceholder = settings.hero?.searchPlaceholder || "Search cabs, drivers, holidays, flights…";
+
+  if (hideOnTravelShell) return null;
 
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-200 bg-white shadow-sm">
+    <header
+      className={
+        isMmt
+          ? "sticky top-0 z-50 border-b border-white/10 bg-mmt-header shadow-md"
+          : "sticky top-0 z-50 border-b border-slate-200 bg-white shadow-sm"
+      }
+    >
       <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between gap-3 sm:h-[4.25rem]">
           <Link href="/" className="inline-flex shrink-0 items-center gap-2.5">
             <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-white shadow-sm" style={{ backgroundColor: brandColor }}>
               <BrandIcon className="h-5 w-5" />
             </span>
-            <span className="text-lg font-bold tracking-tight text-slate-900">{brandName}</span>
+            <span
+              className={`text-lg font-bold tracking-tight ${isMmt ? "text-white" : "text-slate-900"}`}
+            >
+              {brandName}
+            </span>
           </Link>
 
           <nav className="hidden flex-1 items-center justify-center gap-0.5 lg:flex xl:gap-1">
@@ -200,7 +223,7 @@ export default function Navbar() {
           </nav>
 
           <div className="hidden items-center gap-2 md:flex lg:gap-3">
-            <div className="relative hidden items-center gap-2 lg:flex" ref={cityRef}>
+            <div className="relative hidden items-center gap-2 lg:flex" ref={desktopCityRef}>
               <span className="text-xs font-semibold text-slate-500">📍</span>
               <input
                 className="w-44 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 outline-none focus:border-[#0056D2] focus:bg-white"
@@ -328,7 +351,7 @@ export default function Navbar() {
               className="border-t border-slate-100 py-3 md:hidden"
             >
               <div className="mb-3 flex gap-2 px-2">
-                <div className="relative w-32" ref={cityRef}>
+                <div className="relative w-32" ref={mobileCityRef}>
                   <input
                     className="w-full rounded-lg border border-slate-200 bg-slate-50 px-2 py-2 text-xs text-slate-700"
                     value={cityInput}

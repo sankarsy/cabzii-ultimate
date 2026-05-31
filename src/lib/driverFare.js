@@ -1,4 +1,5 @@
 import { calculateBookingTotals, num, packageYouPay, vendorInitials } from "./cabFare";
+import { buildStandardChargeItems } from "./productCharges";
 
 export { num, vendorInitials as driverInitials };
 
@@ -7,22 +8,44 @@ export function isOutstationDriver(driver) {
   return t.includes("outstation");
 }
 
+/** Same package structure as cabs (cabFare SLAB_META). Keys support legacy driver DB fields. */
 const DRIVER_SLAB_META = [
-  { id: "local_4hr", group: "local", defaultLabel: "4 Hours", key: "local4hr", popular: true },
-  { id: "local_day", group: "local", defaultLabel: "1 Day", key: "localDay" },
-  { id: "outstation_12hr", group: "outstation", defaultLabel: "12 Hours", key: "outstation12hr" },
+  { id: "local_4hr", group: "local", defaultLabel: "4 Hrs / 40 Km", key: "local4hr", legacyKey: "local4hr", popular: true },
+  {
+    id: "local_1day",
+    group: "local",
+    defaultLabel: "8 Hrs / 80 Km",
+    key: "local8hr",
+    legacyKey: "localDay",
+    altKeys: ["localDay"]
+  },
   {
     id: "outstation_oneway",
     group: "outstation",
-    defaultLabel: "One Way Package",
+    defaultLabel: "One Way",
     key: "outstationOneWay",
-    note: "Per trip quote"
+    legacyKey: "outstationOneWay",
+    note: "Per Trip Quote"
+  },
+  {
+    id: "outstation_twoway",
+    group: "outstation",
+    defaultLabel: "Two Way",
+    key: "outstationRoundTrip",
+    legacyKey: "outstation12hr",
+    altKeys: ["outstation12hr"],
+    note: "Round Trip Quote"
   }
 ];
 
-function labelForKey(labels, key, fallback) {
-  const custom = labels?.[key];
-  return typeof custom === "string" && custom.trim() ? custom.trim() : fallback;
+function pickStoredPackage(packages, meta) {
+  const primary = packages?.[meta.key];
+  if (primary && (num(primary.price) > 0 || num(primary.originalPrice) > 0)) return primary;
+  for (const alt of meta.altKeys || []) {
+    const p = packages?.[alt];
+    if (p && (num(p.price) > 0 || num(p.originalPrice) > 0)) return p;
+  }
+  return packages?.[meta.key] || packages?.[meta.legacyKey];
 }
 
 function resolveDriverPackageFare(pkg, driver, fallbackList) {
@@ -42,10 +65,17 @@ function buildLegacyDriverSlabs(driver) {
   const hourly = num(driver?.pricing?.hourly);
   const day = num(driver?.pricing?.day);
   const local4 = hourly > 0 ? Math.round(hourly * 4) : day > 0 ? Math.round(day * 0.55) : 0;
-  const localDay = day > 0 ? day : hourly > 0 ? Math.round(hourly * 8) : local4;
-  const out12 = hourly > 0 ? Math.round(hourly * 12) : Math.round(localDay * 1.2);
-  const outOne = day > 0 ? day : out12;
-  return { local4hr: local4, localDay, outstation12hr: out12, outstationOneWay: outOne };
+  const local8 = day > 0 ? day : hourly > 0 ? Math.round(hourly * 8) : local4;
+  const outOne = day > 0 ? day : hourly > 0 ? Math.round(hourly * 12) : Math.max(local8, local4, 1);
+  const outTwo = day > 0 ? Math.round(day * 1.85) : Math.round(outOne * 1.62);
+  return {
+    local4hr: local4,
+    localDay: local8,
+    local8hr: local8,
+    outstationOneWay: outOne,
+    outstation12hr: outTwo,
+    outstationRoundTrip: outTwo
+  };
 }
 
 export function getDriverPricing(driver) {
@@ -65,14 +95,13 @@ export function getDriverPricing(driver) {
 
 export function buildDriverFareSlabs(driver) {
   const packages = driver?.farePackages || {};
-  const labels = driver?.farePackageLabels || {};
   const legacy = buildLegacyDriverSlabs(driver);
 
   return DRIVER_SLAB_META.map((meta) => {
-    const stored = packages[meta.key];
-    const fallbackList = legacy[meta.key];
+    const stored = pickStoredPackage(packages, meta);
+    const fallbackList = legacy[meta.legacyKey] ?? legacy[meta.key] ?? 0;
     const fare = resolveDriverPackageFare(stored, driver, fallbackList);
-    const label = labelForKey(labels, meta.key, meta.defaultLabel);
+    const label = meta.defaultLabel;
 
     return {
       id: meta.id,
@@ -92,33 +121,13 @@ export function buildDriverFareSlabs(driver) {
 }
 
 export function buildDriverChargeItems(driver) {
-  const isOut = isOutstationDriver(driver);
-  const { extraKm, extraHr, nightCharge, day } = getDriverPricing(driver);
-  const sc = driver?.serviceCharges ?? {};
-  const dropCharge = sc.dropCharge ?? "Contact vendor";
-  const outOfCity = sc.outOfCity ?? (day > 0 ? `₹${Math.round(day * 0.08)}` : "Per trip quote");
-  const cancelCharge = sc.cancelCharge ?? "As per vendor policy";
-  const accommodation = sc.accommodation;
-
-  const items = [
-    { label: "Extra KM Charge", value: `₹${extraKm}/km` },
-    { label: "Extra Hour Charge", value: `₹${extraHr}/hr` },
-    { label: "Drop Charge", value: typeof dropCharge === "number" ? `₹${dropCharge}` : String(dropCharge) },
-    {
-      label: "Night Charges",
-      value: nightCharge != null ? `₹${nightCharge} extra (10 PM – 6 AM)` : "—"
-    },
-    { label: "Cancel Charge", value: typeof cancelCharge === "number" ? `₹${cancelCharge}` : String(cancelCharge) },
-    { label: "Out of City (>40 km)", value: typeof outOfCity === "number" ? `₹${outOfCity}` : String(outOfCity) },
-    { label: "Driver Allowance", value: "Included" },
-    { label: "Toll, Parking & State Tax", value: "As per actuals" }
-  ];
-
-  if (isOut && accommodation) {
-    items.splice(6, 0, { label: "Accommodation", value: String(accommodation) });
-  }
-
-  return items;
+  const { extraKm, extraHr, nightCharge } = getDriverPricing(driver);
+  return buildStandardChargeItems({
+    extraKm,
+    extraHr,
+    nightCharge,
+    serviceCharges: driver?.serviceCharges
+  });
 }
 
 export function formatDriverRating(driver) {

@@ -34,9 +34,16 @@ export function middleware(request) {
   if (pathname === "/tour-booking") {
     const id = request.nextUrl.searchParams.get("id");
     if (id) {
-      return NextResponse.redirect(new URL(`/packages/${id}`, request.url), 301);
+      return NextResponse.redirect(new URL(`/holidays/${id}`, request.url), 301);
     }
-    return NextResponse.redirect(new URL("/packages", request.url), 301);
+    return NextResponse.redirect(new URL("/holidays", request.url), 301);
+  }
+
+  if (pathname === "/packages" || pathname.startsWith("/packages/")) {
+    const rest = pathname.slice("/packages".length) || "";
+    const url = new URL(`/holidays${rest}`, request.url);
+    url.search = request.nextUrl.search;
+    return NextResponse.redirect(url, 301);
   }
 
   const isProtected = PROTECTED_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));

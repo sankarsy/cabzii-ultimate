@@ -1,12 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import BookingForm from "../../components/BookingForm";
-import Footer from "../../components/Footer";
-import Navbar from "../../components/Navbar";
+import EmtBookingFlow from "../../components/emt/EmtBookingFlow";
 
-export default function Booking({ searchParams }) {
+function CabTourBooking({ searchParams }) {
   const router = useRouter();
   const itemType = searchParams?.type ?? "cab";
   const itemId = String(searchParams?.id ?? searchParams?.cabId ?? "");
@@ -23,7 +22,8 @@ export default function Booking({ searchParams }) {
 
   useEffect(() => {
     if (!itemId || itemType === "cab" || itemType === "driver") return;
-    const base = itemType === "tour" ? `/api/packages/${encodeURIComponent(itemId)}` : `/api/cabs/${encodeURIComponent(itemId)}`;
+    const base =
+      itemType === "tour" ? `/api/packages/${encodeURIComponent(itemId)}` : `/api/cabs/${encodeURIComponent(itemId)}`;
     const loadItem = async () => {
       try {
         const res = await fetch(base, { cache: "no-store" });
@@ -51,21 +51,33 @@ export default function Booking({ searchParams }) {
 
   if ((itemType === "cab" || itemType === "driver") && itemId && !searchParams?.step) {
     return (
-      <main className="bg-linear-to-b from-slate-50 via-sky-50/60 to-violet-50/40">
-        <Navbar />
-        <div className="mx-auto max-w-7xl px-4 py-16 text-center text-sm text-slate-600">
-          Redirecting to {itemType === "driver" ? "driver" : "cab"} details?
-        </div>
-        <Footer />
-      </main>
+      <div className="mx-auto max-w-5xl px-4 py-16 text-center text-sm text-slate-600">
+        Redirecting to {itemType === "driver" ? "driver" : "cab"} details…
+      </div>
     );
   }
 
   return (
-    <main className="min-h-screen bg-linear-to-b from-slate-50 via-sky-50/60 to-violet-50/40">
-      <Navbar />
+    <div className="mx-auto max-w-5xl px-4 py-8">
       <BookingForm selectedItem={selectedItem} itemType={itemType} proceedHref={proceedHref} />
-      <Footer />
-    </main>
+    </div>
   );
+}
+
+function BookingRouter({ searchParams }) {
+  const itemType = searchParams?.type ?? "cab";
+
+  if (itemType === "flight" || itemType === "hotel") {
+    return (
+      <Suspense fallback={<div className="py-16 text-center">Loading…</div>}>
+        <EmtBookingFlow />
+      </Suspense>
+    );
+  }
+
+  return <CabTourBooking searchParams={searchParams} />;
+}
+
+export default function Booking(props) {
+  return <BookingRouter {...props} />;
 }

@@ -22,7 +22,7 @@ export default function PackageOptionCard({ pkg, selected, discount, onSelect, c
         compact ? `px-2.5 py-2.5 ${COMPACT_MIN_H}` : `px-4 py-4 ${FULL_MIN_H}`
       } ${
         selected
-          ? "border-[#0056D2] bg-blue-50/30 ring-2 ring-[#0056D2]/20"
+          ? "border-[var(--cabzii-brand)] bg-blue-50/30 ring-2 ring-[var(--cabzii-brand)]/20"
           : "border-slate-200 bg-white hover:border-slate-300"
       }`}
     >

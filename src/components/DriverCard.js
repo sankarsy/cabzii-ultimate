@@ -20,7 +20,7 @@ import {
   ProductImageFrame,
   ProductMetaBlock
 } from "./productCardShared";
-import { ArrowRightIcon, BriefcaseIcon, CarIcon, RouteIcon, StarFilledIcon } from "./icons";
+import { ArrowRightIcon, BriefcaseIcon, CarIcon, PersonIcon, RouteIcon, StarFilledIcon } from "./icons";
 
 const FALLBACK_DRIVER_IMAGE =
   "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=900&q=80";
@@ -84,11 +84,7 @@ export default function DriverCard({
 
   const fareSlabs = useMemo(
     () => buildDriverFareSlabs(driver),
-    [
-      driver._id,
-      driver.pricing,
-      driver.type
-    ]
+    [driver._id, driver.pricing, driver.type, driver.farePackages, driver.discountPercentage]
   );
 
   const {
@@ -100,33 +96,15 @@ export default function DriverCard({
     [driver]
   );
 
-  const defaultTab =
-    isOutstationDriver(driver)
-      ? "outstation"
-      : "local";
-
-  const defaultPkg =
-    defaultTab === "outstation"
-      ? "outstation_12hr"
-      : "local_4hr";
-
-  const [
-    selectedPackageId,
-    setSelectedPackageId
-  ] = useState(defaultPkg);
+  const [selectedPackageId, setSelectedPackageId] = useState("local_4hr");
+  const [serviceTab, setServiceTab] = useState("local");
 
   useEffect(() => {
-    const preferred =
-      fareSlabs.find(
-        (p) => p.id === defaultPkg
-      ) || fareSlabs[0];
-
+    const preferred = fareSlabs.find((p) => p.id === "local_4hr") || fareSlabs[0];
     if (preferred) {
-      setSelectedPackageId(
-        preferred.id
-      );
+      setSelectedPackageId(preferred.id);
     }
-  }, [fareSlabs, defaultPkg]);
+  }, [fareSlabs]);
 
   const localPackages =
     fareSlabs.filter(
@@ -182,7 +160,7 @@ export default function DriverCard({
   const detailHref =
     bookHref ??
     (driverPk
-      ? `/drivers/${driverPk}`
+      ? `/drivers/${driverPk}${selectedPackageId ? `?package=${encodeURIComponent(selectedPackageId)}` : ""}`
       : undefined);
 
   const BookAction = detailHref ? (
@@ -191,7 +169,7 @@ export default function DriverCard({
       className={CARD_BOOK_BTN_CLASS}
     >
       Book Now
-      <ArrowRightIcon className="h-3.5 w-3.5" />
+      <ArrowRightIcon className="h-4 w-4" />
     </Link>
   ) : (
     <button
@@ -200,7 +178,7 @@ export default function DriverCard({
       className={CARD_BOOK_BTN_CLASS}
     >
       Book Now
-      <ArrowRightIcon className="h-3.5 w-3.5" />
+      <ArrowRightIcon className="h-4 w-4" />
     </button>
   );
 
@@ -218,9 +196,9 @@ export default function DriverCard({
         </span>
       </div>
 
-      {/* {ratingText && (
+      {ratingText && (
         <div className="absolute right-1.5 top-1.5 flex items-center gap-0.5 rounded-full bg-white px-1.5 py-0.5 text-[10px] font-semibold text-slate-700 shadow-sm">
-          <StarFilledIcon className="h-2.5 w-2.5 text-amber-400" />
+          <StarFilledIcon className="h-2.5 w-2.5 text-yellow-400" />
 
           {ratingText}
 
@@ -230,7 +208,25 @@ export default function DriverCard({
             </span>
           ) : null}
         </div>
-      )} */}
+      )}
+    </>
+  );
+
+  const extraBadges = (
+    <>
+      <span className="rounded-full bg-white px-2 py-1 text-xs font-medium text-slate-600">
+        Allowance included
+      </span>
+
+      {nightCharge != null && nightCharge > 0 ? (
+        <span className="rounded-full bg-white px-2 py-1 text-xs font-medium text-slate-600">
+          Night ₹{nightCharge}
+        </span>
+      ) : null}
+
+      <span className="rounded-full bg-white px-2 py-1 text-xs font-medium text-slate-600">
+        Toll extra
+      </span>
     </>
   );
 
@@ -244,9 +240,13 @@ export default function DriverCard({
       />
 
       <ProductMetaBlock title={displayName} vendor={displayVendor} vendorFallback="Cabzii Partner">
+        {driver.city || driver.location ? (
+          <MetaPill label={`${driver.city || "City"}${driver.location ? ` · ${driver.location}` : ""}`} />
+        ) : null}
         <MetaPill icon={<BriefcaseIcon className="h-2.5 w-2.5" />} label={driver.experience ?? "Experienced"} />
         <MetaPill icon={<RouteIcon className="h-2.5 w-2.5" />} label={`${driver.trips ?? 0} trips`} />
         <MetaPill icon={<CarIcon className="h-2.5 w-2.5" />} label={vehicleLabel} />
+        <MetaPill icon={<PersonIcon className="h-2.5 w-2.5" />} label="Your vehicle" />
       </ProductMetaBlock>
 
       <div className="flex flex-1 flex-col px-2.5 pb-2.5">
@@ -308,18 +308,10 @@ export default function DriverCard({
             finalPrice={finalPrice}
             originalPrice={originalPrice}
             savedAmount={savedAmount}
-            discountPct={d}
+            discountPct={packageDiscount}
             extraKmCharge={extraKmCharge}
             extraHourCharge={extraHourCharge}
-            extraBadges={
-              nightCharge != null &&
-              nightCharge > 0 ? (
-                <span className="rounded-full bg-white px-2 py-1 text-xs font-medium text-slate-600">
-                  Night ₹
-                  {nightCharge}
-                </span>
-              ) : null
-            }
+            extraBadges={extraBadges}
           />
         )}
 

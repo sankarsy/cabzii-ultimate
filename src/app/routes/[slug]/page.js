@@ -59,7 +59,8 @@ export default function RoutePage({ params }) {
       toCity: route.toCity,
       urlPath: path,
       description: routeDescription(route.fromCity, route.toCity, route),
-      priceFrom: route.sedanFrom
+      priceFrom: route.sedanFrom,
+      priceTo: route.innovaFrom || Math.round((route.sedanFrom || 1400) * 1.8)
     }),
     faqFromPairs(faqs)
   ];

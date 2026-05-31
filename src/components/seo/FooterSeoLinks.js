@@ -11,7 +11,7 @@ import { SEO_ROUTES } from "../../lib/seo/routes";
 
 const QUICK_PILLS = [
   { href: "/cabs", label: "Cabs" },
-  { href: "/packages", label: "Tours" },
+  { href: "/holidays", label: "Holidays" },
   { href: "/drivers", label: "Drivers" },
   { href: "/locations", label: "Locations" },
   { href: "/blogs", label: "Blog" }

@@ -7,7 +7,9 @@ export default function CabProductSpecs({ cab }) {
   const extra = num(cab.extraHourRate);
 
   const rows = [
-    { label: "Cab type", value: cab.type },
+    { label: "Vehicle", value: cab.title || cab.examples?.split(",")[0]?.trim() || "—" },
+    { label: "Category", value: cab.seats > 8 || String(cab.type).includes("Tempo") ? "Van / Bus" : "Taxi Car" },
+    { label: "Body type", value: cab.type },
     { label: "Vendor", value: cab.vendor },
     { label: "Seats", value: cab.seats ?? "—" },
     { label: "Base price", value: cab.price ? `₹${num(cab.price).toLocaleString("en-IN")}` : "—" },

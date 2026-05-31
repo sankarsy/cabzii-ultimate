@@ -3,7 +3,9 @@
 import { useMemo, useState } from "react";
 import { resolveMediaUrl } from "../lib/media";
 import PackageOptionCard from "./PackageOptionCard";
+import AdditionalChargesGrid from "./AdditionalChargesGrid";
 import {
+  buildCabChargeItems,
   buildFareSlabs,
   formatRating,
   num,
@@ -14,7 +16,6 @@ import { MetaPill, ProductImageFrame, ProductMetaBlock } from "./productCardShar
 import {
   CalendarIcon,
   CheckIcon,
-  ClockIcon,
   HeadsetIcon,
   LockIcon,
   MapPinIcon,
@@ -42,6 +43,10 @@ export default function CabBookingDetail({ cab, onSelectionChange }) {
     rawExtra != null && rawExtra !== "" && Number.isFinite(Number(rawExtra)) ? num(rawExtra) : num(cab.price);
   const extraKmRate = Math.max(12, Math.floor(price / 10) || 12);
   const nightCharge = extraHour > 0 ? Math.max(0, Math.round(extraHour * 0.25)) : null;
+  const chargeItems = useMemo(
+    () => buildCabChargeItems(cab, { extraKm: extraKmRate, extraHr: extraHour, nightCharge }),
+    [cab, extraKmRate, extraHour, nightCharge]
+  );
   const imageSrc = resolveMediaUrl(cab.image) || FALLBACK_CAB_IMAGE;
   const features = Array.isArray(cab.features) ? cab.features : [];
   const hasAc = features.some((f) => /^(ac|a\/c|air\s*condition)/i.test(String(f).trim()));
@@ -123,7 +128,7 @@ export default function CabBookingDetail({ cab, onSelectionChange }) {
             onSelectPackage={handleSelectPackage}
             discount={discount}
           />
-          <ChargesGrid extraKmRate={extraKmRate} extraHour={extraHour} nightCharge={nightCharge} />
+          <ChargesGrid items={chargeItems} />
         </div>
 
         <aside className="flex flex-col border-t border-slate-100 bg-slate-50/60 p-3 sm:p-4 lg:border-t-0">
@@ -186,38 +191,8 @@ function PackageSection({ visiblePackages, selectedPackageId, onSelectPackage, d
   );
 }
 
-function ChargesGrid({ extraKmRate, extraHour, nightCharge }) {
-  const items = [
-    { label: "Extra KM Charge", value: `₹${extraKmRate}/km`, icon: RoadIcon },
-    { label: "Extra Hour Charge", value: `₹${extraHour}/hr`, icon: ClockIcon },
-    { label: "Drop Charge", value: "Contact Vendor", icon: PinIcon },
-    { label: "Night Charges", value: nightCharge != null ? `₹${nightCharge} Extra (10 PM – 6 AM)` : "—", icon: ClockIcon },
-    { label: "Cancel Charge", value: "As per vendor policy", icon: CalendarIcon },
-    { label: "Out of City (>40 km)", value: "Per trip quote", icon: RoadIcon },
-    { label: "Driver Allowance", value: "Included", icon: PersonIcon },
-    { label: "Toll, Parking & State Tax", value: "As per actuals", icon: TagIcon }
-  ];
-
-  return (
-    <div className="mt-4 rounded-xl border border-slate-100 bg-slate-50/90 p-3">
-      <h2 className="mb-2 text-xs font-bold text-slate-900">Additional charges</h2>
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-        {items.map((item) => {
-          const Icon = item.icon;
-          return (
-            <p key={item.label} className="flex items-start gap-1.5 text-xs text-slate-600">
-              <Icon className="mt-0.5 h-3.5 w-3.5 shrink-0 text-slate-400" />
-              <span>
-                <span className="font-medium text-slate-800">{item.label}</span>
-                <br />
-                <span className="text-slate-500">{item.value}</span>
-              </span>
-            </p>
-          );
-        })}
-      </div>
-    </div>
-  );
+function ChargesGrid({ items }) {
+  return <AdditionalChargesGrid items={items} />;
 }
 
 function VendorBox({ vendor }) {

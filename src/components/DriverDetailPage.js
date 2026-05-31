@@ -2,10 +2,9 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import DriverBookingDetail from "./DriverBookingDetail";
 import DriverProductSpecs from "./DriverProductSpecs";
-import Footer from "./Footer";
-import Navbar from "./Navbar";
 import PaymentBreakdown from "./PaymentBreakdown";
 import SimilarDrivers from "./SimilarDrivers";
 import {
@@ -26,14 +25,19 @@ const SECTION_LINKS = [
   { href: "#similar-drivers", label: "Alternatives" }
 ];
 
-function applyDriverData(data, setDriver, setSelection) {
+function applyDriverData(data, setDriver, setSelection, preferredPackageId = "") {
   setDriver(data);
   const slabs = buildDriverFareSlabs(data);
-  const first = slabs.find((p) => p.id === "local_4hr") || slabs[0];
+  const preferred = preferredPackageId
+    ? slabs.find((p) => p.id === preferredPackageId)
+    : null;
+  const first = preferred || slabs.find((p) => p.id === "local_4hr") || slabs[0];
   if (first) setSelection(selectionFromDriverPackage(first, first.group, data.discountPercentage));
 }
 
 export default function DriverDetailPage({ driverId, initialDriver = null }) {
+  const searchParams = useSearchParams();
+  const packageFromUrl = searchParams.get("packageId") || searchParams.get("package") || "";
   const id = firstParam(driverId);
   const [driver, setDriver] = useState(initialDriver);
   const [loading, setLoading] = useState(!initialDriver);
@@ -42,7 +46,7 @@ export default function DriverDetailPage({ driverId, initialDriver = null }) {
 
   useEffect(() => {
     if (initialDriver) {
-      applyDriverData(initialDriver, setDriver, setSelection);
+      applyDriverData(initialDriver, setDriver, setSelection, packageFromUrl);
       setLoading(false);
       return undefined;
     }
@@ -64,7 +68,7 @@ export default function DriverDetailPage({ driverId, initialDriver = null }) {
             setLoadError(json?.message || "Driver not found.");
           }
         } else if (!cancelled) {
-          applyDriverData(json.data, setDriver, setSelection);
+          applyDriverData(json.data, setDriver, setSelection, packageFromUrl);
         }
       } catch {
         if (!cancelled) {
@@ -78,7 +82,7 @@ export default function DriverDetailPage({ driverId, initialDriver = null }) {
     return () => {
       cancelled = true;
     };
-  }, [id, initialDriver]);
+  }, [id, initialDriver, packageFromUrl]);
 
   const driverPk = driver ? String(driver._id ?? driver.id ?? "") : "";
   const payHref = useMemo(() => {
@@ -86,11 +90,13 @@ export default function DriverDetailPage({ driverId, initialDriver = null }) {
     return q ? `/payment?${q.toString()}` : undefined;
   }, [driverPk, selection]);
 
-  const seoTitle = driver?.seoTitle || (driver ? `${driver.name} – Professional Driver` : "Driver");
+  const seoTitle =
+    driver?.seoTitle ||
+    (driver ? `Hire ${driver.name} Acting Driver in ${driver.city || "South India"}` : "Acting Driver");
   const seoDescription =
     driver?.seoDescription ||
     (driver
-      ? `Book ${driver.name} by ${driver.vendor || "Cabzii"}. Local & outstation driver packages with transparent pricing on cabzii.in.`
+      ? `Professional chauffeur for your ${driver.name} in ${driver.city || "South India"}. Local & outstation packages with transparent pricing on cabzii.in.`
       : "");
   const seoKeywords = (driver?.seo || "")
     .split(",")
@@ -106,17 +112,14 @@ export default function DriverDetailPage({ driverId, initialDriver = null }) {
     : null;
 
   return (
-    <main className="min-h-screen bg-linear-to-b from-slate-50 via-sky-50/40 to-white">
-      <Navbar />
-
-      <section className="py-8 md:py-10">
-        <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-8">
+    <section className="bg-cabzii-page py-8 md:py-10">
+      <div className="mx-auto max-w-5xl px-4 md:px-6">
           <nav className="mb-4 text-xs text-slate-500" aria-label="Breadcrumb">
-            <Link href="/" className="hover:text-[#0056D2]">
+            <Link href="/" className="hover:text-[var(--cabzii-brand)]">
               Home
             </Link>
             <span className="mx-2">/</span>
-            <Link href="/drivers" className="hover:text-[#0056D2]">
+            <Link href="/drivers" className="hover:text-[var(--cabzii-brand)]">
               Drivers
             </Link>
             <span className="mx-2">/</span>
@@ -130,14 +133,16 @@ export default function DriverDetailPage({ driverId, initialDriver = null }) {
           ) : loadError || !driver ? (
             <div className="rounded-2xl border border-amber-200 bg-amber-50 p-8 text-center">
               <p className="font-semibold text-amber-900">{loadError || "Driver not available."}</p>
-              <Link href="/drivers" className="mt-4 inline-block text-sm font-semibold text-[#0056D2] hover:underline">
+              <Link href="/drivers" className="mt-4 inline-block text-sm font-semibold text-[var(--cabzii-brand)] hover:underline">
                 ← Browse all drivers
               </Link>
             </div>
           ) : (
             <>
               <header className="mb-5">
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-[#0056D2]">Driver product page</p>
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--cabzii-brand)]">
+                  Driver · cabzii.in
+                </p>
                 <h1 className="mt-1 text-xl font-bold text-slate-900 sm:text-2xl">{seoTitle}</h1>
                 {seoDescription ? <p className="mt-1.5 max-w-3xl text-xs text-slate-600">{seoDescription}</p> : null}
               </header>
@@ -150,7 +155,7 @@ export default function DriverDetailPage({ driverId, initialDriver = null }) {
                   <a
                     key={link.href}
                     href={link.href}
-                    className="shrink-0 rounded-lg px-2.5 py-1 font-medium text-slate-600 transition hover:bg-slate-100 hover:text-[#0056D2]"
+                    className="shrink-0 rounded-lg px-2.5 py-1 font-medium text-slate-600 transition hover:bg-slate-100 hover:text-[var(--cabzii-brand)]"
                   >
                     {link.label}
                   </a>
@@ -161,16 +166,20 @@ export default function DriverDetailPage({ driverId, initialDriver = null }) {
                 <div className="space-y-6 lg:col-span-2">
                   <section id="packages" className="scroll-mt-24">
                     <h2 className="mb-2 text-base font-bold text-slate-900">Choose your package</h2>
-                    <DriverBookingDetail driver={driver} onSelectionChange={setSelection} />
+                    <DriverBookingDetail
+                      driver={driver}
+                      initialPackageId={packageFromUrl}
+                      onSelectionChange={setSelection}
+                    />
                   </section>
 
                   <DriverProductSpecs driver={driver} />
 
                   <article id="about" className="scroll-mt-24 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:p-5">
-                    <h2 className="text-base font-bold text-slate-900">About this driver</h2>
+                    <h2 className="text-base font-bold text-slate-900">About this chauffeur service</h2>
                     <p className="mt-2 text-xs leading-relaxed text-slate-600">
                       {driver.seoDescription ||
-                        `Book ${driver.name} with ${driver.vendor || "Cabzii"} on cabzii.in. Experienced, verified driver for local and outstation trips with clear package fares and additional charges.`}
+                        `Hire an acting driver for your ${driver.name} with ${driver.vendor || "Cabzii"} on cabzii.in. Verified chauffeur for local and outstation trips — same package structure as cab booking with clear fares and additional charges.`}
                     </p>
                     {seoKeywords.length > 0 ? (
                       <div className="mt-4 flex flex-wrap gap-2">
@@ -182,10 +191,12 @@ export default function DriverDetailPage({ driverId, initialDriver = null }) {
                       </div>
                     ) : null}
                     <ul className="mt-3 grid gap-1.5 text-xs text-slate-600 sm:grid-cols-2">
-                      <li>✓ Verified driver</li>
+                      <li>✓ Verified vendor & drivers</li>
                       <li>✓ Local & outstation packages</li>
                       <li>✓ Secure online booking</li>
                       <li>✓ Transparent extra charges</li>
+                      <li>✓ Your vehicle — chauffeur only</li>
+                      <li>✓ Driver allowance included</li>
                     </ul>
                   </article>
 
@@ -210,10 +221,7 @@ export default function DriverDetailPage({ driverId, initialDriver = null }) {
               </div>
             </>
           )}
-        </div>
-      </section>
-
-      <Footer />
-    </main>
+      </div>
+    </section>
   );
 }

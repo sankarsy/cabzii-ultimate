@@ -1,12 +1,13 @@
-import { buildPageMetadata } from "../../lib/seo";
+import TravelLayoutClient from "../../components/mmt/TravelLayoutClient";
+import { buildPageMetadata } from "../../lib/seo/constants";
 
 export const metadata = buildPageMetadata({
-  title: "Travel Blog & Cab Booking Tips",
-  description: "Guides on cab booking, acting drivers, airport transfers and outstation trips from Cabzii.",
+  title: "Travel Blog — Cabs, Pilgrimage & Holiday Tips",
+  description: "Guides on cab booking, pilgrimage packages, airport transfers and holiday planning on cabzii.in.",
   path: "/blogs",
-  keywords: ["cab booking tips", "travel blog India", "cabzii blog", "outstation travel guide"]
+  keywords: ["cab booking tips", "Tirupati travel guide", "pilgrimage blog India", "cabzii blog"]
 });
 
 export default function BlogsLayout({ children }) {
-  return children;
+  return <TravelLayoutClient>{children}</TravelLayoutClient>;
 }

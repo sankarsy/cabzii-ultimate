@@ -1,4 +1,28 @@
-export default function AdditionalChargesGrid({ items, compact = false, className = "" }) {
+import {
+  CalendarIcon,
+  ClockIcon,
+  MapPinIcon,
+  PersonIcon,
+  RoadIcon,
+  TagIcon
+} from "./icons";
+
+const CHARGE_ICONS = {
+  "Extra KM Charge": RoadIcon,
+  "Extra Hour Charge": ClockIcon,
+  "Drop Charge": MapPinIcon,
+  "Night Charges": ClockIcon,
+  "Cancel Charge": CalendarIcon,
+  "Out of City (>40 km)": RoadIcon,
+  "Driver Allowance": PersonIcon,
+  "Toll, Parking & State Tax": TagIcon,
+  "Toll & State Tax": TagIcon,
+  Toll: TagIcon,
+  Permit: MapPinIcon,
+  "Driver Bata": PersonIcon
+};
+
+export default function AdditionalChargesGrid({ items, compact = false, className = "", showIcons = true }) {
   if (!items?.length) return null;
 
   return (
@@ -9,25 +33,31 @@ export default function AdditionalChargesGrid({ items, compact = false, classNam
         Additional charges
       </h2>
       <div className={`grid grid-cols-1 ${compact ? "gap-1" : "gap-2 sm:grid-cols-2"}`}>
-        {items.map((item) => (
-          <p
-            key={item.label}
-            className={`text-slate-600 ${compact ? "flex justify-between gap-2 text-[9px]" : "flex items-start gap-1.5 text-xs"}`}
-          >
-            {compact ? (
-              <>
-                <span className="font-medium text-slate-700">{item.label}</span>
-                <span className="shrink-0 text-right text-slate-500">{item.value}</span>
-              </>
-            ) : (
-              <span>
-                <span className="font-medium text-slate-800">{item.label}</span>
-                <br />
-                <span className="text-slate-500">{item.value}</span>
-              </span>
-            )}
-          </p>
-        ))}
+        {items.map((item) => {
+          const Icon = showIcons ? CHARGE_ICONS[item.label] || TagIcon : null;
+          return (
+            <p
+              key={item.label}
+              className={`text-slate-600 ${compact ? "flex justify-between gap-2 text-[9px]" : "flex items-start gap-1.5 text-xs"}`}
+            >
+              {compact ? (
+                <>
+                  <span className="font-medium text-slate-700">{item.label}</span>
+                  <span className="shrink-0 text-right text-slate-500">{item.value}</span>
+                </>
+              ) : (
+                <>
+                  {Icon ? <Icon className="mt-0.5 h-3.5 w-3.5 shrink-0 text-slate-400" /> : null}
+                  <span>
+                    <span className="font-medium text-slate-800">{item.label}</span>
+                    <br />
+                    <span className="text-slate-500">{item.value}</span>
+                  </span>
+                </>
+              )}
+            </p>
+          );
+        })}
       </div>
     </div>
   );

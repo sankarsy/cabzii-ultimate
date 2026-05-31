@@ -127,7 +127,7 @@ export default function PlaceAutocomplete({
             className={`pointer-events-none absolute left-3 top-1/2 z-10 -translate-y-1/2 ${leadingIconClassName}`}
             aria-hidden="true"
           >
-            <LeadingIcon className="h-4 w-4" />
+            <LeadingIcon className="h-5 w-5" />
           </span>
         ) : null}
         <input
@@ -143,7 +143,7 @@ export default function PlaceAutocomplete({
             if (e.key === "Escape") setOpen(false);
           }}
           placeholder={placeholder}
-          className={`${inputClassName || defaultInput}${LeadingIcon ? " pl-10" : ""}`}
+          className={`${inputClassName || defaultInput}${LeadingIcon ? " pl-11" : ""}`}
           autoComplete="off"
           autoCorrect="off"
           autoCapitalize="off"

@@ -62,7 +62,8 @@ export default function ServiceCityPage({ params }) {
       cityName: city.name,
       description: tunedServiceDescription(service, city),
       urlPath: path,
-      priceFrom: service.priceFrom
+      priceFrom: service.priceFrom,
+      priceTo: Math.round((service.priceFrom || 999) * 3.5)
     }),
     faqFromPairs(faqs)
   ];

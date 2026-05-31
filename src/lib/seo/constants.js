@@ -34,6 +34,18 @@ export const WIKIDATA_URL = process.env.NEXT_PUBLIC_WIKIDATA_URL || "";
 /** Google Knowledge Graph entity id (kg:/g/...) once Google assigns one. */
 export const KNOWLEDGE_GRAPH_ID = process.env.NEXT_PUBLIC_KNOWLEDGE_GRAPH_ID || "";
 
+/** Verified customer reviews on /testimonials — used in AggregateRating schema. */
+export const SITE_REVIEW_STATS = {
+  ratingValue: "4.9",
+  reviewCount: "6",
+  bestRating: "5",
+  worstRating: "1"
+};
+
+/** Typical fare ranges (INR) for city landing rich snippets. */
+export const CITY_CAB_PRICE_RANGE = { low: 999, high: 6500 };
+export const CITY_DRIVER_PRICE_RANGE = { low: 899, high: 4200 };
+
 export const DEFAULT_KEYWORDS = [
   "cabzii",
   "cabzii.in",

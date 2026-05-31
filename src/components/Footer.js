@@ -1,11 +1,17 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import FooterSeoLinks from "./seo/FooterSeoLinks";
+import { isTravelShellPath } from "../lib/travelShellPaths";
 import { useSiteSettings } from "./SiteSettingsProvider";
 
 export default function Footer() {
+  const pathname = usePathname();
+  const hideOnTravelShell = isTravelShellPath(pathname);
   const settings = useSiteSettings();
   const { contact, footerQuickLinks, footerLegalLinks, siteName, tagline } = settings;
+
+  if (hideOnTravelShell) return null;
 
   return (
     <footer className="mt-14 border-t border-slate-800 bg-slate-950 py-12 text-slate-300">

@@ -1,12 +1,5 @@
-import { buildPageMetadata } from "../../lib/seo";
-
-export const metadata = buildPageMetadata({
-  title: "Book Your Ride",
-  description: "Complete your Cabzii cab or tour booking.",
-  path: "/booking",
-  noindex: true
-});
+import TravelLayoutClient from "../../components/mmt/TravelLayoutClient";
 
 export default function BookingLayout({ children }) {
-  return children;
+  return <TravelLayoutClient>{children}</TravelLayoutClient>;
 }

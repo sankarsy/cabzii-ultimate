@@ -3,12 +3,13 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { num, packageYouPay } from "../lib/cabFare";
+import { categoryLabel } from "../lib/holidays";
 import { resolveMediaUrl } from "../lib/media";
 
 const FALLBACK_IMAGE =
   "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=600&q=60";
 
-export default function SimilarPackages({ currentPackageId, duration, vendor }) {
+export default function SimilarPackages({ currentPackageId, category, vendor }) {
   const [similar, setSimilar] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -18,7 +19,7 @@ export default function SimilarPackages({ currentPackageId, duration, vendor }) 
       setLoading(true);
       try {
         const params = new URLSearchParams({ limit: "12", page: "1" });
-        if (duration) params.set("duration", duration);
+        if (category) params.set("category", category);
         const res = await fetch(`/api/packages?${params}`, { cache: "no-store" });
         const json = await res.json();
         let list = Array.isArray(json?.data) ? json.data : [];
@@ -42,9 +43,11 @@ export default function SimilarPackages({ currentPackageId, duration, vendor }) 
     return () => {
       cancelled = true;
     };
-  }, [currentPackageId, duration, vendor]);
+  }, [currentPackageId, category, vendor]);
 
   if (!loading && similar.length === 0) return null;
+
+  const categoryName = category ? categoryLabel(category) : "";
 
   return (
     <section
@@ -55,10 +58,10 @@ export default function SimilarPackages({ currentPackageId, duration, vendor }) 
         <div>
           <h2 className="text-base font-bold text-slate-900">Similar tour packages</h2>
           <p className="mt-0.5 text-xs text-slate-600">
-            {duration ? `More packages like ${duration}` : "Explore other curated tours"}.
+            {categoryName ? `More ${categoryName.toLowerCase()} packages` : "Explore other curated tours"}.
           </p>
         </div>
-        <Link href="/packages" className="text-xs font-semibold text-[#0056D2] hover:underline">
+        <Link href="/holidays" className="text-xs font-semibold text-[#0056D2] hover:underline">
           View all tours →
         </Link>
       </div>
@@ -76,7 +79,7 @@ export default function SimilarPackages({ currentPackageId, duration, vendor }) 
             return (
               <Link
                 key={id}
-                href={`/packages/${id}`}
+                href={`/holidays/${id}`}
                 className="group overflow-hidden rounded-xl border border-slate-200 bg-white transition hover:border-[#0056D2]/40 hover:shadow-md"
               >
                 <img
@@ -85,12 +88,11 @@ export default function SimilarPackages({ currentPackageId, duration, vendor }) 
                   className="h-24 w-full object-cover transition group-hover:scale-[1.02]"
                 />
                 <div className="p-3">
-                  <p className="text-[10px] font-semibold text-[#0056D2]">{pkg.duration}</p>
-                  <h3 className="mt-0.5 line-clamp-1 text-sm font-bold text-slate-900">{pkg.name}</h3>
+                  <h3 className="line-clamp-1 text-sm font-bold text-slate-900">{pkg.name}</h3>
                   <p className="text-[11px] text-slate-500">by {pkg.vendor}</p>
                   <p className="mt-2 text-sm font-bold text-[#0056D2]">
                     ₹{youPay.toLocaleString("en-IN")}
-                    <span className="text-[10px] font-normal text-slate-500"> /person</span>
+                    <span className="text-[10px] font-normal text-slate-500"> onwards</span>
                   </p>
                 </div>
               </Link>

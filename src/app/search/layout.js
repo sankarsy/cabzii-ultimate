@@ -1,12 +1,5 @@
-import { buildPageMetadata } from "../../lib/seo";
-
-export const metadata = buildPageMetadata({
-  title: "Search Cabs, Acting Drivers & Tours",
-  description: "Search cabzii.in for cabs, acting drivers, tour packages and travel guides across Indian cities.",
-  path: "/search",
-  noindex: true
-});
+import TravelLayoutClient from "../../components/mmt/TravelLayoutClient";
 
 export default function SearchLayout({ children }) {
-  return children;
+  return <TravelLayoutClient>{children}</TravelLayoutClient>;
 }

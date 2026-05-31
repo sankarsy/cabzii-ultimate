@@ -205,4 +205,3 @@ function PasswordLoginForm({ mode, onBack }) {
     </div>
   );
 }
-

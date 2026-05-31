@@ -4,8 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import CabBookingDetail from "./CabBookingDetail";
 import CabProductSpecs from "./CabProductSpecs";
-import Footer from "./Footer";
-import Navbar from "./Navbar";
 import PaymentBreakdown from "./PaymentBreakdown";
 import SimilarCabs from "./SimilarCabs";
 import { buildFareSlabs, buildPaymentSearchParams, selectionFromPackage } from "../lib/cabFare";
@@ -82,11 +80,13 @@ export default function CabDetailPage({ cabId, initialCab = null }) {
     return q ? `/payment?${q.toString()}` : undefined;
   }, [cabPk, selection]);
 
-  const seoTitle = cab?.seoTitle || (cab ? `${cab.title} – ${cab.type} Cab` : "Cab");
+  const seoTitle =
+    cab?.seoTitle ||
+    (cab ? `Book ${cab.title} in ${cab.city || "South India"} | Taxi & Outstation` : "Cab");
   const seoDescription =
     cab?.seoDescription ||
     (cab
-      ? `Book ${cab.title} by ${cab.vendor}. Compare local & outstation packages with transparent pricing on cabzii.in.`
+      ? `Rent ${cab.title} — ${cab.type} taxi car with AC, local 4hr/8hr & outstation packages from ${cab.vendor} on cabzii.in.`
       : "");
   const seoKeywords = (cab?.seo || "")
     .split(",")
@@ -94,17 +94,14 @@ export default function CabDetailPage({ cabId, initialCab = null }) {
     .filter(Boolean);
 
   return (
-    <main className="min-h-screen bg-linear-to-b from-slate-50 via-sky-50/40 to-white">
-      <Navbar />
-
-      <section className="py-8 md:py-10">
-        <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-8">
+    <section className="bg-cabzii-page py-8 md:py-10">
+        <div className="mx-auto max-w-5xl px-4 md:px-6">
           <nav className="mb-4 text-xs text-slate-500" aria-label="Breadcrumb">
-            <Link href="/" className="hover:text-[#0056D2]">
+            <Link href="/" className="hover:text-[var(--cabzii-brand)]">
               Home
             </Link>
             <span className="mx-2">/</span>
-            <Link href="/cabs" className="hover:text-[#0056D2]">
+            <Link href="/cabs" className="hover:text-[var(--cabzii-brand)]">
               Cabs
             </Link>
             <span className="mx-2">/</span>
@@ -118,14 +115,14 @@ export default function CabDetailPage({ cabId, initialCab = null }) {
           ) : loadError || !cab ? (
             <div className="rounded-2xl border border-amber-200 bg-amber-50 p-8 text-center">
               <p className="font-semibold text-amber-900">{loadError || "Cab not available."}</p>
-              <Link href="/cabs" className="mt-4 inline-block text-sm font-semibold text-[#0056D2] hover:underline">
+              <Link href="/cabs" className="mt-4 inline-block text-sm font-semibold text-[var(--cabzii-brand)] hover:underline">
                 ← Browse all cabs
               </Link>
             </div>
           ) : (
             <>
               <header className="mb-5">
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-[#0056D2]">Cab product page</p>
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--cabzii-brand)]">Cab product page</p>
                 <h1 className="mt-1 text-xl font-bold text-slate-900 sm:text-2xl">{seoTitle}</h1>
                 {seoDescription ? <p className="mt-1.5 max-w-3xl text-xs text-slate-600">{seoDescription}</p> : null}
               </header>
@@ -138,7 +135,7 @@ export default function CabDetailPage({ cabId, initialCab = null }) {
                   <a
                     key={link.href}
                     href={link.href}
-                    className="shrink-0 rounded-lg px-2.5 py-1 font-medium text-slate-600 transition hover:bg-slate-100 hover:text-[#0056D2]"
+                    className="shrink-0 rounded-lg px-2.5 py-1 font-medium text-slate-600 transition hover:bg-slate-100 hover:text-[var(--cabzii-brand)]"
                   >
                     {link.label}
                   </a>
@@ -158,7 +155,7 @@ export default function CabDetailPage({ cabId, initialCab = null }) {
                     <h2 className="text-base font-bold text-slate-900">About this cab</h2>
                     <p className="mt-2 text-xs leading-relaxed text-slate-600">
                       {cab.seoDescription ||
-                        `Book ${cab.title} (${cab.type}) with ${cab.vendor} on cabzii.in. Professional drivers, AC cabs, and clear local & outstation fares.`}
+                        `Rent ${cab.title} — AC ${cab.type} taxi car with ${cab.vendor} on cabzii.in. Local 4hr/8hr, airport transfer & outstation packages with transparent fares.`}
                     </p>
                     {seoKeywords.length > 0 ? (
                       <div className="mt-4 flex flex-wrap gap-2">
@@ -200,9 +197,6 @@ export default function CabDetailPage({ cabId, initialCab = null }) {
             </>
           )}
         </div>
-      </section>
-
-      <Footer />
-    </main>
+    </section>
   );
 }

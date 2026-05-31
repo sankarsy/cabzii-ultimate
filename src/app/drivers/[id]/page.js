@@ -1,6 +1,9 @@
+import { Suspense } from "react";
 import DriverDetailPage from "../../../components/DriverDetailPage";
+import JsonLd from "../../../components/seo/JsonLd";
 import { fetchDriverById } from "../../../lib/serverCatalog";
 import { driverDetailMetadata } from "../../../lib/metadataHelpers";
+import { breadcrumbJsonLd } from "../../../lib/seo";
 
 export async function generateMetadata({ params }) {
   const id = params?.id;
@@ -15,13 +18,27 @@ export default async function DriverDetailRoutePage({ params }) {
   const id = params?.id;
   const driver = id ? await fetchDriverById(id) : null;
   const { jsonLd } = driver ? driverDetailMetadata(driver, id) : { jsonLd: null };
+  const schema = driver
+    ? [
+        breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Drivers", path: "/drivers" },
+          { name: driver.name || "Driver", path: `/drivers/${id}` }
+        ]),
+        jsonLd
+      ]
+    : null;
 
   return (
     <>
-      {jsonLd ? (
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      ) : null}
-      <DriverDetailPage driverId={id} initialDriver={driver} />
+      {schema ? <JsonLd data={schema} /> : null}
+      <Suspense
+        fallback={
+          <div className="mx-auto max-w-5xl px-4 py-16 text-center text-sm text-slate-600">Loading driver…</div>
+        }
+      >
+        <DriverDetailPage driverId={id} initialDriver={driver} />
+      </Suspense>
     </>
   );
 }

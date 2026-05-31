@@ -1,3 +1,5 @@
+import { buildStandardChargeItems } from "./productCharges";
+
 export function num(v, fallback = 0) {
   const n = Number(v);
   return Number.isFinite(n) ? n : fallback;
@@ -67,21 +69,15 @@ const SLAB_META = [
   }
 ];
 
-function labelForKey(labels, key, fallback) {
-  const custom = labels?.[key];
-  return typeof custom === "string" && custom.trim() ? custom.trim() : fallback;
-}
-
 export function buildFareSlabs(cab) {
   const packages = cab?.farePackages || {};
-  const labels = cab?.farePackageLabels || {};
   const legacy = buildLegacySlabs(cab);
 
   return SLAB_META.map((meta) => {
     const stored = packages[meta.key];
     const fallbackList = legacy[meta.legacy];
     const fare = resolvePackageFare(stored, cab, fallbackList);
-    const label = labelForKey(labels, meta.key, meta.defaultLabel);
+    const label = meta.defaultLabel;
 
     return {
       id: meta.id,
@@ -168,4 +164,22 @@ export function selectionFromPackage(pkg, tab, fallbackDiscountPct) {
     total,
     fare: total
   };
+}
+
+export function buildCabChargeItems(cab, overrides = {}) {
+  const price = num(cab.price);
+  const rawExtra = cab.extraHourRate;
+  const extraHour =
+    overrides.extraHr ??
+    (rawExtra != null && rawExtra !== "" && Number.isFinite(Number(rawExtra)) ? num(rawExtra) : price);
+  const extraKmRate = overrides.extraKm ?? Math.max(12, Math.floor(price / 10) || 12);
+  const nightCharge =
+    overrides.nightCharge ??
+    (extraHour > 0 ? Math.max(0, Math.round(extraHour * 0.25)) : null);
+  return buildStandardChargeItems({
+    extraKm: extraKmRate,
+    extraHr: extraHour,
+    nightCharge,
+    serviceCharges: cab?.serviceCharges
+  });
 }

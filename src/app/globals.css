@@ -1,11 +1,39 @@
 @import "tailwindcss";
 
 :root {
+  /* Cabzii.in brand */
   --cabzii-brand: #0056d2;
-  --cabzii-brand-hover: #0046b0;
+  --cabzii-brand-hover: #0047b3;
+  --cabzii-red: #e74c3c;
+  --cabzii-orange: #f5871f;
+  --cabzii-accent: #00c2cb;
+  --cabzii-header: #1a2744;
   --cabzii-surface: #ffffff;
   --cabzii-muted: #64748b;
   --cabzii-border: #e2e8f0;
+  --cabzii-bg: #f4f6f9;
+  --cabzii-shadow-card: 0 2px 12px rgba(0, 0, 0, 0.08);
+  --cabzii-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.12);
+  /* Aliases used across travel UI components */
+  --emt-primary: var(--cabzii-brand);
+  --emt-primary-dark: var(--cabzii-brand-hover);
+  --emt-secondary: var(--cabzii-header);
+  --emt-accent: var(--cabzii-accent);
+  --emt-bg-light: var(--cabzii-bg);
+  --emt-shadow-card: var(--cabzii-shadow-card);
+  --emt-shadow-hover: var(--cabzii-shadow-hover);
+  --mmt-header: var(--cabzii-header);
+  --mmt-header-fg: #f8fafc;
+  --mmt-primary: var(--cabzii-brand);
+  --mmt-bg: var(--cabzii-bg);
+  --mmt-card: #ffffff;
+  --mmt-muted: #64748b;
+  --mmt-border: #e2e8f0;
+}
+
+@theme {
+  --color-cabzii-header: #1a2744;
+  --color-mmt-header-fg: #f8fafc;
 }
 
 html {
@@ -17,7 +45,30 @@ body {
   font-family: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
   font-size: 0.875rem;
   line-height: 1.5;
-  @apply bg-white text-slate-900 antialiased;
+  @apply bg-[var(--cabzii-bg)] text-slate-900 antialiased;
+}
+
+.bg-mmt-header,
+.bg-cabzii-header {
+  background-color: var(--cabzii-header);
+}
+.text-mmt-header-fg,
+.text-cabzii-header-fg {
+  color: var(--mmt-header-fg);
+}
+.bg-mmt-page,
+.bg-cabzii-page {
+  background-color: var(--cabzii-bg);
+}
+
+.text-cabzii-brand {
+  color: var(--cabzii-brand);
+}
+.bg-cabzii-brand {
+  background-color: var(--cabzii-brand);
+}
+.hover\:bg-cabzii-brand-hover:hover {
+  background-color: var(--cabzii-brand-hover);
 }
 
 h1,
@@ -30,7 +81,39 @@ h3 {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
-
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+
+/* Horizontal scroll (offers, hero tabs) — swipe / arrows only, no scrollbar */
+.offers-scroll,
+.hero-tabs-scroll {
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.offers-scroll::-webkit-scrollbar,
+.hero-tabs-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.mmt-search-cell,
+.cabzii-search-cell {
+  @apply flex flex-col gap-1 bg-white p-4;
+}
+.mmt-search-label,
+.emt-search-label,
+.cabzii-search-label {
+  @apply text-xs font-medium uppercase tracking-wide text-slate-500;
+}
+.mmt-search-value,
+.cabzii-search-value {
+  @apply text-lg font-bold text-slate-900;
+}
+
+/* Admin + forms: focus ring matches brand */
+.cabzii-input:focus {
+  border-color: var(--cabzii-brand);
+  outline: 2px solid color-mix(in srgb, var(--cabzii-brand) 25%, transparent);
 }

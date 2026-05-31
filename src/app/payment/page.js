@@ -3,10 +3,11 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import Footer from "../../components/Footer";
-import Navbar from "../../components/Navbar";
 import PaymentBreakdown from "../../components/PaymentBreakdown";
 import { authHeaders, getToken, getUser, normalizeMobileInput } from "../../lib/auth";
+import { fetchJson } from "../../lib/apiClient";
+
+const CHECKOUT_KEY = "cabzii-checkout";
 
 function firstParam(value) {
   if (Array.isArray(value)) return String(value[0] ?? "").trim();
@@ -27,8 +28,10 @@ export default function PaymentPage({ searchParams }) {
   const [bookingId, setBookingId] = useState("");
   const type = searchParams?.type ?? "cab";
   const itemId = String(searchParams?.id ?? searchParams?.cabId ?? "");
+  const taxes = Number(searchParams?.taxes ?? 0);
   const baseFare = Number(searchParams?.baseFare ?? 0);
-  const total = baseFare > 0 ? baseFare : Number(searchParams?.total ?? 0);
+  const totalParam = Number(searchParams?.total ?? 0);
+  const total = totalParam > 0 ? totalParam : baseFare + taxes;
   const listPrice = Number(searchParams?.listPrice ?? baseFare);
   const discountPct = Number(searchParams?.discountPct ?? 0);
   const discountAmount = Number(searchParams?.discountAmount ?? Math.max(0, listPrice - baseFare));
@@ -44,6 +47,18 @@ export default function PaymentPage({ searchParams }) {
     if (!getToken()) {
       const next = typeof window !== "undefined" ? window.location.pathname + window.location.search : "/payment";
       router.replace(`/login?next=${encodeURIComponent(next)}`);
+      return;
+    }
+    try {
+      const raw = sessionStorage.getItem(CHECKOUT_KEY);
+      if (raw) {
+        const saved = JSON.parse(raw);
+        if (saved.customerName) setCustomerName(saved.customerName);
+        if (saved.phone) setPhone(saved.phone);
+        if (saved.email) setEmail(saved.email);
+      }
+    } catch {
+      /* ignore */
     }
   }, [router]);
 
@@ -57,8 +72,7 @@ export default function PaymentPage({ searchParams }) {
           : `/api/cabs/${encodeURIComponent(itemId)}`;
     (async () => {
       try {
-        const res = await fetch(base, { cache: "no-store" });
-        const data = await res.json();
+        const data = await fetchJson(base);
         setSelectedItem(data?.data ?? null);
       } catch {
         setSelectedItem(null);
@@ -75,12 +89,12 @@ export default function PaymentPage({ searchParams }) {
       discountPct,
       discountAmount,
       baseFare,
-      taxes: 0,
+      taxes,
       total,
       extraKm: Number(searchParams?.extraKm) || undefined,
       extraHr: Number(searchParams?.extraHr) || undefined
     };
-  }, [type, packageLabel, serviceTab, listPrice, discountPct, discountAmount, baseFare, total, searchParams?.extraKm, searchParams?.extraHr]);
+  }, [type, packageLabel, serviceTab, listPrice, discountPct, discountAmount, baseFare, taxes, total, searchParams?.extraKm, searchParams?.extraHr]);
 
   const backHref =
     type === "cab" && itemId
@@ -88,9 +102,9 @@ export default function PaymentPage({ searchParams }) {
       : type === "driver" && itemId
         ? `/drivers/${itemId}`
         : type === "tour" && itemId
-          ? `/packages/${itemId}`
+          ? `/holidays/${itemId}`
           : type === "tour"
-            ? "/packages"
+            ? "/holidays"
             : "/drivers";
 
   const bookingType = type === "tour" ? "tour" : type === "driver" ? "driver" : "cab";
@@ -126,13 +140,18 @@ export default function PaymentPage({ searchParams }) {
               ? `${tourPersons} persons`
               : serviceTab || firstParam(searchParams?.routeType),
           tripType: firstParam(searchParams?.tripType),
+          pickupTime: firstParam(searchParams?.time),
+          serviceTripType: firstParam(searchParams?.serviceTripType),
+          roundTrip: firstParam(searchParams?.roundTrip) === "true",
+          packageHours: Number(firstParam(searchParams?.packageHours)) || undefined,
           amount: total
         })
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data?.message || "Booking failed");
+      if (!res.ok || data?.success === false) throw new Error(data?.message || "Booking failed");
       const id = data?.data?._id || data?.data?.id;
       setBookingId(String(id || ""));
+      sessionStorage.removeItem(CHECKOUT_KEY);
       if (method !== "payLater") {
         setSubmitError("");
       }
@@ -144,8 +163,7 @@ export default function PaymentPage({ searchParams }) {
   };
 
   return (
-    <main className="min-h-screen bg-linear-to-b from-slate-50 via-sky-50/40 to-white">
-      <Navbar />
+    <div className="mx-auto max-w-5xl px-4 py-8">
       <section className="py-10 md:py-12">
         <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-8">
           <nav className="mb-4 text-xs text-slate-500">
@@ -312,11 +330,11 @@ export default function PaymentPage({ searchParams }) {
               <PaymentBreakdown
                 item={{
                   title: selectedItem.name,
-                  type: "Tour",
+                  type: "Holiday",
                   vendor: selectedItem.vendor
                 }}
                 selection={{
-                  packageLabel: selectedItem.duration || selectedItem.name,
+                  packageLabel: selectedItem.name,
                   serviceTab: "tour",
                   listPrice: Number(searchParams?.listPrice) || baseFare,
                   discountPct,
@@ -326,13 +344,17 @@ export default function PaymentPage({ searchParams }) {
                   persons: tourPersons,
                   pickup: firstParam(searchParams?.pickup),
                   date: firstParam(searchParams?.date),
-                  note:
-                    tourPersons > 1
-                      ? `${tourPersons} travellers — tour package total`
-                      : "Tour package total"
+                  cabLabel: firstParam(searchParams?.cabLabel),
+                  note: (() => {
+                    const cab = firstParam(searchParams?.cabLabel);
+                    const cabPart = cab ? `${cab} · ` : "";
+                    return tourPersons > 1
+                      ? `${cabPart}${tourPersons} travellers — holiday package`
+                      : `${cabPart}Holiday package total`;
+                  })()
                 }}
                 showExtrasNote={false}
-                footerNote="Tour fare is per person × number of travellers. No extra km/hour charges."
+                footerNote="Package fare payable now. Toll, permit & driver bata billed separately as per trip."
               />
             ) : (
               <aside className="rounded-2xl border border-slate-200 bg-white p-5 shadow-md md:p-6">
@@ -355,8 +377,7 @@ export default function PaymentPage({ searchParams }) {
           </div>
         </div>
       </section>
-      <Footer />
-    </main>
+    </div>
   );
 }
 

@@ -8,7 +8,7 @@ export async function generateMetadata({ searchParams }) {
   if (!id) {
     return buildPageMetadata({
       title: "Tour Package Booking",
-      description: "Book tour packages with transparent per-person pricing on cabzii.in.",
+      description: "Book tour packages with flat package fare on cabzii.in. Toll, permit & driver bata extra.",
       path: "/packages"
     });
   }

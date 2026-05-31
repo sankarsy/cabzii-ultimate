@@ -3,14 +3,15 @@ import CitySeoPage from "../../../components/CitySeoPage";
 import JsonLd from "../../../components/seo/JsonLd";
 import {
   SEO_CITIES,
-  actingDriverDescription,
-  actingDriverTitle,
   breadcrumbJsonLd,
   buildPageMetadata,
   cityBySlug,
+  cityDriverSearchJsonLd,
   faqFromPairs,
   getCityFaqs,
-  localBusinessJsonLd
+  localBusinessJsonLd,
+  tunedActingDriverDescription,
+  tunedActingDriverTitle
 } from "../../../lib/seo";
 
 export function generateStaticParams() {
@@ -29,8 +30,8 @@ export async function generateMetadata({ params }) {
   }
   const path = `/acting-driver/${city.slug}`;
   return buildPageMetadata({
-    title: actingDriverTitle(city.name),
-    description: actingDriverDescription(city.name, city.state),
+    title: tunedActingDriverTitle(city),
+    description: tunedActingDriverDescription(city.name, city.state),
     path,
     keywords: [
       `acting driver ${city.name.toLowerCase()}`,
@@ -50,10 +51,14 @@ export default function ActingDriverCityPage({ params }) {
   const jsonLd = [
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
-      { name: "Locations", path: "/locations" },
+      { name: "Drivers", path: "/drivers" },
       { name: `Acting driver ${city.name}`, path }
     ]),
-    localBusinessJsonLd(city.name, city.region),
+    cityDriverSearchJsonLd(city, {
+      description: tunedActingDriverDescription(city.name, city.state),
+      urlPath: path
+    }),
+    localBusinessJsonLd(city.name, city.state, path),
     faqFromPairs(faqs)
   ];
 

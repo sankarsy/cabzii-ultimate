@@ -50,7 +50,7 @@ function itemSubtitle(item, tabKey) {
   if (tabKey === "bookings") return `${item.status || "pending"} · ${item.phone || ""}`;
   if (tabKey === "cabs") return `${item.vendor || "—"} · ${item.city || "No city"} · ${item.location || "No location"} · ${formatCabPackageSummary(item)}`;
   if (tabKey === "drivers") return `${item.vendor || "—"} · ${item.city || "No city"} · ${item.location || "No location"} · ${formatDriverPackageSummary(item)}`;
-  if (tabKey === "packages") return `${item.vendor || "—"} · ${item.city || "No city"} · ${item.duration || "—"} · ₹${item.price ?? "—"}`;
+  if (tabKey === "packages") return `${item.vendor || "—"} · ${item.city || "No city"} · ₹${item.price ?? "—"}`;
   return item.vendor || item.experience || item.type || "N/A";
 }
 
@@ -413,7 +413,7 @@ export default function AdminCatalogPanel({
         body: JSON.stringify(body)
       });
       const data = await res.json();
-      if (!res.ok) {
+      if (!res.ok || data?.success === false) {
         const detail = data?.message || data?.error || "Save failed";
         throw new Error(typeof detail === "string" ? detail : JSON.stringify(detail));
       }
@@ -453,8 +453,8 @@ export default function AdminCatalogPanel({
     await loadData();
   };
 
-  if (!tab) return null;
   const filteredItems = useMemo(() => {
+    if (!tab) return [];
     const q = query.trim().toLowerCase();
     const searched = items.filter((item) => {
       if (!q) return true;
@@ -478,11 +478,13 @@ export default function AdminCatalogPanel({
       sorted.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
     }
     return sorted;
-  }, [items, query, statusFilter, sortKey, tabKey]);
+  }, [items, query, statusFilter, sortKey, tabKey, tab]);
   const pageSize = 10;
   const totalPages = Math.max(1, Math.ceil(filteredItems.length / pageSize));
   const pagedItems = filteredItems.slice((listPage - 1) * pageSize, listPage * pageSize);
   const viewingItem = viewingId ? items.find((x) => String(x._id || x.id) === viewingId) : null;
+
+  if (!tab) return null;
 
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-md">
@@ -775,6 +777,22 @@ export default function AdminCatalogPanel({
               </Field>
               <Field label="Vendor *">
                 <input className={inputCls()} value={tourPackageForm.vendor} onChange={(e) => setTourPackageForm((p) => ({ ...p, vendor: e.target.value }))} />
+              </Field>
+              <Field label="Category">
+                <select
+                  className={inputCls()}
+                  value={tourPackageForm.category || ""}
+                  onChange={(e) => setTourPackageForm((p) => ({ ...p, category: e.target.value }))}
+                >
+                  <option value="">—</option>
+                  <option value="pilgrimage">Pilgrimage</option>
+                  <option value="beach">Beach</option>
+                  <option value="hill">Hill station</option>
+                  <option value="heritage">Heritage</option>
+                  <option value="honeymoon">Honeymoon</option>
+                  <option value="adventure">Adventure</option>
+                  <option value="family">Family</option>
+                </select>
               </Field>
               <Field label="Duration *">
                 <input className={inputCls()} value={tourPackageForm.duration} onChange={(e) => setTourPackageForm((p) => ({ ...p, duration: e.target.value }))} placeholder="2 Days" />

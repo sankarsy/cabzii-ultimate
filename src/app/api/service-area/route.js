@@ -44,10 +44,7 @@ export async function GET(request) {
     pincode: resolved.pincode
   });
 
-  const inService =
-    locations.length > 0 ||
-    Boolean(resolved.pincode && resolved.city) ||
-    Boolean(resolved.city);
+  const inService = locations.length > 0;
 
   return Response.json({
     success: true,

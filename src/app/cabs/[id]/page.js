@@ -1,6 +1,8 @@
 import CabDetailPage from "../../../components/CabDetailPage";
+import JsonLd from "../../../components/seo/JsonLd";
 import { fetchCabById } from "../../../lib/serverCatalog";
 import { cabDetailMetadata } from "../../../lib/metadataHelpers";
+import { breadcrumbJsonLd } from "../../../lib/seo";
 
 export async function generateMetadata({ params }) {
   const id = params?.id;
@@ -15,12 +17,20 @@ export default async function CabDetailRoutePage({ params }) {
   const id = params?.id;
   const cab = id ? await fetchCabById(id) : null;
   const { jsonLd } = cab ? cabDetailMetadata(cab, id) : { jsonLd: null };
+  const schema = cab
+    ? [
+        breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Cabs", path: "/cabs" },
+          { name: cab.title || "Cab", path: `/cabs/${id}` }
+        ]),
+        jsonLd
+      ]
+    : null;
 
   return (
     <>
-      {jsonLd ? (
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      ) : null}
+      {schema ? <JsonLd data={schema} /> : null}
       <CabDetailPage cabId={id} initialCab={cab} />
     </>
   );

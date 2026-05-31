@@ -4,7 +4,7 @@
  *  - Static assets (_next/static, images, fonts): stale-while-revalidate.
  *  - Never caches API, admin, auth or payment responses.
  */
-const VERSION = "v1";
+const VERSION = "v2";
 const STATIC_CACHE = `cabzii-static-${VERSION}`;
 const PAGE_CACHE = `cabzii-pages-${VERSION}`;
 const OFFLINE_URL = "/";

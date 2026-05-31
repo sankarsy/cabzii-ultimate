@@ -5,11 +5,12 @@ export const CAB_PACKAGE_FIELDS = [
   { key: "outstationRoundTrip", defaultLabel: "Outstation — Round Trip" }
 ];
 
+/** Same keys as cabs so driver packages match cab structure in admin & booking UI */
 export const DRIVER_PACKAGE_FIELDS = [
-  { key: "local4hr", defaultLabel: "Local — 4 Hours" },
-  { key: "localDay", defaultLabel: "Local — 1 Day" },
-  { key: "outstation12hr", defaultLabel: "Outstation — 12 Hours" },
-  { key: "outstationOneWay", defaultLabel: "Outstation — One Way" }
+  { key: "local4hr", defaultLabel: "Local — 4 Hrs / 40 Km" },
+  { key: "local8hr", defaultLabel: "Local — 8 Hrs / 80 Km" },
+  { key: "outstationOneWay", defaultLabel: "Outstation — One Way" },
+  { key: "outstationRoundTrip", defaultLabel: "Outstation — Round Trip" }
 ];
 
 /** @deprecated use CAB_PACKAGE_FIELDS */
@@ -284,6 +285,7 @@ export function emptyTourPackageForm() {
   return {
     name: "",
     vendor: "",
+    category: "pilgrimage",
     duration: "",
     price: 0,
     originalPrice: 0,
@@ -305,6 +307,7 @@ export function tourPackageFormFromItem(item) {
   return {
     name: item?.name || "",
     vendor: item?.vendor || "",
+    category: item?.category || "",
     duration: item?.duration || "",
     price: numField(item?.price),
     originalPrice: numField(item?.originalPrice),
@@ -323,10 +326,23 @@ export function tourPackageFormFromItem(item) {
 }
 
 export function tourPackageFormToPayload(form) {
+  const cabTypesRaw = form.cabTypes;
+  let cabTypes = [];
+  if (typeof cabTypesRaw === "string" && cabTypesRaw.trim()) {
+    try {
+      cabTypes = JSON.parse(cabTypesRaw);
+    } catch {
+      cabTypes = [];
+    }
+  } else if (Array.isArray(cabTypesRaw)) {
+    cabTypes = cabTypesRaw;
+  }
   return {
     name: form.name,
     vendor: form.vendor,
+    category: form.category || "",
     duration: form.duration,
+    cabTypes,
     price: numField(form.price),
     originalPrice: numField(form.originalPrice),
     discountPercentage: numField(form.discountPercentage),
@@ -377,7 +393,7 @@ export const CATALOG_TABS = {
     form: "cab",
     superAdminOnly: false,
     sample: {
-      title: "City Comfort Sedan",
+      title: "Maruti Dzire Taxi",
       vendor: "SwiftRide",
       type: "Sedan",
       seats: 4,
@@ -416,7 +432,7 @@ export const CATALOG_TABS = {
     form: "driver",
     superAdminOnly: false,
     sample: {
-      name: "Driver Name",
+      name: "Maruti Dzire",
       vendor: "Your Vendor Name",
       type: "local",
       experience: "5 Years",
@@ -431,42 +447,49 @@ export const CATALOG_TABS = {
       supportedVehicles: ["Sedan", "SUV"],
       pricing: { hourly: 250, day: 3000, extraHour: 250 },
       farePackageLabels: {
-        local4hr: "Local — 4 Hours",
-        localDay: "Local — 1 Day",
-        outstation12hr: "Outstation — 12 Hours",
+        local4hr: "Local — 4 Hrs / 40 Km",
+        local8hr: "Local — 8 Hrs / 80 Km",
+        outstationRoundTrip: "Outstation — Round Trip",
         outstationOneWay: "Outstation — One Way"
       },
       farePackages: {
         local4hr: { originalPrice: 1000, price: 900, discountPercentage: 0, extraKmRate: 14, extraHourRate: 250 },
-        localDay: { originalPrice: 3000, price: 2800, discountPercentage: 0, extraKmRate: 14, extraHourRate: 250 },
-        outstation12hr: { originalPrice: 3600, price: 3400, discountPercentage: 0, extraKmRate: 16, extraHourRate: 250 },
+        local8hr: { originalPrice: 3000, price: 2800, discountPercentage: 0, extraKmRate: 14, extraHourRate: 250 },
+        outstationRoundTrip: { originalPrice: 3600, price: 3400, discountPercentage: 0, extraKmRate: 16, extraHourRate: 250 },
         outstationOneWay: { originalPrice: 3000, price: 2800, discountPercentage: 0, extraKmRate: 16, extraHourRate: 250 }
       }
     },
     required: ["name"]
   },
   packages: {
-    label: "Tour packages",
+    label: "Holiday packages",
     base: "/api/packages",
     form: "tourPackage",
     superAdminOnly: false,
     sample: {
-      name: "Weekend Getaway",
+      name: "Tirupati Balaji Darshan",
       vendor: "Your Vendor Name",
-      duration: "2 Days",
-      price: 5999,
-      originalPrice: 6999,
-      discountPercentage: 14,
+      duration: "",
+      price: 4999,
+      originalPrice: 6499,
+      discountPercentage: 23,
       hourlyRate: 0,
-      dayRate: 5999,
+      dayRate: 4999,
       extraHourRate: 300,
       image: "/uploads/package.jpg",
       gallery: ["/uploads/package.jpg"],
-      city: "Bengaluru",
-      location: "Indiranagar",
-      tags: ["Family", "Outstation"]
+      city: "Tirupati",
+      location: "Tirumala",
+      category: "pilgrimage",
+      cabTypes: [
+        { id: "sedan", label: "Sedan", seats: 4, multiplier: 1 },
+        { id: "suv", label: "SUV", seats: 6, multiplier: 1.12 },
+        { id: "innova", label: "Innova", seats: 7, multiplier: 1.18 },
+        { id: "tempo", label: "Tempo Traveller", seats: 12, multiplier: 1.35 }
+      ],
+      tags: ["Pilgrimage", "Tirupati"]
     },
-    required: ["name", "vendor", "duration", "price"]
+    required: ["name", "vendor", "price"]
   },
   bookings: {
     label: "Bookings",

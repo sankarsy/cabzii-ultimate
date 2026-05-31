@@ -13,14 +13,15 @@ export const DEFAULT_SITE_SETTINGS = {
   navbar: [
     { label: "Home", href: "/", visible: true, sortOrder: 1 },
     { label: "Cabs", href: "/cabs", visible: true, sortOrder: 2 },
-    { label: "Tours", href: "/packages", visible: true, sortOrder: 3 },
-    { label: "Drivers", href: "/drivers", visible: true, sortOrder: 4 },
-    { label: "Offers", href: "/search?q=offers", visible: true, sortOrder: 5 }
+    { label: "Drivers", href: "/drivers", visible: true, sortOrder: 3 },
+    { label: "Holidays", href: "/holidays", visible: true, sortOrder: 4 },
+    { label: "Hotels", href: "/hotels", visible: true, sortOrder: 5 },
+    { label: "Flights", href: "/flights", visible: true, sortOrder: 6 }
   ],
   footerQuickLinks: [
     { label: "Home", href: "/" },
     { label: "Cabs", href: "/cabs" },
-    { label: "Tours", href: "/packages" },
+    { label: "Holidays", href: "/holidays" },
     { label: "Drivers", href: "/drivers" },
     { label: "Blog", href: "/blogs" },
     { label: "Reviews", href: "/testimonials" },
@@ -95,14 +96,14 @@ export const DEFAULT_SITE_SETTINGS = {
       viewAllHref: "/drivers"
     },
     {
-      key: "tours",
+      key: "holidays",
       enabled: true,
-      eyebrow: "Tour Packages",
-      title: "Curated Travel Experiences",
-      subtitle: "Handpicked tours with transparent pricing and instant booking.",
+      eyebrow: "Holiday Packages",
+      title: "Pilgrimage & Getaways",
+      subtitle: "Pilgrimage, beach and hill packages with cab type selection.",
       limit: 6,
       sortOrder: 3,
-      viewAllHref: "/packages"
+      viewAllHref: "/holidays"
     },
     {
       key: "testimonials",

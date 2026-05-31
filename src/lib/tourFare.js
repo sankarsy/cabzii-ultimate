@@ -8,32 +8,37 @@ export function clampTourPersons(value) {
   return Math.min(MAX_TOUR_PERSONS, Math.max(MIN_TOUR_PERSONS, n));
 }
 
-/** price in DB is per person */
-export function calculateTourTotals(pricePerPerson, persons, discountPct) {
-  const perPersonList = num(pricePerPerson);
+/** Flat package fare; cabMultiplier adjusts for vehicle type. persons is group size only. */
+export function calculateTourTotals(packagePrice, persons, discountPct, cabMultiplier = 1) {
+  const mult = num(cabMultiplier, 1) > 0 ? num(cabMultiplier, 1) : 1;
+  const packageList = Math.round(num(packagePrice) * mult);
   const count = clampTourPersons(persons);
   const d = Math.min(99, Math.max(0, num(discountPct)));
-  const perPersonPay = packageYouPay(perPersonList, d);
-  const listTotal = perPersonList * count;
-  const total = perPersonPay * count;
+  const packagePay = packageYouPay(packageList, d);
+  const listTotal = packageList;
+  const total = packagePay;
   const discountAmount = Math.max(0, listTotal - total);
 
   return {
     persons: count,
-    perPersonList,
-    perPersonPay,
+    packageList,
+    packagePay,
     listTotal,
     total,
     discountPct: d,
-    discountAmount
+    discountAmount,
+    perPersonList: packageList,
+    perPersonPay: packagePay
   };
 }
 
-export function tourSelectionFromTotals(pkg, totals, { pickup = "", date = "" } = {}) {
-  const duration = pkg?.duration || pkg?.name || "Tour package";
+export function tourSelectionFromTotals(pkg, totals, { pickup = "", date = "", cabType = "", cabLabel = "" } = {}) {
+  const cabNote = cabLabel ? `${cabLabel} · ` : "";
   return {
-    packageLabel: duration,
+    packageLabel: pkg?.name || "Holiday package",
     serviceTab: "tour",
+    cabType,
+    cabLabel,
     listPrice: totals.listTotal,
     discountPct: totals.discountPct,
     discountAmount: totals.discountAmount,
@@ -45,14 +50,11 @@ export function tourSelectionFromTotals(pkg, totals, { pickup = "", date = "" } 
     perPersonPay: totals.perPersonPay,
     pickup,
     date,
-    note:
-      totals.persons > 1
-        ? `${totals.persons} travellers × ₹${totals.perPersonPay.toLocaleString("en-IN")} per person`
-        : `₹${totals.perPersonPay.toLocaleString("en-IN")} per person`
+    note: `${cabNote}Package fare ₹${totals.total.toLocaleString("en-IN")} · toll, permit & driver bata extra`
   };
 }
 
-export function buildTourPaymentParams(pkgId, { totals, pickup, date }) {
+export function buildTourPaymentParams(pkgId, { totals, pickup, date, cabType, cabLabel }) {
   const q = new URLSearchParams({
     type: "tour",
     id: String(pkgId),
@@ -66,5 +68,7 @@ export function buildTourPaymentParams(pkgId, { totals, pickup, date }) {
   });
   if (pickup?.trim()) q.set("pickup", pickup.trim());
   if (date?.trim()) q.set("date", date.trim());
+  if (cabType) q.set("cabType", cabType);
+  if (cabLabel) q.set("cabLabel", cabLabel);
   return q;
 }

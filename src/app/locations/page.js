@@ -2,31 +2,35 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import CityAutocomplete from "../../components/CityAutocomplete";
-import Footer from "../../components/Footer";
-import Navbar from "../../components/Navbar";
-
-function cityQueryFromLabel(label) {
-  if (!label) return "";
-  return label.split(",")[0].trim();
-}
+import { extractCityFromLabel } from "../../lib/locationPriority";
 
 export default function LocationsPage() {
   const [locations, setLocations] = useState([]);
   const [selectedCity, setSelectedCity] = useState("");
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   const loadLocations = useCallback(async (cityLabel) => {
     setLoading(true);
+    setError("");
     try {
-      const cityQ = cityQueryFromLabel(cityLabel);
+      const cityQ = extractCityFromLabel(cityLabel);
       const url = cityQ
         ? `/api/locations?active=1&city=${encodeURIComponent(cityQ)}`
         : "/api/locations?active=1";
       const res = await fetch(url, { cache: "no-store" });
       const json = await res.json();
+
+      if (!res.ok || json.success === false) {
+        setLocations([]);
+        setError(json.message || "Could not load service locations. Please try again.");
+        return;
+      }
+
       setLocations(Array.isArray(json?.data) ? json.data : []);
     } catch {
       setLocations([]);
+      setError("Network error — could not reach the server. Check that the backend is running.");
     } finally {
       setLoading(false);
     }
@@ -40,7 +44,7 @@ export default function LocationsPage() {
 
   const handleCityChange = (label) => {
     setSelectedCity(label);
-    const name = cityQueryFromLabel(label);
+    const name = extractCityFromLabel(label);
     if (name) {
       localStorage.setItem("cabzii-selected-location", name);
       window.dispatchEvent(new CustomEvent("cabzii-city-change", { detail: { city: name } }));
@@ -58,9 +62,10 @@ export default function LocationsPage() {
     return [...map.entries()].sort((a, b) => a[0].localeCompare(b[0]));
   }, [locations]);
 
+  const cityLabel = selectedCity ? extractCityFromLabel(selectedCity) : "";
+
   return (
-    <main className="min-h-screen bg-linear-to-b from-slate-50 via-sky-50/60 to-violet-50/40">
-      <Navbar />
+    <div className="mx-auto max-w-5xl px-4 py-8">
       <section className="py-10 md:py-14">
         <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-8">
           <h1 className="text-3xl font-bold text-slate-900">Service locations</h1>
@@ -76,9 +81,7 @@ export default function LocationsPage() {
               placeholder="Type city name (Google Places)"
             />
             <p className="mt-2 text-xs text-slate-500">
-              {selectedCity
-                ? `Showing locations near ${cityQueryFromLabel(selectedCity)}`
-                : "Choose a city to filter locations"}
+              {cityLabel ? `Showing locations near ${cityLabel}` : "Choose a city to filter locations"}
               {" · "}
               {locations.length} location(s)
             </p>
@@ -86,12 +89,38 @@ export default function LocationsPage() {
 
           {loading ? (
             <p className="mt-8 text-sm text-slate-600">Loading locations…</p>
+          ) : error ? (
+            <div className="mt-8 rounded-xl border border-rose-200 bg-rose-50 p-6 text-center">
+              <p className="text-sm font-semibold text-rose-800">{error}</p>
+              <button
+                type="button"
+                onClick={() => loadLocations(selectedCity)}
+                className="mt-3 rounded-lg bg-rose-600 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-700"
+              >
+                Retry
+              </button>
+            </div>
           ) : !grouped.length ? (
-            <p className="mt-8 rounded-xl border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-600">
-              {selectedCity
-                ? `No saved locations for ${cityQueryFromLabel(selectedCity)} yet. Try another city or ask admin to add points.`
-                : "Select a city above to see service locations."}
-            </p>
+            <div className="mt-8 rounded-xl border border-dashed border-slate-300 bg-white p-8 text-center">
+              <p className="text-sm text-slate-600">
+                {cityLabel
+                  ? `No pickup points listed for ${cityLabel} yet. Try Bengaluru, Coimbatore, or another served city.`
+                  : "Select a city above to see service locations."}
+              </p>
+              {cityLabel ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedCity("");
+                    localStorage.removeItem("cabzii-selected-location");
+                    loadLocations("");
+                  }}
+                  className="mt-4 text-sm font-semibold text-[var(--emt-primary)] hover:underline"
+                >
+                  View all service locations
+                </button>
+              ) : null}
+            </div>
           ) : (
             <div className="mt-8 grid gap-6 md:grid-cols-2">
               {grouped.map(([cityName, locs]) => (
@@ -112,7 +141,6 @@ export default function LocationsPage() {
           )}
         </div>
       </section>
-      <Footer />
-    </main>
+    </div>
   );
 }

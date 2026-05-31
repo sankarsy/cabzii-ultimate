@@ -14,10 +14,10 @@ export function cabDetailMetadata(cab, id) {
     };
   }
 
-  const title = cab.seoTitle || `${cab.title} – ${cab.type} Cab Booking`;
+  const title = cab.seoTitle || `Book ${cab.title} in ${cab.city || "South India"} | Taxi & Outstation | cabzii.in`;
   const description =
     cab.seoDescription ||
-    `Book ${cab.title} by ${cab.vendor}. Local & outstation packages on cabzii.in.`;
+    `Rent ${cab.title} — ${cab.type} taxi car with AC, local 4hr/8hr & outstation packages from ${cab.vendor} on cabzii.in.`;
   const keywords = (cab.seo || "")
     .split(",")
     .map((s) => s.trim())
@@ -38,7 +38,13 @@ export function cabDetailMetadata(cab, id) {
       description,
       urlPath: `/cabs/${id}`,
       image: image || undefined,
-      price: cab.price
+      price: cab.price,
+      ...(cab.originalPrice && Number(cab.originalPrice) > Number(cab.price)
+        ? { lowPrice: cab.price, highPrice: cab.originalPrice }
+        : {}),
+      ratingValue: cab.rating,
+      reviewCount: cab.trips ? Math.min(Number(cab.trips), 9999) : undefined,
+      category: `${cab.type || "Cab"} · Taxi Booking`
     })
   };
 }
@@ -56,10 +62,12 @@ export function driverDetailMetadata(driver, id) {
     };
   }
 
-  const title = driver.seoTitle || `${driver.name} – Professional Driver Booking`;
+  const title =
+    driver.seoTitle ||
+    `Hire ${driver.name} Acting Driver in ${driver.city || "South India"} | Chauffeur on Your Car | cabzii.in`;
   const description =
     driver.seoDescription ||
-    `Book ${driver.name} on cabzii.in. Acting driver packages with transparent pricing.`;
+    `Professional acting driver for your ${driver.name} in ${driver.city || "South India"}. Same package fares as cab booking on cabzii.in.`;
   const keywords = (driver.seo || "")
     .split(",")
     .map((s) => s.trim())
@@ -76,11 +84,16 @@ export function driverDetailMetadata(driver, id) {
       imageAlt: driver.name
     }),
     jsonLd: productJsonLd({
-      name: driver.name,
+      name: `${driver.name} — Acting Driver`,
       description,
       urlPath: `/drivers/${id}`,
       image: image || undefined,
-      price: driver.pricing?.day || driver.pricing?.hourly
+      price: driver.pricing?.day || driver.pricing?.hourly,
+      lowPrice: driver.pricing?.hourly,
+      highPrice: driver.pricing?.day,
+      ratingValue: driver.rating,
+      reviewCount: driver.trips ? Math.min(Number(driver.trips), 9999) : undefined,
+      category: "Acting Driver & Chauffeur Service"
     })
   };
 }
@@ -89,20 +102,20 @@ export function packageDetailMetadata(pkg, id) {
   if (!pkg) {
     return {
       metadata: buildPageMetadata({
-        title: "Tour Package Not Found",
-        description: "This tour package is not available on Cabzii.",
-        path: `/packages/${id}`,
+        title: "Holiday Package Not Found",
+        description: "This holiday package is not available on Cabzii.",
+        path: `/holidays/${id}`,
         noindex: true
       }),
       jsonLd: null
     };
   }
 
-  const path = `/packages/${id}`;
-  const title = pkg.seoTitle || `${pkg.name} – Tour Package`;
+  const path = `/holidays/${id}`;
+  const title = pkg.seoTitle || `${pkg.name} – Holiday Package | cabzii.in`;
   const description =
     pkg.seoDescription ||
-    `Book ${pkg.name} (${pkg.duration}) with ${pkg.vendor} on cabzii.in.`;
+    `Book ${pkg.name} with ${pkg.vendor} on cabzii.in. Toll, permit and driver bata billed separately.`;
   const keywords = (pkg.seo || "")
     .split(",")
     .map((s) => s.trim())
@@ -123,7 +136,11 @@ export function packageDetailMetadata(pkg, id) {
       description,
       urlPath: path,
       image: image || undefined,
-      price: pkg.price
+      price: pkg.price,
+      ...(pkg.originalPrice && Number(pkg.originalPrice) > Number(pkg.price)
+        ? { lowPrice: pkg.price, highPrice: pkg.originalPrice }
+        : {}),
+      category: "Holiday Tour Package"
     })
   };
 }

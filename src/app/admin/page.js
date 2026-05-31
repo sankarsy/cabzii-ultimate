@@ -7,7 +7,10 @@ import AdminCatalogPanel from "../../components/admin/AdminCatalogPanel";
 import AdminCustomers from "../../components/admin/AdminCustomers";
 import AdminMasterData from "../../components/admin/AdminMasterData";
 import AdminReports from "../../components/admin/AdminReports";
+import AdminShell from "../../components/admin/AdminShell";
 import AdminSiteSettings from "../../components/admin/AdminSiteSettings";
+import CabziiLogo from "../../components/brand/CabziiLogo";
+import { BRAND } from "../../lib/brand";
 import { CATALOG_TAB_KEYS, CATALOG_TABS } from "../../lib/adminCatalogConfig";
 import { clearSession, getToken } from "../../lib/auth";
 
@@ -101,118 +104,105 @@ export default function AdminPage() {
     { key: "locations", label: "locations", tab: "master", section: "locations" }
   ];
 
-  return (
-    <main className="min-h-screen bg-linear-to-b from-slate-50 via-sky-50/60 to-violet-50/40">
-      {token ? (
-        <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur">
-          <div className="w-full px-4 md:px-6 lg:px-8">
-            <div className="flex min-h-[64px] flex-wrap items-center justify-between gap-3 py-2 text-sm text-slate-700">
-              <p>
-                Logged in as <span className="font-semibold">{user?.mobileNumber || user?.phone}</span> ({user?.role})
-                {user?.vendorName ? ` - ${user.vendorName}` : ""}
-              </p>
-              <button
-                type="button"
-                onClick={logout}
-                className="rounded-lg border border-slate-300 px-3 py-1.5 font-semibold hover:bg-slate-100"
-              >
-                Logout
-              </button>
-            </div>
+  const panel = (
+    <>
+      {authChecked && !token ? (
+        <div className="mx-auto mt-6 max-w-lg rounded-xl border border-slate-200 bg-white p-6 shadow-[var(--cabzii-shadow-card)]">
+          <h2 className="text-lg font-bold text-slate-900">{BRAND.name} admin</h2>
+          <p className="mt-2 text-sm text-slate-600">
+            Sign in as travel partner or super admin to manage {BRAND.domain}.
+          </p>
+          <div className="mt-4 flex flex-wrap gap-3">
+            <Link
+              href="/login?role=partner"
+              className="rounded-lg bg-[var(--cabzii-brand)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--cabzii-brand-hover)]"
+            >
+              Travel Partner Login
+            </Link>
+            <Link
+              href="/login?role=admin"
+              className="rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-800 hover:bg-slate-50"
+            >
+              Admin Login
+            </Link>
           </div>
-        </header>
-      ) : null}
-
-      <section className={`py-10 md:py-14 ${token ? "pt-6 md:pt-8" : ""}`}>
-        <div className="w-full px-4 md:px-6 lg:px-8">
-
-          {authChecked && !token ? (
-            <div className="mt-6 rounded-xl border border-slate-200 bg-white p-6 shadow-md">
-              <h2 className="text-lg font-bold text-slate-900">Sign in required</h2>
-              <p className="mt-2 text-sm text-slate-600">
-                Choose Travel Partner or Admin login on the sign-in page to access this panel.
-              </p>
-              <div className="mt-4 flex flex-wrap gap-3">
-                <Link
-                  href="/login?role=partner"
-                  className="rounded-lg bg-[#0056D2] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#0047b3]"
-                >
-                  Travel Partner Login
-                </Link>
-                <Link
-                  href="/login?role=admin"
-                  className="rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-800 hover:bg-slate-50"
-                >
-                  Admin Login
-                </Link>
-              </div>
-            </div>
-          ) : token ? (
-            <>
-              <div className="grid gap-4 lg:grid-cols-[260px_minmax(0,1fr)]">
-                <aside className="sticky top-24 h-fit self-start rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
-                  <nav className="space-y-1">
-                    {sidebarItems
-                      .filter((item) => !item.superAdminOnly || isSuperAdmin)
-                      .map((item) => {
-                        const tab = item.tab || item.key;
-                        const section = item.section || "";
-                        const isActive =
-                          activeTab === tab &&
-                          (!section || (tab === "master" && masterSection === section));
-                        return (
-                          <button
-                            key={item.key}
-                            type="button"
-                            onClick={() => {
-                              setActiveTab(tab);
-                              if (tab === "master") setMasterSection(section || "vendors");
-                              setPanelMode("list");
-                              setInitialEditId("");
-                              setInitialViewId("");
-                            }}
-                            className={`flex w-full items-center rounded-lg px-3 py-2 text-left text-sm font-semibold transition ${
-                              isActive
-                                ? "bg-sky-600 text-white"
-                                : "text-slate-700 hover:bg-slate-100"
-                            }`}
-                          >
-                            {item.label}
-                          </button>
-                        );
-                      })}
-                  </nav>
-                </aside>
-
-                <div>
-                  {activeTab === "reports" ? (
-                    <AdminReports token={token} isSuperAdmin={isSuperAdmin} />
-                  ) : activeTab === "customers" ? (
-                    <AdminCustomers token={token} isSuperAdmin={isSuperAdmin} />
-                  ) : activeTab === "master" ? (
-                    <AdminMasterData
-                      token={token}
-                      isSuperAdmin={isSuperAdmin}
-                      initialSection={masterSection}
-                    />
-                  ) : activeTab === "settings" ? (
-                    <AdminSiteSettings token={token} isSuperAdmin={isSuperAdmin} />
-                  ) : CATALOG_TAB_KEYS.includes(activeTab) ? (
-                    <AdminCatalogPanel
-                      tabKey={activeTab}
-                      token={token}
-                      isSuperAdmin={isSuperAdmin}
-                      initialEditId={initialEditId}
-                      viewId={initialViewId}
-                      pageMode={panelMode}
-                    />
-                  ) : null}
-                </div>
-              </div>
-            </>
-          ) : null}
         </div>
-      </section>
+      ) : token ? (
+        <div className="grid gap-4 lg:grid-cols-[260px_minmax(0,1fr)]">
+          <aside className="sticky top-20 h-fit self-start rounded-xl border border-slate-200 bg-white p-3 shadow-[var(--cabzii-shadow-card)]">
+            <p className="mb-2 px-2 text-xs font-bold uppercase tracking-wide text-slate-500">Menu</p>
+            <nav className="space-y-1">
+              {sidebarItems
+                .filter((item) => !item.superAdminOnly || isSuperAdmin)
+                .map((item) => {
+                  const tab = item.tab || item.key;
+                  const section = item.section || "";
+                  const isActive =
+                    activeTab === tab && (!section || (tab === "master" && masterSection === section));
+                  return (
+                    <button
+                      key={item.key}
+                      type="button"
+                      onClick={() => {
+                        setActiveTab(tab);
+                        if (tab === "master") setMasterSection(section || "vendors");
+                        setPanelMode("list");
+                        setInitialEditId("");
+                        setInitialViewId("");
+                      }}
+                      className={`flex w-full items-center rounded-lg px-3 py-2 text-left text-sm font-semibold transition ${
+                        isActive
+                          ? "bg-[var(--cabzii-brand)] text-white"
+                          : "text-slate-700 hover:bg-slate-100"
+                      }`}
+                    >
+                      {item.label}
+                    </button>
+                  );
+                })}
+            </nav>
+          </aside>
+          <div className="min-w-0">
+            {activeTab === "reports" ? (
+              <AdminReports token={token} isSuperAdmin={isSuperAdmin} />
+            ) : activeTab === "customers" ? (
+              <AdminCustomers token={token} isSuperAdmin={isSuperAdmin} />
+            ) : activeTab === "master" ? (
+              <AdminMasterData token={token} isSuperAdmin={isSuperAdmin} initialSection={masterSection} />
+            ) : activeTab === "settings" ? (
+              <AdminSiteSettings token={token} isSuperAdmin={isSuperAdmin} />
+            ) : CATALOG_TAB_KEYS.includes(activeTab) ? (
+              <AdminCatalogPanel
+                tabKey={activeTab}
+                token={token}
+                isSuperAdmin={isSuperAdmin}
+                initialEditId={initialEditId}
+                viewId={initialViewId}
+                pageMode={panelMode}
+              />
+            ) : null}
+          </div>
+        </div>
+      ) : null}
+    </>
+  );
+
+  if (token) {
+    return (
+      <AdminShell user={user} onLogout={logout}>
+        {panel}
+      </AdminShell>
+    );
+  }
+
+  return (
+    <main className="min-h-screen bg-[var(--cabzii-bg)]">
+      <header className="border-b border-white/10 bg-[var(--cabzii-header)] px-4 py-4">
+        <Link href="/" className="inline-block rounded-lg bg-white px-2.5 py-1">
+          <CabziiLogo showDomain />
+        </Link>
+      </header>
+      <div className="px-4 md:px-6 lg:px-8">{panel}</div>
     </main>
   );
 }

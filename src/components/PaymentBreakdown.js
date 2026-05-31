@@ -60,12 +60,6 @@ export default function PaymentBreakdown({
             <dd className="max-w-[55%] text-right font-medium leading-snug">{selection.pickup}</dd>
           </div>
         ) : null}
-        {selection?.perPersonPay != null && selection.persons > 1 ? (
-          <div className="flex justify-between gap-2 text-slate-500">
-            <dt>Per person</dt>
-            <dd>{inr(selection.perPersonPay)}</dd>
-          </div>
-        ) : null}
         {discountPct > 0 ? (
           <>
             <div className="flex justify-between gap-2 text-slate-500">

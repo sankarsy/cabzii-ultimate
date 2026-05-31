@@ -10,7 +10,8 @@ export const SERVICE_URL_PREFIXES = new Set([
   "chauffeur-service",
   "tempo-traveller",
   "hourly-rental",
-  "tour-packages"
+  "tour-packages",
+  "holiday-packages"
 ]);
 
 /** /travels/{city} or /travel/{city} → /cab-booking/{city} */
@@ -40,6 +41,15 @@ export function resolveSeoAliasPath(pathname) {
 
   if (parts.length === 1) {
     const slug = parts[0];
+    const cabBookingGuide = slug.match(/^cab-booking-in-chennai-complete-guide-2026$/i);
+    if (cabBookingGuide) return "/blog/cab-booking-in-chennai-complete-guide-2026";
+
+    const cabBookingIn = slug.match(/^cab-booking-in-(.+)$/i);
+    if (cabBookingIn) return `/cab-booking/${cabBookingIn[1].toLowerCase()}`;
+
+    const actingDriverIn = slug.match(/^acting-driver-in-(.+)$/i);
+    if (actingDriverIn) return `/acting-driver/${actingDriverIn[1].toLowerCase()}`;
+
     const travelsIn = slug.match(/^travels-in-(.+)$/i);
     if (travelsIn) return `/cab-booking/${travelsIn[1].toLowerCase()}`;
 

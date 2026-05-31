@@ -1,20 +1,16 @@
 import Link from "next/link";
-import Footer from "../Footer";
-import Navbar from "../Navbar";
 import Breadcrumbs from "./Breadcrumbs";
 import FaqSection from "./FaqSection";
 
 export default function RouteLandingPage({ route, faqs }) {
   const { fromCity, toCity, distance, duration, sedanFrom, suvFrom, slug } = route;
   const path = `/routes/${slug}`;
-  const searchHref = `/search?q=${encodeURIComponent(`one way cab ${fromCity.name} ${toCity.name}`)}&pickup=${encodeURIComponent(fromCity.name)}&drop=${encodeURIComponent(toCity.name)}`;
+  const searchHref = `/cabs/results?serviceTripType=outstation&from=${encodeURIComponent(fromCity.name)}&to=${encodeURIComponent(toCity.name)}&date=${new Date().toISOString().split("T")[0]}&time=09:00`;
   const reverseSlug = `${toCity.slug}-to-${fromCity.slug}-cab`;
   const reversePath = `/routes/${reverseSlug}`;
 
   return (
-    <main className="min-h-screen bg-white">
-      <Navbar />
-      <article className="mx-auto max-w-4xl px-4 py-10 md:py-14">
+    <article className="mx-auto max-w-4xl px-4 py-10 md:py-14">
         <Breadcrumbs
           items={[
             { name: "Home", path: "/" },
@@ -35,7 +31,7 @@ export default function RouteLandingPage({ route, faqs }) {
         <div className="mt-6 flex flex-wrap gap-3">
           <Link
             href={searchHref}
-            className="rounded-full bg-[#0056D2] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#0046b0]"
+            className="rounded-full bg-[var(--cabzii-brand)] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#0046b0]"
           >
             Book one way cab
           </Link>
@@ -103,8 +99,6 @@ export default function RouteLandingPage({ route, faqs }) {
             {toCity.name} → {fromCity.name} cab
           </Link>
         </section>
-      </article>
-      <Footer />
-    </main>
+    </article>
   );
 }

@@ -5,7 +5,8 @@ import { SEO_SERVICES, servicePath } from "./services";
 /** Primary catalog pages — always link from hub sections. */
 export const CORE_INTERNAL_LINKS = [
   { href: "/cabs", label: "Book a cab", desc: "Sedan, SUV, Innova & more" },
-  { href: "/packages", label: "Tour packages", desc: "Weekend & pilgrimage tours" },
+  { href: "/holidays", label: "Holiday packages", desc: "Pilgrimage, beach & hill trips" },
+  { href: "/holidays?category=pilgrimage", label: "Pilgrimage tours", desc: "Tirupati, Rameswaram, Shirdi & more" },
   { href: "/drivers", label: "Hire a driver", desc: "Acting & chauffeur drivers" },
   { href: "/search?q=offers", label: "Offers & deals", desc: "Discounted fares" },
   { href: "/locations", label: "Service locations", desc: "Pickup points by city" },
@@ -109,7 +110,7 @@ export function relatedLinksForPage(page) {
   const base = [
     { href: "/", label: "Home" },
     { href: "/cabs", label: "All cabs" },
-    { href: "/packages", label: "Tour packages" },
+    { href: "/holidays", label: "Holiday packages" },
     { href: "/drivers", label: "Drivers" }
   ];
 
@@ -127,7 +128,7 @@ export function relatedLinksForPage(page) {
   if (page === "packages") {
     return [
       ...base,
-      { href: `/services/tour-packages/${chennai.slug}`, label: "Tour packages Chennai" },
+      { href: `/services/holiday-packages/${chennai.slug}`, label: "Holiday packages Chennai" },
       { href: `/cab-booking/chennai`, label: "Cab to tour pickup" },
       ...cabBookingLinks(6),
       ...routeLinks(4)

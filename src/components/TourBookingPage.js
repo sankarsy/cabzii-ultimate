@@ -2,19 +2,20 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import Footer from "./Footer";
-import Navbar from "./Navbar";
 import PaymentBreakdown from "./PaymentBreakdown";
 import PickupPlaceInput from "./PickupPlaceInput";
 import SimilarPackages from "./SimilarPackages";
+import AdditionalChargesGrid from "./AdditionalChargesGrid";
 import { resolveMediaUrl } from "../lib/media";
-import { CalendarIcon, MapPinIcon, UsersGroupIcon } from "./icons";
+import { MapPinIcon } from "./icons";
+import { buildTourChargeItems } from "../lib/productCharges";
 import {
   CARD_BOOK_BTN_CLASS,
   MetaPill,
   ProductImageFrame,
   ProductMetaBlock
 } from "./productCardShared";
+import { cabTypeById, categoryLabel, resolveHolidayCabTypes } from "../lib/holidays";
 import {
   MAX_TOUR_PERSONS,
   MIN_TOUR_PERSONS,
@@ -30,7 +31,7 @@ const FALLBACK_TOUR_IMAGE =
 const SECTION_LINKS = [
   { href: "#booking-details", label: "Booking" },
   { href: "#about", label: "About" },
-  { href: "#similar-packages", label: "Similar tours" }
+  { href: "#similar-packages", label: "Similar packages" }
 ];
 
 function firstParam(value) {
@@ -47,6 +48,16 @@ export default function TourBookingPage({ searchParams, initialPackage = null })
   const [travelDate, setTravelDate] = useState("");
   const [persons, setPersons] = useState(2);
   const [formError, setFormError] = useState("");
+
+  const cabTypes = useMemo(() => (pkg ? resolveHolidayCabTypes(pkg) : []), [pkg]);
+  const [cabTypeId, setCabTypeId] = useState("sedan");
+
+  useEffect(() => {
+    if (cabTypes.length) setCabTypeId(cabTypes[0].id);
+  }, [pkg?._id, cabTypes]);
+
+  const selectedCab = useMemo(() => cabTypeById(cabTypes, cabTypeId), [cabTypes, cabTypeId]);
+  const cabMultiplier = selectedCab?.multiplier ?? 1;
 
   useEffect(() => {
     if (initialPackage) {
@@ -91,29 +102,46 @@ export default function TourBookingPage({ searchParams, initialPackage = null })
 
   const pkgId = pkg ? String(pkg._id ?? pkg.id ?? "") : "";
   const discountPct = Number(pkg?.discountPercentage) || 0;
+  const listBase = Number(pkg?.originalPrice) > 0 ? Number(pkg.originalPrice) : Number(pkg?.price) || 0;
   const totals = useMemo(
-    () => (pkg ? calculateTourTotals(pkg.price, persons, discountPct) : null),
-    [pkg, persons, discountPct]
+    () => (pkg ? calculateTourTotals(listBase, persons, discountPct, cabMultiplier) : null),
+    [pkg, persons, discountPct, cabMultiplier, listBase]
   );
 
   const selection = useMemo(
-    () => (pkg && totals ? tourSelectionFromTotals(pkg, totals, { pickup, date: travelDate }) : null),
-    [pkg, totals, pickup, travelDate]
+    () =>
+      pkg && totals
+        ? tourSelectionFromTotals(pkg, totals, {
+            pickup,
+            date: travelDate,
+            cabType: selectedCab?.id,
+            cabLabel: selectedCab?.label
+          })
+        : null,
+    [pkg, totals, pickup, travelDate, selectedCab]
   );
 
   const payHref = useMemo(() => {
     if (!pkgId || !totals) return undefined;
     if (!pickup.trim()) return undefined;
-    const q = buildTourPaymentParams(pkgId, { totals, pickup, date: travelDate });
+    const q = buildTourPaymentParams(pkgId, {
+      totals,
+      pickup,
+      date: travelDate,
+      cabType: selectedCab?.id,
+      cabLabel: selectedCab?.label
+    });
     return `/payment?${q.toString()}`;
-  }, [pkgId, totals, pickup, travelDate]);
+  }, [pkgId, totals, pickup, travelDate, selectedCab]);
 
-  const tagLabel =
-    pkg?.tag || (Array.isArray(pkg?.tags) && pkg.tags[0] ? String(pkg.tags[0]) : "Tour");
+  const tagLabel = pkg?.category
+    ? categoryLabel(pkg.category)
+    : pkg?.tag || (Array.isArray(pkg?.tags) && pkg.tags[0] ? String(pkg.tags[0]) : "Holiday");
+  const tourChargeItems = buildTourChargeItems();
   const imageSrc = resolveMediaUrl(pkg?.image) || FALLBACK_TOUR_IMAGE;
   const d = Math.min(99, Math.max(0, discountPct));
 
-  const seoTitle = pkg?.seoTitle || (pkg ? `${pkg.name} – Tour Package` : "Tour");
+  const seoTitle = pkg?.seoTitle || (pkg ? `${pkg.name} – Holiday Package` : "Holiday");
   const seoDescription =
     pkg?.seoDescription ||
     (pkg ? `Book ${pkg.name} with ${pkg.vendor}. Choose pickup and number of travellers on cabzii.in.` : "");
@@ -123,23 +151,16 @@ export default function TourBookingPage({ searchParams, initialPackage = null })
     .filter(Boolean);
 
   const imageBadges = pkg ? (
-    <>
-      <div className="absolute left-1.5 top-1.5 flex items-center gap-1">
-        {d > 0 && (
-          <span className="rounded-md bg-[#0056D2] px-1.5 py-0.5 text-[8px] font-bold text-white shadow">
-            {d}% OFF
-          </span>
-        )}
-        <span className="rounded-md bg-white/10 px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-wide text-white backdrop-blur">
-          {tagLabel}
+    <div className="absolute left-1.5 top-1.5 flex items-center gap-1">
+      {d > 0 && (
+        <span className="rounded-md bg-[var(--cabzii-brand)] px-1.5 py-0.5 text-[8px] font-bold text-white shadow">
+          {d}% OFF
         </span>
-      </div>
-      {pkg.duration ? (
-        <span className="absolute right-1.5 top-1.5 rounded-full bg-white px-1.5 py-0.5 text-[8px] font-semibold text-slate-700 shadow-sm">
-          {pkg.duration}
-        </span>
-      ) : null}
-    </>
+      )}
+      <span className="rounded-md bg-white/10 px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-wide text-white backdrop-blur">
+        {tagLabel}
+      </span>
+    </div>
   ) : null;
 
   const handleProceed = () => {
@@ -153,17 +174,15 @@ export default function TourBookingPage({ searchParams, initialPackage = null })
   };
 
   return (
-    <main className="min-h-screen bg-white">
-      <Navbar />
-      <section className="py-8 md:py-10">
-        <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-8">
+    <section className="bg-cabzii-page py-8 md:py-10">
+      <div className="mx-auto max-w-5xl px-4 md:px-6">
           <nav className="mb-4 text-xs text-slate-500" aria-label="Breadcrumb">
-            <Link href="/" className="hover:text-[#0056D2]">
+            <Link href="/" className="hover:text-[var(--cabzii-brand)]">
               Home
             </Link>
             <span className="mx-2">/</span>
-            <Link href="/packages" className="hover:text-[#0056D2]">
-              Tours
+            <Link href="/holidays" className="hover:text-[var(--cabzii-brand)]">
+              Holidays
             </Link>
             <span className="mx-2">/</span>
             <span className="text-slate-700">{pkg?.name ?? "Details"}</span>
@@ -171,19 +190,19 @@ export default function TourBookingPage({ searchParams, initialPackage = null })
 
           {loading ? (
             <div className="rounded-[18px] border border-slate-200 bg-white p-12 text-center text-sm text-slate-600">
-              Loading tour package…
+              Loading holiday package…
             </div>
           ) : loadError || !pkg ? (
             <div className="rounded-[18px] border border-amber-200 bg-amber-50 p-8 text-center">
               <p className="font-semibold text-amber-900">{loadError || "Package not available."}</p>
-              <Link href="/packages" className="mt-4 inline-block text-sm font-semibold text-[#0056D2] hover:underline">
-                ← Browse all tours
+              <Link href="/holidays" className="mt-4 inline-block text-sm font-semibold text-[var(--cabzii-brand)] hover:underline">
+                ← Browse all holidays
               </Link>
             </div>
           ) : (
             <>
               <header className="mb-5">
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-[#0056D2]">Tour package</p>
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--cabzii-brand)]">Holiday package</p>
                 <h1 className="mt-1 text-xl font-bold text-slate-900 sm:text-2xl">{seoTitle}</h1>
                 {seoDescription ? <p className="mt-1.5 max-w-3xl text-xs text-slate-600">{seoDescription}</p> : null}
               </header>
@@ -196,7 +215,7 @@ export default function TourBookingPage({ searchParams, initialPackage = null })
                   <a
                     key={link.href}
                     href={link.href}
-                    className="shrink-0 rounded-lg px-2.5 py-1 font-medium text-slate-600 transition hover:bg-slate-100 hover:text-[#0056D2]"
+                    className="shrink-0 rounded-lg px-2.5 py-1 font-medium text-slate-600 transition hover:bg-slate-100 hover:text-[var(--cabzii-brand)]"
                   >
                     {link.label}
                   </a>
@@ -213,11 +232,8 @@ export default function TourBookingPage({ searchParams, initialPackage = null })
                       imageClassName="h-[200px] w-full object-cover object-center sm:h-[240px]"
                     />
                     <ProductMetaBlock title={pkg.name} vendor={pkg.vendor}>
-                      {pkg.duration ? (
-                        <MetaPill icon={<CalendarIcon className="h-2.5 w-2.5" />} label={pkg.duration} />
-                      ) : null}
-                      <MetaPill icon={<UsersGroupIcon className="h-2.5 w-2.5" />} label="Per person fare" />
-                      <MetaPill icon={<MapPinIcon className="h-2.5 w-2.5" />} label="Flexible pickup" />
+                      {pkg.city ? <MetaPill icon={<MapPinIcon className="h-2.5 w-2.5" />} label={pkg.city} /> : null}
+                      <MetaPill label="Toll, permit & driver bata extra" />
                     </ProductMetaBlock>
                   </article>
 
@@ -227,10 +243,36 @@ export default function TourBookingPage({ searchParams, initialPackage = null })
                   >
                     <h2 className="text-base font-bold text-slate-900">Booking details</h2>
                     <p className="mt-1 text-xs text-slate-600">
-                      Enter pickup and how many people are travelling. Total updates automatically.
+                      Enter pickup, cab type and group size. Package fare is flat — toll, permit & driver bata are extra.
                     </p>
 
                     <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                      <div className="sm:col-span-2">
+                        <label className="mb-2 block text-xs font-semibold text-slate-700">
+                          Cab type <span className="text-rose-500">*</span>
+                        </label>
+                        <div className="flex flex-wrap gap-2">
+                          {cabTypes.map((cab) => (
+                            <button
+                              key={cab.id}
+                              type="button"
+                              onClick={() => setCabTypeId(cab.id)}
+                              className={`rounded-xl border px-3 py-2 text-left text-xs transition ${
+                                cabTypeId === cab.id
+                                  ? "border-[var(--cabzii-brand)] bg-blue-50 font-semibold text-[var(--cabzii-brand)]"
+                                  : "border-slate-200 bg-white text-slate-700 hover:border-slate-300"
+                              }`}
+                            >
+                              <span className="block font-semibold">{cab.label}</span>
+                              <span className="text-[10px] text-slate-500">{cab.seats} seats</span>
+                              {cab.multiplier > 1 ? (
+                                <span className="text-[10px] text-amber-700">+{Math.round((cab.multiplier - 1) * 100)}% fare</span>
+                              ) : null}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
                       <div className="sm:col-span-2">
                         <PickupPlaceInput value={pickup} onChange={setPickup} />
                       </div>
@@ -255,7 +297,7 @@ export default function TourBookingPage({ searchParams, initialPackage = null })
                             max={MAX_TOUR_PERSONS}
                             value={persons}
                             onChange={(e) => setPersons(clampTourPersons(e.target.value))}
-                            className="w-full rounded-lg border border-slate-200 px-3 py-2 text-center text-sm font-semibold outline-none focus:border-[#0056D2]"
+                            className="w-full rounded-lg border border-slate-200 px-3 py-2 text-center text-sm font-semibold outline-none focus:border-[var(--cabzii-brand)]"
                           />
                           <button
                             type="button"
@@ -268,8 +310,7 @@ export default function TourBookingPage({ searchParams, initialPackage = null })
                           </button>
                         </div>
                         <p className="mt-1 text-[10px] text-slate-500">
-                          ₹{totals?.perPersonPay.toLocaleString("en-IN")} per person × {totals?.persons} = ₹
-                          {totals?.total.toLocaleString("en-IN")}
+                          Package fare: ₹{totals?.total.toLocaleString("en-IN")} (excl. toll, permit & driver bata)
                         </p>
                       </div>
 
@@ -279,7 +320,7 @@ export default function TourBookingPage({ searchParams, initialPackage = null })
                           type="date"
                           value={travelDate}
                           onChange={(e) => setTravelDate(e.target.value)}
-                          className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-[#0056D2]"
+                          className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-[var(--cabzii-brand)]"
                         />
                       </div>
                     </div>
@@ -295,10 +336,10 @@ export default function TourBookingPage({ searchParams, initialPackage = null })
                     id="about"
                     className="scroll-mt-24 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:p-5"
                   >
-                    <h2 className="text-base font-bold text-slate-900">About this tour</h2>
+                    <h2 className="text-base font-bold text-slate-900">About this package</h2>
                     <p className="mt-2 text-xs leading-relaxed text-slate-600">
                       {seoDescription ||
-                        `Book ${pkg.name} (${pkg.duration}) with ${pkg.vendor} on cabzii.in. All-inclusive tour transport with clear per-person pricing.`}
+                        `Book ${pkg.name} with ${pkg.vendor} on cabzii.in. Flat package fare — toll, permit and driver bata billed separately.`}
                     </p>
                     {seoKeywords.length > 0 ? (
                       <div className="mt-4 flex flex-wrap gap-2">
@@ -313,16 +354,18 @@ export default function TourBookingPage({ searchParams, initialPackage = null })
                       </div>
                     ) : null}
                     <ul className="mt-3 grid gap-1.5 text-xs text-slate-600 sm:grid-cols-2">
-                      <li>✓ Per person transparent pricing</li>
+                      <li>✓ Flat package fare shown upfront</li>
+                      <li>✓ Toll, permit & driver bata as per actuals</li>
                       <li>✓ Pickup location of your choice</li>
                       <li>✓ Verified tour partner</li>
-                      <li>✓ Secure online booking</li>
                     </ul>
                   </article>
 
+                  <AdditionalChargesGrid items={tourChargeItems} />
+
                   <SimilarPackages
                     currentPackageId={pkgId}
-                    duration={pkg.duration}
+                    category={pkg.category}
                     vendor={pkg.vendor}
                   />
                 </div>
@@ -338,7 +381,7 @@ export default function TourBookingPage({ searchParams, initialPackage = null })
                       selection={selection}
                       showExtrasNote={false}
                       compact
-                      footerNote="Tour package price is all-inclusive per person. No extra km or hour charges."
+                      footerNote="Package fare payable now. Toll, permit & driver bata billed separately as per trip."
                     />
                     <button type="button" onClick={handleProceed} className={CARD_BOOK_BTN_CLASS}>
                       Continue to payment
@@ -348,10 +391,8 @@ export default function TourBookingPage({ searchParams, initialPackage = null })
               </div>
             </>
           )}
-        </div>
-      </section>
-      <Footer />
-    </main>
+      </div>
+    </section>
   );
 }
 

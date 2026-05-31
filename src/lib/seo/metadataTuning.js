@@ -3,34 +3,61 @@ import { SITE_NAME } from "./constants";
 /** Search-intent tuned titles & descriptions (canonical URLs unchanged). */
 export function tunedCabBookingTitle(city) {
   if (city.slug === "chennai") {
-    return "Travels in Chennai | Cab, Taxi & Car Rental Near You | Cabzii";
+    return "Cab Booking in Chennai | Online Taxi Service 24/7 | Cabzii";
   }
-  return `Cab Booking ${city.name} | Taxi & Outstation Cabs | Cabzii`;
+  return `Cab Booking in ${city.name} | Online Taxi & Outstation | Cabzii`;
 }
 
 export function tunedCabBookingDescription(city) {
   if (city.slug === "chennai") {
-    return `Book travels in Chennai — cabs, taxis, car rental, airport pickup and outstation trips. Compare sedan, SUV & Innova fares with verified drivers. Instant online booking on ${SITE_NAME}.`;
+    return `Cab booking in Chennai — compare Dzire, Ertiga, Innova & Tempo fares from ₹999. Airport pickup, outstation & local packages. Enter pickup, choose vehicle, login with OTP & book 24/7 on ${SITE_NAME}.`;
   }
-  return `Book cabs and taxis in ${city.name}, ${city.state} with ${SITE_NAME}. Airport pickup, outstation, local rental, acting driver and transparent fares — instant online booking.`;
+  return `Cab booking in ${city.name}, ${city.state} — online taxi with transparent fares. Airport transfer, outstation one way & round trip, local hourly packages. Book instantly on ${SITE_NAME}.`;
+}
+
+export function tunedCabBookingH1(city) {
+  if (city.slug === "chennai") {
+    return "Cab Booking in Chennai — Online Taxi & Outstation Cabs";
+  }
+  return `Cab Booking in ${city.name} — Online Taxi Service`;
+}
+
+export function tunedActingDriverTitle(city) {
+  if (city.slug === "tirupati") {
+    return "Acting Driver in Tirupati | Chauffeur on Hire | Cabzii";
+  }
+  return `Acting Driver in ${city.name} | Driver on Hire | Cabzii`;
+}
+
+export function tunedActingDriverDescription(city) {
+  return `Acting driver in ${city.name}, ${city.state} — verified chauffeurs for your car. Hourly, daily & outstation packages with allowance included. Book online on ${SITE_NAME}.`;
+}
+
+export function tunedActingDriverH1(city) {
+  return `Acting Driver in ${city.name} — Chauffeur on Hire`;
 }
 
 export function tunedCabBookingKeywords(city) {
   const cityLower = city.name.toLowerCase();
   const base = [
+    `cab booking in ${cityLower}`,
     `cab booking ${cityLower}`,
+    `online cab booking ${cityLower}`,
     `taxi ${cityLower}`,
+    `taxi service ${cityLower}`,
     `outstation cab ${cityLower}`,
     `airport taxi ${cityLower}`,
     "cabzii"
   ];
   if (city.slug === "chennai") {
     return [
-      "travels in chennai",
-      "travels near me chennai",
-      "travel agency chennai",
+      "cab booking in chennai",
+      "online cab booking chennai",
+      "taxi services in chennai",
+      "chennai taxi cab service",
+      "cab booking chennai",
       "car rental in chennai",
-      "cab rental chennai",
+      "travels in chennai",
       ...base
     ];
   }
@@ -42,7 +69,7 @@ export function tunedServiceTitle(service, city) {
     return "Car Rental in Chennai | Best Rates & Instant Booking | Cabzii";
   }
   if (service.slug === "cab-rental" && city.slug === "chennai") {
-    return "Cab Rental in Chennai | Daily & Outstation Packages | Cabzii";
+    return "Cab Booking in Chennai | Daily & Outstation Packages | Cabzii";
   }
   return `${service.name} in ${city.name} | Book Online | Cabzii`;
 }
@@ -52,7 +79,7 @@ export function tunedServiceDescription(service, city) {
     return `Book car rental in Chennai with sedan, SUV, Innova & tempo options. Daily rental, airport transfer and outstation trips with transparent fares from ₹${service.priceFrom?.toLocaleString("en-IN") || "1,200"}+. Compare vendors and book online on Cabzii.`;
   }
   if (service.slug === "cab-rental" && city.slug === "chennai") {
-    return `Cab rental in Chennai for local day trips, airport runs and outstation travel. Hourly and full-day packages with clear km limits — book instantly on Cabzii.`;
+    return `Cab booking in Chennai — local day trips, airport runs and outstation travel. Hourly and full-day packages from ₹${service.priceFrom?.toLocaleString("en-IN") || "1,400"}+ with clear km limits on Cabzii.`;
   }
   return `Book ${service.name.toLowerCase()} in ${city.name}, ${city.state}. ${service.highlights[0]}. Compare fares and book instantly on Cabzii with OTP login.`;
 }

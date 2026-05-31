@@ -1,13 +1,13 @@
+import TravelLayoutClient from "../../components/mmt/TravelLayoutClient";
 import { buildPageMetadata } from "../../lib/seo";
 
 export const metadata = buildPageMetadata({
-  title: "Tour Packages & Holiday Cabs",
-  description:
-    "Curated tour packages with premium transport. Book hill stations, heritage and weekend getaways on Cabzii.",
-  path: "/packages",
-  keywords: ["tour packages", "holiday cab", "travel package India", "cabzii tours"]
+  title: "Tour Packages & Holidays",
+  description: "Holiday packages — pilgrimage, beach and hill trips with cab type selection on cabzii.in.",
+  path: "/holidays",
+  keywords: ["holiday packages", "pilgrimage tour", "Tirupati package", "cabzii holidays"]
 });
 
 export default function PackagesLayout({ children }) {
-  return children;
+  return <TravelLayoutClient>{children}</TravelLayoutClient>;
 }

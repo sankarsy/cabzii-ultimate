@@ -6,6 +6,7 @@ import {
   breadcrumbJsonLd,
   buildPageMetadata,
   cityBySlug,
+  cityCabSearchJsonLd,
   faqFromPairs,
   getCityFaqs,
   localBusinessJsonLd,
@@ -46,10 +47,14 @@ export default function CabBookingCityPage({ params }) {
   const jsonLd = [
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
-      { name: "Locations", path: "/locations" },
+      { name: "Cabs", path: "/cabs" },
       { name: city.name, path }
     ]),
-    localBusinessJsonLd(city.name, city.region),
+    cityCabSearchJsonLd(city, {
+      description: tunedCabBookingDescription(city),
+      urlPath: path
+    }),
+    localBusinessJsonLd(city.name, city.state, path),
     faqFromPairs(faqs)
   ];
 

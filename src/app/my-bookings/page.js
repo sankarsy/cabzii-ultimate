@@ -2,8 +2,6 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import Footer from "../../components/Footer";
-import Navbar from "../../components/Navbar";
 import { authHeaders, formatMobileDisplay, getUser, isLoggedIn } from "../../lib/auth";
 import { useRouter } from "next/navigation";
 
@@ -32,7 +30,7 @@ export default function MyBookingsPage() {
       try {
         const res = await fetch("/api/bookings", { headers: authHeaders(), cache: "no-store" });
         const json = await res.json();
-        if (!res.ok) throw new Error(json?.message || "Could not load bookings");
+        if (!res.ok || json?.success === false) throw new Error(json?.message || "Could not load bookings");
         if (!cancelled) setBookings(Array.isArray(json?.data) ? json.data : []);
       } catch (err) {
         if (!cancelled) {
@@ -51,16 +49,23 @@ export default function MyBookingsPage() {
   const { upcoming, completed } = useMemo(() => {
     const up = [];
     const done = [];
+    const today = new Date().toISOString().split("T")[0];
     for (const b of bookings) {
-      if (b.status === "cancelled" || b.status === "confirmed") done.push(b);
-      else up.push(b);
+      if (b.status === "cancelled") {
+        done.push(b);
+      } else if (b.status === "confirmed" && b.date && b.date >= today) {
+        up.push(b);
+      } else if (b.status === "pending") {
+        up.push(b);
+      } else {
+        done.push(b);
+      }
     }
     return { upcoming: up, completed: done };
   }, [bookings]);
 
   return (
-    <main className="min-h-screen bg-linear-to-b from-slate-50 via-sky-50/60 to-violet-50/40">
-      <Navbar />
+    <div className="mx-auto max-w-5xl px-4 py-8">
       <section className="py-8 md:py-12">
         <div className="mx-auto max-w-4xl px-4 md:px-6 lg:px-8">
           <h1 className="text-2xl font-bold text-slate-900">My Bookings</h1>
@@ -91,8 +96,7 @@ export default function MyBookingsPage() {
           </Link>
         </div>
       </section>
-      <Footer />
-    </main>
+    </div>
   );
 }
 
