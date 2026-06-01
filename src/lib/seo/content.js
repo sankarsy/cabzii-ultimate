@@ -1,5 +1,25 @@
 import { SEO_SERVICES } from "./services";
 
+/** Homepage visible FAQs — must match faqJsonLd() for rich results. */
+export const HOME_PAGE_FAQS = [
+  [
+    "How do I book an outstation cab?",
+    "Select Outstation on the home page, enter pickup and drop, date & time, then choose a cab from results."
+  ],
+  [
+    "Can I book airport pickup?",
+    "Use the Airport tab, pick direction (pickup or drop), and search available cabs."
+  ],
+  [
+    "What is hourly rental?",
+    "Book a cab for 4, 8 or 12 hours within a city — ideal for weddings, meetings or local errands."
+  ],
+  [
+    "Is OTP login required?",
+    "Yes. Login with your mobile number to confirm booking and view My Trips."
+  ]
+];
+
 export function getCityFaqs(city, variant = "cab") {
   const name = city.name;
   if (variant === "driver") {

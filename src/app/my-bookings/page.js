@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { authHeaders, formatMobileDisplay, getUser, isLoggedIn } from "../../lib/auth";
+import { authHeaders, buildLoginHref, formatMobileDisplay, getUser, isLoggedIn } from "../../lib/auth";
 import { useRouter } from "next/navigation";
 
 const STATUS_STYLES = {
@@ -20,7 +20,7 @@ export default function MyBookingsPage() {
 
   useEffect(() => {
     if (!isLoggedIn()) {
-      router.replace("/login?next=/my-bookings");
+      router.replace(buildLoginHref("/my-bookings", "customer"));
       return;
     }
     let cancelled = false;

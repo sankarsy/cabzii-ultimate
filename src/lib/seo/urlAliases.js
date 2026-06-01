@@ -32,7 +32,8 @@ export function resolveSeoAliasPath(pathname) {
   if (parts.length === 2) {
     const [prefix, city] = parts;
     if (SERVICE_URL_PREFIXES.has(prefix)) {
-      return `/services/${prefix}/${city}`;
+      const serviceSlug = prefix === "holiday-packages" ? "tour-packages" : prefix;
+      return `/services/${serviceSlug}/${city}`;
     }
     if (TRAVELS_URL_PREFIXES.has(prefix)) {
       return `/cab-booking/${city}`;

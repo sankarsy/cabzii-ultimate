@@ -97,8 +97,14 @@ export function buildPageMetadata({
       ? `${SITE_URL}${image.startsWith("/") ? image : `/${image}`}`
       : DEFAULT_OG_IMAGE;
 
+  /** Use absolute titles — child pages already include "| Cabzii" where needed. */
+  const titleMeta =
+    title.includes("| Cabzii") || title.startsWith("Cabzii —") || title.startsWith("Cabzii -")
+      ? { absolute: title }
+      : title;
+
   return {
-    title,
+    title: titleMeta,
     description,
     ...(keywords?.length ? { keywords } : {}),
     alternates: {
@@ -143,7 +149,7 @@ export function actingDriverDescription(cityName, state) {
 }
 
 export const homeMetadata = buildPageMetadata({
-  title: "Cabzii — Online Cab, Taxi & Driver Booking in South India",
+  title: "Cabzii — Online Cab, Taxi & Driver Booking in South India | cabzii.in",
   description:
     "Book cabs, taxis, airport transfers, outstation trips, acting drivers and tempo travellers in Chennai, Bengaluru, Hyderabad and 20+ cities. Transparent fares. Instant OTP booking on cabzii.in.",
   path: "/",

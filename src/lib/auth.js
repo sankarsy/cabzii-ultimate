@@ -215,3 +215,15 @@ export function validateSession() {
 
   return true;
 }
+
+/**
+ * @param {string} [next] — return URL after login
+ * @param {"customer"|"partner"|"admin"|null} [role] — skip hub when set (e.g. customer OTP for booking)
+ */
+export function buildLoginHref(next, role = null) {
+  const params = new URLSearchParams();
+  if (next) params.set("next", next);
+  if (role) params.set("role", role);
+  const q = params.toString();
+  return q ? `/login?${q}` : "/login";
+}

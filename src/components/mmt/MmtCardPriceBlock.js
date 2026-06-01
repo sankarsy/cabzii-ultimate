@@ -29,10 +29,12 @@ export default function MmtCardPriceBlock({ originalPrice, finalPrice, discountP
           ) : null}
         </div>
       ) : null}
-      <p className={`font-extrabold leading-tight text-slate-900 ${showDiscount ? "text-lg" : "text-xl sm:text-2xl"}`}>
+      <p className={`font-extrabold leading-tight text-slate-900 ${showDiscount ? "text-base sm:text-lg" : "text-lg sm:text-2xl"}`}>
         {formatINR(final)}
       </p>
-      <p className="text-[10px] leading-tight text-slate-500">incl. taxes &amp; charges</p>
+      <p className={`leading-tight text-slate-500 ${compact ? "hidden text-[10px] sm:block" : "text-[10px]"}`}>
+        incl. taxes &amp; charges
+      </p>
     </div>
   );
 }

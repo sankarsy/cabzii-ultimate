@@ -1,3 +1,4 @@
+import { HOME_PAGE_FAQS } from "./content";
 import {
   SITE_URL,
   SITE_NAME,
@@ -246,24 +247,7 @@ export function taxiServiceJsonLd() {
 }
 
 export function faqJsonLd() {
-  return faqFromPairs([
-    [
-      "How do I book a cab on Cabzii?",
-      "Enter pickup and destination on cabzii.in, choose a cab or service, login with mobile OTP, and confirm payment."
-    ],
-    [
-      "Do I need an account to book?",
-      "Yes. Login with your 10-digit mobile number and a one-time OTP to complete a booking."
-    ],
-    [
-      "Can I hire an acting driver?",
-      "Yes. Cabzii offers professional acting drivers and chauffeurs for local and outstation trips with transparent package fares."
-    ],
-    [
-      "Does Cabzii serve South Indian cities?",
-      "Yes. Cabzii covers Chennai, Bengaluru, Hyderabad, Coimbatore, Madurai, Trichy, Mysore, Pondicherry, Tirupati and more."
-    ]
-  ]);
+  return faqFromPairs(HOME_PAGE_FAQS);
 }
 
 export function localBusinessJsonLd(cityName, cityRegion, urlPath) {

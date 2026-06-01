@@ -128,7 +128,7 @@ export function relatedLinksForPage(page) {
   if (page === "packages") {
     return [
       ...base,
-      { href: `/services/holiday-packages/${chennai.slug}`, label: "Holiday packages Chennai" },
+      { href: `/services/tour-packages/${chennai.slug}`, label: "Holiday packages Chennai" },
       { href: `/cab-booking/chennai`, label: "Cab to tour pickup" },
       ...cabBookingLinks(6),
       ...routeLinks(4)

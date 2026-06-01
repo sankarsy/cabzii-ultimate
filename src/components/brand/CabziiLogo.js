@@ -5,9 +5,9 @@ import { BRAND } from "../../lib/brand";
  * @param {{ className?: string, compact?: boolean, onDark?: boolean, showDomain?: boolean }} props
  */
 export default function CabziiLogo({ className = "", compact = false, onDark = false, showDomain = true }) {
-  const cabClass = onDark ? "text-[var(--cabzii-red)]" : "text-[var(--cabzii-red)]";
-  const ziiClass = onDark ? "text-[var(--cabzii-orange)]" : "text-[var(--cabzii-orange)]";
-  const domainClass = onDark ? "text-white/70" : "text-slate-500";
+  const cabClass = "text-[var(--cabzii-red)]";
+  const ziiClass = "text-[var(--cabzii-orange)]";
+  const domainClass = onDark ? "text-white/80" : "text-slate-500";
 
   if (compact) {
     return (

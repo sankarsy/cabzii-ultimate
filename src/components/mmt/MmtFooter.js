@@ -43,8 +43,8 @@ const COLUMNS = [
 export default function MmtFooter() {
   return (
     <footer className="border-t border-slate-200 bg-white">
-      <div className="mx-auto w-full max-w-6xl px-4 py-12">
-        <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
+      <div className="section-shell py-10 sm:py-12">
+        <div className="grid grid-cols-1 gap-8 min-[420px]:grid-cols-2 md:grid-cols-4">
           {COLUMNS.map((col) => (
             <div key={col.title}>
               <h3 className="mb-3 text-sm font-bold text-slate-900">{col.title}</h3>

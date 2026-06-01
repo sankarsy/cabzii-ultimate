@@ -8,6 +8,11 @@ const SEO_PREFIX_REDIRECTS = {
   "/taxi-booking": "/cab-booking"
 };
 
+/** Legacy duplicate service slug → canonical tour-packages */
+const SERVICE_SLUG_REDIRECTS = {
+  "holiday-packages": "tour-packages"
+};
+
 export function middleware(request) {
   const { pathname } = request.nextUrl;
 
@@ -22,6 +27,14 @@ export function middleware(request) {
       const rest = pathname.slice(prefix.length);
       return NextResponse.redirect(new URL(`${target}${rest}`, request.url), 301);
     }
+  }
+
+  const serviceParts = pathname.split("/").filter(Boolean);
+  if (serviceParts[0] === "services" && serviceParts[1] && SERVICE_SLUG_REDIRECTS[serviceParts[1]]) {
+    const canonical = SERVICE_SLUG_REDIRECTS[serviceParts[1]];
+    const rest = serviceParts.slice(2).join("/");
+    const target = rest ? `/services/${canonical}/${rest}` : `/services/${canonical}`;
+    return NextResponse.redirect(new URL(target, request.url), 301);
   }
 
   const aliasTarget = resolveSeoAliasPath(pathname);
@@ -53,7 +66,8 @@ export function middleware(request) {
   if (token) return NextResponse.next();
 
   const login = new URL("/login", request.url);
-  login.searchParams.set("next", pathname);
+  login.searchParams.set("next", pathname + request.nextUrl.search);
+  login.searchParams.set("role", "customer");
   return NextResponse.redirect(login);
 }
 

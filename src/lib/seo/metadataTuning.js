@@ -30,11 +30,36 @@ export function tunedActingDriverTitle(city) {
 }
 
 export function tunedActingDriverDescription(city) {
+  if (city.slug === "chennai") {
+    return `Acting driver in Chennai — call driver & chauffeur on hire for your car. Hourly, daily and outstation packages with allowance included. Book online on ${SITE_NAME}.`;
+  }
+  if (city.slug === "tirupati") {
+    return `Acting driver in Tirupati for temple trips and outstation runs. Verified chauffeurs, daily packages and transparent fares on ${SITE_NAME}.`;
+  }
   return `Acting driver in ${city.name}, ${city.state} — verified chauffeurs for your car. Hourly, daily & outstation packages with allowance included. Book online on ${SITE_NAME}.`;
 }
 
 export function tunedActingDriverH1(city) {
   return `Acting Driver in ${city.name} — Chauffeur on Hire`;
+}
+
+export function tunedActingDriverKeywords(city) {
+  const cityLower = city.name.toLowerCase();
+  const base = [
+    `acting driver in ${cityLower}`,
+    `acting driver ${cityLower}`,
+    `call driver in ${cityLower}`,
+    `driver on hire ${cityLower}`,
+    `chauffeur ${cityLower}`,
+    "cabzii acting driver"
+  ];
+  if (city.slug === "chennai") {
+    return ["acting driver in chennai", "call driver in chennai", "acting driver chennai", ...base];
+  }
+  if (city.slug === "tirupati") {
+    return ["acting driver tirupati", "driver on hire tirupati", ...base];
+  }
+  return base;
 }
 
 export function tunedCabBookingKeywords(city) {

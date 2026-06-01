@@ -10,6 +10,21 @@ export const DOMESTIC_DESTINATION_MATCHERS = [
   { slug: "manali", label: "Manali", nameIncludes: "Manali", cityMatch: "Manali" }
 ];
 
+/** Reliable cover photos when package image is missing or broken */
+export const DOMESTIC_DESTINATION_IMAGES = {
+  tirupati:
+    "https://images.unsplash.com/photo-1582510003544-4c68e09d26c6?auto=format&fit=crop&w=400&h=280&q=80",
+  goa: "https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&w=400&h=280&q=80",
+  kerala:
+    "https://images.unsplash.com/photo-1602216058046-6313af38bfa0?auto=format&fit=crop&w=400&h=280&q=80",
+  rajasthan:
+    "https://images.unsplash.com/photo-1477587459743-55063adafc43?auto=format&fit=crop&w=400&h=280&q=80",
+  rameswaram:
+    "https://images.unsplash.com/photo-1587502537745-84a86e180511?auto=format&fit=crop&w=400&h=280&q=80",
+  manali:
+    "https://images.unsplash.com/photo-1626621341617-b13b62b9c320?auto=format&fit=crop&w=400&h=280&q=80"
+};
+
 export const INTERNATIONAL_DESTINATIONS = [
   {
     slug: "dubai",
@@ -22,21 +37,21 @@ export const INTERNATIONAL_DESTINATIONS = [
     slug: "singapore",
     name: "Singapore",
     priceFrom: 27999,
-    image: "https://images.unsplash.com/photo-1525629920041-4fffe988b9a0?auto=format&fit=crop&w=400&h=280&q=80",
+    image: "https://images.unsplash.com/photo-1529655683827-d9a09c081ba2?auto=format&fit=crop&w=400&h=280&q=80",
     href: "/flights?from=DEL&to=SIN"
   },
   {
     slug: "bangkok",
     name: "Bangkok",
     priceFrom: 18999,
-    image: "https://images.unsplash.com/photo-1552465011-b40e1d7e5776?auto=format&fit=crop&w=400&h=280&q=80",
+    image: "https://images.unsplash.com/photo-1508009603885-50cf7c579365?auto=format&fit=crop&w=400&h=280&q=80",
     href: "/flights?from=DEL&to=BKK"
   },
   {
     slug: "bali",
     name: "Bali",
     priceFrom: 32999,
-    image: "https://images.unsplash.com/photo-1537996194471-c480c8a963b0?auto=format&fit=crop&w=400&h=280&q=80",
+    image: "https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=400&h=280&q=80",
     href: "/holidays"
   },
   {
@@ -102,13 +117,13 @@ export function packageDisplayPrice(pkg) {
 export function buildDomesticDestinations(packages) {
   return DOMESTIC_DESTINATION_MATCHERS.map((matcher) => {
     const pkg = findPackage(packages, matcher);
-    const fallbackImage =
-      "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=400&h=280&q=80";
+    const cover = DOMESTIC_DESTINATION_IMAGES[matcher.slug] || DOMESTIC_DESTINATION_IMAGES.tirupati;
     return {
       slug: matcher.slug,
       name: matcher.label,
       priceFrom: pkg ? packageDisplayPrice(pkg) : 0,
-      image: pkg?.image || fallbackImage,
+      image: pkg?.image || cover,
+      fallbackImage: cover,
       href: pkg ? packageDetailHref(pkg) : `/holidays?category=pilgrimage`,
       packageName: pkg?.name || null
     };

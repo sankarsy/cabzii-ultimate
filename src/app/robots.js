@@ -1,13 +1,12 @@
 import { SITE_URL } from "../lib/seo";
 
 /**
- * Private/transactional sections and duplicate-content URLs that should never
- * be indexed. Public marketing pages (cities, services, routes, cabs, drivers,
- * packages, blog) stay fully crawlable.
+ * Private, transactional, duplicate or thin pages — not for indexing.
  */
 const DISALLOW = [
   "/admin",
   "/api/",
+  "/account",
   "/payment",
   "/booking",
   "/my-bookings",
@@ -15,10 +14,16 @@ const DISALLOW = [
   "/signin",
   "/search",
   "/tour-booking",
-  "/*?source=pwa", // PWA start_url — avoid duplicate of "/"
-  "/*?*sort=", // faceted/sorted listings
+  "/buses",
+  "/trains",
+  "/flights",
+  "/hotels",
+  "/cabs/results",
+  "/drivers/results",
+  "/*?source=pwa",
+  "/*?*sort=",
   "/*?*filter=",
-  "/*?*page=" // paginated query params (canonical lives on clean URLs)
+  "/*?*page="
 ];
 
 export default function robots() {
@@ -30,7 +35,6 @@ export default function robots() {
         disallow: DISALLOW
       },
       {
-        // Googlebot needs JS/CSS/images to render & rank pages correctly.
         userAgent: "Googlebot",
         allow: ["/", "/_next/static/", "/_next/image", "/images/"],
         disallow: DISALLOW

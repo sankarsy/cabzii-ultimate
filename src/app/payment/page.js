@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import PaymentBreakdown from "../../components/PaymentBreakdown";
-import { authHeaders, getToken, getUser, normalizeMobileInput } from "../../lib/auth";
+import { authHeaders, buildLoginHref, getToken, getUser, normalizeMobileInput } from "../../lib/auth";
 import { fetchJson } from "../../lib/apiClient";
 
 const CHECKOUT_KEY = "cabzii-checkout";
@@ -46,7 +46,7 @@ export default function PaymentPage({ searchParams }) {
     if (user?.mobileNumber) setPhone(user.mobileNumber);
     if (!getToken()) {
       const next = typeof window !== "undefined" ? window.location.pathname + window.location.search : "/payment";
-      router.replace(`/login?next=${encodeURIComponent(next)}`);
+      router.replace(buildLoginHref(next, "customer"));
       return;
     }
     try {

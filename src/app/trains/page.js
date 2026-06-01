@@ -8,9 +8,11 @@ export default function TrainsPage() {
     <MmtLayout>
       <div className="mx-auto max-w-3xl px-4 py-16 text-center">
         <h1 className="text-2xl font-bold">Train booking</h1>
-        <p className="mt-2 text-slate-600">IRCTC-style train booking is Phase 2. Use flights or cabs meanwhile.</p>
-        <Link href="/flights" className="mt-6 inline-block rounded-full bg-[var(--emt-primary)] px-8 py-3 font-bold text-white">
-          Search flights
+        <p className="mt-2 text-slate-600">
+          Train booking is coming soon on cabzii.in. Book cabs or outstation taxis for your trip in the meantime.
+        </p>
+        <Link href="/cabs" className="mt-6 inline-block rounded-full bg-[var(--emt-primary)] px-8 py-3 font-bold text-white">
+          Book a cab
         </Link>
       </div>
     </MmtLayout>

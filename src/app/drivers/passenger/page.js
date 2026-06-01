@@ -4,7 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import MmtDriverTripSummaryBar from "../../../components/mmt/MmtDriverTripSummaryBar";
 import { buildDriverFareSlabs, num } from "../../../lib/driverFare";
-import { getUser, isLoggedIn } from "../../../lib/auth";
+import { buildLoginHref, getUser, isLoggedIn } from "../../../lib/auth";
 import { resolveMediaUrl } from "../../../lib/media";
 import {
   driverSlabForTrip,
@@ -68,7 +68,7 @@ function DriverPassengerContent() {
     setError("");
     if (!isLoggedIn()) {
       const next = `/drivers/passenger?${searchParams.toString()}`;
-      router.push(`/login?next=${encodeURIComponent(next)}`);
+      router.push(buildLoginHref(next, "customer"));
       return;
     }
     if (!name.trim() || !phone.trim()) {

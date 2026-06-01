@@ -10,7 +10,6 @@ import { resolveMediaUrl } from "../lib/media";
 
 const HERO_IMAGE = `${SITE_URL}/images/hero-banner.png`;
 
-/** Return an absolute image URL for the sitemap, or null when unavailable. */
 function absoluteImage(path) {
   const resolved = resolveMediaUrl(path);
   if (!resolved) return null;
@@ -18,18 +17,25 @@ function absoluteImage(path) {
   return `${SITE_URL}${resolved.startsWith("/") ? resolved : `/${resolved}`}`;
 }
 
-async function fetchIds(path) {
+async function fetchAllIds(path, maxPages = 25) {
   const backend = getBackendUrl();
-  try {
-    const res = await fetch(`${backend}/api/v1${path}?limit=100&page=1`, {
-      next: { revalidate: 3600 }
-    });
-    if (!res.ok) return [];
-    const json = await res.json();
-    return Array.isArray(json?.data) ? json.data : [];
-  } catch {
-    return [];
+  const all = [];
+  for (let page = 1; page <= maxPages; page += 1) {
+    try {
+      const res = await fetch(`${backend}/api/v1${path}?limit=100&page=${page}`, {
+        next: { revalidate: 3600 }
+      });
+      if (!res.ok) break;
+      const json = await res.json();
+      const batch = Array.isArray(json?.data) ? json.data : [];
+      if (!batch.length) break;
+      all.push(...batch);
+      if (batch.length < 100) break;
+    } catch {
+      break;
+    }
   }
+  return all;
 }
 
 export default async function sitemap() {
@@ -41,12 +47,11 @@ export default async function sitemap() {
     { url: `${base}/cabs`, lastModified: now, changeFrequency: "daily", priority: 0.95, images: [HERO_IMAGE] },
     { url: `${base}/drivers`, lastModified: now, changeFrequency: "daily", priority: 0.95, images: [HERO_IMAGE] },
     { url: `${base}/holidays`, lastModified: now, changeFrequency: "daily", priority: 0.92, images: [HERO_IMAGE] },
-    { url: `${base}/flights`, lastModified: now, changeFrequency: "daily", priority: 0.88 },
-    { url: `${base}/hotels`, lastModified: now, changeFrequency: "daily", priority: 0.88 },
-    { url: `${base}/holidays?category=pilgrimage`, lastModified: now, changeFrequency: "weekly", priority: 0.85 },
-    { url: `${base}/locations`, lastModified: now, changeFrequency: "weekly", priority: 0.85 },
     { url: `${base}/blogs`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
+    { url: `${base}/blog/cab-booking-in-chennai-complete-guide-2026`, lastModified: now, changeFrequency: "weekly", priority: 0.88 },
+    { url: `${base}/locations`, lastModified: now, changeFrequency: "weekly", priority: 0.85 },
     { url: `${base}/testimonials`, lastModified: now, changeFrequency: "weekly", priority: 0.75 },
+    { url: `${base}/holidays?category=pilgrimage`, lastModified: now, changeFrequency: "weekly", priority: 0.85 },
     { url: `${base}/terms-and-conditions`, lastModified: now, changeFrequency: "yearly", priority: 0.4 },
     { url: `${base}/legal-declaration`, lastModified: now, changeFrequency: "yearly", priority: 0.4 },
     { url: `${base}/cancellation-policy`, lastModified: now, changeFrequency: "yearly", priority: 0.4 }
@@ -54,6 +59,7 @@ export default async function sitemap() {
 
   const cityRoutes = SEO_CITIES.flatMap((city) => {
     const isChennai = city.slug === "chennai";
+    const isTirupati = city.slug === "tirupati";
     return [
       {
         url: `${base}/cab-booking/${city.slug}`,
@@ -65,7 +71,7 @@ export default async function sitemap() {
         url: `${base}/acting-driver/${city.slug}`,
         lastModified: now,
         changeFrequency: "weekly",
-        priority: city.slug === "tirupati" ? 0.95 : 0.9
+        priority: isTirupati ? 0.96 : isChennai ? 0.94 : 0.9
       }
     ];
   });
@@ -75,7 +81,7 @@ export default async function sitemap() {
       url: `${base}${servicePath(service, city)}`,
       lastModified: now,
       changeFrequency: "weekly",
-      priority: 0.88
+      priority: city.slug === "chennai" && ["car-rental", "cab-rental", "airport-taxi"].includes(service.slug) ? 0.9 : 0.86
     }))
   );
 
@@ -83,37 +89,41 @@ export default async function sitemap() {
     url: `${base}/routes/${route.slug}`,
     lastModified: now,
     changeFrequency: "weekly",
-    priority: 0.87
+    priority: route.slug.includes("tirupati") || route.slug.includes("chennai") ? 0.9 : 0.87
   }));
 
   const [cabs, drivers, packages, blogPosts] = await Promise.all([
-    fetchIds("/cabs"),
-    fetchIds("/drivers"),
-    fetchIds("/packages"),
-    fetchIds("/blogs")
+    fetchAllIds("/cabs"),
+    fetchAllIds("/drivers"),
+    fetchAllIds("/packages"),
+    fetchAllIds("/blogs")
   ]);
 
-  const cabRoutes = cabs.map((item) => {
-    const image = absoluteImage(item.image);
-    return {
-      url: `${base}/cabs/${item._id}`,
-      lastModified: item.updatedAt ? new Date(item.updatedAt) : now,
-      changeFrequency: "weekly",
-      priority: 0.7,
-      ...(image ? { images: [image] } : {})
-    };
-  });
+  const cabRoutes = cabs
+    .filter((item) => item._id)
+    .map((item) => {
+      const image = absoluteImage(item.image);
+      return {
+        url: `${base}/cabs/${item._id}`,
+        lastModified: item.updatedAt ? new Date(item.updatedAt) : now,
+        changeFrequency: "weekly",
+        priority: 0.7,
+        ...(image ? { images: [image] } : {})
+      };
+    });
 
-  const driverRoutes = drivers.map((item) => {
-    const image = absoluteImage(item.image);
-    return {
-      url: `${base}/drivers/${item._id}`,
-      lastModified: item.updatedAt ? new Date(item.updatedAt) : now,
-      changeFrequency: "weekly",
-      priority: 0.7,
-      ...(image ? { images: [image] } : {})
-    };
-  });
+  const driverRoutes = drivers
+    .filter((item) => item._id)
+    .map((item) => {
+      const image = absoluteImage(item.image);
+      return {
+        url: `${base}/drivers/${item._id}`,
+        lastModified: item.updatedAt ? new Date(item.updatedAt) : now,
+        changeFrequency: "weekly",
+        priority: 0.7,
+        ...(image ? { images: [image] } : {})
+      };
+    });
 
   const packageRoutes = packages
     .filter((item) => item._id)
@@ -134,7 +144,7 @@ export default async function sitemap() {
       url: `${base}/blog/${item.slug}`,
       lastModified: item.updatedAt ? new Date(item.updatedAt) : now,
       changeFrequency: "monthly",
-      priority: 0.6
+      priority: item.slug?.includes("chennai") ? 0.82 : 0.6
     }));
 
   return [

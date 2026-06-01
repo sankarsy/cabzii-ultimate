@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import MmtLayout from "../../components/mmt/MmtLayout";
 import { BRAND } from "../../lib/brand";
-import { clearSession, getUser, isLoggedIn } from "../../lib/auth";
+import { buildLoginHref, clearSession, getUser, isLoggedIn } from "../../lib/auth";
 
 export default function AccountPage() {
   const router = useRouter();
@@ -13,7 +13,7 @@ export default function AccountPage() {
 
   useEffect(() => {
     if (!isLoggedIn()) {
-      router.replace("/login?next=/account");
+      router.replace(buildLoginHref("/account", "customer"));
       return;
     }
     setUser(getUser());

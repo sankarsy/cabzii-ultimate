@@ -3,7 +3,7 @@ import { BRAND } from "../../lib/brand";
 export default function EmtAppDownloadBanner() {
   return (
     <section className="border-t border-slate-200 bg-slate-50">
-      <div className="mx-auto max-w-6xl px-4 py-10 sm:py-12">
+      <div className="section-shell py-10 sm:py-12">
         <div className="flex flex-col items-center gap-6 rounded-2xl bg-[var(--cabzii-header)] px-6 py-10 text-center text-white sm:flex-row sm:text-left">
           <div className="flex-1">
             <p className="text-[10px] font-semibold uppercase tracking-wider text-white/70">Mobile app</p>

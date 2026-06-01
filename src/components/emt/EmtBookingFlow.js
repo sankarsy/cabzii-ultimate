@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { MOCK_HOTELS } from "../../lib/mock-data/hotels";
 import { searchMockFlights } from "../../lib/mock-data/flights";
-import { isLoggedIn } from "../../lib/auth";
+import { buildLoginHref, isLoggedIn } from "../../lib/auth";
 
 function formatINR(n) {
   return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(n);
@@ -52,7 +52,7 @@ export default function EmtBookingFlow() {
       return;
     }
     if (!isLoggedIn()) {
-      router.push(`/login?next=${encodeURIComponent(`/booking?${searchParams.toString()}&step=2`)}`);
+      router.push(buildLoginHref(`/booking?${searchParams.toString()}&step=2`, "customer"));
       return;
     }
     setStep(2);

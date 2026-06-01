@@ -60,7 +60,7 @@ function ScrollButton({ direction, onClick }) {
       type="button"
       onClick={onClick}
       aria-label={direction === "left" ? "Scroll offers left" : "Scroll offers right"}
-      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-[var(--cabzii-brand)] shadow-[var(--cabzii-shadow-card)] transition hover:border-[var(--cabzii-brand)]/35 hover:bg-blue-50/80"
+      className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-[var(--cabzii-brand)] shadow-[var(--cabzii-shadow-card)] transition hover:border-[var(--cabzii-brand)]/35 hover:bg-blue-50/80 sm:flex"
     >
       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden>
         {direction === "left" ? (
@@ -84,10 +84,10 @@ export default function EmtOffersCarousel() {
   };
 
   return (
-    <section className="mx-auto w-full max-w-6xl px-4 py-10">
-      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="text-xl font-bold text-slate-900 sm:text-2xl">Exclusive offers</h2>
-        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+    <section className="section-shell py-8 sm:py-10">
+      <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+        <h2 className="text-lg font-bold text-slate-900 sm:text-2xl">Exclusive offers</h2>
+        <div className="flex shrink-0 items-center justify-between gap-2 sm:justify-end sm:gap-3">
           <ScrollButton direction="left" onClick={() => scrollBy(-1)} />
           <ScrollButton direction="right" onClick={() => scrollBy(1)} />
           <Link

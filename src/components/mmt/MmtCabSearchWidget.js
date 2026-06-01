@@ -66,13 +66,13 @@ export default function MmtCabSearchWidget({ defaultCity = "" }) {
 
   return (
     <div className="w-full">
-      <div className="flex flex-wrap gap-2 border-b border-slate-200 pb-4">
+      <div className="hero-tabs-scroll -mx-1 flex gap-2 overflow-x-auto border-b border-slate-200 px-1 pb-3">
         {TRIP_TABS.map((tab) => (
           <button
             key={tab.id}
             type="button"
             onClick={() => setTripType(tab.id)}
-            className={`rounded-full px-4 py-1.5 text-sm font-semibold transition-colors ${
+            className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-semibold transition-colors sm:px-4 sm:text-sm ${
               tripType === tab.id
                 ? "bg-[var(--emt-primary)] text-white"
                 : "bg-slate-100 text-slate-700 hover:bg-slate-200"
@@ -219,7 +219,7 @@ export default function MmtCabSearchWidget({ defaultCity = "" }) {
               min={todayStr()}
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full border-0 bg-transparent pl-7 text-lg font-bold text-slate-900 focus:outline-none"
+              className="w-full min-w-0 border-0 bg-transparent pl-7 text-base font-bold text-slate-900 focus:outline-none sm:text-lg"
             />
           </div>
         </div>
@@ -231,7 +231,7 @@ export default function MmtCabSearchWidget({ defaultCity = "" }) {
               type="time"
               value={time}
               onChange={(e) => setTime(e.target.value)}
-              className="w-full border-0 bg-transparent pl-7 text-lg font-bold text-slate-900 focus:outline-none"
+              className="w-full min-w-0 border-0 bg-transparent pl-7 text-base font-bold text-slate-900 focus:outline-none sm:text-lg"
             />
           </div>
         </div>
@@ -239,11 +239,11 @@ export default function MmtCabSearchWidget({ defaultCity = "" }) {
 
       {error ? <p className="mt-3 text-sm text-rose-600">{error}</p> : null}
 
-      <div className="mt-6 flex justify-center">
+      <div className="mt-5 flex justify-stretch sm:mt-6 sm:justify-center">
         <button
           type="button"
           onClick={handleSearch}
-          className="inline-flex items-center gap-2 rounded-full bg-[var(--emt-primary)] px-12 py-3 text-base font-bold text-white shadow-md transition hover:bg-[var(--emt-primary-dark)]"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[var(--emt-primary)] px-8 py-3 text-base font-bold text-white shadow-md transition hover:bg-[var(--emt-primary-dark)] sm:w-auto sm:px-12"
         >
           <SearchIcon className="h-6 w-6" />
           Search Cabs

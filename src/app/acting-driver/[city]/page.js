@@ -11,7 +11,8 @@ import {
   getCityFaqs,
   localBusinessJsonLd,
   tunedActingDriverDescription,
-  tunedActingDriverTitle
+  tunedActingDriverTitle,
+  tunedActingDriverKeywords
 } from "../../../lib/seo";
 
 export function generateStaticParams() {
@@ -31,14 +32,9 @@ export async function generateMetadata({ params }) {
   const path = `/acting-driver/${city.slug}`;
   return buildPageMetadata({
     title: tunedActingDriverTitle(city),
-    description: tunedActingDriverDescription(city.name, city.state),
+    description: tunedActingDriverDescription(city),
     path,
-    keywords: [
-      `acting driver ${city.name.toLowerCase()}`,
-      `driver on hire ${city.name.toLowerCase()}`,
-      `chauffeur ${city.name.toLowerCase()}`,
-      "cabzii acting driver"
-    ]
+    keywords: tunedActingDriverKeywords(city)
   });
 }
 
@@ -55,7 +51,7 @@ export default function ActingDriverCityPage({ params }) {
       { name: `Acting driver ${city.name}`, path }
     ]),
     cityDriverSearchJsonLd(city, {
-      description: tunedActingDriverDescription(city.name, city.state),
+      description: tunedActingDriverDescription(city),
       urlPath: path
     }),
     localBusinessJsonLd(city.name, city.state, path),

@@ -4,7 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import MmtTripSummaryBar from "../../../components/mmt/MmtTripSummaryBar";
 import { buildFareSlabs, num, packageYouPay } from "../../../lib/cabFare";
-import { getUser, isLoggedIn } from "../../../lib/auth";
+import { buildLoginHref, getUser, isLoggedIn } from "../../../lib/auth";
 import { resolveMediaUrl } from "../../../lib/media";
 import { cabSlabForTrip, parseTripSearchParams, tripToSearchQuery } from "../../../lib/mmtTrip";
 
@@ -62,7 +62,7 @@ function PassengerContent() {
     setError("");
     if (!isLoggedIn()) {
       const next = `/cabs/passenger?${searchParams.toString()}`;
-      router.push(`/login?next=${encodeURIComponent(next)}`);
+      router.push(buildLoginHref(next, "customer"));
       return;
     }
     if (!name.trim() || !phone.trim()) {

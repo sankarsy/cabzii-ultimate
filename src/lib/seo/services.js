@@ -86,15 +86,7 @@ export const SEO_SERVICES = [
     primaryKeyword: "holiday packages",
     searchQuery: "holiday package",
     priceFrom: 4999,
-    highlights: ["Pilgrimage circuits", "Beach & hill getaways", "Cab type selection"]
-  },
-  {
-    slug: "holiday-packages",
-    name: "Holiday Packages",
-    primaryKeyword: "holiday packages India",
-    searchQuery: "pilgrimage package",
-    priceFrom: 4999,
-    highlights: ["Tirupati & Rameswaram", "Shirdi & Varanasi", "Sedan to tempo choice"]
+    highlights: ["Pilgrimage circuits", "Beach & hill getaways", "Tirupati & Rameswaram tours"]
   }
 ];
 

@@ -350,8 +350,8 @@ export default function Navbar({ variant = "default" }) {
               exit={{ opacity: 0, height: 0 }}
               className="border-t border-slate-100 py-3 md:hidden"
             >
-              <div className="mb-3 flex gap-2 px-2">
-                <div className="relative w-32" ref={mobileCityRef}>
+              <div className="mb-3 flex flex-col gap-2 px-2 sm:flex-row">
+                <div className="relative w-full sm:w-32" ref={mobileCityRef}>
                   <input
                     className="w-full rounded-lg border border-slate-200 bg-slate-50 px-2 py-2 text-xs text-slate-700"
                     value={cityInput}
@@ -411,11 +411,7 @@ export default function Navbar({ variant = "default" }) {
                     Logout
                   </button>
                 </div>
-              ) : (
-                <Link href="/login" onClick={() => setMenuOpen(false)} className="mt-3 block rounded-lg bg-[#0056D2] px-4 py-2 text-center text-sm font-semibold text-white">
-                  Login
-                </Link>
-              )}
+              ) : null}
             </motion.nav>
           )}
         </AnimatePresence>
