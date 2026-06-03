@@ -23,22 +23,10 @@ async function parseJsonResponse(res) {
   }
 }
 
-const MODE_COPY = {
-  customer: {
-    title: "Customer Login",
-    subtitle: "Book cabs, tours & drivers with your mobile OTP."
-  },
-  partner: {
-    title: "Travel Partner Login",
-    subtitle: "Sign in with your registered partner mobile number."
-  }
-};
-
-export default function OtpLogin({ mode = "customer", nextUrl: nextUrlProp, onBack }) {
+export default function OtpLogin({ nextUrl: nextUrlProp, onBack }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const nextUrl = nextUrlProp || searchParams.get("next") || "/";
-  const copy = MODE_COPY[mode] || MODE_COPY.customer;
 
   const [mobile, setMobile] = useState("");
   const [otpDigits, setOtpDigits] = useState(["", "", "", "", "", ""]);
@@ -110,7 +98,7 @@ export default function OtpLogin({ mode = "customer", nextUrl: nextUrlProp, onBa
       const res = await fetch("/api/auth/verify-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mobileNumber, otp, loginAs: mode === "partner" ? "partner" : "customer" })
+        body: JSON.stringify({ mobileNumber, otp })
       });
       const data = await parseJsonResponse(res);
       if (!res.ok || !data?.data?.token) {
@@ -124,12 +112,6 @@ export default function OtpLogin({ mode = "customer", nextUrl: nextUrlProp, onBa
       });
       if (!sessionRes.ok) {
         console.warn("Session cookie could not be set");
-      }
-
-      if (mode === "partner") {
-        router.replace("/admin");
-        router.refresh();
-        return;
       }
 
       router.replace(nextUrl.startsWith("/") ? nextUrl : "/");
@@ -185,8 +167,8 @@ export default function OtpLogin({ mode = "customer", nextUrl: nextUrlProp, onBa
           <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-[#0056D2]/10 text-[#0056D2]">
             <PhoneIcon className="h-6 w-6" />
           </span>
-          <h1 className="mt-3 text-xl font-bold text-slate-900">{copy.title}</h1>
-          <p className="mt-1 text-sm text-slate-600">{copy.subtitle}</p>
+          <h1 className="mt-3 text-xl font-bold text-slate-900">Customer Login</h1>
+          <p className="mt-1 text-sm text-slate-600">Book cabs, tours &amp; drivers with your 6-digit mobile OTP.</p>
         </div>
 
         {step === "mobile" ? (

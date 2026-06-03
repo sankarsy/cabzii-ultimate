@@ -14,7 +14,8 @@ export default function MmtDriverResultCard({ driver, trip, layout = "row" }) {
   const slab = driverSlabForTrip(slabs, trip);
   const listPrice = num(slab?.originalPrice) || num(slab?.list) || 0;
   const discount = num(slab?.discountPercentage) || num(driver.discountPercentage);
-  const total = num(slab?.price) > 0 ? num(slab.price) : packageYouPay(listPrice || 1, discount);
+  const total =
+    num(slab?.price) > 0 ? num(slab.price) : listPrice > 0 ? packageYouPay(listPrice, discount) : 0;
   const imageSrc = resolveMediaUrl(driver.image);
   const displayName = driver.name || driver.serviceTitle || "Driver";
   const vehicle = driver.supportedVehicles?.[0] || "Your vehicle";

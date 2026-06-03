@@ -11,7 +11,7 @@ export default function MmtTripSummaryBar({ trip }) {
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="text-xs font-medium uppercase tracking-wide opacity-80">{label}</p>
-          <h1 className="flex items-start gap-2 text-lg font-bold sm:text-xl">
+          <h1 className="flex items-start gap-2 text-lg font-bold text-mmt-header-fg sm:text-xl">
             <span className="mt-0.5 shrink-0" aria-hidden="true">
               📍
             </span>

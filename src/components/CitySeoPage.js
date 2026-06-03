@@ -1,9 +1,14 @@
 import Link from "next/link";
 import Breadcrumbs from "./seo/Breadcrumbs";
 import FaqSection from "./seo/FaqSection";
-import { SEO_CITIES, SEO_SERVICES } from "../lib/seo";
+import { SEO_CITIES } from "../lib/seo";
 import { getCityFaqs } from "../lib/seo/content";
-import { tunedCabBookingDescription, tunedCabBookingH1, tunedActingDriverH1 } from "../lib/seo/metadataTuning";
+import {
+  tunedCabBookingDescription,
+  tunedCabBookingH1,
+  tunedActingDriverH1
+} from "../lib/seo/metadataTuning";
+import { servicesForCityHub } from "../lib/seo/programmaticMeta";
 import { routesForCity } from "../lib/seo/routes";
 import { servicePath } from "../lib/seo/services";
 
@@ -15,7 +20,7 @@ export default function CitySeoPage({ city, variant }) {
   const hubPath = isCab ? `/cab-booking/${city.slug}` : `/acting-driver/${city.slug}`;
   const faqs = getCityFaqs(city, isCab ? "cab" : "driver");
   const cityRoutes = routesForCity(city.slug).slice(0, 8);
-  const topServices = SEO_SERVICES.slice(0, 6);
+  const topServices = isCab ? servicesForCityHub(city.slug, 8) : servicesForCityHub(city.slug, 4);
 
   return (
     <article className="mx-auto max-w-4xl px-4 py-10 md:py-14">
@@ -86,9 +91,13 @@ export default function CitySeoPage({ city, variant }) {
               <li key={svc.slug}>
                 <Link
                   href={servicePath(svc, city)}
+                  title={`${svc.name} in ${city.name} — book on Cabzii.in`}
                   className="block rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-800 shadow-sm hover:border-[var(--cabzii-brand)]/30 hover:text-[var(--cabzii-brand)]"
                 >
-                  {svc.name} in {city.name}
+                  <span className="block">{svc.name} in {city.name}</span>
+                  <span className="mt-0.5 block text-xs font-normal text-slate-500">
+                    View {svc.name.toLowerCase()} packages →
+                  </span>
                 </Link>
               </li>
             ))}

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Breadcrumbs from "./Breadcrumbs";
 import FaqSection from "./FaqSection";
+import { tunedRouteDescription } from "../../lib/seo/metadataTuning";
 
 export default function RouteLandingPage({ route, faqs }) {
   const { fromCity, toCity, distance, duration, sedanFrom, suvFrom, slug } = route;
@@ -24,8 +25,7 @@ export default function RouteLandingPage({ route, faqs }) {
           One Way Cab from {fromCity.name} to {toCity.name}
         </h1>
         <p className="mt-4 text-base leading-relaxed text-slate-700 md:text-lg">
-          Book a one way cab from {fromCity.name} to {toCity.name} ({distance}, {duration}). Compare sedan, SUV and
-          Innova fares with upfront pricing on Cabzii — ideal for relocations, work travel and family trips.
+          {tunedRouteDescription(route)} ({distance}, {duration})
         </p>
 
         <div className="mt-6 flex flex-wrap gap-3">

@@ -8,6 +8,7 @@ import CabziiBrowseHeader from "../../components/mmt/CabziiBrowseHeader";
 import { sortBySelectedCity } from "../../lib/locationPriority";
 import { todayStr } from "../../lib/mmtTrip";
 import { useSelectedCity } from "../../lib/useSelectedCity";
+import { extractCabList } from "../../lib/apiClient";
 
 export default function CabsBrowsePage() {
   const { city: selectedCity } = useSelectedCity();
@@ -36,7 +37,7 @@ export default function CabsBrowsePage() {
       if (displayCity) q.set("priorityCity", displayCity);
       const res = await fetch(`/api/cabs?${q}`, { cache: "no-store" });
       const json = await res.json();
-      setCabs(sortBySelectedCity(Array.isArray(json?.data) ? json.data : [], displayCity));
+      setCabs(sortBySelectedCity(extractCabList(json), displayCity));
       if (json?.meta) setMeta(json.meta);
     } finally {
       setLoading(false);

@@ -47,7 +47,7 @@ export default function LoginHub() {
   const [selectedRole, setSelectedRole] = useState(validInitial);
 
   if (selectedRole === "customer") {
-    return <OtpLogin mode="customer" nextUrl={nextUrl} onBack={() => setSelectedRole(null)} />;
+    return <OtpLogin nextUrl={nextUrl} onBack={() => setSelectedRole(null)} />;
   }
 
   if (selectedRole === "partner") {

@@ -17,6 +17,18 @@ export async function fetchJson(url, options = {}) {
   return json;
 }
 
+import { normalizeCabList } from "./catalogNormalize";
+
 export function extractList(json) {
   return Array.isArray(json?.data) ? json.data : [];
+}
+
+/** Cab catalog list with legacy price normalization */
+export function extractCabList(json) {
+  return normalizeCabList(extractList(json));
+}
+
+/** Driver catalog list */
+export function extractDriverList(json) {
+  return extractList(json);
 }

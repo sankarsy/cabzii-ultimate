@@ -6,16 +6,30 @@ function formatINR(n) {
   }).format(Number(n) || 0);
 }
 
+const MIN_DISPLAY_PRICE = 100;
+
 export default function MmtCardPriceBlock({ originalPrice, finalPrice, discountPct = 0, compact = false }) {
   const original = Number(originalPrice) || 0;
   const final = Number(finalPrice) || 0;
+
+  if (final < MIN_DISPLAY_PRICE && original < MIN_DISPLAY_PRICE) {
+    return (
+      <div className={compact ? "min-w-0" : "min-w-0 text-right"}>
+        <p className={`font-bold text-slate-700 ${compact ? "text-sm" : "text-base"}`}>Get quote</p>
+        <p className={`leading-tight text-slate-500 ${compact ? "hidden text-[10px] sm:block" : "text-[10px]"}`}>
+          fare on booking
+        </p>
+      </div>
+    );
+  }
+
   const pct =
     discountPct > 0
       ? Math.min(99, Math.round(discountPct))
       : original > final && original > 0
         ? Math.min(99, Math.round(((original - final) / original) * 100))
         : 0;
-  const showDiscount = original > final && original > 0;
+  const showDiscount = original > final && original >= MIN_DISPLAY_PRICE;
 
   return (
     <div className={compact ? "min-w-0" : "min-w-0 text-right"}>
@@ -29,11 +43,13 @@ export default function MmtCardPriceBlock({ originalPrice, finalPrice, discountP
           ) : null}
         </div>
       ) : null}
-      <p className={`font-extrabold leading-tight text-slate-900 ${showDiscount ? "text-base sm:text-lg" : "text-lg sm:text-2xl"}`}>
+      <p
+        className={`font-extrabold leading-tight text-slate-900 ${showDiscount ? "text-base sm:text-lg" : "text-lg sm:text-2xl"}`}
+      >
         {formatINR(final)}
       </p>
       <p className={`leading-tight text-slate-500 ${compact ? "hidden text-[10px] sm:block" : "text-[10px]"}`}>
-        incl. taxes &amp; charges
+        package fare
       </p>
     </div>
   );

@@ -55,8 +55,6 @@ function PassengerContent() {
   const listPrice = num(slab?.originalPrice) || num(slab?.list) || num(cab?.price);
   const discount = num(slab?.discountPercentage) || num(cab?.discountPercentage);
   const total = num(slab?.price) > 0 ? num(slab.price) : packageYouPay(listPrice, discount);
-  const gst = Math.round(total * 0.05);
-  const grandTotal = total + gst;
 
   async function handleContinue() {
     setError("");
@@ -74,9 +72,9 @@ function PassengerContent() {
       const payParams = new URLSearchParams(tripToSearchQuery(trip));
       payParams.set("type", "cab");
       payParams.set("id", cabId);
-      payParams.set("total", String(grandTotal));
+      payParams.set("total", String(total));
       payParams.set("baseFare", String(total));
-      payParams.set("taxes", String(gst));
+      payParams.set("taxes", "0");
       payParams.set("pickup", trip.from);
       if (trip.to) payParams.set("drop", trip.to);
       payParams.set("date", trip.date);
@@ -165,19 +163,9 @@ function PassengerContent() {
           <h3 className="font-bold text-slate-900">{cab.title}</h3>
           <p className="text-sm text-slate-500">{cab.type} · {cab.vendor}</p>
           <hr className="my-4 border-slate-100" />
-          <div className="space-y-2 text-sm text-slate-600">
-            <div className="flex justify-between">
-              <span>Base fare</span>
-              <span>{formatINR(total)}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>GST (5%)</span>
-              <span>{formatINR(gst)}</span>
-            </div>
-          </div>
           <div className="mt-4 flex justify-between border-t border-slate-100 pt-3 text-base font-bold text-slate-900">
-            <span>Total</span>
-            <span>{formatINR(grandTotal)}</span>
+            <span>Total payable</span>
+            <span>{formatINR(total)}</span>
           </div>
         </aside>
       </div>

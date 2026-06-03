@@ -91,10 +91,23 @@ body {
   background-color: var(--cabzii-brand-hover);
 }
 
-h1,
-h2,
-h3 {
+/* Default heading color in page content; dark header bars keep light text */
+main h1,
+main h2,
+main h3,
+.section-shell h1,
+.section-shell h2,
+.section-shell h3 {
   @apply text-slate-900;
+}
+
+.bg-mmt-header h1,
+.bg-mmt-header h2,
+.bg-mmt-header h3,
+.bg-cabzii-header h1,
+.bg-cabzii-header h2,
+.bg-cabzii-header h3 {
+  color: var(--mmt-header-fg);
 }
 
 .scrollbar-hide {
@@ -115,6 +128,16 @@ h3 {
 }
 .offers-scroll::-webkit-scrollbar,
 .hero-tabs-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* Homepage FAQ — vertical scroll, no visible scrollbar */
+.faq-scroll {
+  -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.faq-scroll::-webkit-scrollbar {
   display: none;
 }
 

@@ -8,9 +8,10 @@ import {
   faqFromPairs,
   getRouteFaqs,
   routeBySlug,
-  routeDescription,
   routeServiceJsonLd,
-  routeTitle
+  tunedRouteDescription,
+  tunedRouteKeywords,
+  tunedRouteTitle
 } from "../../../lib/seo";
 
 export function generateStaticParams() {
@@ -30,15 +31,10 @@ export async function generateMetadata({ params }) {
 
   const path = `/routes/${route.slug}`;
   return buildPageMetadata({
-    title: routeTitle(route.fromCity, route.toCity),
-    description: routeDescription(route.fromCity, route.toCity, route),
+    title: tunedRouteTitle(route),
+    description: tunedRouteDescription(route),
     path,
-    keywords: [
-      `one way cab ${route.fromCity.name.toLowerCase()} to ${route.toCity.name.toLowerCase()}`,
-      `${route.fromCity.name.toLowerCase()} to ${route.toCity.name.toLowerCase()} taxi`,
-      "cabzii one way cab",
-      `outstation cab ${route.fromCity.name.toLowerCase()}`
-    ]
+    keywords: tunedRouteKeywords(route)
   });
 }
 
@@ -58,7 +54,7 @@ export default function RoutePage({ params }) {
       fromCity: route.fromCity,
       toCity: route.toCity,
       urlPath: path,
-      description: routeDescription(route.fromCity, route.toCity, route),
+      description: tunedRouteDescription(route),
       priceFrom: route.sedanFrom,
       priceTo: route.innovaFrom || Math.round((route.sedanFrom || 1400) * 1.8)
     }),

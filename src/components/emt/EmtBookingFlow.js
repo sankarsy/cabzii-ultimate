@@ -35,10 +35,9 @@ export default function EmtBookingFlow() {
         }).find((f) => f.id === id);
 
   const base = type === "hotel" ? item?.pricePerNight || 0 : item?.price || 0;
-  const taxes = Math.round(base * 0.12);
   const fee = 299;
   const discount = promoOk ? Math.round(base * 0.05) : 0;
-  const total = base + taxes + fee - discount;
+  const total = base + fee - discount;
 
   function validatePromo() {
     const ok = promo.trim().toUpperCase() === "CABZII500";
@@ -152,10 +151,6 @@ export default function EmtBookingFlow() {
           <div className="flex justify-between">
             <span>Base fare</span>
             <span>{formatINR(base)}</span>
-          </div>
-          <div className="flex justify-between">
-            <span>Taxes</span>
-            <span>{formatINR(taxes)}</span>
           </div>
           <div className="flex justify-between">
             <span>Convenience fee</span>

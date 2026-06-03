@@ -6,6 +6,7 @@ import MmtDriverResults from "../../../components/mmt/MmtDriverResults";
 import MmtDriverTripSummaryBar from "../../../components/mmt/MmtDriverTripSummaryBar";
 import { parseDriverTripSearchParams, isValidDriverTripSearch } from "../../../lib/driverTrip";
 import { useSelectedCity } from "../../../lib/useSelectedCity";
+import { extractDriverList } from "../../../lib/apiClient";
 
 function DriverResultsContent() {
   const router = useRouter();
@@ -40,7 +41,7 @@ function DriverResultsContent() {
           setDrivers([]);
           return;
         }
-        setDrivers(Array.isArray(json?.data) ? json.data : []);
+        setDrivers(extractDriverList(json));
       })
       .catch(() => {
         if (!cancelled) {

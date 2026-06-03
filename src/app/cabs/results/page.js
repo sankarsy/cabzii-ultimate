@@ -6,6 +6,7 @@ import MmtCabResults from "../../../components/mmt/MmtCabResults";
 import MmtTripSummaryBar from "../../../components/mmt/MmtTripSummaryBar";
 import { parseTripSearchParams, isValidTripSearch } from "../../../lib/mmtTrip";
 import { useSelectedCity } from "../../../lib/useSelectedCity";
+import { extractCabList } from "../../../lib/apiClient";
 
 function ResultsContent() {
   const router = useRouter();
@@ -39,7 +40,7 @@ function ResultsContent() {
           setCabs([]);
           return;
         }
-        setCabs(Array.isArray(json?.data) ? json.data : []);
+        setCabs(extractCabList(json));
       })
       .catch(() => {
         if (!cancelled) {

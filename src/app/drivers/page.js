@@ -9,6 +9,7 @@ import RelatedSeoLinks from "../../components/seo/RelatedSeoLinks";
 import { sortBySelectedCity } from "../../lib/locationPriority";
 import { defaultPackageForTrip, todayStr } from "../../lib/driverTrip";
 import { useSelectedCity } from "../../lib/useSelectedCity";
+import { extractDriverList } from "../../lib/apiClient";
 
 export default function DriversBrowsePage() {
   const { city: selectedCity } = useSelectedCity();
@@ -38,7 +39,7 @@ export default function DriversBrowsePage() {
       if (displayCity) q.set("priorityCity", displayCity);
       const res = await fetch(`/api/drivers?${q}`, { cache: "no-store" });
       const json = await res.json();
-      setDrivers(sortBySelectedCity(Array.isArray(json?.data) ? json.data : [], displayCity));
+      setDrivers(sortBySelectedCity(extractDriverList(json), displayCity));
       if (json?.meta) setMeta(json.meta);
     } finally {
       setLoading(false);

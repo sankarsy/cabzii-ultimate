@@ -17,7 +17,7 @@ function resolvePackageFare(pkg, cab, fallbackList) {
       ? num(pkg.originalPrice)
       : num(pkg?.list) > 0
         ? num(pkg.list)
-        : Math.max(num(fallbackList), 1);
+        : Math.max(num(fallbackList), 0);
   const discountPercentage =
     pkg?.discountPercentage != null && pkg?.discountPercentage !== ""
       ? num(pkg.discountPercentage)
@@ -43,7 +43,7 @@ function buildLegacySlabs(cab) {
   const local4 =
     hourly > 0 ? Math.round(hourly * 4) : day > 0 ? Math.round(day * 0.55) : price > 0 ? Math.round(price * 0.4) : 0;
   const local8 = day > 0 ? day : hourly > 0 ? Math.round(hourly * 8) : price > 0 ? Math.round(price * 0.72) : 0;
-  const outOne = price > 0 ? Math.round(price) : Math.max(local8, local4, 1);
+  const outOne = price > 0 ? Math.round(price) : Math.max(local8, local4, 0);
   const outTwo = day > 0 ? Math.round(day * 1.85) : Math.round(outOne * 1.62);
   return { local4, local8, outOne, outTwo };
 }

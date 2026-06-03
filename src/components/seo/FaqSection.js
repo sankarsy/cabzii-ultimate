@@ -5,12 +5,19 @@ export default function FaqSection({
   title = "Frequently asked questions",
   subtitle,
   faqs,
-  hideTitle = false
+  hideTitle = false,
+  /** Fixed-height scroll area — use on homepage when there are many FAQs */
+  scrollable = false,
+  scrollMaxClass = "max-h-[min(20rem,52vh)]"
 }) {
   if (!faqs?.length) return null;
 
   const showIntro = Boolean(eyebrow || subtitle);
   const showCardTitle = !hideTitle && !showIntro;
+
+  const listClass = scrollable
+    ? `faq-scroll scrollbar-hide space-y-4 overflow-y-auto overscroll-y-contain pr-1 ${scrollMaxClass}`
+    : "space-y-5";
 
   return (
     <div className={showIntro || hideTitle ? "" : "mt-10"}>
@@ -22,9 +29,9 @@ export default function FaqSection({
         }`}
       >
         {showCardTitle ? <h2 className="text-xl font-bold text-slate-900">{title}</h2> : null}
-        <dl className={`space-y-5 ${showCardTitle ? "mt-5" : ""}`}>
+        <dl className={`${listClass} ${showCardTitle ? "mt-5" : ""}`}>
           {faqs.map(([question, answer]) => (
-            <FaqItem key={question} question={question} answer={answer} />
+            <FaqItem key={question} question={question} answer={answer} compact={scrollable} />
           ))}
         </dl>
       </section>
@@ -32,11 +39,11 @@ export default function FaqSection({
   );
 }
 
-function FaqItem({ question, answer }) {
+function FaqItem({ question, answer, compact = false }) {
   return (
-    <div>
+    <div className={compact ? "border-b border-slate-100 pb-4 last:border-0 last:pb-0" : ""}>
       <dt className="text-sm font-semibold text-slate-900">{question}</dt>
-      <dd className={`mt-1.5 text-sm leading-relaxed text-slate-600`}>{answer}</dd>
+      <dd className="mt-1.5 text-sm leading-relaxed text-slate-600">{answer}</dd>
     </div>
   );
 }

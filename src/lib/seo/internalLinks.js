@@ -30,7 +30,14 @@ export const INTERNAL_LINK_CITIES = [
 ];
 
 /** Top cities for service landing cross-links (SEO). */
-export const SERVICE_LINK_CITIES = ["chennai", "bengaluru", "hyderabad", "coimbatore", "madurai"];
+export const SERVICE_LINK_CITIES = [
+  "chennai",
+  "bengaluru",
+  "hyderabad",
+  "coimbatore",
+  "madurai",
+  "trichy"
+];
 
 function citiesBySlugs(slugs) {
   return slugs.map((slug) => SEO_CITIES.find((c) => c.slug === slug)).filter(Boolean);

@@ -3,20 +3,56 @@ import { SEO_SERVICES } from "./services";
 /** Homepage visible FAQs — must match faqJsonLd() for rich results. */
 export const HOME_PAGE_FAQS = [
   [
-    "How do I book an outstation cab?",
-    "Select Outstation on the home page, enter pickup and drop, date & time, then choose a cab from results."
+    "How do I book an outstation cab on Cabzii?",
+    "Choose Cabs on the home page, select Outstation, enter pickup and drop cities, date and time, then compare vehicles and confirm with OTP login."
   ],
   [
-    "Can I book airport pickup?",
-    "Use the Airport tab, pick direction (pickup or drop), and search available cabs."
+    "Can I book airport pickup in Chennai?",
+    "Yes. Use the Airport tab, set pickup or drop direction, and search cabs serving Chennai airport with fixed fare quotes."
   ],
   [
-    "What is hourly rental?",
-    "Book a cab for 4, 8 or 12 hours within a city — ideal for weddings, meetings or local errands."
+    "What is hourly / local cab rental?",
+    "Book a cab for 4, 8 or 12 hours within a city — ideal for weddings, meetings, shopping or local sightseeing."
   ],
   [
-    "Is OTP login required?",
-    "Yes. Login with your mobile number to confirm booking and view My Trips."
+    "How do I hire an acting driver?",
+    "Open the Drivers tab or visit Acting Driver pages, pick your city and package (hourly, daily or outstation), then book like a regular cab trip."
+  ],
+  [
+    "Are fares shown upfront before I pay?",
+    "Yes. Cabzii displays package fare and any discount before payment. Outstation trips show km limits and allowance details on the booking page."
+  ],
+  [
+    "Is OTP login required to book?",
+    "Yes. Login with your 10-digit mobile number and OTP to confirm booking and access My Trips anytime."
+  ],
+  [
+    "Which vehicles are available?",
+    "Sedan (Dzire, Etios), SUV (Ertiga), Innova and Tempo Traveller options from verified partners across South India."
+  ],
+  [
+    "Do you offer one-way cabs (e.g. Chennai to Tirupati)?",
+    "Yes. Search outstation one-way routes or browse route pages like Chennai–Tirupati for upfront sedan and SUV fares."
+  ],
+  [
+    "Can I book holiday packages on cabzii.in?",
+    "Yes. Browse Holidays for pilgrimage, beach, family and honeymoon tours with optional cab upgrades shown in each package."
+  ],
+  [
+    "How do I cancel or change my booking?",
+    "Contact support via WhatsApp or phone from your booking confirmation. Refunds follow our cancellation policy on the website."
+  ],
+  [
+    "Is Cabzii available outside Chennai?",
+    "Cabzii serves Chennai, Bengaluru, Hyderabad, Coimbatore, Madurai, Tirupati and more cities — check Locations for service areas."
+  ],
+  [
+    "What payment methods are accepted?",
+    "Pay online through the secure checkout on cabzii.in after OTP verification. Payment options may vary by trip type."
+  ],
+  [
+    "How can I contact Cabzii support?",
+    "Use WhatsApp or call the number on the website footer. Share your booking ID for faster help with trips and refunds."
   ]
 ];
 

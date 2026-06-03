@@ -51,7 +51,7 @@ function pickStoredPackage(packages, meta) {
 function resolveDriverPackageFare(pkg, driver, fallbackList) {
   const discount = num(pkg?.discountPercentage ?? driver?.discountPercentage);
   const originalPrice =
-    num(pkg?.originalPrice) > 0 ? num(pkg.originalPrice) : Math.max(num(fallbackList), 1);
+    num(pkg?.originalPrice) > 0 ? num(pkg.originalPrice) : Math.max(num(fallbackList), 0);
   const price = num(pkg?.price) > 0 ? num(pkg.price) : packageYouPay(originalPrice, discount);
   const hourly = num(driver?.pricing?.hourly);
   const day = num(driver?.pricing?.day);
@@ -66,7 +66,7 @@ function buildLegacyDriverSlabs(driver) {
   const day = num(driver?.pricing?.day);
   const local4 = hourly > 0 ? Math.round(hourly * 4) : day > 0 ? Math.round(day * 0.55) : 0;
   const local8 = day > 0 ? day : hourly > 0 ? Math.round(hourly * 8) : local4;
-  const outOne = day > 0 ? day : hourly > 0 ? Math.round(hourly * 12) : Math.max(local8, local4, 1);
+  const outOne = day > 0 ? day : hourly > 0 ? Math.round(hourly * 12) : Math.max(local8, local4, 0);
   const outTwo = day > 0 ? Math.round(day * 1.85) : Math.round(outOne * 1.62);
   return {
     local4hr: local4,

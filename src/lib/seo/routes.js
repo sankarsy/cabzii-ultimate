@@ -334,10 +334,12 @@ export function routesForCity(citySlug) {
     .filter(Boolean);
 }
 
+/** @deprecated Use tunedRouteTitle / tunedRouteDescription from metadataTuning */
 export function routeTitle(fromCity, toCity) {
   return `One Way Cab ${fromCity.name} to ${toCity.name} | Fixed Fare | Cabzii`;
 }
 
+/** @deprecated Use tunedRouteDescription from metadataTuning */
 export function routeDescription(fromCity, toCity, route) {
   return `Book one way cab from ${fromCity.name} to ${toCity.name} (${route.distance}, ${route.duration}). Sedan, SUV & Innova with upfront fare on Cabzii.`;
 }

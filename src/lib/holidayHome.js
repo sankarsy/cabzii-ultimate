@@ -13,16 +13,16 @@ export const DOMESTIC_DESTINATION_MATCHERS = [
 /** Reliable cover photos when package image is missing or broken */
 export const DOMESTIC_DESTINATION_IMAGES = {
   tirupati:
-    "https://images.unsplash.com/photo-1582510003544-4c68e09d26c6?auto=format&fit=crop&w=400&h=280&q=80",
-  goa: "https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&w=400&h=280&q=80",
+    "https://images.unsplash.com/photo-1582510003294-1b66a9c2a2b0?auto=format&fit=crop&w=600&h=400&q=80",
+  goa: "https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&w=600&h=400&q=80",
   kerala:
-    "https://images.unsplash.com/photo-1602216058046-6313af38bfa0?auto=format&fit=crop&w=400&h=280&q=80",
+    "https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&w=600&h=400&q=80",
   rajasthan:
-    "https://images.unsplash.com/photo-1477587459743-55063adafc43?auto=format&fit=crop&w=400&h=280&q=80",
+    "https://images.unsplash.com/photo-1599661046289-e31897846e41?auto=format&fit=crop&w=600&h=400&q=80",
   rameswaram:
-    "https://images.unsplash.com/photo-1587502537745-84a86e180511?auto=format&fit=crop&w=400&h=280&q=80",
+    "https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=600&h=400&q=80",
   manali:
-    "https://images.unsplash.com/photo-1626621341617-b13b62b9c320?auto=format&fit=crop&w=400&h=280&q=80"
+    "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=600&h=400&q=80"
 };
 
 export const INTERNATIONAL_DESTINATIONS = [
@@ -37,7 +37,7 @@ export const INTERNATIONAL_DESTINATIONS = [
     slug: "singapore",
     name: "Singapore",
     priceFrom: 27999,
-    image: "https://images.unsplash.com/photo-1529655683827-d9a09c081ba2?auto=format&fit=crop&w=400&h=280&q=80",
+    image: "https://images.unsplash.com/photo-1525629920041-4fffe988b9a0?auto=format&fit=crop&w=600&h=400&q=80",
     href: "/flights?from=DEL&to=SIN"
   },
   {

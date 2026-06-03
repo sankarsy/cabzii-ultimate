@@ -16,7 +16,7 @@ import { HOME_PAGE_FAQS } from "../../lib/seo/content";
 import { sortBySelectedCity } from "../../lib/locationPriority";
 import { useSelectedCity } from "../../lib/useSelectedCity";
 import { todayStr } from "../../lib/mmtTrip";
-import { extractList, fetchJson } from "../../lib/apiClient";
+import { extractCabList, extractDriverList, fetchJson } from "../../lib/apiClient";
 
 export default function MmtHomePage() {
   const { city: selectedCity } = useSelectedCity();
@@ -48,7 +48,7 @@ export default function MmtHomePage() {
     fetchJson(`/api/cabs?${q}`)
       .then((json) => {
         if (!cancelled) {
-          setCabs(sortBySelectedCity(extractList(json), displayCity));
+          setCabs(sortBySelectedCity(extractCabList(json), displayCity));
         }
       })
       .catch((err) => {
@@ -73,7 +73,7 @@ export default function MmtHomePage() {
     fetchJson(`/api/drivers?${q}`)
       .then((json) => {
         if (!cancelled) {
-          setDrivers(sortBySelectedCity(extractList(json), displayCity));
+          setDrivers(sortBySelectedCity(extractDriverList(json), displayCity));
         }
       })
       .catch((err) => {
@@ -129,7 +129,7 @@ export default function MmtHomePage() {
         loading={loadingDrivers}
         loadingLabel="Loading drivers…"
         isEmpty={!loadingDrivers && drivers.length === 0}
-        emptyMessage="No drivers yet. Start the backend and add listings in admin."
+        emptyMessage="No acting drivers yet. Restart the backend (it auto-creates drivers from cabs), or add drivers in admin."
         borderedTop
       >
         <MmtHomeCatalogScroll>
@@ -148,6 +148,8 @@ export default function MmtHomePage() {
             title="Frequently asked questions"
             subtitle="Quick answers about booking on cabzii.in."
             faqs={HOME_PAGE_FAQS}
+            scrollable
+            scrollMaxClass="max-h-[min(18rem,48vh)] sm:max-h-[min(20rem,50vh)]"
           />
         </div>
       </section>
