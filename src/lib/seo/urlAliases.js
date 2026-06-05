@@ -17,6 +17,18 @@ export const SERVICE_URL_PREFIXES = new Set([
 /** /travels/{city} or /travel/{city} → /cab-booking/{city} */
 export const TRAVELS_URL_PREFIXES = new Set(["travels", "travel", "travel-agency"]);
 
+/** Google search aliases → canonical city slug */
+const CITY_SLUG_ALIASES = {
+  bangalore: "bengaluru",
+  bengaluru: "bengaluru",
+  maduravoyal: "chennai"
+};
+
+function resolveCitySlug(raw) {
+  const key = String(raw || "").toLowerCase();
+  return CITY_SLUG_ALIASES[key] || key;
+}
+
 /**
  * Resolve SEO alias path to canonical path (301 target), or null.
  * Examples:
@@ -33,10 +45,10 @@ export function resolveSeoAliasPath(pathname) {
     const [prefix, city] = parts;
     if (SERVICE_URL_PREFIXES.has(prefix)) {
       const serviceSlug = prefix === "holiday-packages" ? "tour-packages" : prefix;
-      return `/services/${serviceSlug}/${city}`;
+      return `/services/${serviceSlug}/${resolveCitySlug(city)}`;
     }
     if (TRAVELS_URL_PREFIXES.has(prefix)) {
-      return `/cab-booking/${city}`;
+      return `/cab-booking/${resolveCitySlug(city)}`;
     }
   }
 
@@ -54,11 +66,15 @@ export function resolveSeoAliasPath(pathname) {
     const travelsIn = slug.match(/^travels-in-(.+)$/i);
     if (travelsIn) return `/cab-booking/${travelsIn[1].toLowerCase()}`;
 
+    if (/^car-rental-maduravoyal$/i.test(slug)) {
+      return "/services/car-rental/chennai";
+    }
+
     const carRentalIn = slug.match(/^car-rental-in-(.+)$/i);
-    if (carRentalIn) return `/services/car-rental/${carRentalIn[1].toLowerCase()}`;
+    if (carRentalIn) return `/services/car-rental/${resolveCitySlug(carRentalIn[1])}`;
 
     const cabRentalIn = slug.match(/^cab-rental-in-(.+)$/i);
-    if (cabRentalIn) return `/services/cab-rental/${cabRentalIn[1].toLowerCase()}`;
+    if (cabRentalIn) return `/services/cab-rental/${resolveCitySlug(cabRentalIn[1])}`;
   }
 
   return null;

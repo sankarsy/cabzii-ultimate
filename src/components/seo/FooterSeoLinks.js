@@ -21,7 +21,7 @@ function FooterLinkList({ title, items }) {
   return (
     <div>
       <h4 className="text-sm font-semibold text-white">{title}</h4>
-      <ul className="mt-3 max-h-80 space-y-2 overflow-y-auto pr-1 text-sm text-slate-400 scrollbar-hide">
+      <ul className="mt-3 max-h-80 space-y-2 overflow-y-auto pr-1 text-sm text-slate-400 scrollbar-hide max-md:max-h-none max-md:overflow-visible">
         {items.map((item) => (
           <li key={item.href}>
             <Link href={item.href} className="hover:text-sky-400">

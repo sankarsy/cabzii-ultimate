@@ -1,3 +1,5 @@
+import { appendTripCoords, readTripCoords } from "./tripCoords";
+
 /** Trip search params for cabzii.in cab booking flow. */
 
 export const TRIP_TABS = [
@@ -42,7 +44,8 @@ export function parseTripSearchParams(searchParams) {
     roundTrip,
     direction,
     packageHours,
-    city
+    city,
+    ...readTripCoords(get)
   };
 }
 
@@ -67,6 +70,7 @@ export function tripToSearchQuery(trip) {
   if (trip.direction) params.set("direction", trip.direction);
   if (trip.packageHours) params.set("packageHours", String(trip.packageHours));
   if (trip.city) params.set("city", trip.city);
+  appendTripCoords(params, trip);
   return params;
 }
 

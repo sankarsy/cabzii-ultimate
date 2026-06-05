@@ -165,6 +165,24 @@ export const SEO_ROUTES = [
     suvFrom: 4400
   },
   {
+    slug: "coimbatore-to-kodaikanal-cab",
+    from: "coimbatore",
+    to: "kodaikanal",
+    distance: "170 km",
+    duration: "4–5 hours",
+    sedanFrom: 3500,
+    suvFrom: 4800
+  },
+  {
+    slug: "madurai-to-kodaikanal-cab",
+    from: "madurai",
+    to: "kodaikanal",
+    distance: "120 km",
+    duration: "3–4 hours",
+    sedanFrom: 2800,
+    suvFrom: 3800
+  },
+  {
     slug: "coimbatore-to-pondicherry-cab",
     from: "coimbatore",
     to: "pondicherry",

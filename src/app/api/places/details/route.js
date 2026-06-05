@@ -1,21 +1,34 @@
-import { getGoogleMapsApiKey, placeDetails } from "../../../../lib/googleMapsServer";
+import { getGoogleMapsApiKey, placeDetails as googlePlaceDetails } from "../../../../lib/googleMapsServer";
+import { lookupPlace } from "../../../../lib/nominatimServer";
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const placeId = (searchParams.get("placeId") || "").trim();
-  const apiKey = getGoogleMapsApiKey();
+  const label = (searchParams.get("label") || "").trim();
 
-  if (!placeId) {
-    return Response.json({ error: "placeId is required" }, { status: 400 });
-  }
-  if (!apiKey) {
-    return Response.json({ error: "GOOGLE_MAPS_API_KEY is not configured" }, { status: 503 });
+  if (!placeId && !label) {
+    return Response.json({ error: "placeId or label is required" }, { status: 400 });
   }
 
   try {
-    const data = await placeDetails(placeId, apiKey);
-    if (!data) return Response.json({ error: "Place not found" }, { status: 404 });
-    return Response.json({ success: true, data });
+    if (placeId.startsWith("osm:") || placeId.startsWith("nominatim:")) {
+      const data = await lookupPlace(placeId);
+      if (data) return Response.json({ success: true, data });
+    }
+
+    const apiKey = getGoogleMapsApiKey();
+    if (placeId && apiKey) {
+      const data = await googlePlaceDetails(placeId, apiKey);
+      if (data) return Response.json({ success: true, data });
+    }
+
+    if (label) {
+      const { geocodeAddress } = await import("../../../../lib/nominatimServer");
+      const data = await geocodeAddress(label);
+      if (data) return Response.json({ success: true, data });
+    }
+
+    return Response.json({ error: "Place not found" }, { status: 404 });
   } catch {
     return Response.json({ error: "Place details request failed" }, { status: 500 });
   }

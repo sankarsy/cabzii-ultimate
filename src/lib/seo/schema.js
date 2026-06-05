@@ -35,13 +35,39 @@ export function siteAggregateRating(overrides = {}) {
   };
 }
 
+function offerShippingDetails() {
+  return {
+    "@type": "OfferShippingDetails",
+    shippingRate: {
+      "@type": "MonetaryAmount",
+      value: "0",
+      currency: "INR"
+    },
+    shippingDestination: {
+      "@type": "DefinedRegion",
+      addressCountry: "IN"
+    },
+    deliveryTime: {
+      "@type": "ShippingDeliveryTime",
+      handlingTime: {
+        "@type": "QuantitativeValue",
+        minValue: 0,
+        maxValue: 2,
+        unitCode: "HUR"
+      }
+    }
+  };
+}
+
 function buildOffers({ url, price, lowPrice, highPrice, offerCount }) {
   const base = {
     priceCurrency: "INR",
     availability: "https://schema.org/InStock",
+    itemCondition: "https://schema.org/NewCondition",
     url,
     priceValidUntil: priceValidUntil(),
-    seller: { "@id": ORG_ID }
+    seller: { "@id": ORG_ID },
+    shippingDetails: offerShippingDetails()
   };
   if (lowPrice != null && highPrice != null && Number(lowPrice) !== Number(highPrice)) {
     return {
@@ -85,25 +111,35 @@ export function faqFromPairs(pairs) {
   };
 }
 
-export function servicePageJsonLd({ serviceName, cityName, description, urlPath, priceFrom, priceTo, image }) {
+export function servicePageJsonLd({
+  serviceName,
+  cityName,
+  productName,
+  description,
+  urlPath,
+  priceFrom,
+  priceTo,
+  image
+}) {
   const url = `${SITE_URL}${urlPath}`;
+  const low = priceFrom ?? CITY_CAB_PRICE_RANGE.low;
+  const high = priceTo ?? Math.round((priceFrom ?? CITY_CAB_PRICE_RANGE.low) * 3.5);
   return {
     "@context": "https://schema.org",
-    "@type": "Service",
-    name: `${serviceName} in ${cityName}`,
+    "@type": "Product",
+    name: productName || `${serviceName} in ${cityName}`,
     description,
     url,
     image: image || DEFAULT_OG_IMAGE,
-    provider: { "@id": ORG_ID },
-    areaServed: { "@type": "City", name: cityName },
+    brand: { "@type": "Brand", name: "cabzii" },
+    category: `${serviceName} · Taxi Booking`,
     aggregateRating: siteAggregateRating(),
-    ...(priceFrom != null && {
-      offers: buildOffers({
-        url,
-        price: priceFrom,
-        lowPrice: priceFrom,
-        highPrice: priceTo ?? Math.round(priceFrom * 4)
-      })
+    offers: buildOffers({
+      url,
+      price: priceFrom,
+      lowPrice: low,
+      highPrice: high,
+      offerCount: 12
     })
   };
 }
@@ -134,20 +170,26 @@ export function reviewJsonLd({ author, rating, text, datePublished }) {
   };
 }
 
-export function routeServiceJsonLd({ fromCity, toCity, urlPath, description, priceFrom, priceTo, image }) {
+export function routeServiceJsonLd({
+  fromCity,
+  toCity,
+  productName,
+  urlPath,
+  description,
+  priceFrom,
+  priceTo,
+  image
+}) {
   const url = `${SITE_URL}${urlPath}`;
   return {
     "@context": "https://schema.org",
-    "@type": "Service",
-    name: `One Way Cab ${fromCity.name} to ${toCity.name}`,
+    "@type": "Product",
+    name: productName || `One Way Cab ${fromCity.name} to ${toCity.name}`,
     description,
     url,
     image: image || DEFAULT_OG_IMAGE,
-    provider: { "@id": ORG_ID },
-    areaServed: [
-      { "@type": "City", name: fromCity.name },
-      { "@type": "City", name: toCity.name }
-    ],
+    brand: { "@type": "Brand", name: "cabzii" },
+    category: "One Way Cab · Outstation",
     aggregateRating: siteAggregateRating(),
     offers: buildOffers({
       url,
@@ -274,20 +316,20 @@ export function localBusinessJsonLd(cityName, cityRegion, urlPath) {
 }
 
 /** Rich Product schema for "cab in Chennai" / city cab searches (price range + rating in SERP). */
-export function cityCabSearchJsonLd(city, { description, urlPath, priceLow, priceHigh, image }) {
+export function cityCabSearchJsonLd(city, { productName, description, urlPath, priceLow, priceHigh, image }) {
   const url = `${SITE_URL}${urlPath}`;
   const low = priceLow ?? CITY_CAB_PRICE_RANGE.low;
   const high = priceHigh ?? CITY_CAB_PRICE_RANGE.high;
   return {
     "@context": "https://schema.org",
     "@type": "Product",
-    name: `Cab Booking in ${city.name}`,
+    name: productName || `Cab Booking in ${city.name}`,
     description:
       description ||
       `Book Maruti Dzire, Ertiga, Innova & Tempo cabs in ${city.name}, ${city.state}. Outstation, airport & local packages.`,
     url,
     image: image || DEFAULT_OG_IMAGE,
-    brand: { "@type": "Brand", name: SITE_NAME },
+    brand: { "@type": "Brand", name: "cabzii" },
     category: "Taxi & Cab Booking",
     aggregateRating: siteAggregateRating(),
     offers: buildOffers({ url, lowPrice: low, highPrice: high, offerCount: 24 })
@@ -295,20 +337,20 @@ export function cityCabSearchJsonLd(city, { description, urlPath, priceLow, pric
 }
 
 /** Rich Product schema for "acting driver in Tirupati" style searches. */
-export function cityDriverSearchJsonLd(city, { description, urlPath, priceLow, priceHigh, image }) {
+export function cityDriverSearchJsonLd(city, { productName, description, urlPath, priceLow, priceHigh, image }) {
   const url = `${SITE_URL}${urlPath}`;
   const low = priceLow ?? CITY_DRIVER_PRICE_RANGE.low;
   const high = priceHigh ?? CITY_DRIVER_PRICE_RANGE.high;
   return {
     "@context": "https://schema.org",
     "@type": "Product",
-    name: `Acting Driver in ${city.name}`,
+    name: productName || `Acting Driver in ${city.name}`,
     description:
       description ||
       `Hire verified acting drivers & chauffeurs in ${city.name}, ${city.state}. Hourly, daily & outstation packages on your car.`,
     url,
     image: image || DEFAULT_OG_IMAGE,
-    brand: { "@type": "Brand", name: SITE_NAME },
+    brand: { "@type": "Brand", name: "cabzii" },
     category: "Chauffeur & Driver Service",
     aggregateRating: siteAggregateRating(),
     offers: buildOffers({ url, lowPrice: low, highPrice: high, offerCount: 16 })

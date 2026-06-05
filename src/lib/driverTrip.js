@@ -1,3 +1,5 @@
+import { appendTripCoords, readTripCoords } from "./tripCoords";
+
 /** Hero & results search params for acting driver booking (mirrors cab mmtTrip). */
 
 export const DRIVER_TRIP_TABS = [
@@ -57,7 +59,19 @@ export function parseDriverTripSearchParams(searchParams) {
   const packageId =
     get("packageId") || get("package") || packageIdFromTrip({ tripType, roundTrip, packageHours });
 
-  return { tripType, from, to, date, time, roundTrip, direction, packageHours, packageId, city };
+  return {
+    tripType,
+    from,
+    to,
+    date,
+    time,
+    roundTrip,
+    direction,
+    packageHours,
+    packageId,
+    city,
+    ...readTripCoords(get)
+  };
 }
 
 export function defaultPackageForTrip(tripType, roundTrip = false) {
@@ -86,6 +100,7 @@ export function driverTripToSearchQuery(trip) {
   if (trip.packageHours) params.set("packageHours", String(trip.packageHours));
   if (trip.packageId) params.set("packageId", trip.packageId);
   if (trip.city) params.set("city", trip.city);
+  appendTripCoords(params, trip);
   return params;
 }
 

@@ -53,6 +53,7 @@ export default function RoutePage({ params }) {
     routeServiceJsonLd({
       fromCity: route.fromCity,
       toCity: route.toCity,
+      productName: tunedRouteTitle(route),
       urlPath: path,
       description: tunedRouteDescription(route),
       priceFrom: route.sedanFrom,

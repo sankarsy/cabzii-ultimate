@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import MmtCabResults from "../../../components/mmt/MmtCabResults";
 import MmtTripSummaryBar from "../../../components/mmt/MmtTripSummaryBar";
+import TripRoutePanel from "../../../components/maps/TripRoutePanel";
 import { parseTripSearchParams, isValidTripSearch } from "../../../lib/mmtTrip";
 import { useSelectedCity } from "../../../lib/useSelectedCity";
 import { extractCabList } from "../../../lib/apiClient";
@@ -60,6 +61,9 @@ function ResultsContent() {
   return (
     <>
       <MmtTripSummaryBar trip={trip} />
+      <div className="mx-auto max-w-5xl px-4">
+        <TripRoutePanel trip={trip} />
+      </div>
       {loading ? (
         <div className="py-16 text-center text-slate-500">Finding best cabs for you…</div>
       ) : error ? (

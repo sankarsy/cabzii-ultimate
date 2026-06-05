@@ -16,7 +16,7 @@ export default function FaqSection({
   const showCardTitle = !hideTitle && !showIntro;
 
   const listClass = scrollable
-    ? `faq-scroll scrollbar-hide space-y-4 overflow-y-auto overscroll-y-contain pr-1 ${scrollMaxClass}`
+    ? `faq-scroll scrollbar-hide space-y-4 overflow-visible pr-1 md:overflow-y-auto md:overscroll-y-contain ${scrollMaxClass} max-md:!max-h-none`
     : "space-y-5";
 
   return (

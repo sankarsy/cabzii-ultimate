@@ -1,4 +1,5 @@
 import {
+  formatSerpTitle,
   getCabBookingH1,
   getCabBookingMeta,
   getRouteMeta,
@@ -31,9 +32,12 @@ export function tunedCabBookingKeywords(city) {
 /** /acting-driver/{city} — unchanged intent, length-safe */
 export function tunedActingDriverTitle(city) {
   if (city.slug === "tirupati") {
-    return "Acting Driver Tirupati | Chauffeur on Hire | Cabzii";
+    return formatSerpTitle("Acting Driver Tirupati", "Chauffeur on Hire");
   }
-  return `Acting Driver ${city.name} | Driver on Hire | Cabzii`;
+  if (city.slug === "chennai") {
+    return formatSerpTitle("Acting Driver Chennai", "Call Driver & Chauffeur");
+  }
+  return formatSerpTitle(`Acting Driver ${city.name}`, "Driver on Hire");
 }
 
 export function tunedActingDriverDescription(city) {

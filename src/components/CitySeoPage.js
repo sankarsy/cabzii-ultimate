@@ -53,6 +53,16 @@ export default function CitySeoPage({ city, variant }) {
           </Link>
         </div>
 
+        {isCab && city.slug === "chennai" ? (
+          <section className="mt-10 rounded-xl border border-slate-200 bg-slate-50 p-5">
+            <h2 className="text-lg font-bold text-slate-900">Chennai cabs — hourly packages (4 hours &amp; 8 hours)</h2>
+            <p className="mt-2 text-sm text-slate-700">
+              Compare local cab packages on Cabzii — 4 hours / 40 km and 8 hours / 80 km slabs plus outstation and airport
+              cabs across Chennai.
+            </p>
+          </section>
+        ) : null}
+
         {isCab ? (
           <section className="mt-10 rounded-xl border border-slate-200 bg-slate-50 p-5">
             <h2 className="text-lg font-bold text-slate-900">How to book a cab in {city.name}</h2>

@@ -53,6 +53,24 @@ export default function ServiceLandingPage({ city, service, faqs }) {
         </a>
       </div>
 
+      {["car-rental", "cab-rental", "hourly-rental", "local-taxi"].includes(service.slug) ? (
+        <section className="mt-10 rounded-xl border border-slate-200 bg-slate-50 p-5">
+          <h2 className="text-xl font-bold text-slate-900 md:text-2xl">
+            {city.name} cabs — hourly packages &amp; fares
+          </h2>
+          <p className="mt-3 text-sm leading-relaxed text-slate-700">
+            Choose a cab package that fits your trip — popular slabs include{" "}
+            <strong>4 hours</strong> / 40 km and <strong>8 hours</strong> / 80 km for local {city.name} errands, weddings
+            and sightseeing. Extra hours and km rates are shown on each package before you pay on Cabzii.
+          </p>
+          <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-slate-700">
+            <li>4 hours local package — meetings, shopping, hospital visits</li>
+            <li>8 hours full-day package — weddings, multi-stop city tours</li>
+            <li>12 hours package — long wedding days and corporate events</li>
+          </ul>
+        </section>
+      ) : null}
+
       <section className="mt-10">
         <h2 className="text-xl font-bold text-slate-900 md:text-2xl">Why book on Cabzii?</h2>
         <ul className="mt-4 grid gap-3 sm:grid-cols-2">

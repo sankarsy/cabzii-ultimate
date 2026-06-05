@@ -51,6 +51,7 @@ export default function ActingDriverCityPage({ params }) {
       { name: `Acting driver ${city.name}`, path }
     ]),
     cityDriverSearchJsonLd(city, {
+      productName: tunedActingDriverTitle(city),
       description: tunedActingDriverDescription(city),
       urlPath: path
     }),

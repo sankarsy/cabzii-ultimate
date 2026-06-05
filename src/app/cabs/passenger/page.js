@@ -3,12 +3,13 @@
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import MmtTripSummaryBar from "../../../components/mmt/MmtTripSummaryBar";
+import TripRoutePanel from "../../../components/maps/TripRoutePanel";
 import { buildFareSlabs, num, packageYouPay } from "../../../lib/cabFare";
 import { buildLoginHref, getUser, isLoggedIn } from "../../../lib/auth";
+import { loadCheckoutDraft, saveCheckoutDraft } from "../../../lib/checkoutStorage";
+import { appendTripCoords } from "../../../lib/tripCoords";
 import { resolveMediaUrl } from "../../../lib/media";
 import { cabSlabForTrip, parseTripSearchParams, tripToSearchQuery } from "../../../lib/mmtTrip";
-
-const CHECKOUT_KEY = "cabzii-checkout";
 
 function formatINR(n) {
   return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(
@@ -29,11 +30,28 @@ function PassengerContent() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
+  const [autoContinue, setAutoContinue] = useState(false);
 
   useEffect(() => {
+    const saved = loadCheckoutDraft();
     const user = getUser();
-    if (user?.mobileNumber) setPhone(user.mobileNumber);
+    const restoredName = saved.customerName || "";
+    const restoredPhone = saved.phone || user?.mobileNumber || "";
+    const restoredEmail = saved.email || "";
+    if (restoredName) setName(restoredName);
+    if (restoredEmail) setEmail(restoredEmail);
+    if (restoredPhone) setPhone(restoredPhone);
+    if (saved.pendingResume && isLoggedIn() && restoredName.trim() && restoredPhone.trim()) {
+      saveCheckoutDraft({ pendingResume: false });
+      setAutoContinue(true);
+    }
   }, []);
+
+  useEffect(() => {
+    if (!autoContinue || loading || !cab) return;
+    setAutoContinue(false);
+    handleContinue();
+  }, [autoContinue, loading, cab]);
 
   useEffect(() => {
     if (!cabId) {
@@ -58,13 +76,22 @@ function PassengerContent() {
 
   async function handleContinue() {
     setError("");
-    if (!isLoggedIn()) {
-      const next = `/cabs/passenger?${searchParams.toString()}`;
-      router.push(buildLoginHref(next, "customer"));
-      return;
-    }
     if (!name.trim() || !phone.trim()) {
       setError("Enter passenger name and mobile number.");
+      return;
+    }
+    saveCheckoutDraft({
+      customerName: name.trim(),
+      phone: phone.trim(),
+      email: email.trim(),
+      pickup: trip.from,
+      drop: trip.to || "",
+      date: trip.date
+    });
+    if (!isLoggedIn()) {
+      saveCheckoutDraft({ pendingResume: true });
+      const next = `/cabs/passenger?${searchParams.toString()}`;
+      router.push(buildLoginHref(next, "customer"));
       return;
     }
     setSubmitting(true);
@@ -86,13 +113,8 @@ function PassengerContent() {
       payParams.set("listPrice", String(listPrice));
       payParams.set("discountPct", String(discount));
       payParams.set("discountAmount", String(Math.max(0, listPrice - total)));
+      appendTripCoords(payParams, trip);
 
-      if (typeof window !== "undefined") {
-        sessionStorage.setItem(
-          CHECKOUT_KEY,
-          JSON.stringify({ customerName: name.trim(), phone: phone.trim(), email: email.trim() })
-        );
-      }
       router.push(`/payment?${payParams.toString()}`);
     } catch (e) {
       setError(e.message || "Booking failed");
@@ -112,6 +134,9 @@ function PassengerContent() {
   return (
     <>
       <MmtTripSummaryBar trip={trip} />
+      <div className="mx-auto max-w-5xl px-4">
+        <TripRoutePanel trip={trip} compact />
+      </div>
       <div className="mx-auto grid w-full max-w-5xl grid-cols-1 gap-6 px-4 py-6 lg:grid-cols-[1fr_320px]">
         <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
           <h2 className="text-lg font-bold text-slate-900">Traveller details</h2>

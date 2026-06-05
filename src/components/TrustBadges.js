@@ -48,7 +48,7 @@ export default function TrustBadges({ badges }) {
 
   return (
     <div
-      className="flex flex-wrap items-center justify-start gap-x-1 gap-y-1 overflow-x-auto border-t border-slate-100 px-2 py-2 scrollbar-hide"
+      className="scroll-x-touch flex flex-wrap items-center justify-start gap-x-1 gap-y-1 overflow-x-auto border-t border-slate-100 px-2 py-2 scrollbar-hide"
       aria-label="Trust highlights"
     >
       {items.map((badge) => {

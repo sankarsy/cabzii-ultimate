@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import MmtDriverResults from "../../../components/mmt/MmtDriverResults";
 import MmtDriverTripSummaryBar from "../../../components/mmt/MmtDriverTripSummaryBar";
+import TripRoutePanel from "../../../components/maps/TripRoutePanel";
 import { parseDriverTripSearchParams, isValidDriverTripSearch } from "../../../lib/driverTrip";
 import { useSelectedCity } from "../../../lib/useSelectedCity";
 import { extractDriverList } from "../../../lib/apiClient";
@@ -61,6 +62,9 @@ function DriverResultsContent() {
   return (
     <>
       <MmtDriverTripSummaryBar trip={trip} />
+      <div className="mx-auto max-w-5xl px-4">
+        <TripRoutePanel trip={trip} />
+      </div>
       {loading ? (
         <div className="py-16 text-center text-slate-500">Finding best drivers for you…</div>
       ) : error ? (

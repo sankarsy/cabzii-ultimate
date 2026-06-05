@@ -33,7 +33,7 @@ export default function EmtHeroSearch({ defaultCity = "", defaultTab = "cabs" })
   }, [defaultTab]);
 
   return (
-    <section className="relative isolate -mt-14 min-h-[min(100dvh,500px)] pt-14 sm:-mt-[4.25rem] sm:min-h-[420px] sm:pt-[4.25rem]">
+    <section className="relative isolate -mt-14 pt-14 sm:-mt-[4.25rem] sm:min-h-[420px] sm:pt-[4.25rem]">
       <div className="absolute inset-0 -z-10" aria-hidden="true">
         <img
           src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1920&q=80"
@@ -51,7 +51,7 @@ export default function EmtHeroSearch({ defaultCity = "", defaultTab = "cabs" })
           {BRAND.domain} — compare fares, verified partners, instant OTP booking
         </p>
 
-        <div className="mt-4 w-full min-w-0 rounded-xl bg-white shadow-[var(--cabzii-shadow-card)] sm:mt-5">
+        <div className="mt-4 w-full min-w-0 overflow-visible rounded-xl bg-white shadow-[var(--cabzii-shadow-card)] sm:mt-5">
           <div className="hero-tabs-scroll flex gap-0.5 overflow-x-auto border-b border-slate-100 px-1.5 pt-2 sm:justify-center sm:gap-1.5 sm:px-2">
             {HERO_TABS.map((tab) => {
               const isActive = tab.id === active;

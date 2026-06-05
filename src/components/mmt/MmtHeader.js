@@ -46,12 +46,13 @@ export default function MmtHeader({ transparent = false }) {
   }, [menuOpen, forceVisible]);
 
   useEffect(() => {
-    if (!menuOpen) return undefined;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = prev;
-    };
+    const root = document.documentElement;
+    if (menuOpen) {
+      root.classList.add("menu-scroll-lock");
+    } else {
+      root.classList.remove("menu-scroll-lock");
+    }
+    return () => root.classList.remove("menu-scroll-lock");
   }, [menuOpen]);
 
   const logout = async () => {

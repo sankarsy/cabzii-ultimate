@@ -148,7 +148,7 @@ export default function DriverDetailPage({ driverId, initialDriver = null }) {
               </header>
 
               <nav
-                className="mb-5 flex gap-1.5 overflow-x-auto rounded-xl border border-slate-200 bg-white p-1 text-xs shadow-sm [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                className="scroll-x-touch mb-5 flex gap-1.5 overflow-x-auto rounded-xl border border-slate-200 bg-white p-1 text-xs shadow-sm [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
                 aria-label="Page sections"
               >
                 {SECTION_LINKS.map((link) => (

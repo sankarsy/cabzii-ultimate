@@ -12,7 +12,8 @@ import {
   localBusinessJsonLd,
   tunedCabBookingDescription,
   tunedCabBookingKeywords,
-  tunedCabBookingTitle
+  tunedCabBookingTitle,
+  CITY_CAB_PRICE_RANGE
 } from "../../../lib/seo";
 
 export function generateStaticParams() {
@@ -51,8 +52,11 @@ export default function CabBookingCityPage({ params }) {
       { name: city.name, path }
     ]),
     cityCabSearchJsonLd(city, {
+      productName: tunedCabBookingTitle(city),
       description: tunedCabBookingDescription(city),
-      urlPath: path
+      urlPath: path,
+      priceLow: CITY_CAB_PRICE_RANGE.low,
+      priceHigh: CITY_CAB_PRICE_RANGE.high
     }),
     localBusinessJsonLd(city.name, city.state, path),
     faqFromPairs(faqs)

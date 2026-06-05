@@ -39,15 +39,25 @@
 html {
   scroll-behavior: smooth;
   font-size: 16px;
-  overflow-x: clip;
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
   font-family: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
   font-size: 0.875rem;
   line-height: 1.5;
-  overflow-x: clip;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   @apply bg-[var(--cabzii-bg)] text-slate-900 antialiased;
+}
+
+/* Mobile nav open — lock page scroll (restored when menu closes) */
+html.menu-scroll-lock,
+html.menu-scroll-lock body {
+  overflow: hidden;
+  overscroll-behavior: none;
 }
 
 /* Prevent iOS zoom on focus; keep tap targets readable */
@@ -118,11 +128,13 @@ main h3,
   display: none;
 }
 
-/* Horizontal scroll (offers, hero tabs) — swipe / arrows only, no scrollbar */
+/* Horizontal scroll — allow vertical page scroll when swiping on these strips */
 .offers-scroll,
-.hero-tabs-scroll {
+.hero-tabs-scroll,
+.scroll-x-touch {
   -webkit-overflow-scrolling: touch;
-  touch-action: pan-x;
+  touch-action: pan-x pan-y;
+  overscroll-behavior-x: contain;
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
@@ -131,14 +143,31 @@ main h3,
   display: none;
 }
 
-/* Homepage FAQ — vertical scroll, no visible scrollbar */
+/* Homepage FAQ — inner scroll on desktop only; mobile uses full page scroll */
 .faq-scroll {
   -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
 .faq-scroll::-webkit-scrollbar {
   display: none;
+}
+@media (max-width: 767px) {
+  .faq-scroll {
+    max-height: none !important;
+    overflow: visible !important;
+    overscroll-behavior: auto;
+  }
+}
+
+/* Prevent flex layouts from trapping vertical scroll on mobile */
+@media (max-width: 767px) {
+  .cabzii-page-shell {
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: visible;
+  }
 }
 
 .mmt-search-cell,

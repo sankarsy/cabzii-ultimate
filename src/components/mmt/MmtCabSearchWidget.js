@@ -4,7 +4,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import PlaceAutocomplete from "../PlaceAutocomplete";
 import { CalendarIcon, ClockIcon, MapPinIcon, MapPinnedIcon, SearchIcon } from "../icons";
-import { HOURLY_PACKAGES, todayStr, tripToSearchQuery } from "../../lib/mmtTrip";
+import { applyDistanceToTrip, fetchTripDistance } from "../../lib/fetchTripDistance";
+import { coordsForPlaceLabel } from "../../lib/indiaCityCoords";
+import { HOURLY_PACKAGES, todayStr, tripNeedsDrop, tripToSearchQuery } from "../../lib/mmtTrip";
 import { writeSelectedCity } from "../../lib/locationPriority";
 
 const TRIP_TABS = [
@@ -20,15 +22,36 @@ export default function MmtCabSearchWidget({ defaultCity = "" }) {
   const [roundTrip, setRoundTrip] = useState(false);
   const [pickup, setPickup] = useState(defaultCity);
   const [drop, setDrop] = useState("");
+  const [fromCoords, setFromCoords] = useState(null);
+  const [toCoords, setToCoords] = useState(null);
   const [airportDirection, setAirportDirection] = useState("pickup");
   const [packageHours, setPackageHours] = useState(8);
   const [date, setDate] = useState(todayStr());
   const [time, setTime] = useState("09:00");
   const [error, setError] = useState(null);
+  const [searching, setSearching] = useState(false);
 
-  function handleSearch() {
+  function fillCityCoords(trip) {
+    if (!trip.fromLat && trip.from) {
+      const hit = coordsForPlaceLabel(trip.from);
+      if (hit) {
+        trip.fromLat = hit.lat;
+        trip.fromLng = hit.lng;
+      }
+    }
+    if (!trip.toLat && trip.to) {
+      const hit = coordsForPlaceLabel(trip.to);
+      if (hit) {
+        trip.toLat = hit.lat;
+        trip.toLng = hit.lng;
+      }
+    }
+    return trip;
+  }
+
+  async function handleSearch() {
     setError(null);
-    const trip = { tripType, date, time, roundTrip, direction: airportDirection, packageHours };
+    let trip = { tripType, date, time, roundTrip, direction: airportDirection, packageHours };
 
     if (tripType === "outstation" || tripType === "local") {
       if (!pickup.trim()) {
@@ -41,6 +64,10 @@ export default function MmtCabSearchWidget({ defaultCity = "" }) {
       }
       trip.from = pickup.trim();
       trip.to = drop.trim();
+      if (fromCoords?.lat != null) trip.fromLat = fromCoords.lat;
+      if (fromCoords?.lng != null) trip.fromLng = fromCoords.lng;
+      if (toCoords?.lat != null) trip.toLat = toCoords.lat;
+      if (toCoords?.lng != null) trip.toLng = toCoords.lng;
     } else if (tripType === "airport") {
       if (!pickup.trim() || !drop.trim()) {
         setError("Enter airport and city locations.");
@@ -49,9 +76,17 @@ export default function MmtCabSearchWidget({ defaultCity = "" }) {
       if (airportDirection === "pickup") {
         trip.from = pickup.trim();
         trip.to = drop.trim();
+        if (fromCoords?.lat != null) trip.fromLat = fromCoords.lat;
+        if (fromCoords?.lng != null) trip.fromLng = fromCoords.lng;
+        if (toCoords?.lat != null) trip.toLat = toCoords.lat;
+        if (toCoords?.lng != null) trip.toLng = toCoords.lng;
       } else {
         trip.from = drop.trim();
         trip.to = pickup.trim();
+        if (toCoords?.lat != null) trip.fromLat = toCoords.lat;
+        if (toCoords?.lng != null) trip.fromLng = toCoords.lng;
+        if (fromCoords?.lat != null) trip.toLat = fromCoords.lat;
+        if (fromCoords?.lng != null) trip.toLng = fromCoords.lng;
       }
     } else {
       if (!pickup.trim()) {
@@ -59,6 +94,21 @@ export default function MmtCabSearchWidget({ defaultCity = "" }) {
         return;
       }
       trip.from = pickup.trim();
+      if (fromCoords?.lat != null) trip.fromLat = fromCoords.lat;
+      if (fromCoords?.lng != null) trip.fromLng = fromCoords.lng;
+    }
+
+    trip = fillCityCoords(trip);
+
+    if (tripNeedsDrop(trip.tripType) && trip.from && trip.to) {
+      setSearching(true);
+      try {
+        trip = applyDistanceToTrip(trip, await fetchTripDistance(trip));
+      } catch {
+        /* navigate without distance — results page will retry */
+      } finally {
+        setSearching(false);
+      }
     }
 
     router.push(`/cabs/results?${tripToSearchQuery(trip).toString()}`);
@@ -123,7 +173,7 @@ export default function MmtCabSearchWidget({ defaultCity = "" }) {
         </div>
       ) : null}
 
-      <div className="mt-4 grid grid-cols-1 gap-px overflow-hidden rounded-lg border border-slate-200 bg-slate-200 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-4 grid grid-cols-1 gap-px overflow-visible rounded-lg border border-slate-200 bg-slate-200 sm:grid-cols-2 lg:grid-cols-4">
         {tripType === "hourly" ? (
           <>
             <div className="bg-white p-3 sm:p-4">
@@ -133,6 +183,7 @@ export default function MmtCabSearchWidget({ defaultCity = "" }) {
                 value={pickup}
                 onChange={setPickup}
                 onResolved={(area) => {
+                  setFromCoords(area?.lat != null ? { lat: area.lat, lng: area.lng } : null);
                   if (area?.city) writeSelectedCity(area.city);
                 }}
                 leadingIcon={MapPinIcon}
@@ -162,6 +213,9 @@ export default function MmtCabSearchWidget({ defaultCity = "" }) {
                 placeholder="Airport name"
                 value={pickup}
                 onChange={setPickup}
+                onResolved={(area) => {
+                  setFromCoords(area?.lat != null ? { lat: area.lat, lng: area.lng } : null);
+                }}
                 leadingIcon={MapPinIcon}
                 leadingIconClassName="text-sky-600"
               />
@@ -173,6 +227,7 @@ export default function MmtCabSearchWidget({ defaultCity = "" }) {
                 value={drop}
                 onChange={setDrop}
                 onResolved={(area) => {
+                  setToCoords(area?.lat != null ? { lat: area.lat, lng: area.lng } : null);
                   if (area?.city) writeSelectedCity(area.city);
                 }}
                 leadingIcon={MapPinnedIcon}
@@ -189,6 +244,7 @@ export default function MmtCabSearchWidget({ defaultCity = "" }) {
                 value={pickup}
                 onChange={setPickup}
                 onResolved={(area) => {
+                  setFromCoords(area?.lat != null ? { lat: area.lat, lng: area.lng } : null);
                   if (area?.city) writeSelectedCity(area.city);
                 }}
                 leadingIcon={MapPinIcon}
@@ -202,6 +258,9 @@ export default function MmtCabSearchWidget({ defaultCity = "" }) {
                   placeholder="Drop location"
                   value={drop}
                   onChange={setDrop}
+                  onResolved={(area) => {
+                    setToCoords(area?.lat != null ? { lat: area.lat, lng: area.lng } : null);
+                  }}
                   leadingIcon={MapPinnedIcon}
                   leadingIconClassName="text-rose-600"
                 />
@@ -243,10 +302,11 @@ export default function MmtCabSearchWidget({ defaultCity = "" }) {
         <button
           type="button"
           onClick={handleSearch}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[var(--emt-primary)] px-8 py-3 text-base font-bold text-white shadow-md transition hover:bg-[var(--emt-primary-dark)] sm:w-auto sm:px-12"
+          disabled={searching}
+          className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[var(--emt-primary)] px-8 py-3 text-base font-bold text-white shadow-md transition hover:bg-[var(--emt-primary-dark)] disabled:opacity-70 sm:w-auto sm:px-12"
         >
           <SearchIcon className="h-6 w-6" />
-          Search Cabs
+          {searching ? "Calculating distance…" : "Search Cabs"}
         </button>
       </div>
     </div>

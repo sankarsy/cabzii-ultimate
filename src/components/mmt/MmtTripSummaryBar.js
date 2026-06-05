@@ -1,10 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { tripSummaryLabel, tripTypeLabel } from "../../lib/mmtTrip";
+import { formatDistance, formatDuration } from "../../lib/tripCoords";
+import { useTripRoute } from "../../lib/useTripRoute";
+import { tripSummaryLabel, tripTypeLabel, tripNeedsDrop } from "../../lib/mmtTrip";
 
 export default function MmtTripSummaryBar({ trip }) {
   const label = tripTypeLabel(trip);
+  const { route, loading } = useTripRoute(trip);
+  const distance = route?.distanceKm ?? trip?.distanceKm;
+  const duration = route?.durationMin ?? trip?.durationMin;
+  const showDistance = tripNeedsDrop(trip?.tripType) && trip?.from && trip?.to;
 
   return (
     <div className="bg-mmt-header text-mmt-header-fg">
@@ -17,6 +23,22 @@ export default function MmtTripSummaryBar({ trip }) {
             </span>
             {tripSummaryLabel(trip)}
           </h1>
+          {showDistance ? (
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              {loading && !distance ? (
+                <span className="text-xs opacity-90">Calculating distance…</span>
+              ) : distance ? (
+                <>
+                  <span className="rounded-full bg-white/20 px-3 py-1 text-sm font-bold">
+                    {formatDistance(distance)}
+                  </span>
+                  {duration ? (
+                    <span className="text-xs opacity-90">~{formatDuration(duration)}</span>
+                  ) : null}
+                </>
+              ) : null}
+            </div>
+          ) : null}
         </div>
         <div className="flex flex-wrap items-center gap-4 text-sm">
           <span>📅 {trip.date}</span>

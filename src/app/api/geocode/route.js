@@ -1,4 +1,5 @@
-import { geocodeAddress, getGoogleMapsApiKey, reverseGeocode } from "../../../lib/googleMapsServer";
+import { geocodeAddress as googleGeocode, getGoogleMapsApiKey, reverseGeocode as googleReverse } from "../../../lib/googleMapsServer";
+import { geocodeAddress as nominatimGeocode, reverseGeocode as nominatimReverse } from "../../../lib/nominatimServer";
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
@@ -8,13 +9,12 @@ export async function GET(request) {
   const lng = searchParams.get("lng");
   const apiKey = getGoogleMapsApiKey();
 
-  if (!apiKey) {
-    return Response.json({ error: "GOOGLE_MAPS_API_KEY is not configured" }, { status: 503 });
-  }
-
   try {
     if (lat && lng) {
-      const data = await reverseGeocode(Number(lat), Number(lng), apiKey);
+      let data = await nominatimReverse(Number(lat), Number(lng));
+      if (!data && apiKey) {
+        data = await googleReverse(Number(lat), Number(lng), apiKey);
+      }
       if (!data) return Response.json({ error: "Location not found" }, { status: 404 });
       return Response.json({ success: true, data });
     }
@@ -24,7 +24,10 @@ export async function GET(request) {
       return Response.json({ error: "address, pincode, or lat/lng required" }, { status: 400 });
     }
 
-    const data = await geocodeAddress(query, apiKey);
+    let data = await nominatimGeocode(query);
+    if (!data && apiKey) {
+      data = await googleGeocode(query, apiKey);
+    }
     if (!data) return Response.json({ error: "Location not found" }, { status: 404 });
     return Response.json({ success: true, data });
   } catch {

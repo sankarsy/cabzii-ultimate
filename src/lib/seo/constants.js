@@ -1,3 +1,5 @@
+import { formatSerpTitle } from "./programmaticMeta";
+
 export const SITE_URL = "https://cabzii.in";
 export const SITE_NAME = "Cabzii";
 export const BRAND = "cabzii";
@@ -50,8 +52,15 @@ export const DEFAULT_KEYWORDS = [
   "cabzii",
   "cabzii.in",
   "cab booking online",
+  "cab booking near me",
+  "cab booking for outstation",
+  "cab booking madurai",
+  "cab booking in coimbatore",
+  "cab booking trichy",
+  "cab booking kodaikanal",
   "taxi booking India",
   "cab booking Chennai",
+  "cab booking in chennai",
   "taxi booking near me",
   "airport taxi Chennai",
   "outstation cab Bangalore",
@@ -60,6 +69,14 @@ export const DEFAULT_KEYWORDS = [
   "acting driver Chennai",
   "cab rental Chennai",
   "car rental Bangalore",
+  "car rental in bangalore",
+  "car rental in coimbatore",
+  "car rental in madurai",
+  "car rental in goa",
+  "car rental in trichy",
+  "car rental delhi",
+  "car rental in delhi",
+  "car rental maduravoyal",
   "tempo traveller rental",
   "local taxi service",
   "airport pickup service",
@@ -97,11 +114,13 @@ export function buildPageMetadata({
       ? `${SITE_URL}${image.startsWith("/") ? image : `/${image}`}`
       : DEFAULT_OG_IMAGE;
 
-  /** Use absolute titles — child pages already include "| Cabzii" where needed. */
-  const titleMeta =
-    title.includes("| Cabzii") || title.startsWith("Cabzii —") || title.startsWith("Cabzii -")
-      ? { absolute: title }
-      : title;
+  /** Use absolute titles — SERP format ends with `| cabzii` (see formatSerpTitle). */
+  const isAbsoluteSerpTitle =
+    /\|\s*cabzii\s*$/i.test(title) ||
+    title.includes("| Cabzii") ||
+    title.startsWith("Cabzii —") ||
+    title.startsWith("Cabzii -");
+  const titleMeta = isAbsoluteSerpTitle ? { absolute: title } : title;
 
   return {
     title: titleMeta,
@@ -149,9 +168,9 @@ export function actingDriverDescription(cityName, state) {
 }
 
 export const homeMetadata = buildPageMetadata({
-  title: "Cabzii — Online Cab, Taxi & Driver Booking in South India | cabzii.in",
+  title: formatSerpTitle("Online Cab, Taxi & Driver Booking", "South India"),
   description:
-    "Book cabs, taxis, airport transfers, outstation trips, acting drivers and tempo travellers in Chennai, Bengaluru, Hyderabad and 20+ cities. Transparent fares. Instant OTP booking on cabzii.in.",
+    "Cab booking online in Chennai, Madurai, Coimbatore, Trichy, Kodaikanal and 20+ cities. Outstation, airport taxi and acting drivers with transparent fares on cabzii.in.",
   path: "/",
   image: "/images/hero-banner.png",
   imageAlt: "Book cabs and taxis online with Cabzii",

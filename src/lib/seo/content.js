@@ -3,6 +3,18 @@ import { SEO_SERVICES } from "./services";
 /** Homepage visible FAQs — must match faqJsonLd() for rich results. */
 export const HOME_PAGE_FAQS = [
   [
+    "How do I book a cab online on Cabzii?",
+    "Visit cabzii.in, enter pickup and destination, pick date and time, compare cab fares and confirm with your mobile OTP — no app download required."
+  ],
+  [
+    "Can I book a cab near me in Chennai, Madurai or Coimbatore?",
+    "Yes. Search your pickup locality on Cabzii — we show verified taxis near you in Chennai, Madurai, Coimbatore, Trichy and 20+ cities with upfront package fares."
+  ],
+  [
+    "How do I book car rental near me on Cabzii?",
+    "Open cabzii.in, choose Local or Rental, enter your pickup area (e.g. Maduravoyal, OMR or your city), compare hourly packages and confirm with OTP — no app required."
+  ],
+  [
     "How do I book an outstation cab on Cabzii?",
     "Choose Cabs on the home page, select Outstation, enter pickup and drop cities, date and time, then compare vehicles and confirm with OTP login."
   ],
@@ -109,6 +121,24 @@ export function getServiceFaqs(service, city) {
     "hourly-rental": [
       [`What hourly packages are available in ${name}?`, `Typical slabs include 4 hour / 40 km, 8 hour / 80 km and 12 hour packages. Extra hour and km rates are listed on Cabzii.`],
       [`Is hourly cab rental good for city errands in ${name}?`, `Yes. Hourly rental suits multi-stop meetings, shopping runs and wedding logistics within ${name}.`]
+    ],
+    "car-rental": [
+      ...(city.slug === "chennai"
+        ? [
+            [
+              "Is car rental available in Maduravoyal, Chennai?",
+              "Yes. Book car rental in Chennai on Cabzii with pickup in Maduravoyal, Porur, Valasaravakkam and nearby areas — hourly and full-day packages with upfront fares."
+            ]
+          ]
+        : []),
+      [
+        `What is included in car rental in ${name}?`,
+        `Typical packages cover base hours and km (e.g. 4hr/40km or 8hr/80km). Extra hour and km rates are shown before payment on Cabzii.`
+      ],
+      [
+        `Can I book car rental in ${name} online?`,
+        `Yes. Search car rental in ${name} on Cabzii, pick your package, login with mobile OTP and confirm — ideal for local sightseeing and city travel.`
+      ]
     ]
   };
 

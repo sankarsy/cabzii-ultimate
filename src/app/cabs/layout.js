@@ -1,9 +1,9 @@
-import { buildPageMetadata, cabsCatalogJsonLd } from "../../lib/seo";
+import { buildPageMetadata, cabsCatalogJsonLd, formatSerpTitle } from "../../lib/seo";
 import JsonLd from "../../components/seo/JsonLd";
 import TravelLayoutClient from "../../components/mmt/TravelLayoutClient";
 
 export const metadata = buildPageMetadata({
-  title: "Book Cabs & Taxis Online — Dzire, Ertiga, Innova, Tempo",
+  title: formatSerpTitle("Book Cabs & Taxis Online", "Dzire, Ertiga, Innova"),
   description:
     "Book Maruti Dzire, Ertiga, Toyota Innova Crysta taxi cars and Force Tempo Traveller van/bus with transparent fares. Outstation, airport and local cab booking on cabzii.in.",
   path: "/cabs",

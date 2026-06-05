@@ -15,7 +15,7 @@ function LinkColumn({ title, items, scrollable = false }) {
     <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
       <h3 className="text-sm font-semibold text-slate-900">{title}</h3>
       <ul
-        className={`mt-3 space-y-2 ${scrollable ? "max-h-72 overflow-y-auto pr-1 scrollbar-hide" : ""}`}
+        className={`mt-3 space-y-2 ${scrollable ? "max-h-72 overflow-y-auto pr-1 scrollbar-hide max-md:max-h-none max-md:overflow-visible" : ""}`}
       >
         {items.map((item) => (
           <li key={item.href}>

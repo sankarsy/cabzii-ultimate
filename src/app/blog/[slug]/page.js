@@ -4,7 +4,13 @@ import Footer from "../../../components/Footer";
 import Navbar from "../../../components/Navbar";
 import JsonLd from "../../../components/seo/JsonLd";
 import { fetchBlogBySlug } from "../../../lib/serverCatalog";
-import { articleJsonLd, breadcrumbJsonLd, buildPageMetadata, faqFromPairs } from "../../../lib/seo";
+import {
+  articleJsonLd,
+  breadcrumbJsonLd,
+  buildPageMetadata,
+  faqFromPairs,
+  formatSerpTitle
+} from "../../../lib/seo";
 
 const CHENNAI_GUIDE_FAQS = [
   [
@@ -25,6 +31,8 @@ const CHENNAI_GUIDE_FAQS = [
   ]
 ];
 
+const CHENNAI_GUIDE_SLUG = "cab-booking-in-chennai-complete-guide-2026";
+
 export async function generateMetadata({ params }) {
   const post = await fetchBlogBySlug(params.slug);
   if (!post) {
@@ -35,6 +43,25 @@ export async function generateMetadata({ params }) {
       noindex: true
     });
   }
+  if (params.slug === CHENNAI_GUIDE_SLUG) {
+    return buildPageMetadata({
+      title: formatSerpTitle("Chennai Cabs Guide", "Packages, Hours & Booking 2026"),
+      description:
+        "Chennai cabs guide — hourly packages (4 hours, 8 hours), outstation trips, acting driver hire and taxi near me. Book cab packages online on Cabzii.in.",
+      path: `/blog/${params.slug}`,
+      keywords: [
+        "chennai cabs",
+        "cab booking in chennai",
+        "chennai cab packages",
+        "4 hours cab chennai",
+        "8 hours cab chennai",
+        "cabzii"
+      ],
+      image: "/images/hero-banner.png",
+      imageAlt: "Chennai cabs booking guide on Cabzii"
+    });
+  }
+
   return buildPageMetadata({
     title: post.seoTitle || post.title,
     description: post.seoDescription || post.excerpt,
@@ -90,7 +117,11 @@ export default async function BlogPostPage({ params }) {
           </Link>
         </nav>
         <p className="text-xs font-bold uppercase tracking-wider text-[#0056D2]">Cabzii Blog</p>
-        <h1 className="mt-2 text-3xl font-extrabold text-slate-900 md:text-4xl">{post.title}</h1>
+        <h1 className="mt-2 text-3xl font-extrabold text-slate-900 md:text-4xl">
+          {slug === CHENNAI_GUIDE_SLUG
+            ? "Chennai Cabs — Packages, Hours & Cab Booking Guide 2026"
+            : post.title}
+        </h1>
         <p className="mt-3 text-sm text-slate-500">
           {post.author}
           {post.date ? ` · ${post.date}` : ""}

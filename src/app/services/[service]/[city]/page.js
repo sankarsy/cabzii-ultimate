@@ -60,6 +60,7 @@ export default function ServiceCityPage({ params }) {
     servicePageJsonLd({
       serviceName: service.name,
       cityName: city.name,
+      productName: tunedServiceTitle(service, city),
       description: tunedServiceDescription(service, city),
       urlPath: path,
       priceFrom: service.priceFrom,
