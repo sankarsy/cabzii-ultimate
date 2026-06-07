@@ -6,6 +6,7 @@ import {
   getBackendUrl,
   servicePath
 } from "../lib/seo";
+import { catalogPublicPath } from "../lib/catalogProduct";
 import { resolveMediaUrl } from "../lib/media";
 
 const HERO_IMAGE = `${SITE_URL}/images/hero-banner.png`;
@@ -76,8 +77,20 @@ export default async function sitemap() {
     ];
   });
 
-  const serviceRoutes = SEO_CITIES.flatMap((city) =>
-    SEO_SERVICES.map((service) => ({
+  const [cabs, drivers, packages, blogPosts, cmsServices, cmsRoutes] = await Promise.all([
+    fetchAllIds("/cabs"),
+    fetchAllIds("/drivers"),
+    fetchAllIds("/packages"),
+    fetchAllIds("/blogs"),
+    fetchAllIds("/seo-services"),
+    fetchAllIds("/seo-routes")
+  ]);
+
+  const cmsServiceSlugs = new Set((cmsServices || []).filter((s) => s.slug && s.published !== false).map((s) => s.slug));
+  const cmsRouteSlugs = new Set((cmsRoutes || []).filter((r) => r.slug && r.published !== false).map((r) => r.slug));
+
+  const staticServiceRoutes = SEO_CITIES.flatMap((city) =>
+    SEO_SERVICES.filter((service) => !cmsServiceSlugs.has(service.slug)).map((service) => ({
       url: `${base}${servicePath(service, city)}`,
       lastModified: now,
       changeFrequency: "weekly",
@@ -85,26 +98,42 @@ export default async function sitemap() {
     }))
   );
 
-  const routePages = SEO_ROUTES.map((route) => ({
+  const cmsServiceRoutes = (cmsServices || [])
+    .filter((service) => service.slug && service.published !== false)
+    .flatMap((service) => {
+      const cities = service.allCities !== false
+        ? SEO_CITIES
+        : SEO_CITIES.filter((city) => (service.citySlugs || []).includes(city.slug));
+      return cities.map((city) => ({
+        url: `${base}/services/${service.slug}/${city.slug}`,
+        lastModified: service.updatedAt ? new Date(service.updatedAt) : now,
+        changeFrequency: "weekly",
+        priority: 0.86
+      }));
+    });
+
+  const staticRoutePages = SEO_ROUTES.filter((route) => !cmsRouteSlugs.has(route.slug)).map((route) => ({
     url: `${base}/routes/${route.slug}`,
     lastModified: now,
     changeFrequency: "weekly",
     priority: route.slug.includes("tirupati") || route.slug.includes("chennai") ? 0.9 : 0.87
   }));
 
-  const [cabs, drivers, packages, blogPosts] = await Promise.all([
-    fetchAllIds("/cabs"),
-    fetchAllIds("/drivers"),
-    fetchAllIds("/packages"),
-    fetchAllIds("/blogs")
-  ]);
+  const cmsRoutePages = (cmsRoutes || [])
+    .filter((route) => route.slug && route.published !== false)
+    .map((route) => ({
+      url: `${base}/routes/${route.slug}`,
+      lastModified: route.updatedAt ? new Date(route.updatedAt) : now,
+      changeFrequency: "weekly",
+      priority: 0.87
+    }));
 
   const cabRoutes = cabs
-    .filter((item) => item._id)
+    .filter((item) => item._id || item.slug)
     .map((item) => {
       const image = absoluteImage(item.image);
       return {
-        url: `${base}/cabs/${item._id}`,
+        url: `${base}${catalogPublicPath(item, "/cabs")}`,
         lastModified: item.updatedAt ? new Date(item.updatedAt) : now,
         changeFrequency: "weekly",
         priority: 0.7,
@@ -113,11 +142,11 @@ export default async function sitemap() {
     });
 
   const driverRoutes = drivers
-    .filter((item) => item._id)
+    .filter((item) => item._id || item.slug)
     .map((item) => {
       const image = absoluteImage(item.image);
       return {
-        url: `${base}/drivers/${item._id}`,
+        url: `${base}${catalogPublicPath(item, "/drivers")}`,
         lastModified: item.updatedAt ? new Date(item.updatedAt) : now,
         changeFrequency: "weekly",
         priority: 0.7,
@@ -126,11 +155,11 @@ export default async function sitemap() {
     });
 
   const packageRoutes = packages
-    .filter((item) => item._id)
+    .filter((item) => item._id || item.slug)
     .map((item) => {
       const image = absoluteImage(item.image);
       return {
-        url: `${base}/holidays/${item._id}`,
+        url: `${base}${catalogPublicPath(item, "/holidays")}`,
         lastModified: item.updatedAt ? new Date(item.updatedAt) : now,
         changeFrequency: "weekly",
         priority: 0.65,
@@ -150,8 +179,10 @@ export default async function sitemap() {
   return [
     ...staticRoutes,
     ...cityRoutes,
-    ...serviceRoutes,
-    ...routePages,
+    ...staticServiceRoutes,
+    ...cmsServiceRoutes,
+    ...staticRoutePages,
+    ...cmsRoutePages,
     ...cabRoutes,
     ...driverRoutes,
     ...packageRoutes,

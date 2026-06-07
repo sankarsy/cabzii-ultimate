@@ -1,25 +1,22 @@
 import { notFound } from "next/navigation";
 import JsonLd from "../../../components/seo/JsonLd";
 import RouteLandingPage from "../../../components/seo/RouteLandingPage";
+import { resolveRouteBySlug } from "../../../lib/seo/cmsResolve";
 import {
-  SEO_ROUTES,
   breadcrumbJsonLd,
   buildPageMetadata,
   faqFromPairs,
   getRouteFaqs,
-  routeBySlug,
   routeServiceJsonLd,
   tunedRouteDescription,
   tunedRouteKeywords,
   tunedRouteTitle
 } from "../../../lib/seo";
 
-export function generateStaticParams() {
-  return SEO_ROUTES.map((route) => ({ slug: route.slug }));
-}
+export const revalidate = 600;
 
 export async function generateMetadata({ params }) {
-  const route = routeBySlug(params.slug);
+  const route = await resolveRouteBySlug(params.slug);
   if (!route) {
     return buildPageMetadata({
       title: "Route Not Found",
@@ -30,16 +27,17 @@ export async function generateMetadata({ params }) {
   }
 
   const path = `/routes/${route.slug}`;
-  return buildPageMetadata({
-    title: tunedRouteTitle(route),
-    description: tunedRouteDescription(route),
-    path,
-    keywords: tunedRouteKeywords(route)
-  });
+  const title = route.seoTitle || tunedRouteTitle(route);
+  const description = route.seoDescription || tunedRouteDescription(route);
+  const keywords = route.seo
+    ? route.seo.split(",").map((k) => k.trim()).filter(Boolean)
+    : tunedRouteKeywords(route);
+
+  return buildPageMetadata({ title, description, path, keywords });
 }
 
-export default function RoutePage({ params }) {
-  const route = routeBySlug(params.slug);
+export default async function RoutePage({ params }) {
+  const route = await resolveRouteBySlug(params.slug);
   if (!route) notFound();
 
   const path = `/routes/${route.slug}`;
@@ -53,11 +51,11 @@ export default function RoutePage({ params }) {
     routeServiceJsonLd({
       fromCity: route.fromCity,
       toCity: route.toCity,
-      productName: tunedRouteTitle(route),
+      productName: route.seoTitle || tunedRouteTitle(route),
       urlPath: path,
-      description: tunedRouteDescription(route),
+      description: route.seoDescription || tunedRouteDescription(route),
       priceFrom: route.sedanFrom,
-      priceTo: route.innovaFrom || Math.round((route.sedanFrom || 1400) * 1.8)
+      priceTo: route.innovaFrom || route.suvFrom || Math.round((route.sedanFrom || 1400) * 1.8)
     }),
     faqFromPairs(faqs)
   ];
@@ -65,7 +63,7 @@ export default function RoutePage({ params }) {
   return (
     <>
       <JsonLd data={jsonLd} />
-      <RouteLandingPage route={route} faqs={faqs} />
+      <RouteLandingPage route={route} faqs={faqs} extraBody={route.body} />
     </>
   );
 }

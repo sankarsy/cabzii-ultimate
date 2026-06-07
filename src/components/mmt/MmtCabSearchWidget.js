@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import PlaceAutocomplete from "../PlaceAutocomplete";
 import { CalendarIcon, ClockIcon, MapPinIcon, MapPinnedIcon, SearchIcon } from "../icons";
@@ -16,7 +16,7 @@ const TRIP_TABS = [
   { id: "local", label: "Local" }
 ];
 
-export default function MmtCabSearchWidget({ defaultCity = "" }) {
+export default function MmtCabSearchWidget({ defaultCity = "", initialTrip = null }) {
   const router = useRouter();
   const [tripType, setTripType] = useState("outstation");
   const [roundTrip, setRoundTrip] = useState(false);
@@ -30,6 +30,22 @@ export default function MmtCabSearchWidget({ defaultCity = "" }) {
   const [time, setTime] = useState("09:00");
   const [error, setError] = useState(null);
   const [searching, setSearching] = useState(false);
+
+  useEffect(() => {
+    if (!initialTrip?.from?.trim()) return;
+    setTripType(initialTrip.tripType || "outstation");
+    setRoundTrip(Boolean(initialTrip.roundTrip));
+    setPickup(initialTrip.from);
+    setDrop(initialTrip.to || "");
+    setAirportDirection(initialTrip.direction || "pickup");
+    setPackageHours(initialTrip.packageHours || 8);
+    setDate(initialTrip.date || todayStr());
+    setTime(initialTrip.time || "09:00");
+    setFromCoords(
+      initialTrip.fromLat != null ? { lat: initialTrip.fromLat, lng: initialTrip.fromLng } : null
+    );
+    setToCoords(initialTrip.toLat != null ? { lat: initialTrip.toLat, lng: initialTrip.toLng } : null);
+  }, [initialTrip]);
 
   function fillCityCoords(trip) {
     if (!trip.fromLat && trip.from) {

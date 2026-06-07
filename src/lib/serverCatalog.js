@@ -38,3 +38,18 @@ export async function fetchBlogBySlug(slug) {
   if (!slug) return null;
   return fetchJson(`/blogs/${encodeURIComponent(slug)}`, 600);
 }
+
+export async function fetchSeoServiceBySlug(slug) {
+  if (!slug) return null;
+  return fetchJson(`/seo-services/${encodeURIComponent(slug)}`, 600);
+}
+
+export async function fetchSeoRouteBySlug(slug) {
+  if (!slug) return null;
+  return fetchJson(`/seo-routes/${encodeURIComponent(slug)}`, 600);
+}
+
+export async function fetchSeoMenuLinks() {
+  const data = await fetchJson("/seo-menu", 300);
+  return Array.isArray(data) ? data : [];
+}

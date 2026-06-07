@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { catalogPublicPath } from "../lib/catalogProduct";
 import { resolveMediaUrl } from "../lib/media";
 import { num, packageYouPay } from "../lib/cabFare";
 import {
@@ -157,10 +158,11 @@ export default function DriverCard({
     driver._id ?? driver.id ?? ""
   );
 
+  const detailBase = driverPk ? catalogPublicPath(driver, "/drivers") : "";
   const detailHref =
     bookHref ??
-    (driverPk
-      ? `/drivers/${driverPk}${selectedPackageId ? `?package=${encodeURIComponent(selectedPackageId)}` : ""}`
+    (detailBase
+      ? `${detailBase}${selectedPackageId ? `?package=${encodeURIComponent(selectedPackageId)}` : ""}`
       : undefined);
 
   const BookAction = detailHref ? (

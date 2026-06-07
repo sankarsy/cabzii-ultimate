@@ -9,6 +9,7 @@ import {
   tunedActingDriverH1
 } from "../lib/seo/metadataTuning";
 import { servicesForCityHub } from "../lib/seo/programmaticMeta";
+import { routeToCabSearchHref } from "../lib/routeTrip";
 import { routesForCity } from "../lib/seo/routes";
 import { servicePath } from "../lib/seo/services";
 
@@ -131,7 +132,7 @@ export default function CitySeoPage({ city, variant }) {
               {cityRoutes.map((route) => (
                 <li key={route.slug}>
                   <Link
-                    href={`/routes/${route.slug}`}
+                    href={routeToCabSearchHref(route)}
                     className="inline-block rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:text-[var(--cabzii-brand)]"
                   >
                     {route.fromCity.name} → {route.toCity.name}

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useRef } from "react";
+import { routeToCabSearchHref } from "../../lib/routeTrip";
 import { SEO_ROUTES } from "../../lib/seo/routes";
 import { cityBySlug } from "../../lib/seo/cities";
 
@@ -61,7 +62,7 @@ export default function MmtPopularRoutes() {
 
       <div
         ref={scrollRef}
-        className="offers-scroll flex h-[104px] flex-nowrap items-stretch gap-3 overflow-x-auto overscroll-x-contain pb-1 pt-1 snap-x snap-mandatory scroll-smooth"
+        className="offers-scroll flex h-[118px] flex-nowrap items-stretch gap-3 overflow-x-auto overscroll-x-contain pb-1 pt-1 snap-x snap-mandatory scroll-smooth"
         aria-label="Popular outstation cab routes"
       >
           {SEO_ROUTES.map((route) => {
@@ -72,10 +73,10 @@ export default function MmtPopularRoutes() {
             return (
               <Link
                 key={route.slug}
-                href={`/routes/${route.slug}`}
+                href={routeToCabSearchHref(route)}
                 className="group flex h-full min-w-[200px] max-w-[200px] shrink-0 snap-start flex-col justify-between rounded-xl border border-slate-200 bg-white px-3.5 py-3 transition hover:border-[var(--emt-primary)]/40 hover:shadow-md"
               >
-                <p className="line-clamp-2 text-sm font-bold leading-snug text-slate-900 group-hover:text-[var(--emt-primary)]">
+                <p className="line-clamp-1 text-sm font-bold leading-snug text-slate-900 group-hover:text-[var(--emt-primary)]">
                   {fromName} → {toName}
                 </p>
                 <div>
@@ -84,6 +85,9 @@ export default function MmtPopularRoutes() {
                   </p>
                   <p className="mt-0.5 text-sm font-semibold text-[var(--emt-primary)]">
                     From {formatINR(route.sedanFrom)}
+                  </p>
+                  <p className="mt-0.5 text-[10px] font-medium text-slate-400 group-hover:text-[var(--emt-primary)]/80">
+                    One way · View cabs →
                   </p>
                 </div>
               </Link>

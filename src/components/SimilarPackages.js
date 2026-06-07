@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { num, packageYouPay } from "../lib/cabFare";
 import { categoryLabel } from "../lib/holidays";
+import { catalogPublicPath } from "../lib/catalogProduct";
 import { resolveMediaUrl } from "../lib/media";
 
 const FALLBACK_IMAGE =
@@ -79,7 +80,7 @@ export default function SimilarPackages({ currentPackageId, category, vendor }) 
             return (
               <Link
                 key={id}
-                href={`/holidays/${id}`}
+                href={catalogPublicPath(pkg, "/holidays")}
                 className="group overflow-hidden rounded-xl border border-slate-200 bg-white transition hover:border-[#0056D2]/40 hover:shadow-md"
               >
                 <img

@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { UserCheckIcon } from "../icons";
 import { formatDistance, formatDuration } from "../../lib/tripCoords";
 import { useTripRoute } from "../../lib/useTripRoute";
 import { tripNeedsDrop } from "../../lib/mmtTrip";
 import { driverPackageLabel, driverTripSummaryLabel, driverTripTypeLabel } from "../../lib/driverTrip";
+import { tripToHomeHref } from "../../lib/routeTrip";
 
 export default function MmtDriverTripSummaryBar({ trip }) {
   const label = driverTripTypeLabel(trip);
@@ -20,9 +22,7 @@ export default function MmtDriverTripSummaryBar({ trip }) {
         <div>
           <p className="text-xs font-medium uppercase tracking-wide opacity-80">{label}</p>
           <h1 className="flex items-start gap-2 text-lg font-bold text-mmt-header-fg sm:text-xl">
-            <span className="mt-0.5 shrink-0" aria-hidden="true">
-              👤
-            </span>
+            <UserCheckIcon className="mt-0.5 h-5 w-5 shrink-0 opacity-90" aria-hidden="true" />
             {driverTripSummaryLabel(trip)}
           </h1>
           <p className="mt-1 text-xs opacity-90">Package: {pkg}</p>
@@ -46,7 +46,10 @@ export default function MmtDriverTripSummaryBar({ trip }) {
         <div className="flex flex-wrap items-center gap-4 text-sm">
           <span>📅 {trip.date}</span>
           <span>🕐 {trip.time}</span>
-          <Link href="/" className="rounded-full bg-white/10 px-3 py-1.5 font-semibold transition hover:bg-white/20">
+          <Link
+            href={tripToHomeHref(trip, "drivers")}
+            className="rounded-full bg-white/10 px-3 py-1.5 font-semibold transition hover:bg-white/20"
+          >
             ✏️ Modify
           </Link>
         </div>

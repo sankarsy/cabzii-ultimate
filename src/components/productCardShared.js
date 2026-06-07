@@ -18,14 +18,22 @@ export function MetaPill({ icon, label }) {
   );
 }
 
+const FALLBACK_PRODUCT_IMAGE =
+  "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=900&q=80";
+
 export function ProductImageFrame({ src, alt, badges, imageClassName = "h-[185px] w-full object-contain p-1.5" }) {
   return (
     <div className="relative p-1.5">
       <div className="relative overflow-hidden rounded-[16px] bg-slate-100">
         <img
-          src={src}
+          src={src || FALLBACK_PRODUCT_IMAGE}
           alt={alt}
           className={`${imageClassName} transition-transform duration-300 group-hover:scale-[1.02]`}
+          onError={(e) => {
+            if (e.currentTarget.src !== FALLBACK_PRODUCT_IMAGE) {
+              e.currentTarget.src = FALLBACK_PRODUCT_IMAGE;
+            }
+          }}
         />
         {badges}
       </div>

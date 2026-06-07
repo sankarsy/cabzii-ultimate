@@ -3,9 +3,12 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { BRAND, HERO_TABS, TRENDING_SEARCHES } from "../../lib/emt/constants";
+import { routeBySlug } from "../../lib/seo/routes";
+import { routeToCabSearchHref } from "../../lib/routeTrip";
 import { HOLIDAY_THEMES, themeHref } from "../../lib/holidayHome";
 import { cn } from "../../lib/emt/cn";
 import MmtCabSearchWidget from "../mmt/MmtCabSearchWidget";
+import { getIcon, HERO_TAB_ICONS } from "../icons";
 import MmtDriverSearchWidget from "../mmt/MmtDriverSearchWidget";
 import EmtFlightSearchForm from "./EmtFlightSearchForm";
 import EmtHotelSearchForm from "./EmtHotelSearchForm";
@@ -25,7 +28,12 @@ const COMING_SOON = {
   }
 };
 
-export default function EmtHeroSearch({ defaultCity = "", defaultTab = "cabs" }) {
+export default function EmtHeroSearch({
+  defaultCity = "",
+  defaultTab = "cabs",
+  initialCabTrip = null,
+  initialDriverTrip = null
+}) {
   const [active, setActive] = useState(defaultTab);
 
   useEffect(() => {
@@ -55,6 +63,7 @@ export default function EmtHeroSearch({ defaultCity = "", defaultTab = "cabs" })
           <div className="hero-tabs-scroll flex gap-0.5 overflow-x-auto border-b border-slate-100 px-1.5 pt-2 sm:justify-center sm:gap-1.5 sm:px-2">
             {HERO_TABS.map((tab) => {
               const isActive = tab.id === active;
+              const TabIcon = HERO_TAB_ICONS[tab.id] || getIcon(tab.iconKey);
               return (
                 <button
                   key={tab.id}
@@ -68,8 +77,8 @@ export default function EmtHeroSearch({ defaultCity = "", defaultTab = "cabs" })
                       : "text-slate-500 hover:bg-slate-50"
                   )}
                 >
-                  <span className="mb-1.5 block text-xl leading-none sm:text-2xl" aria-hidden="true">
-                    {tab.icon}
+                  <span className="mb-1.5 flex h-6 w-6 items-center justify-center sm:h-7 sm:w-7" aria-hidden="true">
+                    {TabIcon ? <TabIcon className="h-5 w-5 sm:h-6 sm:w-6" /> : null}
                   </span>
                   <span className="leading-tight">{tab.label}</span>
                 </button>
@@ -80,8 +89,12 @@ export default function EmtHeroSearch({ defaultCity = "", defaultTab = "cabs" })
           <div className="px-3 py-4 sm:px-6 sm:py-5">
             {active === "flights" ? <EmtFlightSearchForm /> : null}
             {active === "hotels" ? <EmtHotelSearchForm /> : null}
-            {active === "cabs" ? <MmtCabSearchWidget defaultCity={defaultCity} /> : null}
-            {active === "drivers" ? <MmtDriverSearchWidget defaultCity={defaultCity} /> : null}
+            {active === "cabs" ? (
+              <MmtCabSearchWidget defaultCity={defaultCity} initialTrip={initialCabTrip} />
+            ) : null}
+            {active === "drivers" ? (
+              <MmtDriverSearchWidget defaultCity={defaultCity} initialTrip={initialDriverTrip} />
+            ) : null}
             {active === "holidays" ? <HolidaysHeroPanel /> : null}
             {COMING_SOON[active] ? <ComingSoonPanel {...COMING_SOON[active]} /> : null}
           </div>
@@ -89,15 +102,19 @@ export default function EmtHeroSearch({ defaultCity = "", defaultTab = "cabs" })
 
         <div className="mt-3 flex flex-wrap justify-center gap-1.5">
           <span className="text-[11px] font-medium text-white/80">Trending:</span>
-          {TRENDING_SEARCHES.map((t) => (
-            <Link
-              key={t.label}
-              href={t.href}
-              className="rounded-full border border-white/30 bg-white/10 px-2.5 py-0.5 text-[11px] font-medium text-white backdrop-blur hover:bg-white/20"
-            >
-              {t.label}
-            </Link>
-          ))}
+          {TRENDING_SEARCHES.map((t) => {
+            const route = t.slug ? routeBySlug(t.slug) : null;
+            const href = t.href || (route ? routeToCabSearchHref(route) : "/cabs");
+            return (
+              <Link
+                key={t.label}
+                href={href}
+                className="rounded-full border border-white/30 bg-white/10 px-2.5 py-0.5 text-[11px] font-medium text-white backdrop-blur hover:bg-white/20"
+              >
+                {t.label}
+              </Link>
+            );
+          })}
         </div>
       </div>
     </section>

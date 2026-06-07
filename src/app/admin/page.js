@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import AdminCatalogPanel from "../../components/admin/AdminCatalogPanel";
 import AdminCustomers from "../../components/admin/AdminCustomers";
@@ -16,6 +16,7 @@ import { clearSession, getToken } from "../../lib/auth";
 
 export default function AdminPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [initialEditId, setInitialEditId] = useState("");
   const [initialViewId, setInitialViewId] = useState("");
   const [panelMode, setPanelMode] = useState("list");
@@ -30,12 +31,15 @@ export default function AdminPage() {
   useEffect(() => {
     const localToken = getToken() || "";
     if (localToken) setToken(localToken);
-    const params = new URLSearchParams(window.location.search);
-    const tab = params.get("tab");
-    const edit = params.get("edit");
-    const view = params.get("view");
-    const mode = params.get("mode");
-    const section = params.get("section");
+    setAuthChecked(true);
+  }, []);
+
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    const edit = searchParams.get("edit");
+    const view = searchParams.get("view");
+    const mode = searchParams.get("mode");
+    const section = searchParams.get("section");
     if (
       tab &&
       (tab === "master" ||
@@ -50,13 +54,14 @@ export default function AdminPage() {
       setMasterSection(section);
       setActiveTab("master");
     }
-    if (edit) setInitialEditId(edit);
-    if (view) setInitialViewId(view);
+    setInitialEditId(edit || "");
+    setInitialViewId(view || "");
     if (mode && ["list", "create", "edit", "view"].includes(mode)) {
       setPanelMode(mode);
+    } else if (!mode) {
+      setPanelMode("list");
     }
-    setAuthChecked(true);
-  }, []);
+  }, [searchParams]);
 
   useEffect(() => {
     const loadMe = async () => {
@@ -146,9 +151,8 @@ export default function AdminPage() {
                       onClick={() => {
                         setActiveTab(tab);
                         if (tab === "master") setMasterSection(section || "vendors");
-                        setPanelMode("list");
-                        setInitialEditId("");
-                        setInitialViewId("");
+                        const qs = tab === "master" ? `?tab=master&section=${section || "vendors"}` : `?tab=${tab}`;
+                        router.push(`/admin${qs}`);
                       }}
                       className={`flex w-full items-center rounded-lg px-3 py-2 text-left text-sm font-semibold transition ${
                         isActive

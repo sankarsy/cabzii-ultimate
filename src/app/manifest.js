@@ -1,3 +1,4 @@
+import { BRAND_ICON, BRAND_ICON_SM } from "../lib/brandAssets";
 import { SITE_NAME } from "../lib/seo";
 
 export default function manifest() {
@@ -17,18 +18,9 @@ export default function manifest() {
     dir: "ltr",
     categories: ["travel", "transportation", "business"],
     icons: [
-      {
-        src: "/icon.svg",
-        sizes: "any",
-        type: "image/svg+xml",
-        purpose: "any"
-      },
-      {
-        src: "/icon.svg",
-        sizes: "any",
-        type: "image/svg+xml",
-        purpose: "maskable"
-      }
+      { src: BRAND_ICON_SM, sizes: "192x192", type: "image/png", purpose: "any" },
+      { src: BRAND_ICON, sizes: "512x512", type: "image/png", purpose: "any" },
+      { src: BRAND_ICON, sizes: "512x512", type: "image/png", purpose: "maskable" }
     ]
   };
 }

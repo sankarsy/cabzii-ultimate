@@ -353,6 +353,58 @@ export function RoadIcon(props) {
   );
 }
 
+export function HotelIcon(props) {
+  return (
+    <Svg {...props}>
+      <path d="M3 21h18M4 21V7l8-4 8 4v14M9 21v-6h6v6M9 9h.01M15 9h.01M9 13h.01M15 13h.01" />
+    </Svg>
+  );
+}
+
+export function BusIcon(props) {
+  return (
+    <Svg {...props}>
+      <path d="M8 6v6M15 6v6M2 12h19.5M17 18h2a2 2 0 0 0 2-2V8a5 5 0 0 0-5-5H7a5 5 0 0 0-5 5v8a2 2 0 0 0 2 2h2" />
+      <circle cx="7.5" cy="18" r="1.5" />
+      <circle cx="16.5" cy="18" r="1.5" />
+    </Svg>
+  );
+}
+
+export function TrainIcon(props) {
+  return (
+    <Svg {...props}>
+      <rect width="16" height="16" x="4" y="3" rx="2" />
+      <path d="M4 11h16M12 3v8M8 19l-2 2M16 19l2 2M8 15h.01M16 15h.01" />
+    </Svg>
+  );
+}
+
+export function BackpackIcon(props) {
+  return (
+    <Svg {...props}>
+      <path d="M4 10a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V10Z" />
+      <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M9 14h6" />
+    </Svg>
+  );
+}
+
+export function LuggageIcon(props) {
+  return (
+    <Svg {...props}>
+      <path d="M6 20h12M8 20V8a4 4 0 0 1 8 0v12M10 8V6a2 2 0 0 1 4 0v2" />
+    </Svg>
+  );
+}
+
+export function FuelIcon(props) {
+  return (
+    <Svg {...props}>
+      <path d="M3 22h12M5 22V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v18M14 10h2a2 2 0 0 1 2 2v4a2 2 0 0 0 2 2h0a2 2 0 0 0 2-2V9l-3-3" />
+    </Svg>
+  );
+}
+
 export function LangIcon(props) {
   return (
     <Svg {...props}>
@@ -414,7 +466,28 @@ export const ICON_REGISTRY = {
   rupee: RupeeIcon,
   road: RoadIcon,
   lang: LangIcon,
-  twoWay: TwoWayIcon
+  twoWay: TwoWayIcon,
+  hotel: HotelIcon,
+  bus: BusIcon,
+  train: TrainIcon,
+  holiday: BackpackIcon,
+  holidays: BackpackIcon,
+  backpack: BackpackIcon,
+  luggage: LuggageIcon,
+  fuel: FuelIcon,
+  ac: SnowflakeIcon,
+  snowflake: SnowflakeIcon
+};
+
+/** Home hero travel tabs */
+export const HERO_TAB_ICONS = {
+  cabs: CarIcon,
+  drivers: UserCheckIcon,
+  flights: PlaneIcon,
+  hotels: HotelIcon,
+  holidays: BackpackIcon,
+  buses: BusIcon,
+  trains: TrainIcon
 };
 
 export function getIcon(iconKey) {

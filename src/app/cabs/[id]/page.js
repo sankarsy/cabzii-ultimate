@@ -1,6 +1,7 @@
 import CabDetailPage from "../../../components/CabDetailPage";
 import JsonLd from "../../../components/seo/JsonLd";
 import { fetchCabById } from "../../../lib/serverCatalog";
+import { catalogPublicPath } from "../../../lib/catalogProduct";
 import { cabDetailMetadata } from "../../../lib/metadataHelpers";
 import { breadcrumbJsonLd } from "../../../lib/seo";
 
@@ -22,7 +23,7 @@ export default async function CabDetailRoutePage({ params }) {
         breadcrumbJsonLd([
           { name: "Home", path: "/" },
           { name: "Cabs", path: "/cabs" },
-          { name: cab.title || "Cab", path: `/cabs/${id}` }
+          { name: cab.title || "Cab", path: catalogPublicPath(cab, "/cabs") }
         ]),
         jsonLd
       ]

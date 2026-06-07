@@ -5,7 +5,8 @@ import ContactFab from "../components/ContactFab";
 import CookieConsent from "../components/CookieConsent";
 import ServiceWorkerRegister from "../components/ServiceWorkerRegister";
 import { fetchSiteSettings } from "../lib/serverSiteSettings";
-import { DEFAULT_KEYWORDS, DEFAULT_OG_IMAGE, SITE_URL, organizationJsonLd, taxiServiceJsonLd, websiteJsonLd } from "../lib/seo";
+import { SITE_ICONS } from "../lib/brandAssets";
+import { DEFAULT_KEYWORDS, DEFAULT_OG_IMAGE, DEFAULT_TWITTER_IMAGE, SITE_URL, organizationJsonLd, taxiServiceJsonLd, websiteJsonLd } from "../lib/seo";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -26,6 +27,7 @@ export const metadata = {
   },
   category: "travel",
   keywords: DEFAULT_KEYWORDS,
+  icons: SITE_ICONS,
   openGraph: {
     title: "Cabzii — cabzii.in",
     description:
@@ -40,7 +42,7 @@ export const metadata = {
     card: "summary_large_image",
     title: "Cabzii",
     description: "Book cabs, acting drivers and tours on cabzii.in.",
-    images: [DEFAULT_OG_IMAGE]
+    images: [DEFAULT_TWITTER_IMAGE]
   },
   robots: {
     index: true,

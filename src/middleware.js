@@ -82,6 +82,6 @@ export const config = {
     "/travels/:path*",
     "/travel/:path*",
     "/travel-agency/:path*",
-    "/((?!_next/static|_next/image|favicon.ico|images|api).*)"
+    "/((?!_next/static|_next/image|favicon|apple-touch|android-chrome|og-image|twitter-card|icon\\.svg|images|uploads|api|sw\\.js|ads\\.txt|llms\\.txt|\\.well-known).*)"
   ]
 };

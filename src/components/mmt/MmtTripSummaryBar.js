@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { MapPinIcon } from "../icons";
 import { formatDistance, formatDuration } from "../../lib/tripCoords";
 import { useTripRoute } from "../../lib/useTripRoute";
+import { tripToHomeHref } from "../../lib/routeTrip";
 import { tripSummaryLabel, tripTypeLabel, tripNeedsDrop } from "../../lib/mmtTrip";
 
 export default function MmtTripSummaryBar({ trip }) {
@@ -18,9 +20,7 @@ export default function MmtTripSummaryBar({ trip }) {
         <div>
           <p className="text-xs font-medium uppercase tracking-wide opacity-80">{label}</p>
           <h1 className="flex items-start gap-2 text-lg font-bold text-mmt-header-fg sm:text-xl">
-            <span className="mt-0.5 shrink-0" aria-hidden="true">
-              📍
-            </span>
+            <MapPinIcon className="mt-0.5 h-5 w-5 shrink-0 opacity-90" aria-hidden="true" />
             {tripSummaryLabel(trip)}
           </h1>
           {showDistance ? (
@@ -44,7 +44,7 @@ export default function MmtTripSummaryBar({ trip }) {
           <span>📅 {trip.date}</span>
           <span>🕐 {trip.time}</span>
           <Link
-            href="/"
+            href={tripToHomeHref(trip, "cabs")}
             className="rounded-full bg-white/10 px-3 py-1.5 font-semibold transition hover:bg-white/20"
           >
             ✏️ Modify

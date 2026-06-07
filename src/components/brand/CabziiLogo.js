@@ -1,33 +1,50 @@
+import Image from "next/image";
 import { BRAND } from "../../lib/brand";
+import { BRAND_APPLE_TOUCH } from "../../lib/brandAssets";
 
 /**
- * Cabzii.in wordmark — red "cab" + orange "zii", optional .in suffix.
- * @param {{ className?: string, compact?: boolean, onDark?: boolean, showDomain?: boolean }} props
+ * Cabzii.in wordmark — brand icon + red "cab" + orange "zii".
+ * @param {{ className?: string, compact?: boolean, onDark?: boolean, showDomain?: boolean, showIcon?: boolean }} props
  */
-export default function CabziiLogo({ className = "", compact = false, onDark = false, showDomain = true }) {
+export default function CabziiLogo({
+  className = "",
+  compact = false,
+  onDark = false,
+  showDomain = true,
+  showIcon = true
+}) {
   const cabClass = "text-[var(--cabzii-red)]";
   const ziiClass = "text-[var(--cabzii-orange)]";
   const domainClass = onDark ? "text-white/80" : "text-slate-500";
 
-  if (compact) {
-    return (
-      <span className={`inline-flex items-center font-extrabold tracking-tight ${className}`} aria-label={BRAND.fullName}>
-        <span className={cabClass}>cab</span>
-        <span className={ziiClass}>zii</span>
-      </span>
-    );
-  }
+  const iconSize = compact ? 28 : 36;
+
+  const wordmark = (
+    <>
+      <span className={cabClass}>cab</span>
+      <span className={ziiClass}>zii</span>
+      {!compact && showDomain ? (
+        <span className={`ml-0.5 text-sm font-bold ${domainClass}`}>.in</span>
+      ) : null}
+    </>
+  );
 
   return (
     <span
-      className={`inline-flex select-none items-baseline gap-0.5 font-extrabold tracking-tight ${compact ? "text-lg" : "text-2xl"} ${className}`}
+      className={`inline-flex select-none items-center gap-2 font-extrabold tracking-tight ${compact ? "text-lg" : "text-2xl"} ${className}`}
       aria-label={BRAND.fullName}
     >
-      <span className={cabClass}>cab</span>
-      <span className={ziiClass}>zii</span>
-      {showDomain ? (
-        <span className={`ml-0.5 text-sm font-bold ${domainClass}`}>.in</span>
+      {showIcon ? (
+        <Image
+          src={BRAND_APPLE_TOUCH}
+          alt=""
+          width={iconSize}
+          height={iconSize}
+          className="shrink-0 rounded-lg"
+          priority
+        />
       ) : null}
+      {wordmark}
     </span>
   );
 }

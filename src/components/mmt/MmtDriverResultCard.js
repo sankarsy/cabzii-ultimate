@@ -5,6 +5,7 @@ import { buildDriverFareSlabs, num } from "../../lib/driverFare";
 import { packageYouPay } from "../../lib/cabFare";
 import { driverSlabForTrip, driverTripToSearchQuery } from "../../lib/driverTrip";
 import { resolveMediaUrl } from "../../lib/media";
+import { BriefcaseIcon, CarIcon, CheckIcon, LangIcon, RouteIcon } from "../icons";
 import CatalogCardImage from "./CatalogCardImage";
 import MmtCardPriceBlock from "./MmtCardPriceBlock";
 
@@ -33,11 +34,23 @@ export default function MmtDriverResultCard({ driver, trip, layout = "row" }) {
   );
   const features = (
     <>
-      <span>💼 {driver.experience || "Experienced"}</span>
-      <span>🛣️ {driver.trips ?? 0} trips</span>
-      <span>🚗 {vehicle}</span>
-      <span>✅ Allowance included</span>
-      {languages ? <span>🗣️ {languages}</span> : null}
+      <span className="inline-flex items-center gap-1">
+        <BriefcaseIcon className="h-3.5 w-3.5" /> {driver.experience || "Experienced"}
+      </span>
+      <span className="inline-flex items-center gap-1">
+        <RouteIcon className="h-3.5 w-3.5" /> {driver.trips ?? 0} trips
+      </span>
+      <span className="inline-flex items-center gap-1">
+        <CarIcon className="h-3.5 w-3.5" /> {vehicle}
+      </span>
+      <span className="inline-flex items-center gap-1">
+        <CheckIcon className="h-3.5 w-3.5" /> Allowance included
+      </span>
+      {languages ? (
+        <span className="inline-flex items-center gap-1">
+          <LangIcon className="h-3.5 w-3.5" /> {languages}
+        </span>
+      ) : null}
     </>
   );
   const packageLine = slab?.label ? <p className="text-xs text-slate-500">Package: {slab.label}</p> : null;

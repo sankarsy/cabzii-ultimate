@@ -1,4 +1,4 @@
-import { resolveMediaUrl } from "../../../lib/media";
+import { getMediaBackendBase, resolveMediaUrl } from "../../../lib/media";
 
 const BACKEND_URL = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
 
@@ -28,15 +28,28 @@ export async function POST(req) {
       );
     }
 
-    const relativeUrl = data.data?.url || "";
+    const relativeUrl = data.data?.relativeUrl || data.data?.url || "";
     const absoluteUrl = resolveMediaUrl(relativeUrl);
+
+    const verify = await fetch(absoluteUrl, { method: "HEAD", cache: "no-store" }).catch(() => null);
+    if (!verify?.ok) {
+      return Response.json(
+        {
+          success: false,
+          message:
+            "Upload reported success but the image file is not reachable on the server. Re-upload on production admin, or check backend uploads folder persistence."
+        },
+        { status: 502 }
+      );
+    }
 
     return Response.json({
       success: true,
       data: {
         ...data.data,
         url: absoluteUrl,
-        relativeUrl
+        relativeUrl,
+        backend: getMediaBackendBase()
       }
     });
   } catch (error) {

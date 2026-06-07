@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import EmtAppDownloadBanner from "../emt/EmtAppDownloadBanner";
 import EmtHeroSearch from "../emt/EmtHeroSearch";
 import EmtHolidayExplore from "../emt/EmtHolidayExplore";
@@ -8,6 +9,7 @@ import EmtOffersCarousel from "../emt/EmtOffersCarousel";
 import EmtWhyChooseUs from "../emt/EmtWhyChooseUs";
 import MmtLayout from "./MmtLayout";
 import MmtPopularRoutes from "./MmtPopularRoutes";
+import MmtPopularServices from "./MmtPopularServices";
 import MmtCabResultCard from "./MmtCabResultCard";
 import MmtDriverResultCard from "./MmtDriverResultCard";
 import MmtHomeCatalogSection, { MmtHomeCatalogScroll, MmtHomeCatalogScrollItem } from "./MmtHomeCatalogSection";
@@ -15,8 +17,27 @@ import FaqSection from "../seo/FaqSection";
 import { HOME_PAGE_FAQS } from "../../lib/seo/content";
 import { sortBySelectedCity } from "../../lib/locationPriority";
 import { useSelectedCity } from "../../lib/useSelectedCity";
-import { todayStr } from "../../lib/mmtTrip";
+import { isValidDriverTripSearch, parseDriverTripSearchParams } from "../../lib/driverTrip";
+import { isValidTripSearch, parseTripSearchParams, todayStr } from "../../lib/mmtTrip";
 import { extractCabList, extractDriverList, fetchJson } from "../../lib/apiClient";
+
+function EmtHeroSearchFromUrl({ defaultCity }) {
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get("tab");
+  const tab = tabParam === "drivers" ? "drivers" : "cabs";
+  const hasFrom = Boolean(searchParams.get("from") || searchParams.get("pickup"));
+  const cabTrip = parseTripSearchParams(searchParams);
+  const driverTrip = parseDriverTripSearchParams(searchParams);
+
+  return (
+    <EmtHeroSearch
+      defaultCity={defaultCity}
+      defaultTab={tab}
+      initialCabTrip={hasFrom && isValidTripSearch(cabTrip) ? cabTrip : null}
+      initialDriverTrip={hasFrom && isValidDriverTripSearch(driverTrip) ? driverTrip : null}
+    />
+  );
+}
 
 export default function MmtHomePage() {
   const { city: selectedCity } = useSelectedCity();
@@ -92,9 +113,12 @@ export default function MmtHomePage() {
 
   return (
     <MmtLayout headerTransparent>
-      <EmtHeroSearch defaultCity={displayCity} defaultTab="cabs" />
+      <Suspense fallback={<EmtHeroSearch defaultCity={displayCity} defaultTab="cabs" />}>
+        <EmtHeroSearchFromUrl defaultCity={displayCity} />
+      </Suspense>
       <EmtOffersCarousel />
       <EmtHolidayExplore />
+      <MmtPopularServices />
       <MmtPopularRoutes />
       <EmtWhyChooseUs />
 

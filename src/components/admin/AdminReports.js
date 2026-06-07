@@ -67,7 +67,7 @@ export default function AdminReports({ token, isSuperAdmin }) {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white p-3 shadow-sm sm:p-4">
         <div>
           <h2 className="text-lg font-bold text-slate-900">Reports &amp; Analytics</h2>
           <p className="text-sm text-slate-500">Bookings, revenue and customer growth at a glance.</p>
@@ -98,7 +98,7 @@ export default function AdminReports({ token, isSuperAdmin }) {
         </div>
       ) : kpis ? (
         <>
-          <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-6">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
             <KpiCard label="Total customers" value={formatNumber(kpis.totalCustomers)} accent="text-sky-600" />
             <KpiCard label={`New (${days}d)`} value={formatNumber(kpis.newCustomers)} accent="text-emerald-600" />
             <KpiCard label="Total bookings" value={formatNumber(kpis.totalBookings)} accent="text-violet-600" />
@@ -107,43 +107,46 @@ export default function AdminReports({ token, isSuperAdmin }) {
             <KpiCard label="Total revenue" value={formatINR(kpis.totalRevenue)} accent="text-rose-600" />
           </div>
 
-          <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h3 className="mb-3 text-sm font-bold text-slate-800">Bookings &amp; new customers</h3>
-            <LineChart
-              data={data.timeseries}
-              series={[
-                { key: "bookings", color: "#0056D2", label: "Bookings", fill: true },
-                { key: "newCustomers", color: "#10b981", label: "New customers" }
-              ]}
-            />
-            <Legend
-              items={[
-                { label: "Bookings", color: "#0056D2" },
-                { label: "New customers", color: "#10b981" }
-              ]}
-            />
-          </div>
-
-          <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h3 className="mb-3 text-sm font-bold text-slate-800">Daily revenue (confirmed)</h3>
-            <BarChart data={data.timeseries} valueKey="revenue" color="#0056D2" formatValue={formatINR} />
-          </div>
-
-          <div className="grid gap-4 lg:grid-cols-2">
-            <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-              <h3 className="mb-3 text-sm font-bold text-slate-800">Bookings by status</h3>
-              <DonutChart data={statusData} />
+          <div className="grid gap-3 lg:grid-cols-2">
+            <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm sm:p-4">
+              <h3 className="mb-2 text-xs font-bold text-slate-800">Bookings &amp; new customers</h3>
+              <LineChart
+                data={data.timeseries}
+                height={140}
+                series={[
+                  { key: "bookings", color: "#0056D2", label: "Bookings", fill: true },
+                  { key: "newCustomers", color: "#10b981", label: "New customers" }
+                ]}
+              />
+              <Legend
+                items={[
+                  { label: "Bookings", color: "#0056D2" },
+                  { label: "New customers", color: "#10b981" }
+                ]}
+              />
             </div>
-            <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-              <h3 className="mb-3 text-sm font-bold text-slate-800">Bookings by type</h3>
-              <DonutChart data={typeData} />
+
+            <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm sm:p-4">
+              <h3 className="mb-2 text-xs font-bold text-slate-800">Daily revenue (confirmed)</h3>
+              <BarChart data={data.timeseries} valueKey="revenue" height={140} color="#0056D2" formatValue={formatINR} />
             </div>
           </div>
 
-          <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h3 className="mb-3 text-sm font-bold text-slate-800">Top customers by spend</h3>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm sm:p-4">
+              <h3 className="mb-2 text-xs font-bold text-slate-800">Bookings by status</h3>
+              <DonutChart data={statusData} size={112} thickness={18} />
+            </div>
+            <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm sm:p-4">
+              <h3 className="mb-2 text-xs font-bold text-slate-800">Bookings by type</h3>
+              <DonutChart data={typeData} size={112} thickness={18} />
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm sm:p-4">
+            <h3 className="mb-2 text-xs font-bold text-slate-800">Top customers by spend</h3>
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[480px] border-collapse text-sm">
+              <table className="w-full min-w-[400px] border-collapse text-xs sm:text-sm">
                 <thead>
                   <tr className="border-b border-slate-200 text-left text-xs uppercase tracking-wide text-slate-400">
                     <th className="px-3 py-2 font-semibold">#</th>
@@ -184,16 +187,16 @@ export default function AdminReports({ token, isSuperAdmin }) {
 
 function KpiCard({ label, value, accent }) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-      <p className="text-xs font-medium text-slate-500">{label}</p>
-      <p className={`mt-1 text-xl font-extrabold ${accent || "text-slate-900"}`}>{value}</p>
+    <div className="rounded-lg border border-slate-200 bg-white p-2.5 shadow-sm sm:p-3">
+      <p className="text-[10px] font-medium leading-tight text-slate-500 sm:text-xs">{label}</p>
+      <p className={`mt-0.5 text-base font-extrabold sm:text-lg ${accent || "text-slate-900"}`}>{value}</p>
     </div>
   );
 }
 
 function Legend({ items }) {
   return (
-    <div className="mt-3 flex flex-wrap gap-4 text-xs text-slate-500">
+    <div className="mt-2 flex flex-wrap gap-3 text-[10px] text-slate-500 sm:text-xs">
       {items.map((it) => (
         <span key={it.label} className="flex items-center gap-1.5">
           <span className="inline-block h-2.5 w-2.5 rounded-sm" style={{ backgroundColor: it.color }} />

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { buildDriverFareSlabs, num } from "../lib/driverFare";
+import { catalogPublicPath } from "../lib/catalogProduct";
 import { resolveMediaUrl } from "../lib/media";
 
 const FALLBACK_IMAGE =
@@ -65,7 +66,7 @@ export default function SimilarDrivers({ currentDriverId, vendor }) {
             return (
               <Link
                 key={id}
-                href={`/drivers/${id}`}
+                href={catalogPublicPath(driver, "/drivers")}
                 className="group overflow-hidden rounded-xl border border-slate-200 bg-white transition hover:border-[#0056D2]/40 hover:shadow-md"
               >
                 <img

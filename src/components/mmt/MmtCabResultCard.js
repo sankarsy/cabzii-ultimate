@@ -4,6 +4,7 @@ import Link from "next/link";
 import { buildFareSlabs, num, packageYouPay } from "../../lib/cabFare";
 import { resolveMediaUrl } from "../../lib/media";
 import { cabSlabForTrip, tripToSearchQuery } from "../../lib/mmtTrip";
+import { FuelIcon, LuggageIcon, PersonIcon, SnowflakeIcon } from "../icons";
 import CatalogCardImage from "./CatalogCardImage";
 import MmtCardPriceBlock from "./MmtCardPriceBlock";
 
@@ -33,10 +34,18 @@ export default function MmtCabResultCard({ cab, trip, layout = "row" }) {
   );
   const features = (
     <>
-      <span>👤 {seats} Seats</span>
-      <span>🧳 {bags} Bags</span>
-      <span>❄️ AC</span>
-      <span>⛽ Fuel included</span>
+      <span className="inline-flex items-center gap-1">
+        <PersonIcon className="h-3.5 w-3.5" /> {seats} Seats
+      </span>
+      <span className="inline-flex items-center gap-1">
+        <LuggageIcon className="h-3.5 w-3.5" /> {bags} Bags
+      </span>
+      <span className="inline-flex items-center gap-1">
+        <SnowflakeIcon className="h-3.5 w-3.5" /> AC
+      </span>
+      <span className="inline-flex items-center gap-1">
+        <FuelIcon className="h-3.5 w-3.5" /> Fuel included
+      </span>
     </>
   );
   const packageLine = slab?.label ? <p className="text-xs text-slate-500">Package: {slab.label}</p> : null;

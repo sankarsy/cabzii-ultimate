@@ -33,11 +33,25 @@ const securityHeaders = [
   }
 ];
 
+const backendMediaOrigin = (
+  process.env.BACKEND_URL ||
+  process.env.NEXT_PUBLIC_BACKEND_URL ||
+  "https://api.cabzii.in"
+).replace(/\/$/, "");
+
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   compress: true,
   productionBrowserSourceMaps: false,
+  async rewrites() {
+    return [
+      {
+        source: "/uploads/:path*",
+        destination: `${backendMediaOrigin}/uploads/:path*`
+      }
+    ];
+  },
   images: {
     formats: ["image/avif", "image/webp"],
     remotePatterns: [

@@ -1,5 +1,12 @@
+import { catalogPublicPath } from "./catalogProduct";
 import { resolveMediaUrl } from "./media";
 import { buildPageMetadata, productJsonLd } from "./seo";
+
+function detailPath(item, basePath, fallbackId) {
+  if (item?.slug) return catalogPublicPath(item, basePath);
+  const key = fallbackId || item?._id || item?.id;
+  return key ? `${basePath}/${key}` : basePath;
+}
 
 export function cabDetailMetadata(cab, id) {
   if (!cab) {
@@ -23,20 +30,21 @@ export function cabDetailMetadata(cab, id) {
     .map((s) => s.trim())
     .filter(Boolean);
   const image = resolveMediaUrl(cab.image);
+  const path = detailPath(cab, "/cabs", id);
 
   return {
     metadata: buildPageMetadata({
       title,
       description,
-      path: `/cabs/${id}`,
+      path,
       keywords: keywords.length ? keywords : undefined,
       image,
-      imageAlt: cab.title
+      imageAlt: cab.imageAlt || cab.imageTitle || cab.title
     }),
     jsonLd: productJsonLd({
       name: cab.title,
       description,
-      urlPath: `/cabs/${id}`,
+      urlPath: path,
       image: image || undefined,
       price: cab.price,
       ...(cab.originalPrice && Number(cab.originalPrice) > Number(cab.price)
@@ -73,20 +81,21 @@ export function driverDetailMetadata(driver, id) {
     .map((s) => s.trim())
     .filter(Boolean);
   const image = resolveMediaUrl(driver.image);
+  const path = detailPath(driver, "/drivers", id);
 
   return {
     metadata: buildPageMetadata({
       title,
       description,
-      path: `/drivers/${id}`,
+      path,
       keywords: keywords.length ? keywords : undefined,
       image,
-      imageAlt: driver.name
+      imageAlt: driver.imageAlt || driver.imageTitle || driver.name
     }),
     jsonLd: productJsonLd({
       name: `${driver.name} — Acting Driver`,
       description,
-      urlPath: `/drivers/${id}`,
+      urlPath: path,
       image: image || undefined,
       price: driver.pricing?.day || driver.pricing?.hourly,
       lowPrice: driver.pricing?.hourly,
@@ -111,7 +120,7 @@ export function packageDetailMetadata(pkg, id) {
     };
   }
 
-  const path = `/holidays/${id}`;
+  const path = detailPath(pkg, "/holidays", id);
   const title = pkg.seoTitle || `${pkg.name} – Holiday Package | cabzii.in`;
   const description =
     pkg.seoDescription ||
@@ -129,7 +138,7 @@ export function packageDetailMetadata(pkg, id) {
       path,
       keywords: keywords.length ? keywords : undefined,
       image,
-      imageAlt: pkg.name
+      imageAlt: pkg.imageAlt || pkg.imageTitle || pkg.name
     }),
     jsonLd: productJsonLd({
       name: pkg.name,

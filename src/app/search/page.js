@@ -3,6 +3,8 @@ import BlogCard from "../../components/BlogCard";
 import CabCard from "../../components/CabCard";
 import SearchPageSearchBar from "../../components/search/SearchPageSearchBar";
 import PackageCard from "../../components/PackageCard";
+import { catalogPublicPath } from "../../lib/catalogProduct";
+import { packageDetailHref } from "../../lib/holidayHome";
 import { getBackendUrl } from "../../lib/seo";
 
 const BACKEND_URL = getBackendUrl();
@@ -192,7 +194,7 @@ export default async function SearchPage({ searchParams }) {
                 </div>
                 <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {matchingCabs.map((cab) => (
-                    <CabCard key={String(cab._id ?? cab.id)} cab={cab} bookHref={`/cabs/${String(cab._id ?? cab.id)}`} />
+                    <CabCard key={String(cab._id ?? cab.id)} cab={cab} bookHref={catalogPublicPath(cab, "/cabs")} />
                   ))}
                 </div>
               </section>
@@ -213,7 +215,7 @@ export default async function SearchPage({ searchParams }) {
                     return (
                       <Link
                         key={id}
-                        href={`/drivers/${id}`}
+                        href={catalogPublicPath(driver, "/drivers")}
                         className="flex items-center justify-between rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-[var(--cabzii-brand)] hover:shadow-md"
                       >
                         <div>
@@ -245,7 +247,7 @@ export default async function SearchPage({ searchParams }) {
                       key={String(pkg._id ?? pkg.id)}
                       pkg={pkg}
                       actionText="Book Now"
-                      actionHref={`/holidays/${String(pkg._id ?? pkg.id)}`}
+                      actionHref={packageDetailHref(pkg)}
                     />
                   ))}
                 </div>

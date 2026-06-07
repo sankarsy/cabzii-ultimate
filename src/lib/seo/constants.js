@@ -1,11 +1,14 @@
+import { absoluteBrandUrl, BRAND_ICON, BRAND_OG_IMAGE, BRAND_TWITTER_IMAGE } from "../brandAssets";
 import { formatSerpTitle } from "./programmaticMeta";
 
 export const SITE_URL = "https://cabzii.in";
 export const SITE_NAME = "Cabzii";
 export const BRAND = "cabzii";
-export const SITE_LOGO = `${SITE_URL}/images/hero-banner.png`;
+
+export const SITE_LOGO = absoluteBrandUrl(BRAND_ICON);
 /** Default social / OG image (absolute URL for crawlers). */
-export const DEFAULT_OG_IMAGE = `${SITE_URL}/images/hero-banner.png`;
+export const DEFAULT_OG_IMAGE = absoluteBrandUrl(BRAND_OG_IMAGE);
+export const DEFAULT_TWITTER_IMAGE = absoluteBrandUrl(BRAND_TWITTER_IMAGE);
 
 export const ORG_EMAIL = "support@cabzii.com";
 export const ORG_PHONE = "+91-9944197416";
@@ -146,7 +149,7 @@ export function buildPageMetadata({
       card: "summary_large_image",
       title,
       description,
-      images: [ogImage]
+      images: [image ? ogImage : DEFAULT_TWITTER_IMAGE]
     }
   };
 }
@@ -172,8 +175,8 @@ export const homeMetadata = buildPageMetadata({
   description:
     "Cab booking online in Chennai, Madurai, Coimbatore, Trichy, Kodaikanal and 20+ cities. Outstation, airport taxi and acting drivers with transparent fares on cabzii.in.",
   path: "/",
-  image: "/images/hero-banner.png",
-  imageAlt: "Book cabs and taxis online with Cabzii",
+  image: BRAND_OG_IMAGE,
+  imageAlt: "Cabzii — online cab, taxi and driver booking",
   keywords: [
     ...DEFAULT_KEYWORDS,
     "book cab online India",

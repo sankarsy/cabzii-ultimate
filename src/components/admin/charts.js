@@ -24,7 +24,7 @@ function niceTicks(max, count = 4) {
   return ticks;
 }
 
-export function LineChart({ data = [], series = [], height = 240, formatValue = formatNumber }) {
+export function LineChart({ data = [], series = [], height = 160, formatValue = formatNumber }) {
   const width = 760;
   const pad = { top: 16, right: 18, bottom: 30, left: 52 };
   const innerW = width - pad.left - pad.right;
@@ -39,7 +39,12 @@ export function LineChart({ data = [], series = [], height = 240, formatValue = 
   const labelEvery = Math.max(1, Math.ceil(n / 7));
 
   return (
-    <svg viewBox={`0 0 ${width} ${height}`} className="h-auto w-full" role="img">
+    <svg
+      viewBox={`0 0 ${width} ${height}`}
+      className="mx-auto h-auto w-full max-h-[140px] max-w-xl"
+      role="img"
+      preserveAspectRatio="xMidYMid meet"
+    >
       {ticks.map((t) => (
         <g key={t}>
           <line x1={pad.left} y1={yFor(t)} x2={width - pad.right} y2={yFor(t)} stroke="#e2e8f0" strokeWidth="1" />
@@ -79,7 +84,7 @@ export function LineChart({ data = [], series = [], height = 240, formatValue = 
   );
 }
 
-export function BarChart({ data = [], valueKey = "value", color = "#0056D2", height = 240, formatValue = formatNumber }) {
+export function BarChart({ data = [], valueKey = "value", color = "#0056D2", height = 160, formatValue = formatNumber }) {
   const width = 760;
   const pad = { top: 16, right: 18, bottom: 30, left: 52 };
   const innerW = width - pad.left - pad.right;
@@ -94,7 +99,12 @@ export function BarChart({ data = [], valueKey = "value", color = "#0056D2", hei
   const labelEvery = Math.max(1, Math.ceil(n / 12));
 
   return (
-    <svg viewBox={`0 0 ${width} ${height}`} className="h-auto w-full" role="img">
+    <svg
+      viewBox={`0 0 ${width} ${height}`}
+      className="mx-auto h-auto w-full max-h-[140px] max-w-xl"
+      role="img"
+      preserveAspectRatio="xMidYMid meet"
+    >
       {ticks.map((t) => (
         <g key={t}>
           <line x1={pad.left} y1={yFor(t)} x2={width - pad.right} y2={yFor(t)} stroke="#e2e8f0" strokeWidth="1" />
@@ -124,7 +134,7 @@ export function BarChart({ data = [], valueKey = "value", color = "#0056D2", hei
   );
 }
 
-export function DonutChart({ data = [], size = 200, thickness = 30 }) {
+export function DonutChart({ data = [], size = 128, thickness = 22 }) {
   const total = data.reduce((sum, d) => sum + (Number(d.value) || 0), 0);
   const radius = (size - thickness) / 2;
   const cx = size / 2;
@@ -147,7 +157,7 @@ export function DonutChart({ data = [], size = 200, thickness = 30 }) {
   });
 
   return (
-    <div className="flex items-center gap-5">
+    <div className="flex flex-wrap items-center gap-3 sm:gap-4">
       <svg viewBox={`0 0 ${size} ${size}`} width={size} height={size} className="shrink-0" role="img">
         <circle cx={cx} cy={cy} r={radius} fill="none" stroke="#eef2f7" strokeWidth={thickness} />
         {total > 0
@@ -169,14 +179,14 @@ export function DonutChart({ data = [], size = 200, thickness = 30 }) {
               </circle>
             ))
           : null}
-        <text x={cx} y={cy - 4} textAnchor="middle" fontSize="22" fontWeight="700" fill="#0f172a">
+        <text x={cx} y={cy - 3} textAnchor="middle" fontSize="16" fontWeight="700" fill="#0f172a">
           {formatNumber(total)}
         </text>
-        <text x={cx} y={cy + 16} textAnchor="middle" fontSize="11" fill="#94a3b8">
+        <text x={cx} y={cy + 12} textAnchor="middle" fontSize="9" fill="#94a3b8">
           Total
         </text>
       </svg>
-      <ul className="space-y-2 text-sm">
+      <ul className="space-y-1 text-xs">
         {data.map((d) => (
           <li key={d.label} className="flex items-center gap-2 text-slate-600">
             <span className="inline-block h-3 w-3 rounded-sm" style={{ backgroundColor: d.color }} />

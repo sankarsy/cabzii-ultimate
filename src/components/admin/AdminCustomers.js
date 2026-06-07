@@ -88,7 +88,7 @@ export default function AdminCustomers({ token, isSuperAdmin }) {
           <div>
             <h2 className="text-lg font-bold text-slate-900">Customers</h2>
             <p className="text-sm text-slate-500">
-              {formatNumber(meta.total)} registered {meta.total === 1 ? "customer" : "customers"} · saved automatically on login
+              {formatNumber(meta.total)} {meta.total === 1 ? "customer" : "customers"} · includes everyone who booked (login optional)
             </p>
           </div>
           <form
@@ -102,7 +102,7 @@ export default function AdminCustomers({ token, isSuperAdmin }) {
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search name, mobile or email"
+              placeholder="Search Poornima, mobile, email…"
               className="w-56 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-sky-500"
             />
             <button
@@ -163,6 +163,9 @@ export default function AdminCustomers({ token, isSuperAdmin }) {
                       <p className="font-semibold text-slate-800">{c.name || "Unnamed"}</p>
                       <p className="text-xs text-slate-500">{c.mobileNumber}</p>
                       {c.email ? <p className="text-xs text-slate-400">{c.email}</p> : null}
+                      {c.registered === false ? (
+                        <p className="mt-0.5 text-[10px] font-semibold uppercase text-amber-700">Booked as guest</p>
+                      ) : null}
                     </td>
                     <td className="px-3 py-3 text-slate-600">{fmtDate(c.createdAt)}</td>
                     <td className="px-3 py-3 text-slate-600">{fmtDate(c.lastLoginAt)}</td>

@@ -183,7 +183,17 @@ export default function Navbar({ variant = "default" }) {
           isActive(href) ? "bg-slate-100 text-[#0056D2]" : "text-slate-700 hover:text-[#0056D2]"
         }`;
 
-  const navLinks = (settings.navbar?.length ? settings.navbar : fallbackNavLinks)
+  const cmsMenuLinks = (settings.seoMenuLinks || []).map((link, index) => ({
+    label: link.label,
+    href: link.href,
+    visible: true,
+    sortOrder: 100 + (link.sortOrder ?? index)
+  }));
+
+  const navLinks = [
+    ...(settings.navbar?.length ? settings.navbar : fallbackNavLinks),
+    ...cmsMenuLinks
+  ]
     .filter((link) => link.visible !== false)
     .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
 

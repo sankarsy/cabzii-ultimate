@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { num } from "../lib/cabFare";
+import { catalogPublicPath } from "../lib/catalogProduct";
 import { resolveMediaUrl } from "../lib/media";
 
 const FALLBACK_IMAGE =
@@ -69,7 +70,7 @@ export default function SimilarCabs({ currentCabId, cabType, vendor }) {
             return (
               <Link
                 key={id}
-                href={`/cabs/${id}`}
+                href={catalogPublicPath(cab, "/cabs")}
                 className="group overflow-hidden rounded-xl border border-slate-200 bg-white transition hover:border-[#0056D2]/40 hover:shadow-md"
               >
                 <img

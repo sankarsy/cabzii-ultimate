@@ -1,15 +1,13 @@
 import { notFound } from "next/navigation";
 import JsonLd from "../../../../components/seo/JsonLd";
 import ServiceLandingPage from "../../../../components/seo/ServiceLandingPage";
+import { resolveServiceForCity } from "../../../../lib/seo/cmsResolve";
 import {
-  SEO_CITIES,
-  SEO_SERVICES,
   breadcrumbJsonLd,
   buildPageMetadata,
   cityBySlug,
   faqFromPairs,
   getServiceFaqs,
-  serviceBySlug,
   servicePageJsonLd,
   servicePath,
   tunedServiceDescription,
@@ -17,16 +15,11 @@ import {
   tunedServiceTitle
 } from "../../../../lib/seo";
 
-export function generateStaticParams() {
-  return SEO_CITIES.flatMap((city) =>
-    SEO_SERVICES.map((service) => ({ city: city.slug, service: service.slug }))
-  );
-}
+export const revalidate = 600;
 
 export async function generateMetadata({ params }) {
-  const city = cityBySlug(params.city);
-  const service = serviceBySlug(params.service);
-  if (!city || !service) {
+  const { service: serviceRow, city, cmsMeta } = await resolveServiceForCity(params.service, params.city);
+  if (!serviceRow || !city) {
     return buildPageMetadata({
       title: "Service Not Found",
       description: "This cab service page is not available on Cabzii.",
@@ -35,19 +28,19 @@ export async function generateMetadata({ params }) {
     });
   }
 
-  const path = servicePath(service, city);
-  return buildPageMetadata({
-    title: tunedServiceTitle(service, city),
-    description: tunedServiceDescription(service, city),
-    path,
-    keywords: tunedServiceKeywords(service, city)
-  });
+  const path = servicePath(serviceRow, city);
+  const title = cmsMeta?.seoTitle || tunedServiceTitle(serviceRow, city);
+  const description = cmsMeta?.seoDescription || tunedServiceDescription(serviceRow, city);
+  const keywords = cmsMeta?.seo
+    ? cmsMeta.seo.split(",").map((k) => k.trim()).filter(Boolean)
+    : tunedServiceKeywords(serviceRow, city);
+
+  return buildPageMetadata({ title, description, path, keywords });
 }
 
-export default function ServiceCityPage({ params }) {
-  const city = cityBySlug(params.city);
-  const service = serviceBySlug(params.service);
-  if (!city || !service) notFound();
+export default async function ServiceCityPage({ params }) {
+  const { service, city } = await resolveServiceForCity(params.service, params.city);
+  if (!service || !city) notFound();
 
   const path = servicePath(service, city);
   const faqs = getServiceFaqs(service, city);
@@ -60,8 +53,8 @@ export default function ServiceCityPage({ params }) {
     servicePageJsonLd({
       serviceName: service.name,
       cityName: city.name,
-      productName: tunedServiceTitle(service, city),
-      description: tunedServiceDescription(service, city),
+      productName: service.seoTitle || tunedServiceTitle(service, city),
+      description: service.seoDescription || tunedServiceDescription(service, city),
       urlPath: path,
       priceFrom: service.priceFrom,
       priceTo: Math.round((service.priceFrom || 999) * 3.5)
@@ -72,7 +65,7 @@ export default function ServiceCityPage({ params }) {
   return (
     <>
       <JsonLd data={jsonLd} />
-      <ServiceLandingPage city={city} service={service} faqs={faqs} />
+      <ServiceLandingPage city={city} service={service} faqs={faqs} extraBody={service.body} />
     </>
   );
 }

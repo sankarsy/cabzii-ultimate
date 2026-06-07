@@ -1,3 +1,7 @@
+import { normalizeGalleryPaths, normalizeStoredImagePath } from "./media";
+import { SEO_ROUTES } from "./seo/routes";
+import { SEO_SERVICES } from "./seo/services";
+
 export const CAB_PACKAGE_FIELDS = [
   { key: "local4hr", defaultLabel: "Local — 4 Hrs / 40 Km" },
   { key: "local8hr", defaultLabel: "Local — 8 Hrs / 80 Km" },
@@ -47,6 +51,53 @@ function numField(v) {
   return Number.isFinite(n) ? n : 0;
 }
 
+function emptyProductFields() {
+  return {
+    slug: "",
+    productCode: "",
+    brandName: "",
+    imageAlt: "",
+    imageTitle: "",
+    countryOfOrigin: "India",
+    speciality: "",
+    condition: "",
+    taxPercent: 5,
+    seo: ""
+  };
+}
+
+function productFieldsFromItem(item) {
+  return {
+    slug: item?.slug || "",
+    productCode: item?.productCode || "",
+    brandName: item?.brandName || "",
+    imageAlt: item?.imageAlt || "",
+    imageTitle: item?.imageTitle || "",
+    countryOfOrigin: item?.countryOfOrigin || "India",
+    speciality: item?.speciality || "",
+    condition: item?.condition || "",
+    taxPercent: numField(item?.taxPercent) || 5,
+    seo: item?.seo || ""
+  };
+}
+
+function productFieldsToPayload(form) {
+  return {
+    slug: String(form.slug || "").trim(),
+    productCode: String(form.productCode || "").trim(),
+    brandName: String(form.brandName || "").trim(),
+    imageAlt: String(form.imageAlt || "").trim(),
+    imageTitle: String(form.imageTitle || "").trim(),
+    countryOfOrigin: String(form.countryOfOrigin || "India").trim() || "India",
+    speciality: String(form.speciality || "").trim(),
+    condition: String(form.condition || "").trim(),
+    taxPercent: numField(form.taxPercent) || 5,
+    seo: form.seo || "",
+    seoTitle: form.seoTitle || "",
+    seoDescription: form.seoDescription || ""
+  };
+}
+
 function packageFromItem(pkg) {
   const base = emptyPackageFare();
   if (!pkg || typeof pkg !== "object") return base;
@@ -80,6 +131,7 @@ function packagesFromItem(itemPackages, fields) {
 
 export function emptyCabForm() {
   return {
+    ...emptyProductFields(),
     title: "",
     vendor: "",
     type: "Sedan",
@@ -98,6 +150,7 @@ export function emptyCabForm() {
     features: "",
     seoTitle: "",
     seoDescription: "",
+    status: "active",
     farePackages: emptyPackages(CAB_PACKAGE_FIELDS),
     farePackageLabels: emptyLabels(CAB_PACKAGE_FIELDS)
   };
@@ -105,6 +158,7 @@ export function emptyCabForm() {
 
 export function cabFormFromItem(item) {
   return {
+    ...productFieldsFromItem(item),
     title: item?.title || "",
     vendor: item?.vendor || "",
     type: item?.type || "Sedan",
@@ -123,6 +177,7 @@ export function cabFormFromItem(item) {
     features: Array.isArray(item?.features) ? item.features.join(", ") : "",
     seoTitle: item?.seoTitle || "",
     seoDescription: item?.seoDescription || "",
+    status: item?.status === "inactive" ? "inactive" : "active",
     farePackages: packagesFromItem(item?.farePackages, CAB_PACKAGE_FIELDS),
     farePackageLabels: labelsFromItem(item?.farePackageLabels, CAB_PACKAGE_FIELDS)
   };
@@ -163,24 +218,21 @@ export function cabFormToPayload(form) {
     originalPrice: numField(form.originalPrice),
     discountPercentage: numField(form.discountPercentage),
     ...(rating != null && rating > 0 ? { rating } : {}),
-    image: form.image || "",
-    gallery: String(form.gallery || "")
-      .split(",")
-      .map((g) => g.trim())
-      .filter(Boolean)
-      .slice(0, 3),
+    image: normalizeStoredImagePath(form.image) || "",
+    gallery: normalizeGalleryPaths(form.gallery).slice(0, 3),
     city: form.city || "",
     location: form.location || "",
     features,
     farePackages,
     farePackageLabels,
-    seoTitle: form.seoTitle || "",
-    seoDescription: form.seoDescription || ""
+    status: form.status === "inactive" ? "inactive" : "active",
+    ...productFieldsToPayload(form)
   };
 }
 
 export function emptyDriverForm() {
   return {
+    ...emptyProductFields(),
     name: "",
     vendor: "",
     type: "local",
@@ -199,6 +251,7 @@ export function emptyDriverForm() {
     pricingExtraHour: 0,
     seoTitle: "",
     seoDescription: "",
+    status: "active",
     farePackages: emptyPackages(DRIVER_PACKAGE_FIELDS),
     farePackageLabels: emptyLabels(DRIVER_PACKAGE_FIELDS)
   };
@@ -206,6 +259,7 @@ export function emptyDriverForm() {
 
 export function driverFormFromItem(item) {
   return {
+    ...productFieldsFromItem(item),
     name: item?.name || "",
     vendor: item?.vendor || "",
     type: item?.type || "local",
@@ -224,6 +278,7 @@ export function driverFormFromItem(item) {
     pricingExtraHour: numField(item?.pricing?.extraHour),
     seoTitle: item?.seoTitle || "",
     seoDescription: item?.seoDescription || "",
+    status: item?.status === "inactive" ? "inactive" : "active",
     farePackages: packagesFromItem(item?.farePackages, DRIVER_PACKAGE_FIELDS),
     farePackageLabels: labelsFromItem(item?.farePackageLabels, DRIVER_PACKAGE_FIELDS)
   };
@@ -252,12 +307,8 @@ export function driverFormToPayload(form) {
     experience: form.experience || "0 Years",
     trips: numField(form.trips),
     rating: String(form.rating || "0.0"),
-    image: form.image || "",
-    gallery: String(form.gallery || "")
-      .split(",")
-      .map((g) => g.trim())
-      .filter(Boolean)
-      .slice(0, 3),
+    image: normalizeStoredImagePath(form.image) || "",
+    gallery: normalizeGalleryPaths(form.gallery).slice(0, 3),
     city: form.city || "",
     location: form.location || "",
     discountPercentage: numField(form.discountPercentage),
@@ -276,13 +327,14 @@ export function driverFormToPayload(form) {
     },
     farePackages,
     farePackageLabels,
-    seoTitle: form.seoTitle || "",
-    seoDescription: form.seoDescription || ""
+    status: form.status === "inactive" ? "inactive" : "active",
+    ...productFieldsToPayload(form)
   };
 }
 
 export function emptyTourPackageForm() {
   return {
+    ...emptyProductFields(),
     name: "",
     vendor: "",
     category: "pilgrimage",
@@ -299,12 +351,14 @@ export function emptyTourPackageForm() {
     location: "",
     tags: "",
     seoTitle: "",
-    seoDescription: ""
+    seoDescription: "",
+    status: "active"
   };
 }
 
 export function tourPackageFormFromItem(item) {
   return {
+    ...productFieldsFromItem(item),
     name: item?.name || "",
     vendor: item?.vendor || "",
     category: item?.category || "",
@@ -321,7 +375,8 @@ export function tourPackageFormFromItem(item) {
     location: item?.location || "",
     tags: Array.isArray(item?.tags) ? item.tags.join(", ") : "",
     seoTitle: item?.seoTitle || "",
-    seoDescription: item?.seoDescription || ""
+    seoDescription: item?.seoDescription || "",
+    status: item?.status === "inactive" ? "inactive" : "active"
   };
 }
 
@@ -349,20 +404,16 @@ export function tourPackageFormToPayload(form) {
     hourlyRate: numField(form.hourlyRate),
     dayRate: numField(form.dayRate),
     extraHourRate: numField(form.extraHourRate),
-    image: form.image || "",
-    gallery: String(form.gallery || "")
-      .split(",")
-      .map((g) => g.trim())
-      .filter(Boolean)
-      .slice(0, 3),
+    image: normalizeStoredImagePath(form.image) || "",
+    gallery: normalizeGalleryPaths(form.gallery).slice(0, 3),
     city: form.city || "",
     location: form.location || "",
     tags: String(form.tags || "")
       .split(",")
       .map((t) => t.trim())
       .filter(Boolean),
-    seoTitle: form.seoTitle || "",
-    seoDescription: form.seoDescription || ""
+    status: form.status === "inactive" ? "inactive" : "active",
+    ...productFieldsToPayload(form)
   };
 }
 
@@ -494,8 +545,16 @@ export const CATALOG_TABS = {
   bookings: {
     label: "Bookings",
     base: "/api/bookings",
+    form: "booking",
     superAdminOnly: false,
-    sample: { status: "confirmed" },
+    sample: {
+      status: "confirmed",
+      vendorContact: {
+        name: "Cabzii Premier · Maruti Dzire",
+        phone: "9944197416",
+        whatsapp: "9944197416"
+      }
+    },
     required: ["status"]
   },
   blogs: {
@@ -511,16 +570,110 @@ export const CATALOG_TABS = {
     adminList: true,
     superAdminOnly: true,
     form: "testimonial"
+  },
+  seoServices: {
+    label: "Services",
+    base: "/api/seo-services",
+    adminList: true,
+    superAdminOnly: true,
+    form: "seoService",
+    sample: {
+      seoTitle: "Airport Taxi Chennai: Book Online, Fares & 24×7 Pickup | cabzii.in",
+      seoDescription: "Book Chennai airport taxi with AC cabs, fixed local & outstation fares and instant confirmation on cabzii.in.",
+      seo: "airport taxi chennai,chennai airport cab booking,airport pickup taxi",
+      slug: "airport-taxi",
+      menuCitySlug: "chennai",
+      priceFrom: 899,
+      published: true,
+      showInMenu: true
+    },
+    required: ["seoTitle"]
+  },
+  seoRoutes: {
+    label: "Routes",
+    base: "/api/seo-routes",
+    adminList: true,
+    superAdminOnly: true,
+    form: "seoRoute",
+    sample: {
+      seoTitle: "Chennai to Bengaluru Cab: Book One-Way & Round Trip | cabzii.in",
+      seoDescription: "Book Chennai to Bengaluru cab online. Sedan, SUV & Innova with transparent fares on cabzii.in.",
+      seo: "chennai to bengaluru cab,chennai bangalore taxi fare,one way cab chennai bengaluru",
+      fromCitySlug: "chennai",
+      toCitySlug: "bengaluru",
+      distance: "350 km",
+      duration: "6–7 hours",
+      sedanFrom: 4500,
+      published: true
+    },
+    required: ["seoTitle", "fromCitySlug", "toCitySlug"]
   }
 };
 
 export const CATALOG_TAB_KEYS = Object.keys(CATALOG_TABS);
 
+/** Built-in service pages (shown in admin until overridden by a saved CMS row with same slug). */
+export function mergeStaticSeoServices(cmsItems = []) {
+  const cmsSlugs = new Set((cmsItems || []).map((row) => row.slug).filter(Boolean));
+  const staticRows = SEO_SERVICES.filter((s) => s.slug && !cmsSlugs.has(s.slug)).map((s) => ({
+    _id: `static:${s.slug}`,
+    id: `static:${s.slug}`,
+    slug: s.slug,
+    name: s.name,
+    seoTitle: s.name,
+    primaryKeyword: s.primaryKeyword || s.name,
+    priceFrom: s.priceFrom || 0,
+    highlights: s.highlights || [],
+    published: true,
+    showInMenu: false,
+    menuCitySlug: "chennai",
+    allCities: true,
+    isStatic: true,
+    source: "static",
+    publicPath: `/services/${s.slug}/chennai`
+  }));
+  return [...(cmsItems || []), ...staticRows];
+}
+
+/** Built-in route pages (shown in admin until overridden by a saved CMS row with same slug). */
+export function mergeStaticSeoRoutes(cmsItems = []) {
+  const cmsSlugs = new Set((cmsItems || []).map((row) => row.slug).filter(Boolean));
+  const staticRows = SEO_ROUTES.filter((r) => r.slug && !cmsSlugs.has(r.slug)).map((r) => ({
+    _id: `static:${r.slug}`,
+    id: `static:${r.slug}`,
+    slug: r.slug,
+    title: `${r.from} to ${r.to} cab`.replace(/\b\w/g, (c) => c.toUpperCase()),
+    seoTitle: `${r.from} to ${r.to} cab`.replace(/\b\w/g, (c) => c.toUpperCase()),
+    fromCitySlug: r.from,
+    toCitySlug: r.to,
+    distance: r.distance || "",
+    duration: r.duration || "",
+    sedanFrom: r.sedanFrom || 0,
+    suvFrom: r.suvFrom || 0,
+    published: true,
+    showInMenu: false,
+    isStatic: true,
+    source: "static",
+    publicPath: `/routes/${r.slug}`
+  }));
+  return [...(cmsItems || []), ...staticRows];
+}
+
 export function buildCatalogListUrl(tabKey) {
   const tab = CATALOG_TABS[tabKey];
   if (!tab) return "";
   const params = new URLSearchParams({ limit: "100", page: "1" });
-  if (tab.adminList) params.set("admin", "1");
+  if (
+    tab.adminList ||
+    tabKey === "cabs" ||
+    tabKey === "drivers" ||
+    tabKey === "packages" ||
+    tabKey === "bookings" ||
+    tabKey === "seoServices" ||
+    tabKey === "seoRoutes"
+  ) {
+    params.set("admin", "1");
+  }
   return `${tab.base}?${params.toString()}`;
 }
 
@@ -546,5 +699,212 @@ export function emptyTestimonialForm() {
     rating: 5,
     sortOrder: 0,
     published: true
+  };
+}
+
+export function emptySeoServiceForm() {
+  return {
+    slug: "",
+    name: "",
+    primaryKeyword: "",
+    searchQuery: "",
+    priceFrom: 0,
+    highlights: "",
+    body: "",
+    seo: "",
+    seoTitle: "",
+    seoDescription: "",
+    published: true,
+    showInMenu: false,
+    menuLabel: "",
+    menuSortOrder: 0,
+    menuCitySlug: "chennai",
+    allCities: true,
+    citySlugs: ""
+  };
+}
+
+export function seoServiceFormFromItem(item) {
+  const seoTitle = item?.seoTitle || item?.name || "";
+  return {
+    slug: item?.slug || "",
+    name: seoTitle,
+    primaryKeyword: item?.primaryKeyword || "",
+    searchQuery: item?.searchQuery || "",
+    priceFrom: numField(item?.priceFrom),
+    highlights: Array.isArray(item?.highlights) ? item.highlights.join(", ") : "",
+    body: item?.body || "",
+    seo: item?.seo || "",
+    seoTitle,
+    seoDescription: item?.seoDescription || "",
+    published: item?.published !== false,
+    showInMenu: Boolean(item?.showInMenu),
+    menuLabel: item?.menuLabel || "",
+    menuSortOrder: numField(item?.menuSortOrder),
+    menuCitySlug: item?.menuCitySlug || "chennai",
+    allCities: item?.allCities !== false,
+    citySlugs: Array.isArray(item?.citySlugs) ? item.citySlugs.join(", ") : ""
+  };
+}
+
+export function seoServiceFormToPayload(form) {
+  const seoTitle = String(form.seoTitle || form.name || "").trim();
+  const seo = String(form.seo || "").trim();
+  return {
+    slug: form.slug || "",
+    name: seoTitle,
+    primaryKeyword: seo.split(",")[0]?.trim() || seoTitle,
+    searchQuery: seoTitle,
+    priceFrom: numField(form.priceFrom),
+    highlights: form.highlights || "",
+    body: form.body || "",
+    seo,
+    seoTitle,
+    seoDescription: String(form.seoDescription || "").trim(),
+    published: form.published !== false,
+    showInMenu: Boolean(form.showInMenu),
+    menuLabel: form.menuLabel || "",
+    menuSortOrder: numField(form.menuSortOrder),
+    menuCitySlug: form.menuCitySlug || "chennai",
+    allCities: form.allCities !== false,
+    citySlugs: form.citySlugs || ""
+  };
+}
+
+export function emptySeoRouteForm() {
+  return {
+    slug: "",
+    title: "",
+    fromCitySlug: "",
+    toCitySlug: "",
+    distance: "",
+    duration: "",
+    sedanFrom: 0,
+    suvFrom: 0,
+    highlights: "",
+    body: "",
+    seo: "",
+    seoTitle: "",
+    seoDescription: "",
+    published: true,
+    showInMenu: false,
+    menuLabel: "",
+    menuSortOrder: 0
+  };
+}
+
+export function seoRouteFormFromItem(item) {
+  const seoTitle = item?.seoTitle || item?.title || "";
+  return {
+    slug: item?.slug || "",
+    title: seoTitle,
+    fromCitySlug: item?.fromCitySlug || "",
+    toCitySlug: item?.toCitySlug || "",
+    distance: item?.distance || "",
+    duration: item?.duration || "",
+    sedanFrom: numField(item?.sedanFrom),
+    suvFrom: numField(item?.suvFrom),
+    highlights: Array.isArray(item?.highlights) ? item.highlights.join(", ") : "",
+    body: item?.body || "",
+    seo: item?.seo || "",
+    seoTitle,
+    seoDescription: item?.seoDescription || "",
+    published: item?.published !== false,
+    showInMenu: Boolean(item?.showInMenu),
+    menuLabel: item?.menuLabel || "",
+    menuSortOrder: numField(item?.menuSortOrder)
+  };
+}
+
+export function seoRouteFormToPayload(form) {
+  const seoTitle = String(form.seoTitle || form.title || "").trim();
+  return {
+    slug: form.slug || "",
+    title: seoTitle,
+    fromCitySlug: form.fromCitySlug,
+    toCitySlug: form.toCitySlug,
+    distance: form.distance || "",
+    duration: form.duration || "",
+    sedanFrom: numField(form.sedanFrom),
+    suvFrom: numField(form.suvFrom),
+    highlights: form.highlights || "",
+    body: form.body || "",
+    seo: String(form.seo || "").trim(),
+    seoTitle,
+    seoDescription: String(form.seoDescription || "").trim(),
+    published: form.published !== false,
+    showInMenu: Boolean(form.showInMenu),
+    menuLabel: form.menuLabel || "",
+    menuSortOrder: numField(form.menuSortOrder)
+  };
+}
+
+export function emptyBookingForm() {
+  return {
+    customerName: "",
+    phone: "",
+    email: "",
+    type: "cab",
+    itemId: "",
+    pickup: "",
+    drop: "",
+    date: "",
+    pickupTime: "",
+    amount: 0,
+    paymentMethod: "cash",
+    distanceKm: "",
+    status: "pending",
+    vendorContactName: "",
+    vendorContactPhone: "",
+    vendorContactWhatsapp: "",
+    vendorContactEmail: "",
+    vendorContactNotes: ""
+  };
+}
+
+export function bookingFormFromItem(item) {
+  const contact = item?.vendorContact || {};
+  return {
+    customerName: item?.customerName || "",
+    phone: item?.phone || "",
+    email: item?.email || "",
+    type: item?.type || "cab",
+    itemId: String(item?.itemId || ""),
+    pickup: item?.pickup || "",
+    drop: item?.drop || "",
+    date: item?.date || "",
+    pickupTime: item?.pickupTime || "",
+    amount: numField(item?.amount),
+    paymentMethod: item?.paymentMethod || "cash",
+    distanceKm: item?.distanceKm != null ? String(item.distanceKm) : "",
+    status: item?.status || "pending",
+    vendorContactName: contact.name || "",
+    vendorContactPhone: contact.phone || "",
+    vendorContactWhatsapp: contact.whatsapp || contact.phone || "",
+    vendorContactEmail: contact.email || "",
+    vendorContactNotes: contact.notes || ""
+  };
+}
+
+export function bookingFormToPayload(form) {
+  return {
+    customerName: form.customerName,
+    phone: form.phone,
+    email: form.email || "",
+    type: form.type,
+    itemId: form.itemId,
+    pickup: form.pickup || "",
+    drop: form.drop || "",
+    date: form.date || "",
+    pickupTime: form.pickupTime || "",
+    amount: numField(form.amount),
+    status: form.status || "pending",
+    vendorContact: {
+      name: form.vendorContactName || "",
+      phone: form.vendorContactPhone || "",
+      whatsapp: form.vendorContactWhatsapp || form.vendorContactPhone || "",
+      email: form.vendorContactEmail || "",
+      notes: form.vendorContactNotes || ""
+    }
   };
 }

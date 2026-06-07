@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import CabziiBrowseHeader from "./mmt/CabziiBrowseHeader";
 import PackageCard from "./PackageCard";
 import RelatedSeoLinks from "./seo/RelatedSeoLinks";
+import { packageDetailHref } from "../lib/holidayHome";
 import { HOLIDAY_CATEGORIES, categoryLabel } from "../lib/holidays";
 import { catalogPriorityParams, sortBySelectedCity } from "../lib/locationPriority";
 import { useSelectedCity } from "../lib/useSelectedCity";
@@ -151,7 +152,7 @@ export default function HolidaysListPage() {
                   key={String(pkg._id ?? pkg.id)}
                   pkg={pkg}
                   actionText="View package"
-                  actionHref={`/holidays/${String(pkg._id ?? pkg.id)}`}
+                  actionHref={packageDetailHref(pkg)}
                 />
               ))}
             </div>

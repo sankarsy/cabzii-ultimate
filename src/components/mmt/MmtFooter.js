@@ -1,6 +1,13 @@
 import Link from "next/link";
 import CabziiLogo from "../brand/CabziiLogo";
 import { BRAND } from "../../lib/brand";
+import { routeToCabSearchHref } from "../../lib/routeTrip";
+import { routeBySlug } from "../../lib/seo/routes";
+
+function footerRouteLink(slug, label) {
+  const route = routeBySlug(slug);
+  return { label, href: route ? routeToCabSearchHref(route) : `/routes/${slug}` };
+}
 
 const COLUMNS = [
   {
@@ -16,9 +23,9 @@ const COLUMNS = [
   {
     title: "Popular routes",
     links: [
-      { label: "Chennai → Bangalore", href: "/routes/chennai-to-bangalore-cab" },
-      { label: "Chennai → Pondicherry", href: "/routes/chennai-to-pondicherry-cab" },
-      { label: "Chennai → Tirupati", href: "/routes/chennai-to-tirupati-cab" }
+      footerRouteLink("madurai-to-chennai-cab", "Madurai → Chennai"),
+      footerRouteLink("chennai-to-bangalore-cab", "Chennai → Bangalore"),
+      footerRouteLink("chennai-to-pondicherry-cab", "Chennai → Pondicherry")
     ]
   },
   {

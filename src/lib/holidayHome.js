@@ -1,4 +1,5 @@
 import { num, packageYouPay } from "./cabFare";
+import { catalogPublicPath } from "./catalogProduct";
 
 /** Match homepage destination tiles to catalog packages */
 export const DOMESTIC_DESTINATION_MATCHERS = [
@@ -104,7 +105,7 @@ export function findPackage(packages, matcher = {}) {
 
 export function packageDetailHref(pkg) {
   if (!pkg) return "/holidays";
-  return `/holidays/${encodeURIComponent(String(pkg._id ?? pkg.id))}`;
+  return catalogPublicPath(pkg, "/holidays");
 }
 
 export function packageDisplayPrice(pkg) {

@@ -1,12 +1,14 @@
 import Link from "next/link";
+import { routeToCabSearchHref, routeToDriverSearchHref } from "../../lib/routeTrip";
 import Breadcrumbs from "./Breadcrumbs";
 import FaqSection from "./FaqSection";
 import { tunedRouteDescription } from "../../lib/seo/metadataTuning";
 
-export default function RouteLandingPage({ route, faqs }) {
+export default function RouteLandingPage({ route, faqs, extraBody = "" }) {
   const { fromCity, toCity, distance, duration, sedanFrom, suvFrom, slug } = route;
   const path = `/routes/${slug}`;
-  const searchHref = `/cabs/results?serviceTripType=outstation&from=${encodeURIComponent(fromCity.name)}&to=${encodeURIComponent(toCity.name)}&date=${new Date().toISOString().split("T")[0]}&time=09:00`;
+  const searchHref = routeToCabSearchHref(route);
+  const driverSearchHref = routeToDriverSearchHref(route);
   const reverseSlug = `${toCity.slug}-to-${fromCity.slug}-cab`;
   const reversePath = `/routes/${reverseSlug}`;
 
@@ -27,6 +29,12 @@ export default function RouteLandingPage({ route, faqs }) {
         <p className="mt-4 text-base leading-relaxed text-slate-700 md:text-lg">
           {tunedRouteDescription(route)} ({distance}, {duration})
         </p>
+        {extraBody ? (
+          <div
+            className="prose prose-slate mt-4 max-w-none text-sm text-slate-700"
+            dangerouslySetInnerHTML={{ __html: extraBody }}
+          />
+        ) : null}
 
         <div className="mt-6 flex flex-wrap gap-3">
           <Link
@@ -36,10 +44,16 @@ export default function RouteLandingPage({ route, faqs }) {
             Book one way cab
           </Link>
           <Link
+            href={driverSearchHref}
+            className="rounded-full border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-800"
+          >
+            Acting driver · same route
+          </Link>
+          <Link
             href={`/services/outstation-cab/${fromCity.slug}`}
             className="rounded-full border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-800"
           >
-            Outstation cabs from {fromCity.name}
+            Outstation info · {fromCity.name}
           </Link>
         </div>
 

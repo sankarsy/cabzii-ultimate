@@ -19,6 +19,21 @@ export function todayStr() {
   return new Date().toISOString().split("T")[0];
 }
 
+export function cabPackageIdFromTrip(trip) {
+  if (trip?.packageId || trip?.package) return trip.packageId || trip.package;
+  if (trip?.tripType === "outstation") {
+    return trip.roundTrip ? "outstation_twoway" : "outstation_oneway";
+  }
+  if (trip?.tripType === "hourly") {
+    const h = Number(trip.packageHours) || 8;
+    return h <= 4 ? "local_4hr" : "local_1day";
+  }
+  if (trip?.tripType === "airport" || trip?.tripType === "local") {
+    return "local_4hr";
+  }
+  return "local_4hr";
+}
+
 export function parseTripSearchParams(searchParams) {
   const get = (key) => {
     const v = searchParams?.get?.(key) ?? searchParams?.[key];
@@ -34,6 +49,8 @@ export function parseTripSearchParams(searchParams) {
   const direction = get("direction") || "pickup";
   const packageHours = Number(get("packageHours")) || 8;
   const city = get("city") || "";
+  const packageId =
+    get("packageId") || get("package") || cabPackageIdFromTrip({ tripType, roundTrip, packageHours });
 
   return {
     tripType,
@@ -44,6 +61,7 @@ export function parseTripSearchParams(searchParams) {
     roundTrip,
     direction,
     packageHours,
+    packageId,
     city,
     ...readTripCoords(get)
   };
@@ -69,6 +87,7 @@ export function tripToSearchQuery(trip) {
   if (trip.roundTrip) params.set("roundTrip", "true");
   if (trip.direction) params.set("direction", trip.direction);
   if (trip.packageHours) params.set("packageHours", String(trip.packageHours));
+  if (trip.packageId) params.set("packageId", trip.packageId);
   if (trip.city) params.set("city", trip.city);
   appendTripCoords(params, trip);
   return params;
@@ -93,21 +112,6 @@ export function tripSummaryLabel(trip) {
   }
   const rt = trip.roundTrip ? "Round trip" : "One way";
   return `${trip.from} → ${trip.to} · ${rt} · ${trip.date} ${trip.time}`;
-}
-
-export function cabPackageIdFromTrip(trip) {
-  if (trip?.packageId || trip?.package) return trip.packageId || trip.package;
-  if (trip?.tripType === "outstation") {
-    return trip.roundTrip ? "outstation_twoway" : "outstation_oneway";
-  }
-  if (trip?.tripType === "hourly") {
-    const h = Number(trip.packageHours) || 8;
-    return h <= 4 ? "local_4hr" : "local_1day";
-  }
-  if (trip?.tripType === "airport" || trip?.tripType === "local") {
-    return "local_4hr";
-  }
-  return "local_4hr";
 }
 
 /** Pick fare slab for search results / passenger page (shared with result cards). */

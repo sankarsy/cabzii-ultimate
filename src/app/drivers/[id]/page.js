@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import DriverDetailPage from "../../../components/DriverDetailPage";
 import JsonLd from "../../../components/seo/JsonLd";
 import { fetchDriverById } from "../../../lib/serverCatalog";
+import { catalogPublicPath } from "../../../lib/catalogProduct";
 import { driverDetailMetadata } from "../../../lib/metadataHelpers";
 import { breadcrumbJsonLd } from "../../../lib/seo";
 
@@ -23,7 +24,7 @@ export default async function DriverDetailRoutePage({ params }) {
         breadcrumbJsonLd([
           { name: "Home", path: "/" },
           { name: "Drivers", path: "/drivers" },
-          { name: driver.name || "Driver", path: `/drivers/${id}` }
+          { name: driver.name || "Driver", path: catalogPublicPath(driver, "/drivers") }
         ]),
         jsonLd
       ]

@@ -1,26 +1,46 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
+  bookingFormFromItem,
+  bookingFormToPayload,
   buildCatalogListUrl,
   CAB_PACKAGE_FIELDS,
   CATALOG_TABS,
+  mergeStaticSeoRoutes,
+  mergeStaticSeoServices,
   cabFormFromItem,
   cabFormToPayload,
   driverFormFromItem,
   driverFormToPayload,
   emptyBlogForm,
+  emptyBookingForm,
   emptyCabForm,
   emptyDriverForm,
+  emptySeoRouteForm,
+  emptySeoServiceForm,
   emptyTestimonialForm,
   emptyTourPackageForm,
   DRIVER_PACKAGE_FIELDS,
   formatCabPackageSummary,
   formatDriverPackageSummary,
+  seoRouteFormFromItem,
+  seoRouteFormToPayload,
+  seoServiceFormFromItem,
+  seoServiceFormToPayload,
   tourPackageFormFromItem,
   tourPackageFormToPayload
 } from "../../lib/adminCatalogConfig";
+import {
+  buildBookingStatsMap,
+  catalogItemBookingKey,
+  formatBookingStatsLine
+} from "../../lib/bookingStats";
+import { normalizeStoredImagePath, resolveMediaUrl } from "../../lib/media";
+import AdminBookingEditor from "./AdminBookingEditor";
+import { AdminSeoRouteForm, AdminSeoServiceForm } from "./AdminSeoForm";
+import { AdminProductSeoSection } from "./AdminProductSeoSection";
 import FarePackagesEditor from "./FarePackagesEditor";
 
 function Field({ label, children, hint }) {
@@ -41,16 +61,43 @@ function itemTitle(item, tabKey) {
   if (tabKey === "blogs") return item.title || item.slug;
   if (tabKey === "testimonials") return item.name;
   if (tabKey === "bookings") return item.customerName || item.phone || "Booking";
+  if (tabKey === "seoServices") return item.seoTitle || item.name || item.slug || "Service";
+  if (tabKey === "seoRoutes") return item.seoTitle || item.title || item.slug || "Route";
   return item.title || item.name || item.slug || "Item";
 }
 
 function itemSubtitle(item, tabKey) {
   if (tabKey === "blogs") return `${item.slug || "—"} · ${item.published === false ? "Draft" : "Published"}`;
   if (tabKey === "testimonials") return `${item.location || "—"} · ${item.rating ?? 5}★`;
-  if (tabKey === "bookings") return `${item.status || "pending"} · ${item.phone || ""}`;
+  if (tabKey === "bookings") {
+    const parts = [
+      item.status || "pending",
+      item.phone || "",
+      item.itemTitle || "",
+      item.pickup ? `${item.pickup}${item.drop ? ` → ${item.drop}` : ""}` : "",
+      `₹${Number(item.amount || 0).toLocaleString("en-IN")}`
+    ];
+    const contactPhone = item.vendorContact?.phone || item.vendorContact?.whatsapp;
+    if (item.status === "confirmed" && contactPhone) {
+      parts.push(`Contact: ${contactPhone}`);
+    }
+    return parts.filter(Boolean).join(" · ");
+  }
   if (tabKey === "cabs") return `${item.vendor || "—"} · ${item.city || "No city"} · ${item.location || "No location"} · ${formatCabPackageSummary(item)}`;
   if (tabKey === "drivers") return `${item.vendor || "—"} · ${item.city || "No city"} · ${item.location || "No location"} · ${formatDriverPackageSummary(item)}`;
   if (tabKey === "packages") return `${item.vendor || "—"} · ${item.city || "No city"} · ₹${item.price ?? "—"}`;
+  if (tabKey === "seoServices") {
+    const base = item.publicPath || `/services/${item.slug}/chennai`;
+    return item.isStatic
+      ? `Built-in (read-only) · ${base} · Seed DB to edit in admin`
+      : `${base} · ${item.published === false ? "Draft" : "Published"}${item.showInMenu ? " · Menu" : ""}`;
+  }
+  if (tabKey === "seoRoutes") {
+    const base = item.publicPath || `/routes/${item.slug}`;
+    return item.isStatic
+      ? `Built-in (read-only) · ${base} · Seed DB to edit in admin`
+      : `${base} · ${item.fromCitySlug || "—"} → ${item.toCitySlug || "—"} · ${item.published === false ? "Draft" : "Published"}`;
+  }
   return item.vendor || item.experience || item.type || "N/A";
 }
 
@@ -68,11 +115,12 @@ export default function AdminCatalogPanel({
   const isListMode = pageMode === "list";
   const singularLabel = tab?.label?.endsWith("s") ? tab.label.slice(0, -1) : "Item";
   const navigateAdmin = (url) => {
-    if (typeof window !== "undefined") window.location.assign(url);
-    else router.push(url);
+    router.push(url);
   };
+  const createModeReady = useRef(false);
 
   const [items, setItems] = useState([]);
+  const [allBookings, setAllBookings] = useState([]);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [editingId, setEditingId] = useState("");
@@ -82,6 +130,10 @@ export default function AdminCatalogPanel({
   const [cabForm, setCabForm] = useState(emptyCabForm());
   const [driverForm, setDriverForm] = useState(emptyDriverForm());
   const [tourPackageForm, setTourPackageForm] = useState(emptyTourPackageForm());
+  const [bookingForm, setBookingForm] = useState(emptyBookingForm());
+  const [seoServiceForm, setSeoServiceForm] = useState(emptySeoServiceForm());
+  const [seoRouteForm, setSeoRouteForm] = useState(emptySeoRouteForm());
+  const [bookingLoading, setBookingLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [uploadedUrl, setUploadedUrl] = useState("");
@@ -100,7 +152,11 @@ export default function AdminCatalogPanel({
     tab?.form === "testimonial" ||
     tab?.form === "cab" ||
     tab?.form === "driver" ||
-    tab?.form === "tourPackage";
+    tab?.form === "tourPackage" ||
+    tab?.form === "seoService" ||
+    tab?.form === "seoRoute" ||
+    tabKey === "bookings" ||
+    tab?.form === "booking";
 
   const resetForm = useCallback(() => {
     setEditingId("");
@@ -110,13 +166,29 @@ export default function AdminCatalogPanel({
     setCabForm(emptyCabForm());
     setDriverForm(emptyDriverForm());
     setTourPackageForm(emptyTourPackageForm());
+    setBookingForm(emptyBookingForm());
+    setSeoServiceForm(emptySeoServiceForm());
+    setSeoRouteForm(emptySeoRouteForm());
     setErrorMessage("");
     setStatusMessage("");
   }, []);
 
   useEffect(() => {
     resetForm();
+    createModeReady.current = false;
   }, [tabKey, resetForm]);
+
+  useEffect(() => {
+    if (pageMode === "create" && !createModeReady.current) {
+      resetForm();
+      setEditingId("");
+      setViewingId("");
+      createModeReady.current = true;
+    }
+    if (pageMode !== "create") {
+      createModeReady.current = false;
+    }
+  }, [pageMode, resetForm]);
 
   const loadData = useCallback(async () => {
     if (!token || !tab) return;
@@ -131,7 +203,10 @@ export default function AdminCatalogPanel({
       if (!res.ok) {
         throw new Error(data?.message || `Failed to load ${tab.label.toLowerCase()}`);
       }
-      setItems(Array.isArray(data.data) ? data.data : []);
+      let rows = Array.isArray(data.data) ? data.data : [];
+      if (tabKey === "seoServices") rows = mergeStaticSeoServices(rows);
+      if (tabKey === "seoRoutes") rows = mergeStaticSeoRoutes(rows);
+      setItems(rows);
     } catch (error) {
       setItems([]);
       setErrorMessage(error instanceof Error ? error.message : "Load failed");
@@ -144,31 +219,109 @@ export default function AdminCatalogPanel({
     loadData();
   }, [loadData]);
 
-  useEffect(() => {
-    if (!initialEditId || !items.length) return;
-    const target = items.find((it) => String(it._id || it.id) === String(initialEditId));
-    if (target) startEdit(target);
-  }, [initialEditId, items]);
+  const loadBookings = useCallback(async () => {
+    if (!token) return;
+    try {
+      const res = await fetch("/api/bookings?admin=1", {
+        cache: "no-store",
+        headers: { authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (res.ok && Array.isArray(data?.data)) {
+        setAllBookings(data.data);
+      }
+    } catch {
+      setAllBookings([]);
+    }
+  }, [token]);
 
   useEffect(() => {
-    if (!items.length) return;
-    if (pageMode === "create") {
-      resetForm();
-      setViewingId("");
-      return;
+    loadBookings();
+  }, [loadBookings]);
+
+  const bookingStats = useMemo(() => buildBookingStatsMap(allBookings), [allBookings]);
+
+  const catalogBookingSummary = useMemo(() => {
+    if (!["cabs", "drivers", "packages"].includes(tabKey)) return null;
+    let count = 0;
+    let total = 0;
+    for (const item of items) {
+      const key = catalogItemBookingKey(tabKey, item);
+      const stats = bookingStats.byItem[key];
+      if (stats) {
+        count += stats.count;
+        total += stats.total;
+      }
     }
-    if ((pageMode === "edit" || pageMode === "view") && viewId) {
-      const target = items.find((it) => String(it._id || it.id) === String(viewId));
+    return { count, total };
+  }, [items, tabKey, bookingStats]);
+
+  useEffect(() => {
+    if (tabKey === "bookings") return;
+    if (!initialEditId || !items.length) return;
+    const target = items.find((it) => String(it._id || it.id) === String(initialEditId));
+    if (!target || target.isStatic) return;
+    startEdit(target);
+  }, [initialEditId, items, tabKey]);
+
+  useEffect(() => {
+    if (tabKey === "bookings") return;
+    if (!items.length) return;
+    if (pageMode === "create") return;
+    const editTargetId = viewId || initialEditId;
+    if ((pageMode === "edit" || pageMode === "view") && editTargetId) {
+      const target = items.find((it) => String(it._id || it.id) === String(editTargetId));
       if (!target) return;
+      if (target.isStatic) {
+        if (pageMode === "edit") {
+          setErrorMessage("Built-in pages are read-only. Run seed script or create a new entry with the same slug to override.");
+        }
+        setEditingId("");
+        setViewingId(String(editTargetId));
+        return;
+      }
       if (pageMode === "edit") {
         startEdit(target);
         setViewingId("");
       } else {
         setEditingId("");
-        setViewingId(String(viewId));
+        setViewingId(String(editTargetId));
       }
     }
-  }, [items, pageMode, viewId, resetForm]);
+  }, [items, pageMode, viewId, initialEditId, tabKey]);
+
+  useEffect(() => {
+    if (tabKey !== "bookings" || !token || pageMode === "list") return;
+    const editId = initialEditId || viewId;
+    if (!editId) return;
+
+    let cancelled = false;
+    setBookingLoading(true);
+    setErrorMessage("");
+
+    fetch(`/api/bookings/${editId}`, { headers: authHeaders, cache: "no-store" })
+      .then(async (res) => {
+        const json = await res.json();
+        if (cancelled) return;
+        if (!res.ok || json?.success === false) {
+          throw new Error(json?.message || "Could not load booking");
+        }
+        setEditingId(String(editId));
+        setBookingForm(bookingFormFromItem(json.data));
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          setErrorMessage(err instanceof Error ? err.message : "Could not load booking");
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setBookingLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [tabKey, token, pageMode, initialEditId, viewId]);
 
   useEffect(() => {
     setListPage(1);
@@ -180,6 +333,9 @@ export default function AdminCatalogPanel({
     if (tab?.form === "cab") return cabFormToPayload(cabForm);
     if (tab?.form === "driver") return driverFormToPayload(driverForm);
     if (tab?.form === "tourPackage") return tourPackageFormToPayload(tourPackageForm);
+    if (tabKey === "bookings" || tab?.form === "booking") return bookingFormToPayload(bookingForm);
+    if (tab?.form === "seoService") return seoServiceFormToPayload(seoServiceForm);
+    if (tab?.form === "seoRoute") return seoRouteFormToPayload(seoRouteForm);
     return JSON.parse(formJson);
   };
 
@@ -230,6 +386,21 @@ export default function AdminCatalogPanel({
       return;
     }
 
+    if (tabKey === "bookings" || tab?.form === "booking") {
+      setBookingForm(bookingFormFromItem(item));
+      return;
+    }
+
+    if (tab?.form === "seoService") {
+      setSeoServiceForm(seoServiceFormFromItem(item));
+      return;
+    }
+
+    if (tab?.form === "seoRoute") {
+      setSeoRouteForm(seoRouteFormFromItem(item));
+      return;
+    }
+
     const cleanItem = { ...item };
     delete cleanItem._id;
     delete cleanItem.__v;
@@ -244,12 +415,17 @@ export default function AdminCatalogPanel({
     if (tab?.form === "cab") setCabForm(cabFormFromItem(tab.sample));
     else if (tab?.form === "driver") setDriverForm(driverFormFromItem(tab.sample));
     else if (tab?.form === "tourPackage") setTourPackageForm(tourPackageFormFromItem(tab.sample));
+    else if (tab?.form === "booking") setBookingForm({ ...emptyBookingForm(), status: "confirmed" });
+    else if (tab?.form === "seoService") setSeoServiceForm(seoServiceFormFromItem(tab.sample));
+    else if (tab?.form === "seoRoute") setSeoRouteForm(seoRouteFormFromItem(tab.sample));
     else setFormJson(JSON.stringify(tab.sample, null, 2));
     setErrorMessage("");
   };
 
   const patchFormImage = (imagePath, fileName) => {
-    const path = imagePath.startsWith("/") ? imagePath : `/uploads/${fileName}`;
+    const path =
+      normalizeStoredImagePath(imagePath) ||
+      (imagePath?.startsWith("/") ? imagePath : `/uploads/${fileName}`);
     if (tab?.form === "cab") {
       setCabForm((p) => {
         const gallery = String(p.gallery || "")
@@ -357,15 +533,11 @@ export default function AdminCatalogPanel({
         throw new Error(data?.message || "Upload failed");
       }
 
-      const imagePath = data.data.relativeUrl || data.data.url;
-      setUploadedUrl(data.data.url);
-
-      if (usesStructuredForm) {
-        patchFormImage(imagePath, data.data.fileName);
-        return;
-      }
+      const imagePath = normalizeStoredImagePath(data.data.relativeUrl || data.data.url);
+      setUploadedUrl(imagePath);
 
       patchFormImage(imagePath, data.data.fileName);
+      setStatusMessage("Image uploaded. Click Save below to publish it on the website.");
     } catch (error) {
       setUploadError(error instanceof Error ? error.message : "Upload failed");
     } finally {
@@ -391,6 +563,20 @@ export default function AdminCatalogPanel({
         parsed = JSON.parse(formJson);
       }
 
+      if (tab?.form === "seoService") {
+        if (!String(parsed.seoTitle || "").trim()) {
+          throw new Error("SEO title is required.");
+        }
+      }
+      if (tab?.form === "seoRoute") {
+        if (!String(parsed.seoTitle || "").trim()) {
+          throw new Error("SEO title is required.");
+        }
+        if (!String(parsed.fromCitySlug || "").trim() || !String(parsed.toCitySlug || "").trim()) {
+          throw new Error("From city and to city are required (e.g. chennai, bengaluru).");
+        }
+      }
+
       const isBookingsTab = tabKey === "bookings";
       const base = tab.base;
       const saveEndpoint = isBookingsTab && !editingId ? "/api/book" : base;
@@ -402,7 +588,10 @@ export default function AdminCatalogPanel({
             ? `${base}/${editingId}`
             : saveEndpoint;
 
-      const body = isBookingsTab && editingId ? { status: parsed.status || "pending" } : parsed;
+      const body =
+        isBookingsTab && editingId
+          ? { status: parsed.status || "pending", vendorContact: parsed.vendorContact }
+          : parsed;
 
       const res = await fetch(url, {
         method,
@@ -421,11 +610,34 @@ export default function AdminCatalogPanel({
       if (wasEditing && tab?.form === "cab") setCabForm(cabFormFromItem(data.data));
       else if (wasEditing && tab?.form === "driver") setDriverForm(driverFormFromItem(data.data));
       else if (wasEditing && tab?.form === "tourPackage") setTourPackageForm(tourPackageFormFromItem(data.data));
+      else if (wasEditing && (tabKey === "bookings" || tab?.form === "booking")) {
+        setBookingForm(bookingFormFromItem(data.data));
+      } else if (wasEditing && tab?.form === "seoService") {
+        setSeoServiceForm(seoServiceFormFromItem(data.data));
+      } else if (wasEditing && tab?.form === "seoRoute") {
+        setSeoRouteForm(seoRouteFormFromItem(data.data));
+      }
       else resetForm();
-      setStatusMessage(wasEditing ? "Updated successfully." : "Created successfully.");
+      if (tab?.form === "seoService" && data.data?.publicPath) {
+        setStatusMessage(`Saved. Live URL: ${data.data.publicPath} (added to sitemap when published)`);
+      } else if (tab?.form === "seoRoute" && data.data?.publicPath) {
+        setStatusMessage(`Saved. Live URL: ${data.data.publicPath} (added to sitemap when published)`);
+      } else if (wasEditing && tab?.form === "cab" && data.data?.image) {
+        setStatusMessage(`Updated successfully. Image saved: ${data.data.image}`);
+      } else if (wasEditing && tab?.form === "driver" && data.data?.image) {
+        setStatusMessage(`Updated successfully. Image saved: ${data.data.image}`);
+      } else {
+        setStatusMessage(wasEditing ? "Updated successfully." : "Created successfully.");
+      }
+      if (tab?.form === "seoService" || tab?.form === "seoRoute") {
+        if (!wasEditing && data.data?._id) {
+          setEditingId(String(data.data._id));
+        }
+      }
       await loadData();
+      await loadBookings();
       if (!isListMode) {
-        navigateAdmin(`/admin?tab=${tabKey}`);
+        navigateAdmin(`/admin?tab=${tabKey}&mode=list`);
       }
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : "Invalid JSON or save failed");
@@ -436,6 +648,7 @@ export default function AdminCatalogPanel({
 
   const deleteItem = async (id) => {
     if (!token || !id || tabKey === "bookings" || !canEdit) return;
+    if (String(id).startsWith("static:")) return;
     const ok = window.confirm("Delete this item?");
     if (!ok) return;
 
@@ -463,11 +676,23 @@ export default function AdminCatalogPanel({
     });
     const byStatus = searched.filter((item) => {
       if (statusFilter === "all") return true;
-      if (tabKey === "bookings") return (item.status || "").toLowerCase() === statusFilter;
-      if (tabKey === "blogs" || tabKey === "testimonials") {
+      if (tabKey === "bookings") {
+        const st = (item.status || "pending").toLowerCase();
+        if (statusFilter === "active") return st === "confirmed";
+        if (statusFilter === "draft") return st === "pending";
+        if (statusFilter === "finished") return st === "finished";
+        return st === statusFilter;
+      }
+      if (tabKey === "blogs" || tabKey === "testimonials" || tabKey === "seoServices" || tabKey === "seoRoutes") {
         return statusFilter === "active" ? item.published !== false : item.published === false;
       }
-      return statusFilter === "active";
+      if (tabKey === "cabs" || tabKey === "drivers" || tabKey === "packages") {
+        const st = (item.status || "active").toLowerCase();
+        if (statusFilter === "active") return st === "active";
+        if (statusFilter === "draft") return st === "inactive";
+        return true;
+      }
+      return true;
     });
     const sorted = [...byStatus];
     if (sortKey === "name") {
@@ -490,7 +715,10 @@ export default function AdminCatalogPanel({
     <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-md">
       {!canEdit ? (
         <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">
-          <span className="font-semibold">View only.</span> Blogs and testimonials can only be edited by super admin. Log in with Admin login, not Travel Partner.
+          <span className="font-semibold">View only.</span>{" "}
+          {tabKey === "seoServices" || tabKey === "seoRoutes"
+            ? "Services and Routes can only be created or edited by super admin. Use Admin Login (not Travel Partner)."
+            : "Blogs and testimonials can only be edited by super admin. Log in with Admin login, not Travel Partner."}
         </div>
       ) : null}
 
@@ -504,7 +732,9 @@ export default function AdminCatalogPanel({
       {!isListMode && tabKey !== "bookings" && tabKey !== "testimonials" ? (
         <div className="mb-5 rounded-lg border border-slate-200 bg-slate-50 p-3">
           <p className="text-sm font-semibold text-slate-800">Image upload</p>
-          <p className="mt-1 text-xs text-slate-600">Upload a photo and use the returned path in your JSON or content.</p>
+          <p className="mt-1 text-xs text-slate-600">
+            Upload a photo — the image path is filled automatically. You must click <strong>Save</strong> below for it to appear on the website.
+          </p>
           <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center">
             <input
               type="file"
@@ -522,8 +752,18 @@ export default function AdminCatalogPanel({
             </button>
           </div>
           {uploadedUrl ? (
-            <div className="mt-3 rounded-md border border-emerald-200 bg-emerald-50 p-2 text-xs text-emerald-700">
-              Uploaded URL: <span className="font-semibold">{uploadedUrl}</span>
+            <div className="mt-3 rounded-md border border-emerald-200 bg-emerald-50 p-2 text-xs text-emerald-800">
+              <p>
+                Image path: <span className="font-semibold">{uploadedUrl}</span>
+              </p>
+              <p className="mt-1 text-emerald-700">
+                Use path <span className="font-mono">{uploadedUrl.startsWith("/") ? uploadedUrl : `/uploads/...`}</span> — click Save on the cab form to publish on cabzii.in.
+              </p>
+              <img
+                src={resolveMediaUrl(uploadedUrl)}
+                alt="Upload preview"
+                className="mt-2 h-24 w-auto max-w-full rounded-md border border-emerald-200 bg-white object-contain"
+              />
             </div>
           ) : null}
           {uploadError ? (
@@ -549,7 +789,13 @@ export default function AdminCatalogPanel({
 
         {pageMode === "view" ? null : (
         <>
-        {tab.form === "blog" ? (
+        {tabKey === "bookings" ? (
+          bookingLoading ? (
+            <p className="mt-4 text-sm text-slate-600">Loading booking…</p>
+          ) : (
+            <AdminBookingEditor form={bookingForm} onChange={setBookingForm} disabled={!canEdit} />
+          )
+        ) : tab.form === "blog" ? (
           <div className="mt-3 grid gap-3 sm:grid-cols-2">
             <Field label="Slug *" hint="URL-friendly, e.g. chennai-airport-taxi-tips">
               <input className={inputCls()} value={blogForm.slug} onChange={(e) => setBlogForm((p) => ({ ...p, slug: e.target.value }))} />
@@ -584,6 +830,10 @@ export default function AdminCatalogPanel({
               Published (visible on website)
             </label>
           </div>
+        ) : tab.form === "seoService" ? (
+          <AdminSeoServiceForm form={seoServiceForm} onChange={setSeoServiceForm} />
+        ) : tab.form === "seoRoute" ? (
+          <AdminSeoRouteForm form={seoRouteForm} onChange={setSeoRouteForm} />
         ) : tab.form === "testimonial" ? (
           <div className="mt-3 grid gap-3 sm:grid-cols-2">
             <Field label="Name *">
@@ -624,6 +874,16 @@ export default function AdminCatalogPanel({
                   ))}
                 </select>
               </Field>
+              <Field label="Status" hint="Active cabs appear on the website">
+                <select
+                  className={inputCls()}
+                  value={cabForm.status}
+                  onChange={(e) => setCabForm((p) => ({ ...p, status: e.target.value }))}
+                >
+                  <option value="active">Active — show on website</option>
+                  <option value="inactive">Inactive — admin only</option>
+                </select>
+              </Field>
               <Field label="Seats">
                 <input type="number" min={1} className={inputCls()} value={cabForm.seats} onChange={(e) => setCabForm((p) => ({ ...p, seats: Number(e.target.value) }))} />
               </Field>
@@ -631,7 +891,19 @@ export default function AdminCatalogPanel({
                 <input type="number" min={0} className={inputCls()} value={cabForm.price} onChange={(e) => setCabForm((p) => ({ ...p, price: Number(e.target.value) }))} />
               </Field>
               <Field label="Image path">
-                <input className={inputCls()} value={cabForm.image} onChange={(e) => setCabForm((p) => ({ ...p, image: e.target.value }))} placeholder="/uploads/cab.jpg" />
+                <input
+                  className={inputCls()}
+                  value={cabForm.image}
+                  onChange={(e) => setCabForm((p) => ({ ...p, image: normalizeStoredImagePath(e.target.value) }))}
+                  placeholder="/uploads/cab.jpg"
+                />
+                {cabForm.image ? (
+                  <img
+                    src={resolveMediaUrl(cabForm.image)}
+                    alt="Cab preview"
+                    className="mt-2 h-20 w-auto max-w-full rounded-md border border-slate-200 bg-white object-contain"
+                  />
+                ) : null}
               </Field>
               <Field label="City">
                 <input className={inputCls()} value={cabForm.city} onChange={(e) => setCabForm((p) => ({ ...p, city: e.target.value }))} placeholder="Bengaluru" />
@@ -661,14 +933,7 @@ export default function AdminCatalogPanel({
               onUpdateLabel={updateCabLabel}
             />
 
-            <div className="grid gap-3 sm:grid-cols-2">
-              <Field label="SEO title">
-                <input className={inputCls()} value={cabForm.seoTitle} onChange={(e) => setCabForm((p) => ({ ...p, seoTitle: e.target.value }))} />
-              </Field>
-              <Field label="SEO description">
-                <input className={inputCls()} value={cabForm.seoDescription} onChange={(e) => setCabForm((p) => ({ ...p, seoDescription: e.target.value }))} />
-              </Field>
-            </div>
+            <AdminProductSeoSection form={cabForm} onChange={setCabForm} pathPrefix="/cabs" titleField="title" cityField="city" />
 
             {tab.sample ? (
               <button
@@ -709,7 +974,29 @@ export default function AdminCatalogPanel({
                 <input type="number" min={0} max={99} className={inputCls()} value={driverForm.discountPercentage} onChange={(e) => setDriverForm((p) => ({ ...p, discountPercentage: Number(e.target.value) }))} />
               </Field>
               <Field label="Image path">
-                <input className={inputCls()} value={driverForm.image} onChange={(e) => setDriverForm((p) => ({ ...p, image: e.target.value }))} placeholder="/uploads/driver.jpg" />
+                <input
+                  className={inputCls()}
+                  value={driverForm.image}
+                  onChange={(e) => setDriverForm((p) => ({ ...p, image: normalizeStoredImagePath(e.target.value) }))}
+                  placeholder="/uploads/driver.jpg"
+                />
+                {driverForm.image ? (
+                  <img
+                    src={resolveMediaUrl(driverForm.image)}
+                    alt="Driver preview"
+                    className="mt-2 h-20 w-auto max-w-full rounded-md border border-slate-200 bg-white object-contain"
+                  />
+                ) : null}
+              </Field>
+              <Field label="Status" hint="Active drivers appear on the website">
+                <select
+                  className={inputCls()}
+                  value={driverForm.status}
+                  onChange={(e) => setDriverForm((p) => ({ ...p, status: e.target.value }))}
+                >
+                  <option value="active">Active — show on website</option>
+                  <option value="inactive">Inactive — admin only</option>
+                </select>
               </Field>
               <Field label="City">
                 <input className={inputCls()} value={driverForm.city} onChange={(e) => setDriverForm((p) => ({ ...p, city: e.target.value }))} placeholder="Bengaluru" />
@@ -749,14 +1036,7 @@ export default function AdminCatalogPanel({
               onUpdateLabel={updateDriverLabel}
             />
 
-            <div className="grid gap-3 sm:grid-cols-2">
-              <Field label="SEO title">
-                <input className={inputCls()} value={driverForm.seoTitle} onChange={(e) => setDriverForm((p) => ({ ...p, seoTitle: e.target.value }))} />
-              </Field>
-              <Field label="SEO description">
-                <input className={inputCls()} value={driverForm.seoDescription} onChange={(e) => setDriverForm((p) => ({ ...p, seoDescription: e.target.value }))} />
-              </Field>
-            </div>
+            <AdminProductSeoSection form={driverForm} onChange={setDriverForm} pathPrefix="/drivers" titleField="name" cityField="city" />
 
             {tab.sample ? (
               <button
@@ -816,7 +1096,29 @@ export default function AdminCatalogPanel({
                 <input type="number" min={0} className={inputCls()} value={tourPackageForm.extraHourRate} onChange={(e) => setTourPackageForm((p) => ({ ...p, extraHourRate: Number(e.target.value) }))} />
               </Field>
               <Field label="Image path">
-                <input className={inputCls()} value={tourPackageForm.image} onChange={(e) => setTourPackageForm((p) => ({ ...p, image: e.target.value }))} placeholder="/uploads/package.jpg" />
+                <input
+                  className={inputCls()}
+                  value={tourPackageForm.image}
+                  onChange={(e) => setTourPackageForm((p) => ({ ...p, image: normalizeStoredImagePath(e.target.value) }))}
+                  placeholder="/uploads/package.jpg"
+                />
+                {tourPackageForm.image ? (
+                  <img
+                    src={resolveMediaUrl(tourPackageForm.image)}
+                    alt="Package preview"
+                    className="mt-2 h-20 w-auto max-w-full rounded-md border border-slate-200 bg-white object-contain"
+                  />
+                ) : null}
+              </Field>
+              <Field label="Status" hint="Active packages appear on the website">
+                <select
+                  className={inputCls()}
+                  value={tourPackageForm.status}
+                  onChange={(e) => setTourPackageForm((p) => ({ ...p, status: e.target.value }))}
+                >
+                  <option value="active">Active — show on website</option>
+                  <option value="inactive">Inactive — admin only</option>
+                </select>
               </Field>
               <Field label="City">
                 <input className={inputCls()} value={tourPackageForm.city} onChange={(e) => setTourPackageForm((p) => ({ ...p, city: e.target.value }))} placeholder="Bengaluru" />
@@ -836,14 +1138,7 @@ export default function AdminCatalogPanel({
               </div>
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-2">
-              <Field label="SEO title">
-                <input className={inputCls()} value={tourPackageForm.seoTitle} onChange={(e) => setTourPackageForm((p) => ({ ...p, seoTitle: e.target.value }))} />
-              </Field>
-              <Field label="SEO description">
-                <input className={inputCls()} value={tourPackageForm.seoDescription} onChange={(e) => setTourPackageForm((p) => ({ ...p, seoDescription: e.target.value }))} />
-              </Field>
-            </div>
+            <AdminProductSeoSection form={tourPackageForm} onChange={setTourPackageForm} pathPrefix="/holidays" titleField="name" cityField="city" />
 
             {tab.sample ? (
               <button
@@ -886,7 +1181,13 @@ export default function AdminCatalogPanel({
             disabled={saving || !canEdit}
             className="rounded-lg bg-emerald-600 px-4 py-2 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-60"
           >
-            {saving ? "Saving..." : editingId ? "Update" : "Create"}
+            {saving
+              ? "Saving..."
+              : tabKey === "bookings" && bookingForm.status === "confirmed"
+                ? "Confirm & send contact"
+                : editingId
+                  ? "Update"
+                  : "Create"}
           </button>
           <button
             type="button"
@@ -918,12 +1219,30 @@ export default function AdminCatalogPanel({
 
       {isListMode ? (
       <>
+      {(tabKey === "seoServices" || tabKey === "seoRoutes") && items.length > 0 && !items.some((i) => !i.isStatic) ? (
+        <div className="mb-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
+          <span className="font-semibold">Built-in pages only.</span> Click <strong>Create</strong> to add new pages, or run{" "}
+          <code className="rounded bg-amber-100 px-1">node scripts/seedSeoCms.js</code> on the server once to import all built-in pages as editable rows.
+        </div>
+      ) : null}
       <div className="mb-3 flex items-center justify-between gap-3 rounded-lg border border-slate-200 bg-slate-50 p-3">
-        <p className="text-sm font-semibold text-slate-800">{tab.label}</p>
+        <div>
+          <p className="text-sm font-semibold text-slate-800">{tab.label}</p>
+          {tabKey === "bookings" ? (
+            <p className="mt-0.5 text-xs text-slate-600">
+              {formatBookingStatsLine({ count: bookingStats.totalCount, total: bookingStats.totalAmount })}
+            </p>
+          ) : null}
+          {catalogBookingSummary ? (
+            <p className="mt-0.5 text-xs text-slate-600">
+              {formatBookingStatsLine(catalogBookingSummary)} linked to these {tab.label.toLowerCase()}
+            </p>
+          ) : null}
+        </div>
         {canEdit ? (
           <button
             type="button"
-            onClick={() => navigateAdmin(`/admin/${tabKey}/create`)}
+            onClick={() => navigateAdmin(`/admin?tab=${tabKey}&mode=create`)}
             className="rounded-md bg-sky-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-sky-700"
           >
             Create {singularLabel}
@@ -940,11 +1259,12 @@ export default function AdminCatalogPanel({
         <select className={inputCls()} value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
           <option value="all">All status</option>
           <option value="active">Active</option>
-          <option value="draft">Draft/Inactive</option>
+          <option value="draft">{tabKey === "blogs" || tabKey === "testimonials" || tabKey === "seoServices" || tabKey === "seoRoutes" ? "Draft" : "Inactive"}</option>
           {tabKey === "bookings" ? (
             <>
               <option value="pending">Pending</option>
               <option value="confirmed">Confirmed</option>
+              <option value="finished">Finished</option>
               <option value="cancelled">Cancelled</option>
             </>
           ) : null}
@@ -985,43 +1305,86 @@ export default function AdminCatalogPanel({
               <tbody>
           {pagedItems.map((item) => {
             const id = item._id || item.id;
+            const isStatic = Boolean(item.isStatic);
             const isEditing = editingId === id;
             return (
               <tr key={id} className={`border-t border-slate-100 hover:bg-slate-50 ${isEditing ? "bg-sky-50/70" : ""}`}>
                 <td className="px-3 py-2">
-                  {item.image ? <img src={item.image} alt={itemTitle(item, tabKey)} className="h-10 w-14 rounded object-cover" /> : <span className="text-xs text-slate-400">—</span>}
+                  {item.image ? (
+                    <img
+                      src={resolveMediaUrl(item.image)}
+                      alt={itemTitle(item, tabKey)}
+                      className="h-10 w-14 rounded object-cover"
+                    />
+                  ) : (
+                    <span className="text-xs text-slate-400">—</span>
+                  )}
                 </td>
-                <td className="px-3 py-2 font-semibold text-slate-900">{itemTitle(item, tabKey)}</td>
+                <td className="px-3 py-2">
+                  <p className="font-semibold text-slate-900">{itemTitle(item, tabKey)}</p>
+                  {["cabs", "drivers", "packages"].includes(tabKey) ? (
+                    <p className="mt-0.5 text-[11px] font-medium text-[#0056D2]">
+                      {formatBookingStatsLine(bookingStats.byItem[catalogItemBookingKey(tabKey, item)])}
+                    </p>
+                  ) : null}
+                </td>
                 <td className="px-3 py-2 text-xs text-slate-600">{itemSubtitle(item, tabKey)}</td>
                 <td className="px-3 py-2">
                   <span className={`rounded-full px-2 py-1 text-[11px] font-semibold ${
                     tabKey === "bookings"
-                      ? item.status === "confirmed" ? "bg-emerald-100 text-emerald-700" : item.status === "cancelled" ? "bg-rose-100 text-rose-700" : "bg-amber-100 text-amber-700"
-                      : (item.published === false ? "bg-slate-200 text-slate-700" : "bg-emerald-100 text-emerald-700")
+                      ? item.status === "confirmed"
+                        ? "bg-emerald-100 text-emerald-700"
+                        : item.status === "finished"
+                          ? "bg-sky-100 text-sky-700"
+                          : item.status === "cancelled"
+                            ? "bg-rose-100 text-rose-700"
+                            : "bg-amber-100 text-amber-700"
+                      : tabKey === "cabs" || tabKey === "drivers" || tabKey === "packages"
+                        ? item.status === "inactive" ? "bg-slate-200 text-slate-700" : "bg-emerald-100 text-emerald-700"
+                        : isStatic
+                          ? "bg-sky-100 text-sky-800"
+                          : item.published === false ? "bg-slate-200 text-slate-700" : "bg-emerald-100 text-emerald-700"
                   }`}>
-                    {tabKey === "bookings" ? item.status || "pending" : item.published === false ? "draft" : "active"}
+                    {tabKey === "bookings"
+                      ? item.status || "pending"
+                      : tabKey === "cabs" || tabKey === "drivers" || tabKey === "packages"
+                        ? item.status === "inactive" ? "inactive" : "active"
+                        : isStatic
+                          ? "built-in"
+                          : item.published === false ? "draft" : "active"}
                   </span>
                 </td>
                 <td className="px-3 py-2">
                   <div className="flex flex-wrap gap-2">
                     <button
                       type="button"
-                      onClick={() => navigateAdmin(`/admin/${tabKey}/${id}/view`)}
+                      onClick={() => navigateAdmin(`/admin?tab=${tabKey}&mode=view&view=${id}`)}
                       className="rounded-md border border-slate-300 px-2 py-1 text-[11px] font-semibold text-slate-700 hover:bg-slate-100"
                       title="View"
                     >
                       View
                     </button>
+                  {!isStatic ? (
                   <button
                     type="button"
-                    onClick={() => navigateAdmin(`/admin/${tabKey}/${id}/edit`)}
+                    onClick={() => navigateAdmin(`/admin?tab=${tabKey}&mode=edit&edit=${id}`)}
                     disabled={!canEdit}
                     className="rounded-md border border-slate-300 px-2 py-1 text-[11px] font-semibold text-slate-700 hover:bg-slate-100 disabled:opacity-50"
                     title="Edit"
                   >
                     Edit
                   </button>
-                  {tabKey !== "bookings" ? (
+                  ) : item.publicPath ? (
+                    <a
+                      href={item.publicPath}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="rounded-md border border-sky-300 px-2 py-1 text-[11px] font-semibold text-sky-700 hover:bg-sky-50"
+                    >
+                      Live page
+                    </a>
+                  ) : null}
+                  {tabKey !== "bookings" && !isStatic ? (
                     <button
                       type="button"
                       onClick={() => deleteItem(id)}

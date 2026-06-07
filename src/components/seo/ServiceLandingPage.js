@@ -4,9 +4,10 @@ import FaqSection from "./FaqSection";
 import { cityAreas } from "../../lib/seo/content";
 import { serviceSearchHref, tunedServiceDescription, tunedServiceH1 } from "../../lib/seo/metadataTuning";
 import { servicePath } from "../../lib/seo/services";
+import { routeToCabSearchHref } from "../../lib/routeTrip";
 import { routesForCity } from "../../lib/seo/routes";
 
-export default function ServiceLandingPage({ city, service, faqs }) {
+export default function ServiceLandingPage({ city, service, faqs, extraBody = "" }) {
   const path = servicePath(service, city);
   const areas = cityAreas(city.slug);
   const cityRoutes = routesForCity(city.slug).slice(0, 6);
@@ -29,6 +30,12 @@ export default function ServiceLandingPage({ city, service, faqs }) {
       </p>
       <h1 className="mt-3 text-3xl font-extrabold text-slate-900 md:text-4xl">{h1}</h1>
       <p className="mt-4 text-base leading-relaxed text-slate-700 md:text-lg">{lead}</p>
+      {extraBody ? (
+        <div
+          className="prose prose-slate mt-4 max-w-none text-sm text-slate-700"
+          dangerouslySetInnerHTML={{ __html: extraBody }}
+        />
+      ) : null}
 
       <div className="mt-6 flex flex-wrap gap-3">
         <Link
@@ -101,7 +108,7 @@ export default function ServiceLandingPage({ city, service, faqs }) {
             {cityRoutes.map((route) => (
               <li key={route.slug}>
                 <Link
-                  href={`/routes/${route.slug}`}
+                  href={routeToCabSearchHref(route)}
                   className="inline-block rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:border-[var(--cabzii-brand)]/30 hover:text-[var(--cabzii-brand)]"
                 >
                   {route.fromCity.name} → {route.toCity.name}
