@@ -3,6 +3,8 @@ import JsonLd from "../../../../components/seo/JsonLd";
 import ServiceLandingPage from "../../../../components/seo/ServiceLandingPage";
 import { resolveServiceForCity } from "../../../../lib/seo/cmsResolve";
 import {
+  SEO_CITIES,
+  SEO_SERVICES,
   breadcrumbJsonLd,
   buildPageMetadata,
   cityBySlug,
@@ -16,6 +18,15 @@ import {
 } from "../../../../lib/seo";
 
 export const revalidate = 600;
+
+export function generateStaticParams() {
+  return SEO_SERVICES.flatMap((service) =>
+    SEO_CITIES.map((city) => ({
+      service: service.slug,
+      city: city.slug
+    }))
+  );
+}
 
 export async function generateMetadata({ params }) {
   const { service: serviceRow, city, cmsMeta } = await resolveServiceForCity(params.service, params.city);

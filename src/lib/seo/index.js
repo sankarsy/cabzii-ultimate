@@ -7,3 +7,7 @@ export * from "./content";
 export * from "./metadataTuning";
 export * from "./programmaticMeta";
 export * from "./urlAliases";
+export * from "./landingContent";
+export * from "./blogTopics";
+export * from "./localSeo";
+export * from "./routeCatalog";

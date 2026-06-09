@@ -1,6 +1,5 @@
 import Image from "next/image";
 import { BRAND } from "../../lib/brand";
-import { BRAND_APPLE_TOUCH } from "../../lib/brandAssets";
 
 /**
  * Cabzii.in wordmark — brand icon + red "cab" + orange "zii".
@@ -19,24 +18,14 @@ export default function CabziiLogo({
 
   const iconSize = compact ? 28 : 36;
 
-  const wordmark = (
-    <>
-      <span className={cabClass}>cab</span>
-      <span className={ziiClass}>zii</span>
-      {!compact && showDomain ? (
-        <span className={`ml-0.5 text-sm font-bold ${domainClass}`}>.in</span>
-      ) : null}
-    </>
-  );
-
   return (
     <span
-      className={`inline-flex select-none items-center gap-2 font-extrabold tracking-tight ${compact ? "text-lg" : "text-2xl"} ${className}`}
+      className={`inline-flex select-none items-center gap-1.5 font-extrabold leading-none tracking-tight ${compact ? "text-lg" : "text-2xl"} ${className}`}
       aria-label={BRAND.fullName}
     >
       {showIcon ? (
         <Image
-          src={BRAND_APPLE_TOUCH}
+          src="/icon.svg"
           alt=""
           width={iconSize}
           height={iconSize}
@@ -44,7 +33,13 @@ export default function CabziiLogo({
           priority
         />
       ) : null}
-      {wordmark}
+      <span className="inline-flex items-baseline whitespace-nowrap">
+        <span className={cabClass}>cab</span>
+        <span className={ziiClass}>zii</span>
+        {showDomain ? (
+          <span className={`ml-0.5 text-sm font-bold ${domainClass}`}>.in</span>
+        ) : null}
+      </span>
     </span>
   );
 }

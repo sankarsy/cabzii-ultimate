@@ -132,17 +132,13 @@ export default function MmtCabSearchWidget({ defaultCity = "", initialTrip = nul
 
   return (
     <div className="w-full">
-      <div className="hero-tabs-scroll -mx-1 flex gap-2 overflow-x-auto border-b border-slate-200 px-1 pb-3">
+      <div className="hero-tabs-scroll -mx-0.5 flex gap-2 overflow-x-auto pb-4">
         {TRIP_TABS.map((tab) => (
           <button
             key={tab.id}
             type="button"
             onClick={() => setTripType(tab.id)}
-            className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-semibold transition-colors sm:px-4 sm:text-sm ${
-              tripType === tab.id
-                ? "bg-[var(--emt-primary)] text-white"
-                : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-            }`}
+            className={`cabzii-chip cabzii-tap ${tripType === tab.id ? "cabzii-chip-active" : ""}`}
           >
             {tab.label}
           </button>
@@ -189,10 +185,10 @@ export default function MmtCabSearchWidget({ defaultCity = "", initialTrip = nul
         </div>
       ) : null}
 
-      <div className="mt-4 grid grid-cols-1 gap-px overflow-visible rounded-lg border border-slate-200 bg-slate-200 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="cabzii-search-grid">
         {tripType === "hourly" ? (
           <>
-            <div className="bg-white p-3 sm:p-4">
+            <div className="cabzii-search-cell">
               <PlaceAutocomplete
                 label="City"
                 placeholder="Pickup city or area"
@@ -206,12 +202,12 @@ export default function MmtCabSearchWidget({ defaultCity = "", initialTrip = nul
                 leadingIconClassName="text-emerald-600"
               />
             </div>
-            <div className="flex flex-col justify-center gap-1 bg-white p-4">
-              <span className="text-xs font-medium uppercase tracking-wide text-slate-500">Package</span>
+            <div className="cabzii-search-cell">
+              <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Package</span>
               <select
                 value={packageHours}
                 onChange={(e) => setPackageHours(Number(e.target.value))}
-                className="bg-transparent text-lg font-bold text-slate-900 focus:outline-none"
+                className="cabzii-field -mx-1 w-full rounded-lg border-0 bg-transparent text-base font-bold text-slate-900 focus:outline-none sm:text-lg"
               >
                 {HOURLY_PACKAGES.map((p) => (
                   <option key={p.hours} value={p.hours}>
@@ -223,7 +219,7 @@ export default function MmtCabSearchWidget({ defaultCity = "", initialTrip = nul
           </>
         ) : tripType === "airport" ? (
           <>
-            <div className="bg-white p-3 sm:p-4">
+            <div className="cabzii-search-cell">
               <PlaceAutocomplete
                 label="Airport"
                 placeholder="Airport name"
@@ -236,7 +232,7 @@ export default function MmtCabSearchWidget({ defaultCity = "", initialTrip = nul
                 leadingIconClassName="text-sky-600"
               />
             </div>
-            <div className="bg-white p-3 sm:p-4">
+            <div className="cabzii-search-cell">
               <PlaceAutocomplete
                 label="City"
                 placeholder="City / area"
@@ -253,7 +249,7 @@ export default function MmtCabSearchWidget({ defaultCity = "", initialTrip = nul
           </>
         ) : (
           <>
-            <div className="bg-white p-3 sm:p-4">
+            <div className="cabzii-search-cell">
               <PlaceAutocomplete
                 label="From"
                 placeholder="Pickup location"
@@ -268,7 +264,7 @@ export default function MmtCabSearchWidget({ defaultCity = "", initialTrip = nul
               />
             </div>
             {tripType === "outstation" ? (
-              <div className="bg-white p-3 sm:p-4">
+              <div className="cabzii-search-cell">
                 <PlaceAutocomplete
                   label="To"
                   placeholder="Drop location"
@@ -285,8 +281,8 @@ export default function MmtCabSearchWidget({ defaultCity = "", initialTrip = nul
           </>
         )}
 
-        <div className="flex flex-col justify-center gap-1 bg-white p-4">
-          <label className="text-xs font-medium uppercase tracking-wide text-slate-500">Pickup Date</label>
+        <div className="cabzii-search-cell">
+          <label className="text-xs font-semibold uppercase tracking-wide text-slate-500">Pickup Date</label>
           <div className="relative">
             <CalendarIcon className="pointer-events-none absolute left-0 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" aria-hidden />
             <input
@@ -294,34 +290,34 @@ export default function MmtCabSearchWidget({ defaultCity = "", initialTrip = nul
               min={todayStr()}
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full min-w-0 border-0 bg-transparent pl-7 text-base font-bold text-slate-900 focus:outline-none sm:text-lg"
+              className="w-full max-w-full min-w-0 border-0 bg-transparent pl-7 pr-1 text-base font-bold text-slate-900 focus:outline-none sm:text-lg"
             />
           </div>
         </div>
-        <div className="flex flex-col justify-center gap-1 bg-white p-4">
-          <label className="text-xs font-medium uppercase tracking-wide text-slate-500">Pickup Time</label>
+        <div className="cabzii-search-cell">
+          <label className="text-xs font-semibold uppercase tracking-wide text-slate-500">Pickup Time</label>
           <div className="relative">
             <ClockIcon className="pointer-events-none absolute left-0 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" aria-hidden />
             <input
               type="time"
               value={time}
               onChange={(e) => setTime(e.target.value)}
-              className="w-full min-w-0 border-0 bg-transparent pl-7 text-base font-bold text-slate-900 focus:outline-none sm:text-lg"
+              className="w-full max-w-full min-w-0 border-0 bg-transparent pl-7 pr-1 text-base font-bold text-slate-900 focus:outline-none sm:text-lg"
             />
           </div>
         </div>
       </div>
 
-      {error ? <p className="mt-3 text-sm text-rose-600">{error}</p> : null}
+      {error ? <p className="cabzii-error mt-4" role="alert">{error}</p> : null}
 
       <div className="mt-5 flex justify-stretch sm:mt-6 sm:justify-center">
         <button
           type="button"
           onClick={handleSearch}
           disabled={searching}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[var(--emt-primary)] px-8 py-3 text-base font-bold text-white shadow-md transition hover:bg-[var(--emt-primary-dark)] disabled:opacity-70 sm:w-auto sm:px-12"
+          className="cabzii-btn cabzii-btn-primary cabzii-btn-lg w-full sm:w-auto sm:min-w-[220px]"
         >
-          <SearchIcon className="h-6 w-6" />
+          <SearchIcon className="h-5 w-5" />
           {searching ? "Calculating distance…" : "Search Cabs"}
         </button>
       </div>

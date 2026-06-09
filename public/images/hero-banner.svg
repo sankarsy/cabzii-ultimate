@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080" role="img" aria-label="Cabzii cab booking Chennai">
+  <defs>
+    <linearGradient id="sky" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a2744"/>
+      <stop offset="45%" stop-color="#0056D2"/>
+      <stop offset="100%" stop-color="#003d99"/>
+    </linearGradient>
+    <linearGradient id="road" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#020617" stop-opacity="0.55"/>
+    </linearGradient>
+  </defs>
+  <rect width="1920" height="1080" fill="url(#sky)"/>
+  <ellipse cx="1600" cy="180" rx="220" ry="220" fill="#ffffff" opacity="0.08"/>
+  <ellipse cx="300" cy="260" rx="160" ry="160" fill="#00c2cb" opacity="0.12"/>
+  <path d="M0 720 Q480 640 960 700 T1920 680 L1920 1080 L0 1080 Z" fill="url(#road)"/>
+  <g opacity="0.18" fill="#ffffff">
+    <rect x="220" y="760" width="180" height="36" rx="18"/>
+    <rect x="520" y="790" width="220" height="40" rx="20"/>
+    <rect x="1180" y="770" width="200" height="38" rx="19"/>
+    <rect x="1480" y="800" width="170" height="34" rx="17"/>
+  </g>
+  <text x="120" y="140" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="56" font-weight="700">Cabzii</text>
+  <text x="120" y="200" fill="#dbeafe" font-family="Arial, Helvetica, sans-serif" font-size="28">Cab Booking Chennai · Airport Taxi · Outstation Cabs</text>
+</svg>

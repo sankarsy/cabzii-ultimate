@@ -6,7 +6,6 @@ export default function FaqSection({
   subtitle,
   faqs,
   hideTitle = false,
-  /** Fixed-height scroll area — use on homepage when there are many FAQs */
   scrollable = false,
   scrollMaxClass = "max-h-[min(20rem,52vh)]"
 }) {
@@ -16,34 +15,32 @@ export default function FaqSection({
   const showCardTitle = !hideTitle && !showIntro;
 
   const listClass = scrollable
-    ? `faq-scroll scrollbar-hide space-y-4 overflow-visible pr-1 md:overflow-y-auto md:overscroll-y-contain ${scrollMaxClass} max-md:!max-h-none`
-    : "space-y-5";
+    ? `faq-scroll scrollbar-hide overflow-visible pr-1 md:overflow-y-auto md:overscroll-y-contain ${scrollMaxClass} max-md:!max-h-none`
+    : "";
 
   return (
     <div className={showIntro || hideTitle ? "" : "mt-10"}>
       {showIntro ? <SectionIntro eyebrow={eyebrow} title={title} subtitle={subtitle} /> : null}
 
       <section
-        className={`rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:p-6 ${
-          showIntro || hideTitle ? "mt-6" : ""
-        }`}
+        className={`cabzii-card p-5 md:p-6 ${showIntro || hideTitle ? "mt-6" : ""}`}
       >
-        {showCardTitle ? <h2 className="text-xl font-bold text-slate-900">{title}</h2> : null}
-        <dl className={`${listClass} ${showCardTitle ? "mt-5" : ""}`}>
+        {showCardTitle ? <h2 className="text-lg font-bold text-slate-900 sm:text-xl">{title}</h2> : null}
+        <div className={`cabzii-faq ${listClass} ${showCardTitle ? "mt-4" : ""}`}>
           {faqs.map(([question, answer]) => (
-            <FaqItem key={question} question={question} answer={answer} compact={scrollable} />
+            <FaqItem key={question} question={question} answer={answer} />
           ))}
-        </dl>
+        </div>
       </section>
     </div>
   );
 }
 
-function FaqItem({ question, answer, compact = false }) {
+function FaqItem({ question, answer }) {
   return (
-    <div className={compact ? "border-b border-slate-100 pb-4 last:border-0 last:pb-0" : ""}>
-      <dt className="text-sm font-semibold text-slate-900">{question}</dt>
-      <dd className="mt-1.5 text-sm leading-relaxed text-slate-600">{answer}</dd>
-    </div>
+    <details className="group">
+      <summary>{question}</summary>
+      <p className="faq-answer">{answer}</p>
+    </details>
   );
 }

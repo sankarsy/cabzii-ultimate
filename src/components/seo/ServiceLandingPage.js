@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Breadcrumbs from "./Breadcrumbs";
+import BookingCtaBar from "./BookingCtaBar";
 import FaqSection from "./FaqSection";
 import { cityAreas } from "../../lib/seo/content";
 import { serviceSearchHref, tunedServiceDescription, tunedServiceH1 } from "../../lib/seo/metadataTuning";
@@ -37,27 +38,19 @@ export default function ServiceLandingPage({ city, service, faqs, extraBody = ""
         />
       ) : null}
 
-      <div className="mt-6 flex flex-wrap gap-3">
-        <Link
-          href={searchHref}
-          className="rounded-full bg-[var(--cabzii-brand)] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#0046b0]"
-        >
-          Book {service.name} in {city.name}
-        </Link>
+      <BookingCtaBar
+        bookHref={searchHref}
+        bookLabel={`Book ${service.name} in ${city.name}`}
+        quoteLabel="WhatsApp instant quote"
+        airportDirection={service.slug === "airport-taxi" ? "pickup" : undefined}
+      />
+      <div className="mt-3">
         <Link
           href={`/cab-booking/${city.slug}`}
-          className="rounded-full border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-800 hover:border-sky-300"
+          className="text-sm font-semibold text-[var(--cabzii-brand)] hover:underline"
         >
-          All cabs in {city.name}
+          All cabs in {city.name} →
         </Link>
-        <a
-          href="https://wa.me/9944197416"
-          target="_blank"
-          rel="noreferrer"
-          className="rounded-full border border-[#25D366]/40 bg-[#25D366] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#20BA5A]"
-        >
-          WhatsApp support
-        </a>
       </div>
 
       {["car-rental", "cab-rental", "hourly-rental", "local-taxi"].includes(service.slug) ? (

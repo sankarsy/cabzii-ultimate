@@ -1,7 +1,8 @@
 import { cityBySlug } from "./cities";
+import { buildExpandedRoutes } from "./routeCatalog";
 
-/** One-way / outstation route landing pages at /routes/{slug}. */
-export const SEO_ROUTES = [
+/** Hand-tuned priority routes — fares verified; override generated estimates. */
+const MANUAL_ROUTES = [
   {
     slug: "chennai-to-bangalore-cab",
     from: "chennai",
@@ -336,6 +337,9 @@ export const SEO_ROUTES = [
     suvFrom: 11800
   }
 ];
+
+/** 100+ one-way route pages at /routes/{slug} — manual overrides + programmatic mesh. */
+export const SEO_ROUTES = buildExpandedRoutes(MANUAL_ROUTES);
 
 export function routeBySlug(slug) {
   const route = SEO_ROUTES.find((r) => r.slug === slug);

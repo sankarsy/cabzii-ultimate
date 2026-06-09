@@ -2,13 +2,15 @@
 
 import Link from "next/link";
 import { useRef } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { getIcon } from "../icons";
 
 const OFFERS = [
   {
     tag: "CABS",
     title: "20% OFF outstation cabs",
     desc: "Sedan, SUV & Innova from verified vendors.",
-    emoji: "🚗",
+    iconKey: "car",
     color: "from-[var(--cabzii-brand)] to-blue-500",
     href: "/cabs"
   },
@@ -16,7 +18,7 @@ const OFFERS = [
     tag: "FLIGHTS",
     title: "Flat ₹500 OFF on domestic flights",
     desc: "Use code CABZII500 on select routes.",
-    emoji: "✈️",
+    iconKey: "plane",
     color: "from-orange-500 to-amber-400",
     href: "/flights"
   },
@@ -24,7 +26,7 @@ const OFFERS = [
     tag: "HOTELS",
     title: "Up to 40% OFF on weekend stays",
     desc: "Free cancellation on 500+ properties.",
-    emoji: "🏨",
+    iconKey: "hotel",
     color: "from-teal-500 to-cyan-400",
     href: "/hotels"
   },
@@ -32,7 +34,7 @@ const OFFERS = [
     tag: "DRIVERS",
     title: "Acting driver from ₹900",
     desc: "4hr, 8hr & outstation packages.",
-    emoji: "👤",
+    iconKey: "driver",
     color: "from-slate-700 to-slate-500",
     href: "/drivers"
   },
@@ -40,7 +42,7 @@ const OFFERS = [
     tag: "HOLIDAYS",
     title: "Pilgrimage from ₹4,999",
     desc: "Tirupati, Rameswaram & more.",
-    emoji: "🎒",
+    iconKey: "holiday",
     color: "from-rose-500 to-pink-400",
     href: "/holidays?category=pilgrimage"
   },
@@ -48,13 +50,14 @@ const OFFERS = [
     tag: "DEALS",
     title: "Airport cab Chennai",
     desc: "Fixed fares · instant OTP booking.",
-    emoji: "🛫",
+    iconKey: "airport",
     color: "from-indigo-500 to-violet-400",
     href: "/cabs/results?serviceTripType=airport&from=Chennai%20Airport&to=Chennai"
   }
 ];
 
 function ScrollButton({ direction, onClick }) {
+  const Icon = direction === "left" ? ChevronLeft : ChevronRight;
   return (
     <button
       type="button"
@@ -62,13 +65,7 @@ function ScrollButton({ direction, onClick }) {
       aria-label={direction === "left" ? "Scroll offers left" : "Scroll offers right"}
       className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-[var(--cabzii-brand)] shadow-[var(--cabzii-shadow-card)] transition hover:border-[var(--cabzii-brand)]/35 hover:bg-blue-50/80 sm:flex"
     >
-      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden>
-        {direction === "left" ? (
-          <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-        ) : (
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-        )}
-      </svg>
+      <Icon className="h-5 w-5" strokeWidth={2.25} aria-hidden />
     </button>
   );
 }
@@ -106,24 +103,30 @@ export default function EmtOffersCarousel() {
         aria-label="Exclusive offers"
         tabIndex={0}
       >
-        {OFFERS.map((o) => (
-          <Link
-            key={o.tag}
-            href={o.href}
-            className={`min-w-[min(280px,85vw)] max-w-[320px] shrink-0 snap-start rounded-2xl bg-linear-to-br ${o.color} p-5 text-white shadow-[var(--emt-shadow-card)] transition hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cabzii-brand)] focus-visible:ring-offset-2`}
-          >
-            <span className="text-xs font-bold uppercase tracking-wider opacity-90">{o.tag}</span>
-            <div className="mt-3 flex gap-3">
-              <span className="text-3xl" aria-hidden="true">
-                {o.emoji}
-              </span>
-              <div>
-                <h3 className="font-bold leading-snug">{o.title}</h3>
-                <p className="mt-1 text-sm text-white/90">{o.desc}</p>
+        {OFFERS.map((o) => {
+          const OfferIcon = getIcon(o.iconKey);
+          return (
+            <Link
+              key={o.tag}
+              href={o.href}
+              className={`min-w-[min(280px,85vw)] max-w-[320px] shrink-0 snap-start rounded-2xl bg-linear-to-br ${o.color} p-5 text-white shadow-[var(--emt-shadow-card)] transition hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cabzii-brand)] focus-visible:ring-offset-2`}
+            >
+              <span className="text-xs font-bold uppercase tracking-wider opacity-90">{o.tag}</span>
+              <div className="mt-3 flex gap-3">
+                <span
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm"
+                  aria-hidden="true"
+                >
+                  {OfferIcon ? <OfferIcon className="h-5 w-5 text-white" strokeWidth={1.75} /> : null}
+                </span>
+                <div>
+                  <h3 className="font-bold leading-snug">{o.title}</h3>
+                  <p className="mt-1 text-sm text-white/90">{o.desc}</p>
+                </div>
               </div>
-            </div>
-          </Link>
-        ))}
+            </Link>
+          );
+        })}
       </div>
     </section>
   );

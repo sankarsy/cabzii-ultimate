@@ -13,35 +13,35 @@ const COLUMNS = [
   {
     title: "Book on Cabzii",
     links: [
-      { label: "Flights", href: "/flights" },
-      { label: "Hotels", href: "/hotels" },
       { label: "Outstation Cabs", href: "/cabs" },
+      { label: "Airport Taxi Chennai", href: "/services/airport-taxi/chennai" },
+      { label: "Acting Drivers", href: "/drivers" },
       { label: "Holiday Packages", href: "/holidays" },
-      { label: "Acting Drivers", href: "/drivers" }
+      { label: "Cab Booking Chennai", href: "/cab-booking/chennai" }
     ]
   },
   {
     title: "Popular routes",
     links: [
-      footerRouteLink("madurai-to-chennai-cab", "Madurai → Chennai"),
       footerRouteLink("chennai-to-bangalore-cab", "Chennai → Bangalore"),
-      footerRouteLink("chennai-to-pondicherry-cab", "Chennai → Pondicherry")
+      footerRouteLink("chennai-to-pondicherry-cab", "Chennai → Pondicherry"),
+      footerRouteLink("chennai-to-tirupati-cab", "Chennai → Tirupati")
     ]
   },
   {
     title: "Company",
     links: [
-      { label: "About Cabzii", href: "/locations" },
-      { label: "Blog", href: "/blogs" },
-      { label: "Reviews", href: "/testimonials" }
+      { label: "Service locations", href: "/locations" },
+      { label: "Travel blog", href: "/blogs" },
+      { label: "Customer reviews", href: "/testimonials" }
     ]
   },
   {
     title: "Help",
     links: [
-      { label: "Contact", href: "/locations" },
-      { label: "Cancellation Policy", href: "/cancellation-policy" },
-      { label: "Terms", href: "/terms-and-conditions" },
+      { label: "Contact & support", href: "/locations" },
+      { label: "Cancellation policy", href: "/cancellation-policy" },
+      { label: "Terms & conditions", href: "/terms-and-conditions" },
       { label: "Legal", href: "/legal-declaration" }
     ]
   }
@@ -49,13 +49,27 @@ const COLUMNS = [
 
 export default function MmtFooter() {
   return (
-    <footer className="border-t border-slate-200 bg-white">
+    <footer className="border-t border-slate-200 bg-[var(--cabzii-bg-subtle)]">
       <div className="section-shell py-10 sm:py-12">
-        <div className="grid grid-cols-1 gap-8 min-[420px]:grid-cols-2 md:grid-cols-4">
+        <div className="mb-8 flex flex-col gap-4 border-b border-slate-200/80 pb-8 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <CabziiLogo className="text-xl sm:text-2xl" />
+            <p className="mt-2 max-w-sm text-sm leading-relaxed text-slate-600">
+              Premium cab booking for airport transfers, outstation trips, and local hire across South India.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <span className="cabzii-trust-pill text-xs">🔒 OTP secure</span>
+            <span className="cabzii-trust-pill text-xs">✓ Verified drivers</span>
+            <span className="cabzii-trust-pill text-xs">₹ Upfront fares</span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
           {COLUMNS.map((col) => (
             <div key={col.title}>
-              <h3 className="mb-3 text-sm font-bold text-slate-900">{col.title}</h3>
-              <ul className="flex flex-col gap-2">
+              <h3 className="mb-3 text-xs font-bold uppercase tracking-wider text-slate-900">{col.title}</h3>
+              <ul className="flex flex-col gap-2.5">
                 {col.links.map((link) => (
                   <li key={link.label}>
                     <Link
@@ -70,11 +84,12 @@ export default function MmtFooter() {
             </div>
           ))}
         </div>
-        <div className="mt-10 flex flex-col items-center justify-between gap-4 border-t border-slate-200 pt-6 sm:flex-row">
-          <CabziiLogo className="text-xl" />
-          <p className="text-center text-xs text-slate-500">
-            © {new Date().getFullYear()} {BRAND.name} · {BRAND.domain} — cabs, taxis, tours &amp; travel across India
+
+        <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-slate-200/80 pt-6 text-center sm:flex-row sm:text-left">
+          <p className="text-xs text-slate-500">
+            © {new Date().getFullYear()} {BRAND.name} · {BRAND.domain}
           </p>
+          <p className="text-xs text-slate-400">Cabs, taxis, tours &amp; travel across India</p>
         </div>
       </div>
     </footer>

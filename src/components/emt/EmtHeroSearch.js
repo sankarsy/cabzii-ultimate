@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
-import { BRAND, HERO_TABS, TRENDING_SEARCHES } from "../../lib/emt/constants";
+import { HERO_TABS, TRENDING_SEARCHES } from "../../lib/emt/constants";
 import { routeBySlug } from "../../lib/seo/routes";
 import { routeToCabSearchHref } from "../../lib/routeTrip";
 import { HOLIDAY_THEMES, themeHref } from "../../lib/holidayHome";
@@ -10,6 +11,7 @@ import { cn } from "../../lib/emt/cn";
 import MmtCabSearchWidget from "../mmt/MmtCabSearchWidget";
 import { getIcon, HERO_TAB_ICONS } from "../icons";
 import MmtDriverSearchWidget from "../mmt/MmtDriverSearchWidget";
+import BookingCtaBar from "../seo/BookingCtaBar";
 import EmtFlightSearchForm from "./EmtFlightSearchForm";
 import EmtHotelSearchForm from "./EmtHotelSearchForm";
 
@@ -32,7 +34,9 @@ export default function EmtHeroSearch({
   defaultCity = "",
   defaultTab = "cabs",
   initialCabTrip = null,
-  initialDriverTrip = null
+  initialDriverTrip = null,
+  seoHeading = "Cab Booking Chennai — Airport Taxi, Local & Outstation Cabs",
+  seoSubheading = "Book airport taxi, local taxi, outstation taxi and one-way cabs in Chennai. Instant confirmation, affordable fares and professional drivers."
 }) {
   const [active, setActive] = useState(defaultTab);
 
@@ -41,26 +45,31 @@ export default function EmtHeroSearch({
   }, [defaultTab]);
 
   return (
-    <section className="relative isolate -mt-14 pt-14 sm:-mt-[4.25rem] sm:min-h-[420px] sm:pt-[4.25rem]">
+    <section className="relative isolate min-h-[min(100dvh,720px)] pt-[calc(3.5rem+env(safe-area-inset-top,0px))] sm:min-h-[440px] sm:pt-[calc(4.25rem+env(safe-area-inset-top,0px))]">
       <div className="absolute inset-0 -z-10" aria-hidden="true">
-        <img
-          src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1920&q=80"
-          alt=""
-          className="h-full w-full object-cover"
+        <Image
+          src="/images/hero-banner.svg"
+          alt="Cabzii cab booking Chennai — airport taxi and outstation cabs"
+          fill
+          priority
+          fetchPriority="high"
+          sizes="100vw"
+          className="object-cover"
         />
         <div className="absolute inset-0 bg-linear-to-b from-[var(--cabzii-header)]/90 via-[var(--cabzii-header)]/75 to-[var(--cabzii-header)]/50" />
       </div>
 
-      <div className="relative z-10 mx-auto w-full max-w-5xl px-3 pb-6 pt-4 sm:px-4 sm:pb-8 sm:pt-5">
-        <h1 className="text-balance text-center text-lg font-extrabold leading-snug tracking-tight text-white sm:text-3xl">
-          {BRAND.tagline}
+      <div className="relative z-10 mx-auto w-full max-w-5xl px-3 pb-6 pt-3 sm:px-4 sm:pb-8 sm:pt-4">
+        <h1 className="text-balance px-1 text-center text-[1.125rem] font-extrabold leading-[1.3] tracking-tight text-white sm:text-[1.65rem] lg:text-3xl">
+          {seoHeading}
         </h1>
-        <p className="mt-1.5 text-balance text-center text-[11px] leading-relaxed text-white/90 sm:text-sm">
-          {BRAND.domain} — compare fares, verified partners, instant OTP booking
+        <p className="mx-auto mt-2 max-w-lg text-balance px-1 text-center text-xs leading-relaxed text-white/90 sm:text-sm">
+          {seoSubheading}
         </p>
 
-        <div className="mt-4 w-full min-w-0 overflow-visible rounded-xl bg-white shadow-[var(--cabzii-shadow-card)] sm:mt-5">
-          <div className="hero-tabs-scroll flex gap-0.5 overflow-x-auto border-b border-slate-100 px-1.5 pt-2 sm:justify-center sm:gap-1.5 sm:px-2">
+        <div className="cabzii-widget mt-4 w-full min-w-0 max-w-full overflow-hidden sm:mt-5">
+          <div className="hero-tabs-wrap relative border-b border-slate-100/80">
+          <div className="hero-tabs-scroll flex gap-1 overflow-x-auto px-2 pb-px pt-2.5 sm:justify-center sm:gap-1.5 sm:px-3">
             {HERO_TABS.map((tab) => {
               const isActive = tab.id === active;
               const TabIcon = HERO_TAB_ICONS[tab.id] || getIcon(tab.iconKey);
@@ -71,22 +80,29 @@ export default function EmtHeroSearch({
                   onClick={() => setActive(tab.id)}
                   aria-pressed={isActive}
                   className={cn(
-                    "flex shrink-0 flex-col items-center rounded-lg px-2.5 py-2 text-[10px] font-semibold transition sm:min-w-[3.75rem] sm:px-3 sm:py-2.5 sm:text-xs",
+                    "cabzii-tap flex shrink-0 flex-col items-center rounded-xl px-2.5 py-2 text-[10px] font-semibold transition sm:min-w-[3.75rem] sm:px-3 sm:py-2.5 sm:text-xs",
                     isActive
-                      ? "bg-[var(--cabzii-brand)]/10 text-[var(--cabzii-brand)] ring-1 ring-[var(--cabzii-brand)]/30"
+                      ? "bg-[var(--cabzii-brand)]/10 text-[var(--cabzii-brand)] shadow-[inset_0_0_0_1px_rgba(0,86,210,0.2)]"
                       : "text-slate-500 hover:bg-slate-50"
                   )}
                 >
-                  <span className="mb-1.5 flex h-6 w-6 items-center justify-center sm:h-7 sm:w-7" aria-hidden="true">
-                    {TabIcon ? <TabIcon className="h-5 w-5 sm:h-6 sm:w-6" /> : null}
+                  <span
+                    className={cn(
+                      "mb-1.5 flex h-7 w-7 items-center justify-center rounded-lg sm:h-8 sm:w-8",
+                      isActive ? "bg-[var(--cabzii-brand)]/12 text-[var(--cabzii-brand)]" : "bg-slate-50 text-slate-500"
+                    )}
+                    aria-hidden="true"
+                  >
+                    {TabIcon ? <TabIcon className="h-[1.125rem] w-[1.125rem] sm:h-5 sm:w-5" strokeWidth={1.75} /> : null}
                   </span>
                   <span className="leading-tight">{tab.label}</span>
                 </button>
               );
             })}
           </div>
+          </div>
 
-          <div className="px-3 py-4 sm:px-6 sm:py-5">
+          <div className="px-3 py-4 sm:px-5 sm:py-5 md:px-6">
             {active === "flights" ? <EmtFlightSearchForm /> : null}
             {active === "hotels" ? <EmtHotelSearchForm /> : null}
             {active === "cabs" ? (
@@ -98,6 +114,16 @@ export default function EmtHeroSearch({
             {active === "holidays" ? <HolidaysHeroPanel /> : null}
             {COMING_SOON[active] ? <ComingSoonPanel {...COMING_SOON[active]} /> : null}
           </div>
+        </div>
+
+        <div className="mt-4 hidden sm:block">
+          <BookingCtaBar
+            bookHref="/cabs"
+            bookLabel="Book cab now"
+            quoteLabel="WhatsApp instant quote"
+            callLabel="Call 99441 97416"
+            variant="compact"
+          />
         </div>
 
         <div className="mt-3 flex flex-wrap justify-center gap-1.5">

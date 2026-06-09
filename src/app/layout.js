@@ -17,11 +17,11 @@ const manrope = Manrope({
 export const metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Cabzii — Online Cab, Taxi & Driver Booking in South India",
+    default: "Cab Booking Chennai | Airport Taxi, Local & Outstation Cabs | Cabzii",
     template: "%s | Cabzii"
   },
   description:
-    "Book cabs, taxis, airport transfers, outstation trips, acting drivers and tempo travellers in Chennai, Bengaluru, Hyderabad and 20+ cities. Transparent fares. Instant OTP booking on cabzii.in.",
+    "Book airport taxi, local taxi, outstation taxi and one-way cabs in Chennai. Instant confirmation, professional drivers and affordable fares. Book online with Cabzii.",
   alternates: {
     canonical: "/"
   },

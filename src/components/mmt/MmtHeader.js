@@ -89,7 +89,7 @@ export default function MmtHeader({ transparent = false }) {
       <div className="mx-auto flex h-14 w-full max-w-7xl items-center gap-2 px-3 sm:h-[4.25rem] sm:gap-3 sm:px-6">
         <Link
           href="/"
-          className="min-w-0 shrink py-1"
+          className="min-w-0 shrink py-0.5"
           aria-label={`${BRAND.fullName} home`}
         >
           <CabziiLogo onDark showDomain className="!text-xl sm:!text-2xl lg:!text-[1.75rem]" />
@@ -161,7 +161,7 @@ export default function MmtHeader({ transparent = false }) {
       </div>
 
       {menuOpen ? (
-        <nav id="mmt-mobile-nav" className="border-t border-white/10 bg-cabzii-header px-4 py-3 lg:hidden" aria-label="Mobile">
+        <nav id="mmt-mobile-nav" className="border-t border-white/10 bg-cabzii-header px-4 py-4 shadow-lg lg:hidden" aria-label="Mobile">
           <div className="mb-3 md:hidden">
             <HeaderSearchBar compact onSubmitted={() => setMenuOpen(false)} />
           </div>

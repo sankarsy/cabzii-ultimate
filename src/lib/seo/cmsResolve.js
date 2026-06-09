@@ -1,4 +1,9 @@
 import { cityBySlug } from "./cities";
+import {
+  getRouteLandingBody,
+  getServiceLandingBody,
+  mergeLandingBody
+} from "./landingContent";
 import { routeBySlug as staticRouteBySlug } from "./routes";
 import { serviceBySlug as staticServiceBySlug } from "./services";
 import { fetchSeoRouteBySlug, fetchSeoServiceBySlug } from "../serverCatalog";
@@ -82,7 +87,10 @@ export async function resolveServiceForCity(serviceSlug, citySlug) {
   }
 
   const staticService = staticServiceBySlug(serviceSlug);
-  if (staticService) return { service: { ...staticService, source: "static" }, city };
+  if (staticService) {
+    const body = mergeLandingBody(staticService.body, getServiceLandingBody(staticService, city));
+    return { service: { ...staticService, body, source: "static" }, city };
+  }
 
   return { service: null, city };
 }
@@ -94,7 +102,11 @@ export async function resolveRouteBySlug(slug) {
     if (page) return page;
   }
   const staticRoute = staticRouteBySlug(slug);
-  if (staticRoute) return { ...staticRoute, source: "static" };
+  if (staticRoute) {
+    const generated = getRouteLandingBody(staticRoute);
+    const body = mergeLandingBody(staticRoute.body, generated);
+    return { ...staticRoute, body, source: "static" };
+  }
   if (cms) {
     const page = cmsRouteToPage(cms);
     if (page) return page;

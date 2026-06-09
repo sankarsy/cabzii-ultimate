@@ -133,6 +133,30 @@ function templateMeta(templateId, cityName) {
 
 /** Per city+service overrides when template copy needs a tweak */
 const SERVICE_META_OVERRIDES = {
+  "chennai:airport-taxi": {
+    title: formatSerpTitle("Chennai Airport Taxi", "Pickup & Drop 24/7"),
+    description: clampDescription(
+      "Chennai airport taxi — MAA pickup and drop, fixed fares, flight tracking. Book Chennai airport transfer online. Sedan, SUV & Innova. Instant confirmation on Cabzii."
+    )
+  },
+  "chennai:local-taxi": {
+    title: formatSerpTitle("Chennai Local Taxi", "Hourly & City Rides"),
+    description: clampDescription(
+      "Chennai local taxi service on Cabzii — point-to-point rides and 4hr/8hr packages across OMR, Anna Nagar, T. Nagar and more. Transparent fares, book online."
+    )
+  },
+  "chennai:outstation-cab": {
+    title: formatSerpTitle("Outstation Cab Chennai", "Round Trip Packages"),
+    description: clampDescription(
+      "Outstation cab from Chennai on Cabzii — round-trip and multi-day highway packages with per-km clarity. Sedan, SUV, Innova and tempo. Book online 24/7."
+    )
+  },
+  "chennai:one-way-cab": {
+    title: formatSerpTitle("One Way Taxi Chennai", "Inter-City Drops"),
+    description: clampDescription(
+      "One way taxi from Chennai on Cabzii — inter-city drops without return empty charges. Chennai to Bangalore, Pondicherry, Tirupati and more. Upfront fares."
+    )
+  },
   "chennai:car-rental": {
     title: formatSerpTitle("Chennai Cabs", "Car Rental & 4–8 Hour Packages"),
     description: clampDescription(
@@ -190,9 +214,9 @@ const SERVICE_META_OVERRIDES = {
 /** Cab hub /cab-booking/{city} */
 const CAB_BOOKING_META = {
   chennai: {
-    title: formatSerpTitle("Chennai Cabs Booking", "Packages & 4–8 Hours Hire"),
+    title: "Cab Booking Chennai | Airport Taxi, Local & Outstation Cabs | Cabzii",
     description: clampDescription(
-      "Chennai cabs on Cabzii.in — hourly packages (4 hours, 8 hours), outstation, airport taxi and car rental. Transparent package fares, expert drivers, book online 24/7."
+      "Book airport taxi, local taxi, outstation taxi and one-way cabs in Chennai. Instant confirmation, professional drivers and affordable fares. Book online with Cabzii."
     )
   },
   bengaluru: {
@@ -234,10 +258,52 @@ const CAB_BOOKING_META = {
 };
 
 const ROUTE_META_OVERRIDES = {
+  "chennai-to-pondicherry-cab": {
+    title: formatSerpTitle("Chennai to Pondicherry Cab", "One-Way Best Rates"),
+    description: clampDescription(
+      "Chennai to Pondicherry cab on Cabzii — one-way taxi from ₹2,800 sedan. ECR highway, 160 km, 3–4 hours. Book online with upfront fare."
+    )
+  },
+  "chennai-to-bangalore-cab": {
+    title: formatSerpTitle("Chennai to Bangalore Taxi", "One-Way Best Rates"),
+    description: clampDescription(
+      "Chennai to Bangalore taxi on Cabzii — one-way cab from ₹4,500 sedan. NH48 route, 350 km, 6–7 hours. Compare sedan, SUV and Innova fares online."
+    )
+  },
   "chennai-to-tirupati-cab": {
     title: formatSerpTitle("Chennai to Tirupati Cab", "One-Way Best Rates"),
     description: clampDescription(
       "Book safe, affordable one-way cab from Chennai to Tirupati with Cabzii.in. Clean cars, expert drivers, and zero hidden charges. Get a free quote!"
+    )
+  },
+  "chennai-to-vellore-cab": {
+    title: formatSerpTitle("Chennai to Vellore Cab", "One-Way Best Rates"),
+    description: clampDescription(
+      "Chennai to Vellore cab on Cabzii — one-way taxi from ₹2,600 sedan. 140 km, 3 hours. Medical, education and city travel with upfront fares."
+    )
+  },
+  "chennai-to-coimbatore-cab": {
+    title: formatSerpTitle("Chennai to Coimbatore Cab", "One-Way Best Rates"),
+    description: clampDescription(
+      "Chennai to Coimbatore cab on Cabzii — one-way from ₹6,500 sedan. 505 km highway trip, 8–9 hours. Book sedan, SUV or Innova online."
+    )
+  },
+  "chennai-to-madurai-cab": {
+    title: formatSerpTitle("Chennai to Madurai Taxi", "One-Way Best Rates"),
+    description: clampDescription(
+      "Chennai to Madurai taxi on Cabzii — one-way cab from ₹6,000 sedan. 460 km, 7–8 hours. Temple and family travel with transparent pricing."
+    )
+  },
+  "chennai-to-salem-cab": {
+    title: formatSerpTitle("Chennai to Salem Taxi", "One-Way Best Rates"),
+    description: clampDescription(
+      "Chennai to Salem taxi on Cabzii — one-way cab from ₹4,300 sedan. 340 km, 5–6 hours. Book online with upfront fare and instant confirmation."
+    )
+  },
+  "chennai-to-trichy-cab": {
+    title: formatSerpTitle("Chennai to Trichy Taxi", "One-Way Best Rates"),
+    description: clampDescription(
+      "Chennai to Trichy taxi on Cabzii — one-way cab from ₹4,200 sedan. 330 km, 5–6 hours. Srirangam and city drops with professional drivers."
     )
   },
   "bengaluru-to-tirupati-cab": {

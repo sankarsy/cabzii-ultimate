@@ -201,7 +201,7 @@ export default function PlaceAutocomplete({
       <ul
         ref={dropdownRef}
         role="listbox"
-        className="fixed z-[9999] max-h-52 overflow-auto rounded-xl border border-slate-200 bg-white py-1 shadow-2xl"
+        className="fixed z-[9999] max-h-52 overflow-auto rounded-xl border border-slate-200/90 bg-white py-1 shadow-[var(--cabzii-shadow-hover)]"
         style={{
           top: dropdownRect.top,
           left: dropdownRect.left,

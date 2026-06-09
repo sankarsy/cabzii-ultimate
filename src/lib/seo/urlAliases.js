@@ -75,6 +75,29 @@ export function resolveSeoAliasPath(pathname) {
 
     const cabRentalIn = slug.match(/^cab-rental-in-(.+)$/i);
     if (cabRentalIn) return `/services/cab-rental/${resolveCitySlug(cabRentalIn[1])}`;
+
+    const keywordAliases = {
+      "cab-booking-chennai": "/cab-booking/chennai",
+      "taxi-service-chennai": "/cab-booking/chennai",
+      "online-cab-booking-chennai": "/cab-booking/chennai",
+      "chennai-airport-taxi": "/services/airport-taxi/chennai",
+      "chennai-airport-transfer": "/services/airport-taxi/chennai",
+      "airport-taxi-chennai": "/services/airport-taxi/chennai",
+      "chennai-airport-pickup-taxi": "/services/airport-taxi/chennai",
+      "chennai-airport-drop-taxi": "/services/airport-taxi/chennai",
+      "chennai-local-taxi": "/services/local-taxi/chennai",
+      "chennai-outstation-cab": "/services/outstation-cab/chennai",
+      "chennai-one-way-taxi": "/services/one-way-cab/chennai",
+      "one-way-taxi-chennai": "/services/one-way-cab/chennai",
+      "outstation-cab-chennai": "/services/outstation-cab/chennai"
+    };
+    if (keywordAliases[slug.toLowerCase()]) return keywordAliases[slug.toLowerCase()];
+
+    const routeCab = slug.match(/^([a-z]+)-to-([a-z]+)-cab$/i);
+    if (routeCab) return `/routes/${routeCab[1]}-to-${routeCab[2]}-cab`;
+
+    const routeTaxi = slug.match(/^([a-z]+)-to-([a-z]+)-taxi$/i);
+    if (routeTaxi) return `/routes/${routeTaxi[1]}-to-${routeTaxi[2]}-cab`;
   }
 
   return null;

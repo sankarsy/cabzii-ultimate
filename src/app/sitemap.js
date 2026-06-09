@@ -9,7 +9,7 @@ import {
 import { catalogPublicPath } from "../lib/catalogProduct";
 import { resolveMediaUrl } from "../lib/media";
 
-const HERO_IMAGE = `${SITE_URL}/images/hero-banner.png`;
+const HERO_IMAGE = `${SITE_URL}/images/hero-banner.svg`;
 
 function absoluteImage(path) {
   const resolved = resolveMediaUrl(path);

@@ -104,7 +104,7 @@ export default function MmtPopularServices() {
             <Link
               key={service.slug}
               href={href}
-              className="group flex h-full min-w-[200px] max-w-[200px] shrink-0 snap-start flex-col justify-between rounded-xl border border-slate-200 bg-white px-3.5 py-3 transition hover:border-[var(--emt-primary)]/40 hover:shadow-md"
+              className="cabzii-card cabzii-card-interactive group flex h-full min-w-[200px] max-w-[200px] shrink-0 snap-start flex-col justify-between px-3.5 py-3.5"
             >
               <div>
                 <span

@@ -6,6 +6,26 @@ import { routeToCabSearchHref } from "../../lib/routeTrip";
 import { SEO_ROUTES } from "../../lib/seo/routes";
 import { cityBySlug } from "../../lib/seo/cities";
 
+const POPULAR_ROUTE_SLUGS = [
+  "chennai-to-bangalore-cab",
+  "chennai-to-pondicherry-cab",
+  "chennai-to-tirupati-cab",
+  "chennai-to-vellore-cab",
+  "chennai-to-coimbatore-cab",
+  "chennai-to-madurai-cab",
+  "chennai-to-trichy-cab",
+  "chennai-to-salem-cab",
+  "bengaluru-to-mysore-cab",
+  "bengaluru-to-chennai-cab",
+  "madurai-to-chennai-cab",
+  "coimbatore-to-kodaikanal-cab"
+];
+
+function popularRoutes() {
+  const bySlug = new Map(SEO_ROUTES.map((r) => [r.slug, r]));
+  return POPULAR_ROUTE_SLUGS.map((slug) => bySlug.get(slug)).filter(Boolean);
+}
+
 function formatINR(n) {
   return new Intl.NumberFormat("en-IN", {
     style: "currency",
@@ -43,7 +63,7 @@ export default function MmtPopularRoutes() {
   };
 
   return (
-    <section className="section-shell py-8 sm:py-10">
+    <section className="section-shell py-8 sm:py-12">
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div className="min-w-0">
           <h2 className="text-xl font-bold text-slate-900 sm:text-2xl">Popular routes</h2>
@@ -65,7 +85,7 @@ export default function MmtPopularRoutes() {
         className="offers-scroll flex h-[118px] flex-nowrap items-stretch gap-3 overflow-x-auto overscroll-x-contain pb-1 pt-1 snap-x snap-mandatory scroll-smooth"
         aria-label="Popular outstation cab routes"
       >
-          {SEO_ROUTES.map((route) => {
+          {popularRoutes().map((route) => {
             const from = cityBySlug(route.from);
             const to = cityBySlug(route.to);
             const fromName = from?.name || route.from;
@@ -74,7 +94,7 @@ export default function MmtPopularRoutes() {
               <Link
                 key={route.slug}
                 href={routeToCabSearchHref(route)}
-                className="group flex h-full min-w-[200px] max-w-[200px] shrink-0 snap-start flex-col justify-between rounded-xl border border-slate-200 bg-white px-3.5 py-3 transition hover:border-[var(--emt-primary)]/40 hover:shadow-md"
+                className="cabzii-card cabzii-card-interactive group flex h-full min-w-[200px] max-w-[200px] shrink-0 snap-start flex-col justify-between px-3.5 py-3.5"
               >
                 <p className="line-clamp-1 text-sm font-bold leading-snug text-slate-900 group-hover:text-[var(--emt-primary)]">
                   {fromName} → {toName}

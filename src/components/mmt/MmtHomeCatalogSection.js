@@ -1,15 +1,13 @@
 import Link from "next/link";
+import { ArrowLeftRight } from "lucide-react";
+import { CatalogGridSkeleton } from "../ui/Skeleton";
 
 export function MmtHomeCatalogScroll({ children }) {
-  return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      {children}
-    </div>
-  );
+  return <div className="cabzii-catalog-grid">{children}</div>;
 }
 
 export function MmtHomeCatalogScrollItem({ children }) {
-  return <div className="min-w-0 w-full">{children}</div>;
+  return <div className="cabzii-catalog-item">{children}</div>;
 }
 
 export default function MmtHomeCatalogSection({
@@ -30,22 +28,23 @@ export default function MmtHomeCatalogSection({
     >
       <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div className="min-w-0">
-          <h2 className="text-xl font-bold text-slate-900 sm:text-2xl">{title}</h2>
-          {subtitle ? <p className="mt-0.5 text-sm text-slate-600">{subtitle}</p> : null}
+          <h2 className="text-lg font-bold tracking-tight text-slate-900 sm:text-xl lg:text-2xl">{title}</h2>
+          {subtitle ? <p className="mt-1 text-sm leading-relaxed text-slate-600">{subtitle}</p> : null}
         </div>
         {viewAllHref ? (
-          <Link href={viewAllHref} className="shrink-0 text-sm font-semibold text-[var(--emt-primary)] hover:underline">
+          <Link href={viewAllHref} className="shrink-0 text-sm font-semibold text-[var(--cabzii-brand)] transition hover:underline">
             {viewAllLabel}
           </Link>
         ) : null}
       </div>
       {loading ? (
-        <div className="rounded-xl border border-dashed border-slate-200 bg-white p-8 text-center text-sm text-slate-500 sm:p-10">
-          {loadingLabel}
-        </div>
+        <CatalogGridSkeleton count={4} />
       ) : isEmpty ? (
-        <div className="rounded-xl border border-dashed border-slate-200 bg-white p-8 text-center text-sm text-slate-500 sm:p-10">
-          {emptyMessage}
+        <div className="cabzii-empty">
+          <div className="cabzii-empty-icon" aria-hidden>
+            <ArrowLeftRight className="h-6 w-6" strokeWidth={1.75} />
+          </div>
+          <p className="text-sm font-medium text-slate-600">{emptyMessage}</p>
         </div>
       ) : (
         children

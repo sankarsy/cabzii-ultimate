@@ -171,17 +171,28 @@ export function actingDriverDescription(cityName, state) {
 }
 
 export const homeMetadata = buildPageMetadata({
-  title: formatSerpTitle("Online Cab, Taxi & Driver Booking", "South India"),
+  title: "Cab Booking Chennai | Airport Taxi, Local & Outstation Cabs | Cabzii",
   description:
-    "Cab booking online in Chennai, Madurai, Coimbatore, Trichy, Kodaikanal and 20+ cities. Outstation, airport taxi and acting drivers with transparent fares on cabzii.in.",
+    "Book airport taxi, local taxi, outstation taxi and one-way cabs in Chennai. Instant confirmation, professional drivers and affordable fares. Book online with Cabzii.",
   path: "/",
-  image: BRAND_OG_IMAGE,
-  imageAlt: "Cabzii — online cab, taxi and driver booking",
+  image: "/opengraph-image",
+  imageAlt: "Cabzii — Cab Booking Chennai, Airport Taxi & Outstation Cabs",
   keywords: [
-    ...DEFAULT_KEYWORDS,
-    "book cab online India",
-    "Cabzii cab booking",
-    "taxi Chennai",
-    "cab booking South India"
+    "cab booking chennai",
+    "taxi service chennai",
+    "airport taxi chennai",
+    "outstation cab chennai",
+    "one way taxi chennai",
+    "chennai to pondicherry cab",
+    "chennai to bangalore taxi",
+    "chennai airport transfer",
+  "online cab booking chennai",
+  "chennai airport taxi",
+  "chennai airport pickup taxi",
+  "chennai airport drop taxi",
+  "chennai to tirupati taxi",
+  "chennai to salem taxi",
+  "chennai to trichy taxi",
+  ...DEFAULT_KEYWORDS
   ]
 });

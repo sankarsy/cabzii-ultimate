@@ -37,7 +37,7 @@ export default function MmtCardPriceBlock({ originalPrice, finalPrice, discountP
         <div className={`flex flex-wrap items-center gap-1.5 ${compact ? "" : "justify-end"}`}>
           <span className="text-xs font-medium text-slate-400 line-through">{formatINR(original)}</span>
           {pct > 0 ? (
-            <span className="rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-bold leading-none text-emerald-700">
+            <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold leading-none text-emerald-700">
               {pct}% OFF
             </span>
           ) : null}

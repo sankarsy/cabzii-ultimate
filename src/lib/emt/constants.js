@@ -13,16 +13,14 @@ export const HERO_TABS = [
 ];
 
 export const TRENDING_SEARCHES = [
-  { label: "Madurai → Chennai", slug: "madurai-to-chennai-cab" },
+  { label: "Cab Booking Chennai", href: "/cab-booking/chennai" },
+  { label: "Airport Taxi Chennai", href: "/services/airport-taxi/chennai" },
   { label: "Chennai → Bengaluru", slug: "chennai-to-bangalore-cab" },
-  { label: "DEL → BOM Flights", href: "/flights?from=DEL&to=BOM&date=2026-06-15&adults=1&tripType=oneway" },
-  { label: "Goa Hotels", href: "/hotels?city=Goa" },
-  { label: "Pilgrimage", href: "/holidays?category=pilgrimage" },
-  { label: "Airport Cab Chennai", href: "/cabs/results?serviceTripType=airport&from=Chennai%20Airport&to=Chennai" },
-  {
-    label: "Acting Driver Chennai",
-    href: "/drivers/results?serviceTripType=local&from=Chennai&packageId=local_4hr&date=2026-06-01&time=09:00"
-  }
+  { label: "Chennai → Pondicherry", slug: "chennai-to-pondicherry-cab" },
+  { label: "Outstation Cab Chennai", href: "/services/outstation-cab/chennai" },
+  { label: "One Way Taxi Chennai", href: "/services/one-way-cab/chennai" },
+  { label: "Chennai → Tirupati", slug: "chennai-to-tirupati-cab" },
+  { label: "Pilgrimage Tours", href: "/holidays?category=pilgrimage" }
 ];
 
 export const WHY_STATS = [

@@ -1,15 +1,19 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import EmtAppDownloadBanner from "../emt/EmtAppDownloadBanner";
 import EmtHeroSearch from "../emt/EmtHeroSearch";
-import EmtHolidayExplore from "../emt/EmtHolidayExplore";
-import EmtOffersCarousel from "../emt/EmtOffersCarousel";
 import EmtWhyChooseUs from "../emt/EmtWhyChooseUs";
 import MmtLayout from "./MmtLayout";
-import MmtPopularRoutes from "./MmtPopularRoutes";
-import MmtPopularServices from "./MmtPopularServices";
+import InternalLinksHub from "../seo/InternalLinksHub";
+import TrustStrip from "../ui/TrustStrip";
+
+const EmtHolidayExplore = dynamic(() => import("../emt/EmtHolidayExplore"), { ssr: false });
+const EmtOffersCarousel = dynamic(() => import("../emt/EmtOffersCarousel"), { ssr: false });
+const MmtPopularRoutes = dynamic(() => import("./MmtPopularRoutes"), { ssr: false });
+const MmtPopularServices = dynamic(() => import("./MmtPopularServices"), { ssr: false });
 import MmtCabResultCard from "./MmtCabResultCard";
 import MmtDriverResultCard from "./MmtDriverResultCard";
 import MmtHomeCatalogSection, { MmtHomeCatalogScroll, MmtHomeCatalogScrollItem } from "./MmtHomeCatalogSection";
@@ -120,6 +124,7 @@ export default function MmtHomePage() {
       <EmtHolidayExplore />
       <MmtPopularServices />
       <MmtPopularRoutes />
+      <TrustStrip />
       <EmtWhyChooseUs />
 
       {catalogError ? (
@@ -164,6 +169,8 @@ export default function MmtHomePage() {
           ))}
         </MmtHomeCatalogScroll>
       </MmtHomeCatalogSection>
+
+      <InternalLinksHub title="Explore cab booking, routes & services across South India" />
 
       <section className="border-t border-slate-200 bg-white py-8 sm:py-10">
         <div className="section-shell">

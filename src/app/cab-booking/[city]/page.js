@@ -15,6 +15,7 @@ import {
   tunedCabBookingTitle,
   CITY_CAB_PRICE_RANGE
 } from "../../../lib/seo";
+import { getCityLandingBody } from "../../../lib/seo/landingContent";
 
 export function generateStaticParams() {
   return SEO_CITIES.map((c) => ({ city: c.slug }));
@@ -65,7 +66,7 @@ export default function CabBookingCityPage({ params }) {
   return (
     <>
       <JsonLd data={jsonLd} />
-      <CitySeoPage city={city} variant="cab" />
+      <CitySeoPage city={city} variant="cab" extraBody={getCityLandingBody(city, "cab")} />
     </>
   );
 }

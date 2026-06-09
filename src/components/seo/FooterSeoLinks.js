@@ -21,10 +21,13 @@ function FooterLinkList({ title, items }) {
   return (
     <div>
       <h4 className="text-sm font-semibold text-white">{title}</h4>
-      <ul className="mt-3 max-h-80 space-y-2 overflow-y-auto pr-1 text-sm text-slate-400 scrollbar-hide max-md:max-h-none max-md:overflow-visible">
+      <ul className="scroll-x-touch -mx-1 mt-3 flex max-h-none gap-2 overflow-x-auto pb-1 text-sm text-slate-400 sm:mx-0 sm:max-h-48 sm:flex-col sm:space-y-2 sm:overflow-y-auto sm:overflow-x-hidden sm:pr-1 scrollbar-hide">
         {items.map((item) => (
-          <li key={item.href}>
-            <Link href={item.href} className="hover:text-sky-400">
+          <li key={item.href} className="shrink-0 sm:shrink">
+            <Link
+              href={item.href}
+              className="inline-block whitespace-nowrap rounded-full border border-slate-700 bg-slate-900 px-3 py-1 text-xs hover:border-sky-500 hover:text-sky-400 sm:block sm:rounded-none sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:text-sm"
+            >
               {item.label}
             </Link>
           </li>

@@ -10,18 +10,41 @@ import {
   serviceLinksForCities
 } from "../../lib/seo/internalLinks";
 
-function LinkColumn({ title, items, scrollable = false }) {
+/** Compact horizontal scroll — avoids tall link columns on mobile. */
+function LinkScrollStrip({ title, items }) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+    <div className="min-w-0 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
       <h3 className="text-sm font-semibold text-slate-900">{title}</h3>
-      <ul
-        className={`mt-3 space-y-2 ${scrollable ? "max-h-72 overflow-y-auto pr-1 scrollbar-hide max-md:max-h-none max-md:overflow-visible" : ""}`}
+      <div
+        className="scroll-x-touch -mx-1 mt-3 flex gap-2 overflow-x-auto pb-1 pt-0.5"
+        role="list"
+        aria-label={title}
       >
         {items.map((item) => (
-          <li key={item.href}>
+          <Link
+            key={item.href}
+            href={item.href}
+            role="listitem"
+            className="shrink-0 whitespace-nowrap rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:border-[var(--cabzii-brand)]/35 hover:bg-[var(--cabzii-brand-light)] hover:text-[var(--cabzii-brand)] sm:text-sm"
+          >
+            {item.label}
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function LinkColumn({ title, items }) {
+  return (
+    <div className="min-w-0 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <h3 className="text-sm font-semibold text-slate-900">{title}</h3>
+      <ul className="scroll-x-touch -mx-1 mt-3 flex max-h-none gap-2 overflow-x-auto pb-1 pt-0.5 sm:mx-0 sm:max-h-48 sm:flex-col sm:overflow-y-auto sm:overflow-x-hidden sm:space-y-2 sm:pr-1 scrollbar-hide">
+        {items.map((item) => (
+          <li key={item.href} className="shrink-0 sm:shrink">
             <Link
               href={item.href}
-              className="text-xs text-slate-600 transition hover:text-[#0056D2] hover:underline sm:text-sm"
+              className="inline-block whitespace-nowrap rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs text-slate-600 transition hover:border-[var(--cabzii-brand)]/35 hover:bg-[var(--cabzii-brand-light)] hover:text-[var(--cabzii-brand)] hover:underline sm:block sm:rounded-none sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:text-sm"
             >
               {item.label}
             </Link>
@@ -61,19 +84,15 @@ export default function InternalLinksHub({ title = "Explore Cabzii across South 
           ))}
         </div>
 
-        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <LinkColumn title="Cab booking by city" items={cabs} scrollable />
-          <LinkColumn title="Acting drivers by city" items={drivers} scrollable />
-          <LinkColumn title="Popular one-way routes" items={routes} />
+        <div className="mt-6 flex flex-col gap-4">
+          <LinkScrollStrip title="Cab booking by city" items={cabs} />
+          <LinkScrollStrip title="Acting drivers by city" items={drivers} />
+          <LinkScrollStrip title="Popular one-way routes" items={routes} />
         </div>
 
         <div className="mt-4 grid gap-4 lg:grid-cols-2">
-          <LinkColumn title="Services in Chennai" items={servicesChennai} scrollable />
-          <LinkColumn
-            title="Services — Bengaluru, Hyderabad & more"
-            items={servicesMoreCities}
-            scrollable
-          />
+          <LinkColumn title="Services in Chennai" items={servicesChennai} />
+          <LinkColumn title="Services — Bengaluru, Hyderabad & more" items={servicesMoreCities} />
         </div>
       </div>
     </section>
