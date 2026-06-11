@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { Check } from "lucide-react";
 import PaymentBreakdown from "./PaymentBreakdown";
 import PickupPlaceInput from "./PickupPlaceInput";
 import SimilarPackages from "./SimilarPackages";
@@ -354,10 +355,17 @@ export default function TourBookingPage({ searchParams, initialPackage = null })
                       </div>
                     ) : null}
                     <ul className="mt-3 grid gap-1.5 text-xs text-slate-600 sm:grid-cols-2">
-                      <li>✓ Flat package fare shown upfront</li>
-                      <li>✓ Toll, permit & driver bata as per actuals</li>
-                      <li>✓ Pickup location of your choice</li>
-                      <li>✓ Verified tour partner</li>
+                      {[
+                        "Flat package fare shown upfront",
+                        "Toll, permit & driver bata as per actuals",
+                        "Pickup location of your choice",
+                        "Verified tour partner"
+                      ].map((point) => (
+                        <li key={point} className="flex items-center gap-1.5">
+                          <Check className="h-3.5 w-3.5 shrink-0 text-emerald-600" strokeWidth={2.5} aria-hidden />
+                          {point}
+                        </li>
+                      ))}
                     </ul>
                   </article>
 

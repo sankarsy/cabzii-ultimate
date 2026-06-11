@@ -607,6 +607,22 @@ export const CATALOG_TABS = {
       published: true
     },
     required: ["seoTitle", "fromCitySlug", "toCitySlug"]
+  },
+  seoCityPages: {
+    label: "City Pages",
+    base: "/api/seo-city-pages",
+    adminList: true,
+    superAdminOnly: true,
+    form: "seoCityPage",
+    sample: {
+      pageType: "cab-booking",
+      citySlug: "chennai",
+      seoTitle: "Cab Booking Chennai | Airport Taxi, Local & Outstation Cabs | Cabzii",
+      seoDescription: "Book airport taxi, local taxi, outstation taxi and one-way cabs in Chennai. Instant confirmation and affordable fares on cabzii.in.",
+      seo: "cab booking chennai,taxi chennai,outstation cab chennai",
+      published: true
+    },
+    required: ["seoTitle", "pageType", "citySlug"]
   }
 };
 
@@ -657,6 +673,45 @@ export function mergeStaticSeoRoutes(cmsItems = []) {
     publicPath: `/routes/${r.slug}`
   }));
   return [...(cmsItems || []), ...staticRows];
+}
+
+export function emptySeoCityPageForm() {
+  return {
+    pageType: "cab-booking",
+    citySlug: "",
+    seoTitle: "",
+    seoDescription: "",
+    seo: "",
+    h1: "",
+    body: "",
+    published: true
+  };
+}
+
+export function seoCityPageFormFromItem(item) {
+  return {
+    pageType: item?.pageType || "cab-booking",
+    citySlug: item?.citySlug || "",
+    seoTitle: item?.seoTitle || "",
+    seoDescription: item?.seoDescription || "",
+    seo: item?.seo || "",
+    h1: item?.h1 || "",
+    body: item?.body || "",
+    published: item?.published !== false
+  };
+}
+
+export function seoCityPageFormToPayload(form) {
+  return {
+    pageType: form.pageType || "cab-booking",
+    citySlug: String(form.citySlug || "").trim().toLowerCase(),
+    seoTitle: String(form.seoTitle || "").trim(),
+    seoDescription: String(form.seoDescription || "").trim(),
+    seo: String(form.seo || "").trim(),
+    h1: String(form.h1 || "").trim(),
+    body: form.body || "",
+    published: form.published !== false
+  };
 }
 
 export function buildCatalogListUrl(tabKey) {

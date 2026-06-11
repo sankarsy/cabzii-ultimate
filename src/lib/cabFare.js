@@ -99,7 +99,10 @@ export function buildFareSlabs(cab) {
 export function formatRating(cab) {
   if (cab.rating == null || cab.rating === "") return null;
   const n = Number(cab.rating);
-  if (!Number.isFinite(n)) return null;
+  if (!Number.isFinite(n) || n <= 0) return null;
+  /* Ratings come only from verified reviews — hide entirely until the first approved review */
+  const reviews = Number(cab.reviewCount ?? cab.reviews ?? 0);
+  if (!Number.isFinite(reviews) || reviews <= 0) return null;
   return n.toFixed(1);
 }
 

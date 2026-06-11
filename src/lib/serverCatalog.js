@@ -49,6 +49,12 @@ export async function fetchSeoRouteBySlug(slug) {
   return fetchJson(`/seo-routes/${encodeURIComponent(slug)}`, 600);
 }
 
+/** Admin-managed meta for /cab-booking/{city} and /acting-driver/{city}. */
+export async function fetchSeoCityPage(pageType, citySlug) {
+  if (!pageType || !citySlug) return null;
+  return fetchJson(`/seo-city-pages/${encodeURIComponent(pageType)}/${encodeURIComponent(citySlug)}`, 600);
+}
+
 export async function fetchSeoMenuLinks() {
   const data = await fetchJson("/seo-menu", 300);
   return Array.isArray(data) ? data : [];

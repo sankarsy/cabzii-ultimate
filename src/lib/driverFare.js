@@ -133,7 +133,10 @@ export function buildDriverChargeItems(driver) {
 export function formatDriverRating(driver) {
   if (driver?.rating == null || driver?.rating === "") return null;
   const n = Number(driver.rating);
-  if (!Number.isFinite(n)) return null;
+  if (!Number.isFinite(n) || n <= 0) return null;
+  /* Ratings come only from verified reviews — hide entirely until the first approved review */
+  const reviews = Number(driver.reviewCount ?? driver.reviews ?? 0);
+  if (!Number.isFinite(reviews) || reviews <= 0) return null;
   return n.toFixed(1);
 }
 

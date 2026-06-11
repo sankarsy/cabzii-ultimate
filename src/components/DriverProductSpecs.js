@@ -1,4 +1,4 @@
-import { buildDriverChargeItems, getDriverPricing } from "../lib/driverFare";
+import { buildDriverChargeItems, formatDriverRating, getDriverPricing } from "../lib/driverFare";
 
 export default function DriverProductSpecs({ driver }) {
   const vehicles = Array.isArray(driver.supportedVehicles) ? driver.supportedVehicles : [];
@@ -6,6 +6,8 @@ export default function DriverProductSpecs({ driver }) {
   const features = Array.isArray(driver.features) ? driver.features : [];
   const { hourly, day, extraHr, extraKm } = getDriverPricing(driver);
   const chargeItems = buildDriverChargeItems(driver);
+  /* Only shown after the first approved verified review */
+  const ratingText = formatDriverRating(driver);
 
   const rows = [
     { label: "Vehicle", value: driver.name },
@@ -22,7 +24,7 @@ export default function DriverProductSpecs({ driver }) {
       label: "Discount",
       value: driver.discountPercentage ? `${driver.discountPercentage}% OFF` : "—"
     },
-    { label: "Rating", value: driver.rating != null ? `${driver.rating} / 5` : "—" }
+    ...(ratingText ? [{ label: "Rating", value: `${ratingText} / 5 · ${driver.reviewCount} verified` }] : [])
   ];
 
   return (

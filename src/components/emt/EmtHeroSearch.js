@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { Star } from "lucide-react";
 import { HERO_TABS, TRENDING_SEARCHES } from "../../lib/emt/constants";
 import { routeBySlug } from "../../lib/seo/routes";
 import { routeToCabSearchHref } from "../../lib/routeTrip";
@@ -66,6 +67,21 @@ export default function EmtHeroSearch({
         <p className="mx-auto mt-2 max-w-lg text-balance px-1 text-center text-xs leading-relaxed text-white/90 sm:text-sm">
           {seoSubheading}
         </p>
+
+        {/* Above-the-fold trust signals — visible on every screen size */}
+        <div className="mt-2.5 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[11px] font-semibold text-white/95 sm:text-xs">
+          <span className="inline-flex items-center gap-1">
+            <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" strokeWidth={0} aria-hidden /> 4.9 rated
+          </span>
+          <span className="text-white/40" aria-hidden>·</span>
+          <span>Verified drivers</span>
+          <span className="text-white/40" aria-hidden>·</span>
+          <span>10,000+ trips</span>
+          <span className="text-white/40" aria-hidden>·</span>
+          <a href="tel:+919944197416" className="underline decoration-white/40 underline-offset-2 hover:decoration-white">
+            99441 97416
+          </a>
+        </div>
 
         <div className="cabzii-widget mt-4 w-full min-w-0 max-w-full overflow-hidden sm:mt-5">
           <div className="hero-tabs-wrap relative border-b border-slate-100/80">

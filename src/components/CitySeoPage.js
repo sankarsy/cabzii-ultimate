@@ -13,9 +13,9 @@ import { routeToCabSearchHref } from "../lib/routeTrip";
 import { routesForCity } from "../lib/seo/routes";
 import { servicePath } from "../lib/seo/services";
 
-export default function CitySeoPage({ city, variant, extraBody = "" }) {
+export default function CitySeoPage({ city, variant, extraBody = "", headingOverride = "" }) {
   const isCab = variant === "cab";
-  const title = isCab ? tunedCabBookingH1(city) : tunedActingDriverH1(city);
+  const title = headingOverride || (isCab ? tunedCabBookingH1(city) : tunedActingDriverH1(city));
   const lead = isCab ? tunedCabBookingDescription(city) : `Hire verified acting drivers and chauffeurs in ${city.name} for hourly, daily and outstation trips on Cabzii.`;
 
   const hubPath = isCab ? `/cab-booking/${city.slug}` : `/acting-driver/${city.slug}`;

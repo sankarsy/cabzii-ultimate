@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { Star } from "lucide-react";
 import { resolveMediaUrl } from "../lib/media";
 import PackageOptionCard from "./PackageOptionCard";
 import AdditionalChargesGrid from "./AdditionalChargesGrid";
@@ -101,7 +102,7 @@ export default function CabBookingDetail({ cab, onSelectionChange }) {
       </div>
       {ratingText && (
         <div className="absolute right-1.5 top-1.5 flex items-center gap-0.5 rounded-full bg-white px-1.5 py-0.5 text-[8px] font-semibold text-slate-700 shadow-sm">
-          ★ {ratingText}
+          <Star className="h-2 w-2 fill-amber-500 text-amber-500" strokeWidth={0} aria-hidden /> {ratingText}
           {reviewCount != null ? <span className="text-slate-400"> ({reviewCount})</span> : null}
         </div>
       )}

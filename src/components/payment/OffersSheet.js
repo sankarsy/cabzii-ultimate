@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Star, X } from "lucide-react";
 import { OFFER_COUPONS } from "../../lib/paymentMethods";
 import BottomSheet from "./BottomSheet";
 
@@ -36,9 +37,7 @@ export default function OffersSheet({ open, onClose, onApplyCoupon, appliedCode 
             className="flex h-9 w-9 items-center justify-center rounded-full text-slate-600 hover:bg-slate-100"
             aria-label="Close"
           >
-            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            <X className="h-5 w-5" strokeWidth={2} aria-hidden />
           </button>
         </div>
 
@@ -46,7 +45,7 @@ export default function OffersSheet({ open, onClose, onApplyCoupon, appliedCode 
           <p className="text-sm font-bold text-slate-900">Use Cabzii Rewards</p>
           <p className="text-xs text-slate-500">You don&apos;t have any rewards currently</p>
           <div className="mt-2 flex items-center justify-end gap-1 text-sm font-bold text-amber-600">
-            0 <span className="text-base">★</span>
+            0 <Star className="h-4 w-4 fill-amber-500 text-amber-500" strokeWidth={0} aria-hidden />
           </div>
         </div>
 

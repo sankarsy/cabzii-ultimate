@@ -323,29 +323,93 @@ export function getServiceMeta(service, city) {
   return templateMeta(templateId, city.name);
 }
 
+/* Deterministic variant picker — same page always gets the same copy,
+   but neighbouring pages get different patterns (avoids templated SERPs). */
+function hashSlug(slug) {
+  let h = 0;
+  const s = String(slug || "");
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) % 9973;
+  return h;
+}
+
+function inr(n) {
+  return `₹${Number(n).toLocaleString("en-IN")}`;
+}
+
 export function getCabBookingMeta(city) {
   if (CAB_BOOKING_META[city.slug]) return CAB_BOOKING_META[city.slug];
 
-  return {
-    title: formatSerpTitle(`${city.name} Cab Booking`, "24/7 Taxi & Packages"),
-    description: clampDescription(
-      `Book affordable cabs in ${city.name} with Cabzii.in. Outstation, airport taxi and local hire. Clean fleets, transparent fares and expert drivers 24/7.`
-    )
-  };
+  const variants = [
+    {
+      title: formatSerpTitle(`${city.name} Cab Booking`, "24/7 Taxi & Packages"),
+      description: clampDescription(
+        `Book affordable cabs in ${city.name} with Cabzii.in. Outstation, airport taxi and local hire. Clean fleets, transparent fares and expert drivers 24/7.`
+      )
+    },
+    {
+      title: formatSerpTitle(`Cab Booking ${city.name}`, "Online Taxi Service"),
+      description: clampDescription(
+        `Cab booking in ${city.name} made easy — compare outstation, airport and hourly packages on Cabzii.in. Professional drivers, upfront fares, instant OTP booking.`
+      )
+    },
+    {
+      title: formatSerpTitle(`Taxi in ${city.name}`, "Book Cabs Online"),
+      description: clampDescription(
+        `Need a taxi in ${city.name}? Book local, airport and outstation cabs on Cabzii.in with transparent fares, clean cars and 24/7 customer support.`
+      )
+    }
+  ];
+  return variants[hashSlug(city.slug) % variants.length];
 }
 
 export function getRouteMeta(route) {
-  const { slug, fromCity, toCity } = route;
+  const { slug, fromCity, toCity, distance, duration, sedanFrom } = route;
   if (ROUTE_META_OVERRIDES[slug]) return ROUTE_META_OVERRIDES[slug];
 
-  const title = formatSerpTitle(
-    `${fromCity.name} to ${toCity.name} Cab`,
-    "One-Way Best Rates"
-  );
-  const description = clampDescription(
-    `Book safe, affordable one-way cab from ${fromCity.name} to ${toCity.name} with Cabzii.in. Clean cars, expert drivers, and zero hidden charges. Get a free quote!`
-  );
-  return { title, description };
+  const from = fromCity.name;
+  const to = toCity.name;
+  const hasTrip = Boolean(distance && duration);
+  const hasFare = Number(sedanFrom) > 0;
+
+  /* Intent-rotated recipes (pharmacy-sheet style):
+     transactional · price · informational · trust */
+  const variants = [];
+
+  variants.push({
+    title: formatSerpTitle(`${from} to ${to} Cab`, "Book One-Way Taxi Online"),
+    description: clampDescription(
+      hasTrip
+        ? `Book ${from} to ${to} one-way cab online — ${distance}, around ${duration}. Verified drivers, fixed fare and instant confirmation on Cabzii.in.`
+        : `Book ${from} to ${to} one-way cab online with Cabzii.in. Verified drivers, fixed fares, door pickup and instant confirmation. Reserve your taxi 24/7.`
+    )
+  });
+
+  if (hasFare) {
+    variants.push({
+      title: formatSerpTitle(`${from} to ${to} Taxi`, `Fare from ${inr(sedanFrom)}`),
+      description: clampDescription(
+        `${from} to ${to} taxi fare from ${inr(sedanFrom)} (sedan). Compare sedan, SUV & Innova rates${hasTrip ? ` for the ${distance} trip` : ""} on Cabzii.in — zero hidden charges.`
+      )
+    });
+  }
+
+  if (hasTrip) {
+    variants.push({
+      title: formatSerpTitle(`${from} to ${to} Cab`, `${distance} in ${duration}`),
+      description: clampDescription(
+        `Travelling from ${from} to ${to}? It's ${distance} by road, around ${duration}. Get a clean cab, expert driver and upfront fare on Cabzii.in. Book online 24/7.`
+      )
+    });
+  }
+
+  variants.push({
+    title: formatSerpTitle(`One Way Cab ${from} to ${to}`, "Fixed Fare"),
+    description: clampDescription(
+      `Reliable ${from} to ${to} cab service on Cabzii.in — door pickup, GPS-tracked rides and 24/7 support. One-way drops with transparent, upfront pricing.`
+    )
+  });
+
+  return variants[hashSlug(slug) % variants.length];
 }
 
 export function getServiceH1(service, city) {

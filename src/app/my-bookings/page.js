@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { authHeaders, buildLoginHref, formatMobileDisplay, getUser, isLoggedIn } from "../../lib/auth";
 import { useRouter } from "next/navigation";
+import BookingReviewForm from "../../components/reviews/BookingReviewForm";
 
 const STATUS_STYLES = {
   pending: "bg-amber-100 text-amber-800",
@@ -237,7 +238,10 @@ function BookingCard({ booking, onFinish, finishing }) {
       ) : null}
 
       {booking.status === "finished" ? (
-        <p className="mt-3 text-xs text-slate-500">Trip completed. Contact details are no longer shown.</p>
+        <>
+          <p className="mt-3 text-xs text-slate-500">Trip completed. Contact details are no longer shown.</p>
+          {booking.type === "cab" || booking.type === "driver" ? <BookingReviewForm booking={booking} /> : null}
+        </>
       ) : null}
 
       {booking.status === "pending" ? (

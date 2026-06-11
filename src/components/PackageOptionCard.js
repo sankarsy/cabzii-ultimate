@@ -1,5 +1,6 @@
 "use client";
 
+import { Sparkles } from "lucide-react";
 import { packageYouPay } from "../lib/cabFare";
 import { ClockIcon, RoadIcon, TwoWayIcon } from "./icons";
 
@@ -32,7 +33,8 @@ export default function PackageOptionCard({ pkg, selected, discount, onSelect, c
             compact ? "px-1.5 py-px text-[7px]" : "px-2.5 py-0.5 text-[10px]"
           }`}
         >
-          ★ Most Popular
+          <Sparkles className={compact ? "h-2 w-2" : "h-2.5 w-2.5"} strokeWidth={2.5} aria-hidden />
+          Most Popular
         </span>
       ) : null}
 

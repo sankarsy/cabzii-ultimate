@@ -2,6 +2,7 @@ import "./globals.css";
 import { Manrope } from "next/font/google";
 import SiteSettingsProvider from "../components/SiteSettingsProvider";
 import ContactFab from "../components/ContactFab";
+import StickyBookingBar from "../components/StickyBookingBar";
 import CookieConsent from "../components/CookieConsent";
 import ServiceWorkerRegister from "../components/ServiceWorkerRegister";
 import { fetchSiteSettings } from "../lib/serverSiteSettings";
@@ -77,6 +78,7 @@ export default async function RootLayout({ children }) {
       <body className={manrope.variable}>
         <SiteSettingsProvider initialSettings={siteSettings}>
           {children}
+          <StickyBookingBar />
           <ContactFab />
           <CookieConsent />
         </SiteSettingsProvider>

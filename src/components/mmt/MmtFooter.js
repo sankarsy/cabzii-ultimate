@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BadgeCheck, IndianRupee, Lock } from "lucide-react";
 import CabziiLogo from "../brand/CabziiLogo";
 import { BRAND } from "../../lib/brand";
 import { routeToCabSearchHref } from "../../lib/routeTrip";
@@ -59,9 +60,15 @@ export default function MmtFooter() {
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <span className="cabzii-trust-pill text-xs">🔒 OTP secure</span>
-            <span className="cabzii-trust-pill text-xs">✓ Verified drivers</span>
-            <span className="cabzii-trust-pill text-xs">₹ Upfront fares</span>
+            <span className="cabzii-trust-pill gap-1.5 text-xs">
+              <Lock className="h-3.5 w-3.5 text-emerald-600" strokeWidth={2} aria-hidden /> OTP secure
+            </span>
+            <span className="cabzii-trust-pill gap-1.5 text-xs">
+              <BadgeCheck className="h-3.5 w-3.5 text-[var(--cabzii-brand)]" strokeWidth={2} aria-hidden /> Verified drivers
+            </span>
+            <span className="cabzii-trust-pill gap-1.5 text-xs">
+              <IndianRupee className="h-3.5 w-3.5 text-amber-600" strokeWidth={2} aria-hidden /> Upfront fares
+            </span>
           </div>
         </div>
 

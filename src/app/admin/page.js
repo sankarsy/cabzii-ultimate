@@ -7,6 +7,7 @@ import AdminCatalogPanel from "../../components/admin/AdminCatalogPanel";
 import AdminCustomers from "../../components/admin/AdminCustomers";
 import AdminMasterData from "../../components/admin/AdminMasterData";
 import AdminReports from "../../components/admin/AdminReports";
+import AdminReviews from "../../components/admin/AdminReviews";
 import AdminShell from "../../components/admin/AdminShell";
 import AdminSiteSettings from "../../components/admin/AdminSiteSettings";
 import CabziiLogo from "../../components/brand/CabziiLogo";
@@ -46,6 +47,7 @@ export default function AdminPage() {
         tab === "settings" ||
         tab === "customers" ||
         tab === "reports" ||
+        tab === "reviews" ||
         CATALOG_TAB_KEYS.includes(tab))
     ) {
       setActiveTab(tab);
@@ -101,6 +103,7 @@ export default function AdminPage() {
   const sidebarItems = [
     { key: "reports", label: "Reports & analytics", superAdminOnly: true },
     { key: "customers", label: "Customers", superAdminOnly: true },
+    { key: "reviews", label: "Reviews", superAdminOnly: true },
     { key: "master", label: "Vendors & locations" },
     { key: "settings", label: "Site settings", superAdminOnly: true },
     ...CATALOG_TAB_KEYS.map((tab) => ({ key: tab, label: CATALOG_TABS[tab].label })),
@@ -171,6 +174,8 @@ export default function AdminPage() {
               <AdminReports token={token} isSuperAdmin={isSuperAdmin} />
             ) : activeTab === "customers" ? (
               <AdminCustomers token={token} isSuperAdmin={isSuperAdmin} />
+            ) : activeTab === "reviews" ? (
+              <AdminReviews token={token} />
             ) : activeTab === "master" ? (
               <AdminMasterData token={token} isSuperAdmin={isSuperAdmin} initialSection={masterSection} />
             ) : activeTab === "settings" ? (

@@ -2,10 +2,12 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { Check } from "lucide-react";
 import CabBookingDetail from "./CabBookingDetail";
 import CabProductSpecs from "./CabProductSpecs";
 import PaymentBreakdown from "./PaymentBreakdown";
 import SimilarCabs from "./SimilarCabs";
+import ReviewsSection from "./reviews/ReviewsSection";
 import { buildFareSlabs, buildPaymentSearchParams, selectionFromPackage } from "../lib/cabFare";
 
 function firstParam(value) {
@@ -167,12 +169,21 @@ export default function CabDetailPage({ cabId, initialCab = null }) {
                       </div>
                     ) : null}
                     <ul className="mt-3 grid gap-1.5 text-xs text-slate-600 sm:grid-cols-2">
-                      <li>✓ Verified vendor & drivers</li>
-                      <li>✓ Local hourly & outstation trips</li>
-                      <li>✓ Secure online booking</li>
-                      <li>✓ Transparent extra charges</li>
+                      {[
+                        "Verified vendor & drivers",
+                        "Local hourly & outstation trips",
+                        "Secure online booking",
+                        "Transparent extra charges"
+                      ].map((point) => (
+                        <li key={point} className="flex items-center gap-1.5">
+                          <Check className="h-3.5 w-3.5 shrink-0 text-emerald-600" strokeWidth={2.5} aria-hidden />
+                          {point}
+                        </li>
+                      ))}
                     </ul>
                   </article>
+
+                  <ReviewsSection itemType="cab" itemId={cabPk} />
 
                   <SimilarCabs currentCabId={cabPk} cabType={cab.type} vendor={cab.vendor} />
 

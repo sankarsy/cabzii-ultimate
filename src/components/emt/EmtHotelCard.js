@@ -1,11 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Dumbbell, Sparkles, SquareParking, Star, TreePalm, Waves, Wifi } from "lucide-react";
 
 function formatINR(n) {
   return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(n);
 }
 
-const AMENITY_ICONS = { wifi: "📶", pool: "🏊", parking: "🅿️", spa: "💆", gym: "🏋️", beach: "🏖️" };
+const AMENITY_ICONS = { wifi: Wifi, pool: Waves, parking: SquareParking, spa: Sparkles, gym: Dumbbell, beach: TreePalm };
 
 export default function EmtHotelCard({ hotel, searchQuery }) {
   const href = `/hotels/${hotel.id}?${searchQuery}`;
@@ -23,19 +24,31 @@ export default function EmtHotelCard({ hotel, searchQuery }) {
       <div className="flex flex-1 flex-col justify-between p-4">
         <div>
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-amber-500">{"★".repeat(hotel.stars)}</span>
+            <span className="flex items-center gap-0.5" aria-label={`${hotel.stars} star hotel`}>
+              {Array.from({ length: hotel.stars }).map((_, i) => (
+                <Star key={i} className="h-3.5 w-3.5 fill-amber-400 text-amber-400" strokeWidth={0} aria-hidden />
+              ))}
+            </span>
             <span className="rounded bg-[var(--emt-accent)]/15 px-2 py-0.5 text-xs font-bold text-[var(--emt-secondary)]">
               {hotel.rating.score} · {hotel.rating.label}
             </span>
           </div>
           <h3 className="mt-1 text-lg font-bold text-slate-900">{hotel.name}</h3>
           <p className="text-sm text-slate-500">{hotel.location.address}</p>
-          <div className="mt-2 flex flex-wrap gap-2 text-sm">
-            {hotel.amenities.map((a) => (
-              <span key={a} title={a}>
-                {AMENITY_ICONS[a] || "•"}
-              </span>
-            ))}
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {hotel.amenities.map((a) => {
+              const AmenityIcon = AMENITY_ICONS[a];
+              if (!AmenityIcon) return null;
+              return (
+                <span
+                  key={a}
+                  title={a}
+                  className="flex h-6 w-6 items-center justify-center rounded-md bg-slate-100 text-slate-600"
+                >
+                  <AmenityIcon className="h-3.5 w-3.5" strokeWidth={1.75} aria-hidden />
+                </span>
+              );
+            })}
           </div>
         </div>
         <div className="mt-4 flex items-end justify-between">

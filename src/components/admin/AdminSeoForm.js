@@ -127,6 +127,84 @@ export function AdminSeoServiceForm({ form, onChange }) {
   );
 }
 
+export function AdminSeoCityPageForm({ form, onChange }) {
+  const set = (patch) => onChange((prev) => ({ ...prev, ...patch }));
+  const previewPath = `/${form.pageType || "cab-booking"}/${(form.citySlug || "…").toLowerCase().replace(/[^a-z0-9-…]/g, "")}`;
+
+  return (
+    <div className="mt-3 space-y-4">
+      <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-900">
+        <p className="font-semibold">City page SEO</p>
+        <ul className="mt-1 list-inside list-disc space-y-0.5 text-emerald-800">
+          <li>Controls meta for /cab-booking/&#123;city&#125; or /acting-driver/&#123;city&#125;</li>
+          <li>Leave a field empty to keep the website&apos;s auto-generated copy</li>
+          <li>One entry per page type + city (e.g. cab-booking + chennai)</li>
+        </ul>
+      </div>
+      <div className="rounded-xl border border-slate-200 bg-slate-50/80 p-4">
+        <p className="text-sm font-semibold text-slate-800">Google SEO (required for ranking)</p>
+        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          <Field label="Page type *">
+            <select className={inputCls()} value={form.pageType || "cab-booking"} onChange={(e) => set({ pageType: e.target.value })}>
+              <option value="cab-booking">Cab booking city (/cab-booking/…)</option>
+              <option value="acting-driver">Acting driver city (/acting-driver/…)</option>
+            </select>
+          </Field>
+          <Field label="City slug *" hint="e.g. chennai, bengaluru, madurai">
+            <input className={inputCls()} value={form.citySlug || ""} onChange={(e) => set({ citySlug: e.target.value })} placeholder="chennai" />
+          </Field>
+          <div className="sm:col-span-2">
+            <Field label="SEO title *" hint="Google search title — 50–60 chars ideal">
+              <input
+                className={inputCls()}
+                value={form.seoTitle || ""}
+                onChange={(e) => set({ seoTitle: e.target.value })}
+                placeholder="Cab Booking Chennai | Airport Taxi & Outstation | Cabzii"
+              />
+            </Field>
+          </div>
+          <div className="sm:col-span-2">
+            <Field label="SEO description" hint="Meta description — 120–155 characters ideal">
+              <textarea
+                className={inputCls()}
+                rows={2}
+                value={form.seoDescription || ""}
+                onChange={(e) => set({ seoDescription: e.target.value })}
+                placeholder="Book airport taxi, local and outstation cabs in Chennai with instant confirmation on cabzii.in."
+              />
+            </Field>
+          </div>
+          <div className="sm:col-span-2">
+            <Field label="SEO keywords" hint="Comma-separated">
+              <input className={inputCls()} value={form.seo || ""} onChange={(e) => set({ seo: e.target.value })} />
+            </Field>
+          </div>
+          <div className="sm:col-span-2 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-xs text-sky-900">
+            <span className="font-semibold">Live URL:</span> <span className="font-mono">{previewPath}</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-2">
+        <div className="sm:col-span-2">
+          <Field label="H1 heading override" hint="Leave blank to keep auto heading">
+            <input className={inputCls()} value={form.h1 || ""} onChange={(e) => set({ h1: e.target.value })} />
+          </Field>
+        </div>
+        <div className="sm:col-span-2">
+          <Field label="Extra page content (optional HTML)" hint="Shown above the auto-generated city content">
+            <textarea className={inputCls()} rows={4} value={form.body || ""} onChange={(e) => set({ body: e.target.value })} />
+          </Field>
+        </div>
+        <label className="flex items-center gap-2 text-sm text-slate-700 sm:col-span-2">
+          <input type="checkbox" checked={form.published !== false} onChange={(e) => set({ published: e.target.checked })} />
+          Published (overrides live page meta)
+        </label>
+      </div>
+    </div>
+  );
+}
+
 export function AdminSeoRouteForm({ form, onChange }) {
   const set = (patch) => onChange((prev) => ({ ...prev, ...patch }));
 

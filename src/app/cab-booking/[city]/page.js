@@ -16,6 +16,9 @@ import {
   CITY_CAB_PRICE_RANGE
 } from "../../../lib/seo";
 import { getCityLandingBody } from "../../../lib/seo/landingContent";
+import { fetchSeoCityPage } from "../../../lib/serverCatalog";
+
+export const revalidate = 600;
 
 export function generateStaticParams() {
   return SEO_CITIES.map((c) => ({ city: c.slug }));
@@ -32,19 +35,26 @@ export async function generateMetadata({ params }) {
     });
   }
   const path = `/cab-booking/${city.slug}`;
+  const cms = await fetchSeoCityPage("cab-booking", city.slug);
+  const keywords = cms?.seo
+    ? cms.seo.split(",").map((k) => k.trim()).filter(Boolean)
+    : tunedCabBookingKeywords(city);
   return buildPageMetadata({
-    title: tunedCabBookingTitle(city),
-    description: tunedCabBookingDescription(city),
+    title: cms?.seoTitle || tunedCabBookingTitle(city),
+    description: cms?.seoDescription || tunedCabBookingDescription(city),
     path,
-    keywords: tunedCabBookingKeywords(city)
+    keywords
   });
 }
 
-export default function CabBookingCityPage({ params }) {
+export default async function CabBookingCityPage({ params }) {
   const city = cityBySlug(params.city);
   if (!city) notFound();
 
   const path = `/cab-booking/${city.slug}`;
+  const cms = await fetchSeoCityPage("cab-booking", city.slug);
+  const title = cms?.seoTitle || tunedCabBookingTitle(city);
+  const description = cms?.seoDescription || tunedCabBookingDescription(city);
   const faqs = getCityFaqs(city, "cab");
   const jsonLd = [
     breadcrumbJsonLd([
@@ -53,8 +63,8 @@ export default function CabBookingCityPage({ params }) {
       { name: city.name, path }
     ]),
     cityCabSearchJsonLd(city, {
-      productName: tunedCabBookingTitle(city),
-      description: tunedCabBookingDescription(city),
+      productName: title,
+      description,
       urlPath: path,
       priceLow: CITY_CAB_PRICE_RANGE.low,
       priceHigh: CITY_CAB_PRICE_RANGE.high
@@ -63,10 +73,14 @@ export default function CabBookingCityPage({ params }) {
     faqFromPairs(faqs)
   ];
 
+  const extraBody = cms?.body
+    ? `${cms.body}${getCityLandingBody(city, "cab") || ""}`
+    : getCityLandingBody(city, "cab");
+
   return (
     <>
       <JsonLd data={jsonLd} />
-      <CitySeoPage city={city} variant="cab" extraBody={getCityLandingBody(city, "cab")} />
+      <CitySeoPage city={city} variant="cab" extraBody={extraBody} headingOverride={cms?.h1 || ""} />
     </>
   );
 }

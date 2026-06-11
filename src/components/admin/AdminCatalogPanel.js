@@ -18,6 +18,7 @@ import {
   emptyBookingForm,
   emptyCabForm,
   emptyDriverForm,
+  emptySeoCityPageForm,
   emptySeoRouteForm,
   emptySeoServiceForm,
   emptyTestimonialForm,
@@ -25,6 +26,8 @@ import {
   DRIVER_PACKAGE_FIELDS,
   formatCabPackageSummary,
   formatDriverPackageSummary,
+  seoCityPageFormFromItem,
+  seoCityPageFormToPayload,
   seoRouteFormFromItem,
   seoRouteFormToPayload,
   seoServiceFormFromItem,
@@ -39,7 +42,7 @@ import {
 } from "../../lib/bookingStats";
 import { normalizeStoredImagePath, resolveMediaUrl } from "../../lib/media";
 import AdminBookingEditor from "./AdminBookingEditor";
-import { AdminSeoRouteForm, AdminSeoServiceForm } from "./AdminSeoForm";
+import { AdminSeoCityPageForm, AdminSeoRouteForm, AdminSeoServiceForm } from "./AdminSeoForm";
 import { AdminProductSeoSection } from "./AdminProductSeoSection";
 import FarePackagesEditor from "./FarePackagesEditor";
 
@@ -63,6 +66,7 @@ function itemTitle(item, tabKey) {
   if (tabKey === "bookings") return item.customerName || item.phone || "Booking";
   if (tabKey === "seoServices") return item.seoTitle || item.name || item.slug || "Service";
   if (tabKey === "seoRoutes") return item.seoTitle || item.title || item.slug || "Route";
+  if (tabKey === "seoCityPages") return item.seoTitle || `${item.pageType}/${item.citySlug}` || "City page";
   return item.title || item.name || item.slug || "Item";
 }
 
@@ -97,6 +101,10 @@ function itemSubtitle(item, tabKey) {
     return item.isStatic
       ? `Built-in (read-only) · ${base} · Seed DB to edit in admin`
       : `${base} · ${item.fromCitySlug || "—"} → ${item.toCitySlug || "—"} · ${item.published === false ? "Draft" : "Published"}`;
+  }
+  if (tabKey === "seoCityPages") {
+    const base = item.publicPath || `/${item.pageType}/${item.citySlug}`;
+    return `${base} · ${item.published === false ? "Draft" : "Published"}`;
   }
   return item.vendor || item.experience || item.type || "N/A";
 }
@@ -133,6 +141,7 @@ export default function AdminCatalogPanel({
   const [bookingForm, setBookingForm] = useState(emptyBookingForm());
   const [seoServiceForm, setSeoServiceForm] = useState(emptySeoServiceForm());
   const [seoRouteForm, setSeoRouteForm] = useState(emptySeoRouteForm());
+  const [seoCityPageForm, setSeoCityPageForm] = useState(emptySeoCityPageForm());
   const [bookingLoading, setBookingLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [uploading, setUploading] = useState(false);
@@ -155,6 +164,7 @@ export default function AdminCatalogPanel({
     tab?.form === "tourPackage" ||
     tab?.form === "seoService" ||
     tab?.form === "seoRoute" ||
+    tab?.form === "seoCityPage" ||
     tabKey === "bookings" ||
     tab?.form === "booking";
 
@@ -169,6 +179,7 @@ export default function AdminCatalogPanel({
     setBookingForm(emptyBookingForm());
     setSeoServiceForm(emptySeoServiceForm());
     setSeoRouteForm(emptySeoRouteForm());
+    setSeoCityPageForm(emptySeoCityPageForm());
     setErrorMessage("");
     setStatusMessage("");
   }, []);
@@ -336,6 +347,7 @@ export default function AdminCatalogPanel({
     if (tabKey === "bookings" || tab?.form === "booking") return bookingFormToPayload(bookingForm);
     if (tab?.form === "seoService") return seoServiceFormToPayload(seoServiceForm);
     if (tab?.form === "seoRoute") return seoRouteFormToPayload(seoRouteForm);
+    if (tab?.form === "seoCityPage") return seoCityPageFormToPayload(seoCityPageForm);
     return JSON.parse(formJson);
   };
 
@@ -401,6 +413,11 @@ export default function AdminCatalogPanel({
       return;
     }
 
+    if (tab?.form === "seoCityPage") {
+      setSeoCityPageForm(seoCityPageFormFromItem(item));
+      return;
+    }
+
     const cleanItem = { ...item };
     delete cleanItem._id;
     delete cleanItem.__v;
@@ -418,6 +435,7 @@ export default function AdminCatalogPanel({
     else if (tab?.form === "booking") setBookingForm({ ...emptyBookingForm(), status: "confirmed" });
     else if (tab?.form === "seoService") setSeoServiceForm(seoServiceFormFromItem(tab.sample));
     else if (tab?.form === "seoRoute") setSeoRouteForm(seoRouteFormFromItem(tab.sample));
+    else if (tab?.form === "seoCityPage") setSeoCityPageForm(seoCityPageFormFromItem(tab.sample));
     else setFormJson(JSON.stringify(tab.sample, null, 2));
     setErrorMessage("");
   };
@@ -572,6 +590,14 @@ export default function AdminCatalogPanel({
         if (!String(parsed.seoTitle || "").trim()) {
           throw new Error("SEO title is required.");
         }
+      }
+      if (tab?.form === "seoCityPage") {
+        if (!String(parsed.seoTitle || "").trim()) {
+          throw new Error("SEO title is required.");
+        }
+        if (!String(parsed.citySlug || "").trim()) {
+          throw new Error("City slug is required (e.g. chennai).");
+        }
         if (!String(parsed.fromCitySlug || "").trim() || !String(parsed.toCitySlug || "").trim()) {
           throw new Error("From city and to city are required (e.g. chennai, bengaluru).");
         }
@@ -616,12 +642,16 @@ export default function AdminCatalogPanel({
         setSeoServiceForm(seoServiceFormFromItem(data.data));
       } else if (wasEditing && tab?.form === "seoRoute") {
         setSeoRouteForm(seoRouteFormFromItem(data.data));
+      } else if (wasEditing && tab?.form === "seoCityPage") {
+        setSeoCityPageForm(seoCityPageFormFromItem(data.data));
       }
       else resetForm();
       if (tab?.form === "seoService" && data.data?.publicPath) {
         setStatusMessage(`Saved. Live URL: ${data.data.publicPath} (added to sitemap when published)`);
       } else if (tab?.form === "seoRoute" && data.data?.publicPath) {
         setStatusMessage(`Saved. Live URL: ${data.data.publicPath} (added to sitemap when published)`);
+      } else if (tab?.form === "seoCityPage" && data.data?.publicPath) {
+        setStatusMessage(`Saved. Live URL: ${data.data.publicPath} — meta updates within ~10 minutes.`);
       } else if (wasEditing && tab?.form === "cab" && data.data?.image) {
         setStatusMessage(`Updated successfully. Image saved: ${data.data.image}`);
       } else if (wasEditing && tab?.form === "driver" && data.data?.image) {
@@ -629,7 +659,7 @@ export default function AdminCatalogPanel({
       } else {
         setStatusMessage(wasEditing ? "Updated successfully." : "Created successfully.");
       }
-      if (tab?.form === "seoService" || tab?.form === "seoRoute") {
+      if (tab?.form === "seoService" || tab?.form === "seoRoute" || tab?.form === "seoCityPage") {
         if (!wasEditing && data.data?._id) {
           setEditingId(String(data.data._id));
         }
@@ -683,7 +713,7 @@ export default function AdminCatalogPanel({
         if (statusFilter === "finished") return st === "finished";
         return st === statusFilter;
       }
-      if (tabKey === "blogs" || tabKey === "testimonials" || tabKey === "seoServices" || tabKey === "seoRoutes") {
+      if (tabKey === "blogs" || tabKey === "testimonials" || tabKey === "seoServices" || tabKey === "seoRoutes" || tabKey === "seoCityPages") {
         return statusFilter === "active" ? item.published !== false : item.published === false;
       }
       if (tabKey === "cabs" || tabKey === "drivers" || tabKey === "packages") {
@@ -834,6 +864,8 @@ export default function AdminCatalogPanel({
           <AdminSeoServiceForm form={seoServiceForm} onChange={setSeoServiceForm} />
         ) : tab.form === "seoRoute" ? (
           <AdminSeoRouteForm form={seoRouteForm} onChange={setSeoRouteForm} />
+        ) : tab.form === "seoCityPage" ? (
+          <AdminSeoCityPageForm form={seoCityPageForm} onChange={setSeoCityPageForm} />
         ) : tab.form === "testimonial" ? (
           <div className="mt-3 grid gap-3 sm:grid-cols-2">
             <Field label="Name *">

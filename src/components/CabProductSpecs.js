@@ -1,10 +1,12 @@
-import { num } from "../lib/cabFare";
+import { formatRating, num } from "../lib/cabFare";
 
 export default function CabProductSpecs({ cab }) {
   const features = Array.isArray(cab.features) ? cab.features : [];
   const hourly = num(cab.hourlyRate);
   const day = num(cab.dayRate);
   const extra = num(cab.extraHourRate);
+  /* Only shown after the first approved verified review */
+  const ratingText = formatRating(cab);
 
   const rows = [
     { label: "Vehicle", value: cab.title || cab.examples?.split(",")[0]?.trim() || "—" },
@@ -17,7 +19,7 @@ export default function CabProductSpecs({ cab }) {
     { label: "Day rate", value: day > 0 ? `₹${day.toLocaleString("en-IN")}/day` : "—" },
     { label: "Extra hour", value: extra > 0 ? `₹${extra.toLocaleString("en-IN")}/hr` : "—" },
     { label: "Discount", value: cab.discountPercentage ? `${cab.discountPercentage}% OFF` : "—" },
-    { label: "Rating", value: cab.rating != null ? `${cab.rating} / 5` : "—" }
+    ...(ratingText ? [{ label: "Rating", value: `${ratingText} / 5 · ${cab.reviewCount} verified` }] : [])
   ];
 
   return (
