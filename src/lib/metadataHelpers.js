@@ -51,7 +51,7 @@ export function cabDetailMetadata(cab, id) {
         ? { lowPrice: cab.price, highPrice: cab.originalPrice }
         : {}),
       ratingValue: cab.rating,
-      reviewCount: cab.trips ? Math.min(Number(cab.trips), 9999) : undefined,
+      reviewCount: cab.reviewCount,
       category: `${cab.type || "Cab"} · Taxi Booking`
     })
   };
@@ -101,7 +101,7 @@ export function driverDetailMetadata(driver, id) {
       lowPrice: driver.pricing?.hourly,
       highPrice: driver.pricing?.day,
       ratingValue: driver.rating,
-      reviewCount: driver.trips ? Math.min(Number(driver.trips), 9999) : undefined,
+      reviewCount: driver.reviewCount,
       category: "Acting Driver & Chauffeur Service"
     })
   };

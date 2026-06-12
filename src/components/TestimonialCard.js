@@ -32,7 +32,9 @@ export default function TestimonialCard({ item }) {
           </div>
           <div className="min-w-0 flex-1">
             <p className="truncate text-xs font-semibold text-slate-800">{name}</p>
-            {item.location ? <p className={typo.caption}>{item.location}</p> : null}
+            {item.location || item.date ? (
+              <p className={typo.caption}>{[item.location, item.date].filter(Boolean).join(" · ")}</p>
+            ) : null}
           </div>
           <span className="shrink-0 rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">
             Verified

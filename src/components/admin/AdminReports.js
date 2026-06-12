@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { Download } from "lucide-react";
 import { BarChart, DonutChart, LineChart, formatINR, formatNumber } from "./charts";
 
 const RANGES = [
@@ -8,6 +9,23 @@ const RANGES = [
   { days: 30, label: "30 days" },
   { days: 90, label: "90 days" }
 ];
+
+function csvEscape(value) {
+  const s = String(value ?? "");
+  return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+}
+
+function downloadCsv(filename, headerRow, rows) {
+  const body = rows.map((r) => r.map(csvEscape).join(",")).join("\n");
+  const csv = `\uFEFF${headerRow.join(",")}\n${body}`;
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
 
 export default function AdminReports({ token, isSuperAdmin }) {
   const [days, setDays] = useState(30);
@@ -39,6 +57,39 @@ export default function AdminReports({ token, isSuperAdmin }) {
   useEffect(() => {
     if (isSuperAdmin) load();
   }, [isSuperAdmin, load]);
+
+  const exportAnalyticsCsv = () => {
+    if (!data) return;
+    const rows = (data.timeseries || []).map((d) => [d.date || d.label, d.bookings, d.newCustomers, d.revenue]);
+    downloadCsv(`cabzii-analytics-${days}d.csv`, ["Date", "Bookings", "New customers", "Revenue (INR)"], rows);
+  };
+
+  const exportBookingsCsv = async () => {
+    try {
+      const res = await fetch("/api/bookings?limit=1000&page=1&admin=1", { headers: authHeaders, cache: "no-store" });
+      const json = await res.json();
+      const bookings = Array.isArray(json?.data) ? json.data : [];
+      const rows = bookings.map((b) => [
+        b._id,
+        b.createdAt ? new Date(b.createdAt).toISOString().slice(0, 10) : "",
+        b.customerName,
+        b.phone,
+        b.type,
+        b.pickup,
+        b.drop,
+        b.date,
+        b.amount,
+        b.status
+      ]);
+      downloadCsv(
+        "cabzii-bookings.csv",
+        ["ID", "Created", "Customer", "Phone", "Type", "Pickup", "Drop", "Trip date", "Amount (INR)", "Status"],
+        rows
+      );
+    } catch {
+      setError("Could not export bookings CSV.");
+    }
+  };
 
   if (!isSuperAdmin) {
     return (
@@ -72,19 +123,36 @@ export default function AdminReports({ token, isSuperAdmin }) {
           <h2 className="text-lg font-bold text-slate-900">Reports &amp; Analytics</h2>
           <p className="text-sm text-slate-500">Bookings, revenue and customer growth at a glance.</p>
         </div>
-        <div className="flex gap-1 rounded-lg border border-slate-200 p-1">
-          {RANGES.map((r) => (
-            <button
-              key={r.days}
-              type="button"
-              onClick={() => setDays(r.days)}
-              className={`rounded-md px-3 py-1.5 text-sm font-semibold transition ${
-                days === r.days ? "bg-sky-600 text-white" : "text-slate-600 hover:bg-slate-100"
-              }`}
-            >
-              {r.label}
-            </button>
-          ))}
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex gap-1 rounded-lg border border-slate-200 p-1">
+            {RANGES.map((r) => (
+              <button
+                key={r.days}
+                type="button"
+                onClick={() => setDays(r.days)}
+                className={`rounded-md px-3 py-1.5 text-sm font-semibold transition ${
+                  days === r.days ? "bg-sky-600 text-white" : "text-slate-600 hover:bg-slate-100"
+                }`}
+              >
+                {r.label}
+              </button>
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={exportAnalyticsCsv}
+            disabled={!data}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+          >
+            <Download className="h-3.5 w-3.5" strokeWidth={2} aria-hidden /> Analytics CSV
+          </button>
+          <button
+            type="button"
+            onClick={exportBookingsCsv}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+          >
+            <Download className="h-3.5 w-3.5" strokeWidth={2} aria-hidden /> Bookings CSV
+          </button>
         </div>
       </div>
 

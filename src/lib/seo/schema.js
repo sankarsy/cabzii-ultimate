@@ -133,7 +133,6 @@ export function servicePageJsonLd({
     image: image || DEFAULT_OG_IMAGE,
     brand: { "@type": "Brand", name: "cabzii" },
     category: `${serviceName} · Taxi Booking`,
-    aggregateRating: siteAggregateRating(),
     offers: buildOffers({
       url,
       price: priceFrom,
@@ -190,7 +189,6 @@ export function routeServiceJsonLd({
     image: image || DEFAULT_OG_IMAGE,
     brand: { "@type": "Brand", name: "cabzii" },
     category: "One Way Cab · Outstation",
-    aggregateRating: siteAggregateRating(),
     offers: buildOffers({
       url,
       price: priceFrom,
@@ -304,7 +302,6 @@ export function localBusinessJsonLd(cityName, cityRegion, urlPath) {
     description: `Cab, taxi, airport transfer and acting driver booking in ${cityName} via ${SITE_NAME}.`,
     areaServed: cityName,
     priceRange: "₹₹",
-    aggregateRating: siteAggregateRating(),
     offers: buildOffers({
       url,
       lowPrice: CITY_CAB_PRICE_RANGE.low,
@@ -331,7 +328,6 @@ export function cityCabSearchJsonLd(city, { productName, description, urlPath, p
     image: image || DEFAULT_OG_IMAGE,
     brand: { "@type": "Brand", name: "cabzii" },
     category: "Taxi & Cab Booking",
-    aggregateRating: siteAggregateRating(),
     offers: buildOffers({ url, lowPrice: low, highPrice: high, offerCount: 24 })
   };
 }
@@ -352,7 +348,6 @@ export function cityDriverSearchJsonLd(city, { productName, description, urlPath
     image: image || DEFAULT_OG_IMAGE,
     brand: { "@type": "Brand", name: "cabzii" },
     category: "Chauffeur & Driver Service",
-    aggregateRating: siteAggregateRating(),
     offers: buildOffers({ url, lowPrice: low, highPrice: high, offerCount: 16 })
   };
 }
@@ -386,7 +381,6 @@ export function cabsCatalogJsonLd() {
     image: DEFAULT_OG_IMAGE,
     brand: { "@type": "Brand", name: SITE_NAME },
     category: "Taxi & Cab Booking",
-    aggregateRating: siteAggregateRating(),
     offers: buildOffers({ url, lowPrice: CITY_CAB_PRICE_RANGE.low, highPrice: CITY_CAB_PRICE_RANGE.high, offerCount: 40 })
   };
 }
@@ -404,7 +398,6 @@ export function driversCatalogJsonLd() {
     image: DEFAULT_OG_IMAGE,
     brand: { "@type": "Brand", name: SITE_NAME },
     category: "Chauffeur & Driver Service",
-    aggregateRating: siteAggregateRating(),
     offers: buildOffers({
       url,
       lowPrice: CITY_DRIVER_PRICE_RANGE.low,
@@ -429,13 +422,9 @@ export function productJsonLd({
   category = "Taxi & Cab Booking"
 }) {
   const url = `${SITE_URL}${urlPath.startsWith("/") ? urlPath : `/${urlPath}`}`;
-  const rating =
-    ratingValue != null
-      ? siteAggregateRating({
-          ratingValue: String(ratingValue),
-          reviewCount: reviewCount != null ? String(reviewCount) : SITE_REVIEW_STATS.reviewCount
-        })
-      : siteAggregateRating();
+  /* Only emit AggregateRating backed by real approved reviews — fabricated or
+     sitewide ratings on Product schema risk rich-result removal. */
+  const hasRealRating = Number(ratingValue) > 0 && Number(reviewCount) > 0;
 
   return {
     "@context": "https://schema.org",
@@ -447,7 +436,14 @@ export function productJsonLd({
     category,
     brand: { "@type": "Brand", name: SITE_NAME },
     image: image || DEFAULT_OG_IMAGE,
-    aggregateRating: rating,
+    ...(hasRealRating
+      ? {
+          aggregateRating: siteAggregateRating({
+            ratingValue: String(ratingValue),
+            reviewCount: String(reviewCount)
+          })
+        }
+      : {}),
     offers: buildOffers({
       url,
       price,

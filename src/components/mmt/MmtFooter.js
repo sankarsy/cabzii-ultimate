@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { BadgeCheck, IndianRupee, Lock } from "lucide-react";
 import CabziiLogo from "../brand/CabziiLogo";
+import SocialLinks from "../ui/SocialLinks";
 import { BRAND } from "../../lib/brand";
 import { routeToCabSearchHref } from "../../lib/routeTrip";
 import { routeBySlug } from "../../lib/seo/routes";
@@ -58,6 +59,7 @@ export default function MmtFooter() {
             <p className="mt-2 max-w-sm text-sm leading-relaxed text-slate-600">
               Premium cab booking for airport transfers, outstation trips, and local hire across South India.
             </p>
+            <SocialLinks className="mt-4" />
           </div>
           <div className="flex flex-wrap gap-2">
             <span className="cabzii-trust-pill gap-1.5 text-xs">

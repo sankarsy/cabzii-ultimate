@@ -14,6 +14,10 @@ const EmtHolidayExplore = dynamic(() => import("../emt/EmtHolidayExplore"), { ss
 const EmtOffersCarousel = dynamic(() => import("../emt/EmtOffersCarousel"), { ssr: false });
 const MmtPopularRoutes = dynamic(() => import("./MmtPopularRoutes"), { ssr: false });
 const MmtPopularServices = dynamic(() => import("./MmtPopularServices"), { ssr: false });
+const TrustCounters = dynamic(() => import("../home/TrustCounters"), { ssr: false });
+const PopularDestinations = dynamic(() => import("../home/PopularDestinations"), { ssr: false });
+const HomeTestimonials = dynamic(() => import("../home/HomeTestimonials"), { ssr: false });
+const HomeBlogTeasers = dynamic(() => import("../home/HomeBlogTeasers"), { ssr: false });
 import MmtCabResultCard from "./MmtCabResultCard";
 import MmtDriverResultCard from "./MmtDriverResultCard";
 import MmtHomeCatalogSection, { MmtHomeCatalogScroll, MmtHomeCatalogScrollItem } from "./MmtHomeCatalogSection";
@@ -126,6 +130,7 @@ export default function MmtHomePage() {
       <MmtPopularRoutes />
       <TrustStrip />
       <EmtWhyChooseUs />
+      <TrustCounters />
 
       {catalogError ? (
         <p className="mx-auto max-w-6xl px-4 text-sm text-rose-700">{catalogError}</p>
@@ -169,6 +174,10 @@ export default function MmtHomePage() {
           ))}
         </MmtHomeCatalogScroll>
       </MmtHomeCatalogSection>
+
+      <PopularDestinations />
+      <HomeTestimonials />
+      <HomeBlogTeasers />
 
       <InternalLinksHub title="Explore cab booking, routes & services across South India" />
 

@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import FooterSeoLinks from "./seo/FooterSeoLinks";
+import SocialLinks from "./ui/SocialLinks";
 import { isTravelShellPath } from "../lib/travelShellPaths";
 import { useSiteSettings } from "./SiteSettingsProvider";
 
@@ -20,6 +21,7 @@ export default function Footer() {
           <div>
             <h3 className="text-base font-bold text-white sm:text-lg">{siteName || "cabzii.in"}</h3>
             <p className={`mt-2 text-xs text-slate-400 sm:text-sm`}>{tagline}</p>
+            <SocialLinks variant="light" className="mt-4" />
           </div>
 
           <div>

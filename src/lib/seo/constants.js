@@ -1,5 +1,6 @@
 import { absoluteBrandUrl, BRAND_ICON, BRAND_OG_IMAGE, BRAND_TWITTER_IMAGE } from "../brandAssets";
 import { formatSerpTitle } from "./programmaticMeta";
+import { SOCIAL_LINK_LIST } from "../socialLinks";
 
 export const SITE_URL = "https://cabzii.in";
 export const SITE_NAME = "Cabzii";
@@ -26,8 +27,7 @@ export const ORG_ADDRESS = {
  * handles, or override via env without code changes. Empty values are dropped.
  */
 export const SOCIAL_PROFILES = [
-  process.env.NEXT_PUBLIC_FACEBOOK_URL || "https://www.facebook.com/cabzii",
-  process.env.NEXT_PUBLIC_INSTAGRAM_URL || "https://www.instagram.com/cabzii",
+  ...SOCIAL_LINK_LIST.map((l) => l.href),
   process.env.NEXT_PUBLIC_TWITTER_URL || "https://x.com/cabzii",
   process.env.NEXT_PUBLIC_LINKEDIN_URL || "https://www.linkedin.com/company/cabzii",
   process.env.NEXT_PUBLIC_YOUTUBE_URL || "https://www.youtube.com/@cabzii"

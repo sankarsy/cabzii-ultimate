@@ -352,8 +352,48 @@ export function emptyTourPackageForm() {
     tags: "",
     seoTitle: "",
     seoDescription: "",
-    status: "active"
+    status: "active",
+    packageType: "tour-package",
+    state: "",
+    destination: "",
+    nights: 0,
+    days: 0,
+    description: "",
+    highlights: "",
+    inclusions: "",
+    exclusions: "",
+    termsAndConditions: "",
+    cancellationPolicy: "",
+    itinerary: ""
   };
+}
+
+/** "1 | Arrival & temple visit | Pickup at 6am..." per line ⇄ [{day,title,details}] */
+export function itineraryToLines(itinerary) {
+  if (!Array.isArray(itinerary)) return "";
+  return itinerary.map((d) => [d.day, d.title, d.details].filter((x) => x !== undefined).join(" | ")).join("\n");
+}
+
+export function linesToItinerary(text) {
+  return String(text || "")
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line, i) => {
+      const [day, title, ...rest] = line.split("|").map((s) => s.trim());
+      return {
+        day: Number(day) || i + 1,
+        title: title || "",
+        details: rest.join(" | ")
+      };
+    });
+}
+
+function linesToList(text) {
+  return String(text || "")
+    .split("\n")
+    .map((s) => s.trim())
+    .filter(Boolean);
 }
 
 export function tourPackageFormFromItem(item) {
@@ -376,7 +416,19 @@ export function tourPackageFormFromItem(item) {
     tags: Array.isArray(item?.tags) ? item.tags.join(", ") : "",
     seoTitle: item?.seoTitle || "",
     seoDescription: item?.seoDescription || "",
-    status: item?.status === "inactive" ? "inactive" : "active"
+    status: item?.status === "inactive" ? "inactive" : "active",
+    packageType: item?.packageType || "tour-package",
+    state: item?.state || "",
+    destination: item?.destination || "",
+    nights: numField(item?.nights),
+    days: numField(item?.days),
+    description: item?.description || "",
+    highlights: Array.isArray(item?.highlights) ? item.highlights.join("\n") : "",
+    inclusions: Array.isArray(item?.inclusions) ? item.inclusions.join("\n") : "",
+    exclusions: Array.isArray(item?.exclusions) ? item.exclusions.join("\n") : "",
+    termsAndConditions: item?.termsAndConditions || "",
+    cancellationPolicy: item?.cancellationPolicy || "",
+    itinerary: itineraryToLines(item?.itinerary)
   };
 }
 
@@ -413,6 +465,18 @@ export function tourPackageFormToPayload(form) {
       .map((t) => t.trim())
       .filter(Boolean),
     status: form.status === "inactive" ? "inactive" : "active",
+    packageType: form.packageType || "tour-package",
+    state: form.state || "",
+    destination: form.destination || "",
+    nights: numField(form.nights),
+    days: numField(form.days),
+    description: form.description || "",
+    highlights: linesToList(form.highlights),
+    inclusions: linesToList(form.inclusions),
+    exclusions: linesToList(form.exclusions),
+    termsAndConditions: form.termsAndConditions || "",
+    cancellationPolicy: form.cancellationPolicy || "",
+    itinerary: linesToItinerary(form.itinerary),
     ...productFieldsToPayload(form)
   };
 }

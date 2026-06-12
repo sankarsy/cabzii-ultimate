@@ -676,6 +676,22 @@ export default function AdminCatalogPanel({
     }
   };
 
+  const duplicateItem = async (id) => {
+    if (!token || !id || !canEdit) return;
+    setErrorMessage("");
+    const res = await fetch(`${tab.base}/${id}/duplicate`, {
+      method: "POST",
+      headers: authHeaders
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      setErrorMessage(data?.message || "Duplicate failed");
+      return;
+    }
+    setStatusMessage("Duplicated as inactive draft — edit and activate when ready.");
+    await loadData();
+  };
+
   const deleteItem = async (id) => {
     if (!token || !id || tabKey === "bookings" || !canEdit) return;
     if (String(id).startsWith("static:")) return;
@@ -1170,7 +1186,51 @@ export default function AdminCatalogPanel({
               </div>
             </div>
 
-            <AdminProductSeoSection form={tourPackageForm} onChange={setTourPackageForm} pathPrefix="/holidays" titleField="name" cityField="city" />
+            <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-3">
+              <p className="text-xs font-bold uppercase tracking-wide text-slate-600">Tour details</p>
+              <p className="mt-0.5 text-[11px] text-slate-500">
+                Powers the SEO landing page at /tour-packages/&#123;slug&#125;. All fields optional.
+              </p>
+              <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                <Field label="Destination">
+                  <input className={inputCls()} value={tourPackageForm.destination || ""} onChange={(e) => setTourPackageForm((p) => ({ ...p, destination: e.target.value }))} placeholder="Madurai – Rameswaram" />
+                </Field>
+                <Field label="State">
+                  <input className={inputCls()} value={tourPackageForm.state || ""} onChange={(e) => setTourPackageForm((p) => ({ ...p, state: e.target.value }))} placeholder="Tamil Nadu" />
+                </Field>
+                <Field label="Days">
+                  <input type="number" min={0} className={inputCls()} value={tourPackageForm.days || 0} onChange={(e) => setTourPackageForm((p) => ({ ...p, days: Number(e.target.value) }))} />
+                </Field>
+                <Field label="Nights">
+                  <input type="number" min={0} className={inputCls()} value={tourPackageForm.nights || 0} onChange={(e) => setTourPackageForm((p) => ({ ...p, nights: Number(e.target.value) }))} />
+                </Field>
+                <div className="sm:col-span-2">
+                  <Field label="Description">
+                    <textarea rows={3} className={inputCls()} value={tourPackageForm.description || ""} onChange={(e) => setTourPackageForm((p) => ({ ...p, description: e.target.value }))} placeholder="Full package overview shown on the landing page" />
+                  </Field>
+                </div>
+                <Field label="Highlights" hint="One per line">
+                  <textarea rows={3} className={inputCls()} value={tourPackageForm.highlights || ""} onChange={(e) => setTourPackageForm((p) => ({ ...p, highlights: e.target.value }))} placeholder={"Tirumala darshan with priority entry\nAC vehicle throughout"} />
+                </Field>
+                <Field label="Itinerary" hint="One day per line: day | title | details">
+                  <textarea rows={3} className={inputCls()} value={tourPackageForm.itinerary || ""} onChange={(e) => setTourPackageForm((p) => ({ ...p, itinerary: e.target.value }))} placeholder={"1 | Arrival & temple visit | Pickup at 6 AM...\n2 | Return journey | Checkout after breakfast..."} />
+                </Field>
+                <Field label="Inclusions" hint="One per line">
+                  <textarea rows={3} className={inputCls()} value={tourPackageForm.inclusions || ""} onChange={(e) => setTourPackageForm((p) => ({ ...p, inclusions: e.target.value }))} placeholder={"AC cab with driver\nDriver allowance"} />
+                </Field>
+                <Field label="Exclusions" hint="One per line">
+                  <textarea rows={3} className={inputCls()} value={tourPackageForm.exclusions || ""} onChange={(e) => setTourPackageForm((p) => ({ ...p, exclusions: e.target.value }))} placeholder={"Entry tickets\nMeals"} />
+                </Field>
+                <Field label="Cancellation policy">
+                  <textarea rows={2} className={inputCls()} value={tourPackageForm.cancellationPolicy || ""} onChange={(e) => setTourPackageForm((p) => ({ ...p, cancellationPolicy: e.target.value }))} />
+                </Field>
+                <Field label="Terms & conditions">
+                  <textarea rows={2} className={inputCls()} value={tourPackageForm.termsAndConditions || ""} onChange={(e) => setTourPackageForm((p) => ({ ...p, termsAndConditions: e.target.value }))} />
+                </Field>
+              </div>
+            </div>
+
+            <AdminProductSeoSection form={tourPackageForm} onChange={setTourPackageForm} pathPrefix="/tour-packages" titleField="name" cityField="city" />
 
             {tab.sample ? (
               <button
@@ -1415,6 +1475,17 @@ export default function AdminCatalogPanel({
                     >
                       Live page
                     </a>
+                  ) : null}
+                  {tabKey === "packages" && !isStatic ? (
+                    <button
+                      type="button"
+                      onClick={() => duplicateItem(id)}
+                      disabled={!canEdit}
+                      className="rounded-md border border-violet-300 px-2 py-1 text-[11px] font-semibold text-violet-700 hover:bg-violet-50 disabled:opacity-50"
+                      title="Duplicate as inactive draft"
+                    >
+                      Duplicate
+                    </button>
                   ) : null}
                   {tabKey !== "bookings" && !isStatic ? (
                     <button

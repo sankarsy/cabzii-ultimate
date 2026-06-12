@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { Clock } from "lucide-react";
 import { getInitials } from "../lib/avatar";
 import { typo } from "../lib/typography";
+import { estimateReadMinutes } from "../lib/sampleContent";
 
 export default function BlogCard({ post }) {
   const slug = post.slug;
@@ -13,9 +15,14 @@ export default function BlogCard({ post }) {
       <div className="h-1 bg-[#0056D2]" />
 
       <div className="flex flex-1 flex-col p-4">
-        <span className={`inline-flex w-fit rounded-full bg-[#0056D2]/10 px-2 py-0.5 ${typo.eyebrow}`}>
-          Travel guide
-        </span>
+        <div className="flex items-center justify-between gap-2">
+          <span className={`inline-flex w-fit rounded-full bg-[#0056D2]/10 px-2 py-0.5 ${typo.eyebrow}`}>
+            {post.category || "Travel guide"}
+          </span>
+          <span className="inline-flex shrink-0 items-center gap-1 text-[11px] text-slate-400">
+            <Clock className="h-3 w-3" strokeWidth={2} aria-hidden /> {estimateReadMinutes(post)} min read
+          </span>
+        </div>
 
         <h3 className={`mt-2 line-clamp-2 ${typo.h3}`}>
           <Link href={href} className="transition group-hover:text-[#0056D2]">

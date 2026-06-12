@@ -167,6 +167,20 @@ export default async function sitemap() {
       };
     });
 
+  /* SEO landing pages for tour packages (slug-based, richer than /holidays detail) */
+  const tourPackageRoutes = packages
+    .filter((item) => item.slug)
+    .map((item) => {
+      const image = absoluteImage(item.image);
+      return {
+        url: `${base}/tour-packages/${item.slug}`,
+        lastModified: item.updatedAt ? new Date(item.updatedAt) : now,
+        changeFrequency: "weekly",
+        priority: 0.85,
+        ...(image ? { images: [image] } : {})
+      };
+    });
+
   const blogRoutes = blogPosts
     .filter((item) => item.slug)
     .map((item) => ({
@@ -186,6 +200,7 @@ export default async function sitemap() {
     ...cabRoutes,
     ...driverRoutes,
     ...packageRoutes,
+    ...tourPackageRoutes,
     ...blogRoutes
   ];
 }
