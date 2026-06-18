@@ -31,3 +31,10 @@ export function routeQuoteWhatsappUrl(from, to) {
     message: `Hi Cabzii, I need a one-way cab from ${from} to ${to}. Date: ___. Passengers: ___. Please share fare for sedan and SUV.`
   });
 }
+
+export function bangaloreAirport12HrWhatsappUrl() {
+  return whatsappBookingUrl({
+    message:
+      "Hi Cabzii, I need Bangalore (Kempegowda) airport pickup with a 12-hour cab package (120 km). Date: ___. Time: ___. Passengers: ___. Please quote sedan/SUV fare."
+  });
+}

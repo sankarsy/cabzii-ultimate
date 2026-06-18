@@ -3,7 +3,7 @@ import { routeToCabSearchHref, routeToDriverSearchHref } from "../../lib/routeTr
 import Breadcrumbs from "./Breadcrumbs";
 import BookingCtaBar from "./BookingCtaBar";
 import FaqSection from "./FaqSection";
-import { tunedRouteDescription } from "../../lib/seo/metadataTuning";
+import { tunedRouteDescription, tunedRouteH1 } from "../../lib/seo/metadataTuning";
 import { servicePath, SEO_SERVICES } from "../../lib/seo/services";
 
 export default function RouteLandingPage({ route, faqs, extraBody = "" }) {
@@ -27,7 +27,7 @@ export default function RouteLandingPage({ route, faqs, extraBody = "" }) {
 
       <p className="text-xs font-bold uppercase tracking-[0.2em] text-sky-600">One way cab · Cabzii</p>
       <h1 className="mt-3 text-3xl font-extrabold text-slate-900 md:text-4xl">
-        {fromCity.name} to {toCity.name} Cab — One Way Taxi
+        {tunedRouteH1(route)}
       </h1>
       <p className="mt-4 text-base leading-relaxed text-slate-700 md:text-lg">
         {tunedRouteDescription(route)} ({distance}, {duration})

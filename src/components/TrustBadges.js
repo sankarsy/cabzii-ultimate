@@ -1,6 +1,6 @@
 "use client";
 
-import { getIcon, TRUST_ICON_STYLES, UserCheckIcon } from "./icons";
+import { getTrustIcon, TRUST_ICON_STYLES } from "./icons/heroIcons";
 
 const FALLBACK_TRUST_BADGES = [
   { label: "Verified Drivers", iconKey: "verified" },
@@ -52,7 +52,7 @@ export default function TrustBadges({ badges }) {
       aria-label="Trust highlights"
     >
       {items.map((badge) => {
-        const Icon = getIcon(badge.iconKey) || UserCheckIcon;
+        const Icon = getTrustIcon(badge.iconKey);
         const style = TRUST_ICON_STYLES[badge.iconKey] || TRUST_ICON_STYLES.verified;
         return (
           <span

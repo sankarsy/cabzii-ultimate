@@ -3,7 +3,24 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 const emptyVendor = { name: "", contactPhone: "", contactEmail: "", adminPhone: "", isActive: true };
-const emptyCity = { name: "", state: "", country: "India", isActive: true, sortOrder: 0 };
+const emptyCity = {
+  name: "",
+  slug: "",
+  state: "",
+  country: "India",
+  isActive: true,
+  sortOrder: 0,
+  metaTitle: "",
+  metaDescription: "",
+  keywords: "",
+  content: "",
+  image: "",
+  banner: "",
+  airportDetails: "",
+  popularLocations: "",
+  popularRoutes: "",
+  popularPackages: ""
+};
 const emptyLocation = { city: "", name: "", address: "", pincode: "", isActive: true };
 
 function Field({ label, children }) {
@@ -88,7 +105,22 @@ export default function AdminMasterData({ token, isSuperAdmin, initialSection = 
   const saveCity = async () => {
     const url = editCityId ? `/api/cities/${editCityId}` : "/api/cities";
     const method = editCityId ? "PUT" : "POST";
-    const res = await fetch(url, { method, headers, body: JSON.stringify(cityForm) });
+    const payload = {
+      ...cityForm,
+      popularLocations: String(cityForm.popularLocations || "")
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean),
+      popularRoutes: String(cityForm.popularRoutes || "")
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean),
+      popularPackages: String(cityForm.popularPackages || "")
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean)
+    };
+    const res = await fetch(url, { method, headers, body: JSON.stringify(payload) });
     const data = await res.json();
     if (!res.ok) {
       setMessage(data?.message || "City save failed");
@@ -248,8 +280,36 @@ export default function AdminMasterData({ token, isSuperAdmin, initialSection = 
               <Field label="City name *">
                 <input className={inputCls()} value={cityForm.name} onChange={(e) => setCityForm((p) => ({ ...p, name: e.target.value }))} />
               </Field>
+              <Field label="Slug">
+                <input className={inputCls()} value={cityForm.slug} onChange={(e) => setCityForm((p) => ({ ...p, slug: e.target.value }))} placeholder="chennai" />
+              </Field>
               <Field label="State">
                 <input className={inputCls()} value={cityForm.state} onChange={(e) => setCityForm((p) => ({ ...p, state: e.target.value }))} />
+              </Field>
+              <Field label="Meta title">
+                <input className={inputCls()} value={cityForm.metaTitle} onChange={(e) => setCityForm((p) => ({ ...p, metaTitle: e.target.value }))} />
+              </Field>
+              <div className="sm:col-span-2">
+                <Field label="Meta description">
+                  <textarea className={inputCls()} rows={2} value={cityForm.metaDescription} onChange={(e) => setCityForm((p) => ({ ...p, metaDescription: e.target.value }))} />
+                </Field>
+              </div>
+              <Field label="Keywords">
+                <input className={inputCls()} value={cityForm.keywords} onChange={(e) => setCityForm((p) => ({ ...p, keywords: e.target.value }))} />
+              </Field>
+              <Field label="Image URL">
+                <input className={inputCls()} value={cityForm.image} onChange={(e) => setCityForm((p) => ({ ...p, image: e.target.value }))} />
+              </Field>
+              <div className="sm:col-span-2">
+                <Field label="Content (HTML)">
+                  <textarea className={inputCls()} rows={4} value={cityForm.content} onChange={(e) => setCityForm((p) => ({ ...p, content: e.target.value }))} />
+                </Field>
+              </div>
+              <Field label="Airport details">
+                <input className={inputCls()} value={cityForm.airportDetails} onChange={(e) => setCityForm((p) => ({ ...p, airportDetails: e.target.value }))} />
+              </Field>
+              <Field label="Popular locations (comma-separated)">
+                <input className={inputCls()} value={cityForm.popularLocations} onChange={(e) => setCityForm((p) => ({ ...p, popularLocations: e.target.value }))} />
               </Field>
             </div>
             <div className="mt-3 flex gap-2">
@@ -273,7 +333,7 @@ export default function AdminMasterData({ token, isSuperAdmin, initialSection = 
                 <td className="px-3 py-2 text-xs text-slate-600">{c.state || "—"}</td>
                 <td className="px-3 py-2">
                   <div className="flex gap-2">
-                  <button type="button" className="text-xs font-semibold text-sky-700" onClick={() => { setEditCityId(c._id); setCityForm({ name: c.name, state: c.state || "", country: c.country || "India", isActive: c.isActive !== false, sortOrder: c.sortOrder || 0 }); }}>Edit</button>
+                  <button type="button" className="text-xs font-semibold text-sky-700" onClick={() => { setEditCityId(c._id); setCityForm({ ...emptyCity, ...c, popularLocations: (c.popularLocations || []).join(", "), popularRoutes: (c.popularRoutes || []).join(", "), popularPackages: (c.popularPackages || []).join(", ") }); }}>Edit</button>
                   <button type="button" className="text-xs font-semibold text-rose-700" onClick={() => deleteEntity("cities", c._id)}>Delete</button>
                   </div>
                 </td>

@@ -1,3 +1,4 @@
+import { revalidatePath } from "next/cache";
 import { proxyRequest } from "../../../lib/backendProxy";
 
 export async function GET(req) {
@@ -6,5 +7,9 @@ export async function GET(req) {
 
 export async function PUT(req) {
   const body = await req.text();
-  return proxyRequest(req, "/site-settings", { method: "PUT", body });
+  const res = await proxyRequest(req, "/site-settings", { method: "PUT", body });
+  if (res.ok) {
+    revalidatePath("/", "layout");
+  }
+  return res;
 }

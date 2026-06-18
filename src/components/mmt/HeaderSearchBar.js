@@ -7,9 +7,16 @@ import { SearchIcon } from "../icons";
 
 const PLACEHOLDER = "Search cabs, drivers, holidays, flights…";
 
-export default function HeaderSearchBar({ className = "", inputClassName = "", onSubmitted, compact = false }) {
+export default function HeaderSearchBar({
+  className = "",
+  inputClassName = "",
+  onSubmitted,
+  compact = false,
+  variant = "dark"
+}) {
   const router = useRouter();
   const [query, setQuery] = useState("");
+  const isLight = variant === "light";
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -45,9 +52,11 @@ export default function HeaderSearchBar({ className = "", inputClassName = "", o
           onChange={(e) => setQuery(e.target.value)}
           placeholder={PLACEHOLDER}
           aria-label="Search cabs, drivers, holidays and more"
-          className={`w-full rounded-full border border-white/20 bg-white/95 text-slate-800 placeholder:text-slate-400 outline-none focus:border-white focus:ring-2 focus:ring-white/30 ${
-            compact ? "py-2 pl-9 pr-3 text-sm" : "py-2.5 pl-10 pr-[4.75rem] text-sm"
-          } ${inputClassName}`}
+          className={`w-full rounded-full outline-none ${
+            isLight
+              ? "border border-slate-200 bg-slate-50 text-slate-900 placeholder:text-slate-400 focus:border-[var(--cabzii-brand)] focus:ring-2 focus:ring-blue-100"
+              : "border border-white/20 bg-white/95 text-slate-800 placeholder:text-slate-400 focus:border-white focus:ring-2 focus:ring-white/30"
+          } ${compact ? "py-2 pl-9 pr-3 text-sm" : "py-2.5 pl-10 pr-[4.75rem] text-sm"} ${inputClassName}`}
         />
         {!compact ? (
           <button

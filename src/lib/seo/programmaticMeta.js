@@ -157,6 +157,18 @@ const SERVICE_META_OVERRIDES = {
       "One way taxi from Chennai on Cabzii — inter-city drops without return empty charges. Chennai to Bangalore, Pondicherry, Tirupati and more. Upfront fares."
     )
   },
+  "bengaluru:airport-taxi": {
+    title: formatSerpTitle("Bangalore Airport Taxi", "Pickup & 12 Hr Packages"),
+    description: clampDescription(
+      "Bangalore airport taxi (Kempegowda BLR) — pickup & drop, 4/8/12-hour packages. Book 12 hr / 120 km airport pickup online on Cabzii with upfront fares."
+    )
+  },
+  "bengaluru:hourly-rental": {
+    title: formatSerpTitle("Bangalore 12 Hour Cab", "Airport Pickup Packages"),
+    description: clampDescription(
+      "12 hour cab rental in Bangalore — ideal for airport pickup, meetings & city tours. 12 hr / 120 km packages from Kempegowda airport on Cabzii.in."
+    )
+  },
   "chennai:car-rental": {
     title: formatSerpTitle("Chennai Cabs", "Car Rental & 4–8 Hour Packages"),
     description: clampDescription(
@@ -301,9 +313,9 @@ const ROUTE_META_OVERRIDES = {
     )
   },
   "chennai-to-trichy-cab": {
-    title: formatSerpTitle("Chennai to Trichy Taxi", "One-Way Best Rates"),
+    title: formatSerpTitle("Chennai to Trichy Taxi", "330 km · One-Way Cab Service"),
     description: clampDescription(
-      "Chennai to Trichy taxi on Cabzii — one-way cab from ₹4,200 sedan. 330 km, 5–6 hours. Srirangam and city drops with professional drivers."
+      "Chennai to Trichy taxi & cab service from ₹4,200. 330 km distance by car, 5–6 hours. Book one-way taxi online — Srirangam & city drops on Cabzii."
     )
   },
   "bengaluru-to-tirupati-cab": {
@@ -450,10 +462,15 @@ export function serviceSearchHref(service, city) {
     base.set("serviceTripType", "airport");
     base.set("to", city.name);
     base.set("direction", "pickup");
+  } else if (service.slug === "hourly-rental") {
+    base.set("serviceTripType", "hourly");
+    base.set("from", city.slug === "bengaluru" ? "Kempegowda International Airport, Bengaluru" : city.name);
+    base.set("to", city.name);
+    base.set("city", city.name);
+    base.set("packageHours", city.slug === "bengaluru" ? "12" : "8");
   } else if (
     service.slug === "car-rental" ||
     service.slug === "cab-rental" ||
-    service.slug === "hourly-rental" ||
     service.slug === "local-taxi"
   ) {
     base.set("serviceTripType", "local");
@@ -539,7 +556,31 @@ export function servicesForCityHub(citySlug, limit = 8) {
   return ordered;
 }
 
+const ROUTE_KEYWORD_OVERRIDES = {
+  "chennai-to-trichy-cab": [
+    "chennai to trichy taxi",
+    "chennai to trichy distance by car",
+    "chennai to trichy cabs",
+    "cab from chennai to trichy",
+    "chennai to trichy cab service",
+    "chennai to trichy one way taxi",
+    "chennai to trichy oneway taxi",
+    "chennai to trichy cab",
+    "one way cab chennai to trichy"
+  ]
+};
+
+export function getRouteH1(route) {
+  if (route.slug === "chennai-to-trichy-cab") {
+    return "Chennai to Trichy Taxi — One-Way Cab Service";
+  }
+  return `${route.fromCity.name} to ${route.toCity.name} Cab — One Way Taxi`;
+}
+
 export function routeMetaKeywords(route) {
+  if (ROUTE_KEYWORD_OVERRIDES[route.slug]) {
+    return ROUTE_KEYWORD_OVERRIDES[route.slug];
+  }
   const from = route.fromCity.name.toLowerCase();
   const to = route.toCity.name.toLowerCase();
   return [

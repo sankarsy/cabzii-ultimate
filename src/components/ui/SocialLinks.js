@@ -1,3 +1,5 @@
+"use client";
+
 import { SOCIAL_LINKS } from "../../lib/socialLinks";
 
 function InstagramIcon({ className = "h-4 w-4" }) {
@@ -37,10 +39,11 @@ export default function SocialLinks({ variant = "dark", className = "" }) {
     <div className={`flex flex-wrap items-center gap-2.5 ${className}`} aria-label="Follow Cabzii on social media">
       {ITEMS.map(({ href, label, handle, Icon }) => (
         <a
-          key={href}
+          key={label}
           href={href}
           target="_blank"
-          rel="noopener noreferrer"
+          rel="noopener noreferrer external"
+          referrerPolicy="no-referrer-when-downgrade"
           className={`cabzii-tap inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold transition ${btnClass}`}
           aria-label={`Follow Cabzii on ${label}`}
         >

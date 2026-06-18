@@ -1,17 +1,21 @@
 "use client";
 
-import { useSiteSettings } from "./SiteSettingsProvider";
+import { usePathname } from "next/navigation";
 import { Phone } from "lucide-react";
 import WhatsAppIcon from "./WhatsAppIcon";
+import { useSiteSettings } from "./SiteSettingsProvider";
 import { telUrl, whatsappBookingUrl } from "../lib/conversion";
+import { shouldHideFloatingUi } from "../lib/floatingUi";
 
 /** Desktop-only floating contact buttons — mobile uses StickyBookingBar instead. */
 export default function ContactFab() {
+  const pathname = usePathname();
   const settings = useSiteSettings();
   const whatsapp = settings.whatsappFab;
   const phone = settings.contact?.phone || "+91-9944197416";
   const whatsappNumber = String(whatsapp?.number || settings.contact?.whatsapp || "9944197416").replace(/\D/g, "");
 
+  if (shouldHideFloatingUi(pathname)) return null;
   if (whatsapp?.enabled === false || !whatsappNumber) return null;
 
   const waHref = whatsappBookingUrl({
@@ -20,7 +24,7 @@ export default function ContactFab() {
   });
 
   return (
-    <div className="fixed bottom-5 right-5 z-40 hidden flex-col items-end gap-3 sm:flex">
+    <div className="fixed bottom-5 left-5 z-40 hidden flex-col items-start gap-3 sm:flex">
       <a
         href={telUrl(phone)}
         className="cabzii-tap inline-flex h-12 w-12 items-center justify-center rounded-full text-white shadow-[0_4px_20px_rgba(0,86,210,0.35)] transition hover:shadow-[0_6px_24px_rgba(0,86,210,0.45)]"

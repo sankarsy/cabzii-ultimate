@@ -1,15 +1,14 @@
 import { BRAND } from "../brand";
 
-/** Home hero tabs — Cabzii.in travel booking */
-/** Cabs & drivers first — core Cabzii products; all tabs scroll horizontally on small screens */
+/** Home hero tabs — EMT-style order (scroll on mobile) */
 export const HERO_TABS = [
-  { id: "cabs", label: "Cabs", iconKey: "car" },
-  { id: "drivers", label: "Drivers", iconKey: "driver" },
   { id: "flights", label: "Flights", iconKey: "plane" },
   { id: "hotels", label: "Hotels", iconKey: "hotel" },
-  { id: "holidays", label: "Holidays", iconKey: "holiday" },
+  { id: "trains", label: "Trains", iconKey: "train" },
   { id: "buses", label: "Buses", iconKey: "bus" },
-  { id: "trains", label: "Trains", iconKey: "train" }
+  { id: "holidays", label: "Holidays", iconKey: "holiday" },
+  { id: "cabs", label: "Cabs", iconKey: "car" },
+  { id: "drivers", label: "Drivers", iconKey: "driver" }
 ];
 
 export const TRENDING_SEARCHES = [
@@ -20,14 +19,9 @@ export const TRENDING_SEARCHES = [
   { label: "Outstation Cab Chennai", href: "/services/outstation-cab/chennai" },
   { label: "One Way Taxi Chennai", href: "/services/one-way-cab/chennai" },
   { label: "Chennai → Tirupati", slug: "chennai-to-tirupati-cab" },
+  { label: "Chennai → Trichy", slug: "chennai-to-trichy-cab" },
   { label: "Pilgrimage Tours", href: "/holidays?category=pilgrimage" }
 ];
 
-export const WHY_STATS = [
-  { value: "50K+", label: "Happy customers" },
-  { value: "Best Price", label: "Guarantee" },
-  { value: "24×7", label: "Support" },
-  { value: "Secure", label: "OTP booking" }
-];
-
-export { BRAND };
+export { BRAND } from "../brand";
+export { WHY_STATS } from "../marketingStats";

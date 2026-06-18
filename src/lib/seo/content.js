@@ -146,7 +146,35 @@ export function getServiceFaqs(service, city) {
 }
 
 export function getRouteFaqs(route) {
-  const { fromCity, toCity, distance, duration, sedanFrom, suvFrom } = route;
+  const { fromCity, toCity, distance, duration, sedanFrom, suvFrom, slug } = route;
+
+  const bySlug = {
+    "chennai-to-trichy-cab": [
+      [
+        "What is the Chennai to Trichy distance by car?",
+        `Chennai to Trichy is approximately ${distance} by road (around 330 km via NH44/NH38), typically ${duration} by car excluding long meal breaks.`
+      ],
+      [
+        "How much is Chennai to Trichy one way taxi fare?",
+        `Chennai to Trichy one-way taxi fares start around ₹${sedanFrom.toLocaleString("en-IN")} for sedan (Dzire/Etios) and from ₹${suvFrom.toLocaleString("en-IN")} for SUV/Innova. Exact fare is shown on Cabzii before booking.`
+      ],
+      [
+        "Is Chennai to Trichy cab service available online?",
+        "Yes. Book cab from Chennai to Trichy on Cabzii — enter pickup and drop, choose vehicle type and confirm with mobile OTP. Driver details are shared before departure."
+      ],
+      [
+        "Can I book a cab from Chennai to Trichy for Srirangam temple visit?",
+        "Yes. Specify Srirangam or Rock Fort as your drop landmark during booking. Sedan suits 1–3 passengers; families often choose SUV or Innova for luggage and prasadam."
+      ],
+      [
+        "Is toll included in Chennai to Trichy cab fare?",
+        "Toll treatment varies by vendor package. Cabzii shows toll, state tax and driver allowance inclusions clearly in the fare breakdown before payment."
+      ]
+    ]
+  };
+
+  if (bySlug[slug]) return bySlug[slug];
+
   return [
     [`What is the distance from ${fromCity.name} to ${toCity.name} by cab?`, `The road distance is approximately ${distance} and usually takes ${duration} depending on traffic and stops.`],
     [`How much is one way cab fare from ${fromCity.name} to ${toCity.name}?`, `Sedan one way fares start around ₹${sedanFrom.toLocaleString("en-IN")}; SUV/Innova from ₹${suvFrom.toLocaleString("en-IN")}. Exact fare is shown on Cabzii before booking.`],

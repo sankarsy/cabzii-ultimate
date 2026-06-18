@@ -8,8 +8,8 @@ const SECTIONS = [
   { id: "navbar", label: "Navbar" },
   { id: "footer", label: "Footer links" },
   { id: "hero", label: "Hero banner" },
-  { id: "heroStats", label: "Hero stats" },
-  { id: "whyChooseUs", label: "Why choose us" },
+  { id: "heroStats", label: "Hero stats (counters)" },
+  { id: "whyChooseUs", label: "Why Cabzii section" },
   { id: "homeSections", label: "Homepage sections" },
   { id: "whatsapp", label: "WhatsApp button" }
 ];
@@ -38,6 +38,10 @@ function emptyFooterLink() {
 
 function emptyHeroStat() {
   return { value: "", label: "", iconKey: "users" };
+}
+
+function emptyWhyStat() {
+  return { value: "", label: "" };
 }
 
 function emptyWhyCard() {
@@ -96,6 +100,8 @@ export default function AdminSiteSettings({ token, isSuperAdmin }) {
     trustBadges: []
   });
   const [heroStats, setHeroStats] = useState([]);
+  const [whySection, setWhySection] = useState({ eyebrow: "", title: "", subtitle: "" });
+  const [whyStats, setWhyStats] = useState([]);
   const [whyChooseUs, setWhyChooseUs] = useState([]);
   const [homeSections, setHomeSections] = useState([]);
   const [whatsappFab, setWhatsappFab] = useState({ enabled: true, number: "" });
@@ -134,6 +140,12 @@ export default function AdminSiteSettings({ token, isSuperAdmin }) {
       trustBadges: normalizeTrustBadges(s.hero?.trustBadges)
     });
     setHeroStats(Array.isArray(s.heroStats) ? s.heroStats.map((x) => ({ ...x })) : []);
+    setWhySection({
+      eyebrow: s.whySection?.eyebrow || "",
+      title: s.whySection?.title || "",
+      subtitle: s.whySection?.subtitle || ""
+    });
+    setWhyStats(Array.isArray(s.whyStats) ? s.whyStats.map((x) => ({ ...x })) : []);
     setWhyChooseUs(Array.isArray(s.whyChooseUs) ? s.whyChooseUs.map((x) => ({ ...x })) : []);
     setHomeSections(Array.isArray(s.homeSections) ? s.homeSections.map((x) => ({ ...x })) : []);
     setWhatsappFab({
@@ -177,7 +189,7 @@ export default function AdminSiteSettings({ token, isSuperAdmin }) {
       case "heroStats":
         return { heroStats };
       case "whyChooseUs":
-        return { whyChooseUs };
+        return { whySection, whyStats, whyChooseUs };
       case "homeSections":
         return { homeSections };
       case "whatsapp":
@@ -506,6 +518,11 @@ export default function AdminSiteSettings({ token, isSuperAdmin }) {
 
         {activeSection === "heroStats" && (
           <div className="space-y-3">
+            <p className="text-xs text-slate-600">
+              Controls the animated trust counters on the homepage (Happy customers, Trips completed, etc.). Use values like{" "}
+              <code className="rounded bg-slate-100 px-1">50K+</code>, <code className="rounded bg-slate-100 px-1">50000</code>, or{" "}
+              <code className="rounded bg-slate-100 px-1">4.9/5</code>.
+            </p>
             {heroStats.map((stat, index) => (
               <div key={index} className="grid gap-3 rounded-lg border border-slate-200 bg-slate-50 p-3 sm:grid-cols-4">
                 <Field label="Value">
@@ -529,7 +546,44 @@ export default function AdminSiteSettings({ token, isSuperAdmin }) {
         )}
 
         {activeSection === "whyChooseUs" && (
-          <div className="space-y-3">
+          <div className="space-y-6">
+            <div className="grid gap-3 rounded-lg border border-slate-200 bg-slate-50 p-3 sm:grid-cols-3">
+              <Field label="Section eyebrow">
+                <input className={inputCls()} value={whySection.eyebrow} onChange={(e) => setWhySection((p) => ({ ...p, eyebrow: e.target.value }))} />
+              </Field>
+              <Field label="Section title">
+                <input className={inputCls()} value={whySection.title} onChange={(e) => setWhySection((p) => ({ ...p, title: e.target.value }))} />
+              </Field>
+              <Field label="Section subtitle">
+                <input className={inputCls()} value={whySection.subtitle} onChange={(e) => setWhySection((p) => ({ ...p, subtitle: e.target.value }))} />
+              </Field>
+            </div>
+
+            <div>
+              <p className="mb-2 text-xs font-semibold text-slate-700">Top stat pills (4 cards above features)</p>
+              <div className="space-y-3">
+                {whyStats.map((stat, index) => (
+                  <div key={index} className="grid gap-3 rounded-lg border border-slate-200 bg-slate-50 p-3 sm:grid-cols-3">
+                    <Field label="Value">
+                      <input className={inputCls()} value={stat.value} onChange={(e) => updateListItem(setWhyStats, index, "value", e.target.value)} />
+                    </Field>
+                    <Field label="Label">
+                      <input className={inputCls()} value={stat.label} onChange={(e) => updateListItem(setWhyStats, index, "label", e.target.value)} />
+                    </Field>
+                    <button type="button" onClick={() => removeListItem(setWhyStats, index)} className="self-end text-xs font-semibold text-rose-700">
+                      Remove
+                    </button>
+                  </div>
+                ))}
+                <button type="button" onClick={() => setWhyStats((p) => [...p, emptyWhyStat()])} className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50">
+                  + Add stat pill
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <p className="mb-2 text-xs font-semibold text-slate-700">Feature cards (first 4 shown on homepage)</p>
+              <div className="space-y-3">
             {whyChooseUs.map((card, index) => (
               <div key={index} className="grid gap-3 rounded-lg border border-slate-200 bg-slate-50 p-3 sm:grid-cols-4">
                 <Field label="Title">
@@ -549,6 +603,8 @@ export default function AdminSiteSettings({ token, isSuperAdmin }) {
             <button type="button" onClick={() => setWhyChooseUs((p) => [...p, emptyWhyCard()])} className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50">
               + Add card
             </button>
+              </div>
+            </div>
           </div>
         )}
 

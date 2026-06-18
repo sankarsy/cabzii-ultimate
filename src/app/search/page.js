@@ -14,16 +14,16 @@ const normalize = (value) => value.toLowerCase().trim();
 const includesQuery = (query, values) => values.some((value) => normalize(String(value)).includes(query));
 
 const SERVICE_SHORTCUTS = [
-  { id: "flights", label: "Flights", href: "/flights", keywords: ["flight", "flights", "fly", "air", "airport transfer"] },
-  { id: "hotels", label: "Hotels", href: "/hotels", keywords: ["hotel", "hotels", "stay", "resort", "accommodation"] },
-  { id: "cabs", label: "Cabs", href: "/cabs", keywords: ["cab", "cabs", "taxi", "sedan", "suv", "innova", "tempo"] },
+  { id: "cabs", label: "Book Cab", href: "/cabs", keywords: ["cab", "cabs", "taxi", "sedan", "suv", "innova", "tempo", "outstation", "one way"] },
+  { id: "airport", label: "Airport Taxi", href: "/cabs/results?serviceTripType=airport", keywords: ["airport", "transfer", "pickup", "drop"] },
   { id: "drivers", label: "Drivers", href: "/drivers", keywords: ["driver", "drivers", "chauffeur", "acting driver"] },
   {
     id: "holidays",
-    label: "Holidays",
-    href: "/holidays",
-    keywords: ["holiday", "holidays", "package", "packages", "tour", "tours", "pilgrimage", "trip"]
+    label: "Temple Tours",
+    href: "/holidays?category=pilgrimage",
+    keywords: ["holiday", "holidays", "package", "packages", "tour", "tours", "pilgrimage", "tirupati", "rameswaram", "madurai", "temple"]
   },
+  { id: "routes", label: "Popular Routes", href: "/routes", keywords: ["route", "routes", "chennai", "bangalore", "madurai"] },
   { id: "blogs", label: "Blogs", href: "/blogs", keywords: ["blog", "blogs", "guide", "tips", "article"] }
 ];
 

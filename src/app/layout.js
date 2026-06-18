@@ -2,6 +2,7 @@ import "./globals.css";
 import { Manrope } from "next/font/google";
 import SiteSettingsProvider from "../components/SiteSettingsProvider";
 import ContactFab from "../components/ContactFab";
+import CabziiChatbot from "../components/chatbot/CabziiChatbot";
 import StickyBookingBar from "../components/StickyBookingBar";
 import CookieConsent from "../components/CookieConsent";
 import ServiceWorkerRegister from "../components/ServiceWorkerRegister";
@@ -80,6 +81,7 @@ export default async function RootLayout({ children }) {
           {children}
           <StickyBookingBar />
           <ContactFab />
+          <CabziiChatbot />
           <CookieConsent />
         </SiteSettingsProvider>
         <ServiceWorkerRegister />

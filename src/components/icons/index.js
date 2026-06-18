@@ -13,6 +13,7 @@ import {
   Bus,
   Calendar,
   Car,
+  CarFront,
   Check,
   ChevronDown,
   ChevronRight,
@@ -27,6 +28,7 @@ import {
   MapPin,
   MapPinned,
   Navigation,
+  Palmtree,
   Phone,
   Plane,
   PlaneTakeoff,
@@ -42,7 +44,13 @@ import {
   User,
   UserCheck,
   Users,
-  Fuel
+  Fuel,
+  BookOpen,
+  Umbrella,
+  Percent,
+  Package,
+  Newspaper,
+  CircleUser
 } from "lucide-react";
 
 const STROKE = 1.75;
@@ -66,6 +74,12 @@ export const MapPinIcon = wrapLucide(MapPin);
 export const TagIcon = wrapLucide(Tag);
 export const HeadsetIcon = wrapLucide(Headphones);
 export const CarIcon = wrapLucide(Car);
+export const CarFrontIcon = wrapLucide(CarFront);
+export const CircleUserIcon = wrapLucide(CircleUser);
+export const UmbrellaIcon = wrapLucide(Umbrella);
+export const PercentIcon = wrapLucide(Percent);
+export const PackageIcon = wrapLucide(Package);
+export const NewspaperIcon = wrapLucide(Newspaper);
 export const LockIcon = wrapLucide(Lock);
 export const UsersIcon = wrapLucide(Users);
 export const UserCheckIcon = wrapLucide(UserCheck);
@@ -102,6 +116,8 @@ export const BusIcon = wrapLucide(Bus);
 export const TrainIcon = wrapLucide(TrainFront);
 export const BackpackIcon = wrapLucide(Backpack);
 export const LuggageIcon = wrapLucide(Luggage);
+export const BookOpenIcon = wrapLucide(BookOpen);
+export const PalmtreeIcon = wrapLucide(Palmtree);
 export const FuelIcon = wrapLucide(Fuel);
 export const LangIcon = wrapLucide(Languages);
 export const TwoWayIcon = wrapLucide(ArrowLeftRight);
@@ -162,15 +178,49 @@ export const ICON_REGISTRY = {
   ac: SnowflakeIcon
 };
 
-/** Home hero travel tabs */
-export const HERO_TAB_ICONS = {
-  cabs: CarIcon,
-  drivers: UserCheckIcon,
-  flights: PlaneIcon,
-  hotels: HotelIcon,
-  holidays: BackpackIcon,
-  buses: BusIcon,
-  trains: TrainIcon
+/** Home hero travel tabs — see heroIcons.js (Remix flat icons) */
+export { HERO_TAB_ICONS } from "./heroIcons";
+
+/** Per-tab icon colors — light pastel circles (EMT-style) */
+export const HOME_CATEGORY_ICON_STYLES = {
+  cabs: {
+    active: "bg-sky-50 text-sky-500 ring-1 ring-sky-100",
+    idle: "bg-slate-50 text-slate-400 ring-1 ring-slate-100"
+  },
+  drivers: {
+    active: "bg-violet-50 text-violet-500 ring-1 ring-violet-100",
+    idle: "bg-slate-50 text-slate-400 ring-1 ring-slate-100"
+  },
+  holidays: {
+    active: "bg-emerald-50 text-emerald-500 ring-1 ring-emerald-100",
+    idle: "bg-slate-50 text-slate-400 ring-1 ring-slate-100"
+  },
+  hotels: {
+    active: "bg-amber-50 text-amber-500 ring-1 ring-amber-100",
+    idle: "bg-slate-50 text-slate-400 ring-1 ring-slate-100"
+  },
+  flights: {
+    active: "bg-blue-50 text-blue-500 ring-1 ring-blue-100",
+    idle: "bg-slate-50 text-slate-400 ring-1 ring-slate-100"
+  },
+  buses: {
+    active: "bg-orange-50 text-orange-500 ring-1 ring-orange-100",
+    idle: "bg-slate-50 text-slate-400 ring-1 ring-slate-100"
+  },
+  trains: {
+    active: "bg-indigo-50 text-indigo-500 ring-1 ring-indigo-100",
+    idle: "bg-slate-50 text-slate-400 ring-1 ring-slate-100"
+  }
+};
+
+/** Bottom hero feature row — soft icon chips */
+export const HERO_FEATURE_ICON_STYLES = {
+  deals: "bg-orange-50 text-orange-500 ring-1 ring-orange-100",
+  locations: "bg-rose-50 text-rose-500 ring-1 ring-rose-100",
+  airport: "bg-sky-50 text-sky-500 ring-1 ring-sky-100",
+  packages: "bg-violet-50 text-violet-500 ring-1 ring-violet-100",
+  routes: "bg-emerald-50 text-emerald-500 ring-1 ring-emerald-100",
+  blog: "bg-blue-50 text-blue-500 ring-1 ring-blue-100"
 };
 
 export function getIcon(iconKey) {

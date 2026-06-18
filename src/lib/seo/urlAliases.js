@@ -89,7 +89,18 @@ export function resolveSeoAliasPath(pathname) {
       "chennai-outstation-cab": "/services/outstation-cab/chennai",
       "chennai-one-way-taxi": "/services/one-way-cab/chennai",
       "one-way-taxi-chennai": "/services/one-way-cab/chennai",
-      "outstation-cab-chennai": "/services/outstation-cab/chennai"
+      "outstation-cab-chennai": "/services/outstation-cab/chennai",
+      "chennai-to-trichy-cabs": "/routes/chennai-to-trichy-cab",
+      "chennai-to-trichy-cab-service": "/routes/chennai-to-trichy-cab",
+      "chennai-to-trichy-one-way-taxi": "/routes/chennai-to-trichy-cab",
+      "chennai-to-trichy-oneway-taxi": "/routes/chennai-to-trichy-cab",
+      "chennai-to-trichy-distance-by-car": "/routes/chennai-to-trichy-cab",
+      "cab-from-chennai-to-trichy": "/routes/chennai-to-trichy-cab",
+      "bangalore-airport-taxi": "/services/airport-taxi/bengaluru",
+      "bangalore-airport-pickup": "/services/airport-taxi/bengaluru",
+      "bengaluru-airport-taxi": "/services/airport-taxi/bengaluru",
+      "bangalore-airport-pickup-12-hour-package": "/cabs/results?serviceTripType=hourly&from=Kempegowda+International+Airport%2C+Bengaluru&to=Bengaluru&city=Bengaluru&packageHours=12",
+      "bangalore-12-hour-cab-package": "/cabs/results?serviceTripType=hourly&from=Kempegowda+International+Airport%2C+Bengaluru&to=Bengaluru&city=Bengaluru&packageHours=12"
     };
     if (keywordAliases[slug.toLowerCase()]) return keywordAliases[slug.toLowerCase()];
 

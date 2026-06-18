@@ -93,6 +93,37 @@ export function tripToSearchQuery(trip) {
   return params;
 }
 
+/** Deep-link to hourly cab search (e.g. Bangalore airport 12-hour package). */
+export function hourlyCabSearchHref({
+  city = "Bengaluru",
+  hours = 12,
+  pickup = "",
+  date,
+  time = "09:00"
+} = {}) {
+  const trip = {
+    tripType: "hourly",
+    from: pickup || city,
+    to: city,
+    city,
+    packageHours: hours,
+    date: date || todayStr(),
+    time,
+    roundTrip: false,
+    direction: "pickup"
+  };
+  return `/cabs/results?${tripToSearchQuery(trip).toString()}`;
+}
+
+/** Kempegowda (BLR) airport pickup · 12 hr / 120 km package. */
+export function bangaloreAirport12HrSearchHref() {
+  return hourlyCabSearchHref({
+    city: "Bengaluru",
+    hours: 12,
+    pickup: "Kempegowda International Airport, Bengaluru"
+  });
+}
+
 export function tripTypeLabel(trip) {
   const map = {
     outstation: "Outstation Cab",

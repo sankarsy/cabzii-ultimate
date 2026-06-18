@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { BadgeCheck, IndianRupee, Lock } from "lucide-react";
 import CabziiLogo from "../brand/CabziiLogo";
 import SocialLinks from "../ui/SocialLinks";
+import { getTrustIcon, TRUST_ICON_STYLES } from "../icons/heroIcons";
 import { BRAND } from "../../lib/brand";
 import { routeToCabSearchHref } from "../../lib/routeTrip";
 import { routeBySlug } from "../../lib/seo/routes";
@@ -10,6 +10,12 @@ function footerRouteLink(slug, label) {
   const route = routeBySlug(slug);
   return { label, href: route ? routeToCabSearchHref(route) : `/routes/${slug}` };
 }
+
+const FOOTER_TRUST = [
+  { label: "OTP secure", iconKey: "secure" },
+  { label: "Verified drivers", iconKey: "verified" },
+  { label: "Upfront fares", iconKey: "price" }
+];
 
 const COLUMNS = [
   {
@@ -26,6 +32,7 @@ const COLUMNS = [
     title: "Popular routes",
     links: [
       footerRouteLink("chennai-to-bangalore-cab", "Chennai → Bangalore"),
+      footerRouteLink("chennai-to-trichy-cab", "Chennai → Trichy"),
       footerRouteLink("chennai-to-pondicherry-cab", "Chennai → Pondicherry"),
       footerRouteLink("chennai-to-tirupati-cab", "Chennai → Tirupati")
     ]
@@ -55,22 +62,28 @@ export default function MmtFooter() {
       <div className="section-shell py-10 sm:py-12">
         <div className="mb-8 flex flex-col gap-4 border-b border-slate-200/80 pb-8 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <CabziiLogo className="text-xl sm:text-2xl" />
+            <CabziiLogo className="text-xl sm:text-2xl" showTagline />
             <p className="mt-2 max-w-sm text-sm leading-relaxed text-slate-600">
               Premium cab booking for airport transfers, outstation trips, and local hire across South India.
             </p>
             <SocialLinks className="mt-4" />
           </div>
           <div className="flex flex-wrap gap-2">
-            <span className="cabzii-trust-pill gap-1.5 text-xs">
-              <Lock className="h-3.5 w-3.5 text-emerald-600" strokeWidth={2} aria-hidden /> OTP secure
-            </span>
-            <span className="cabzii-trust-pill gap-1.5 text-xs">
-              <BadgeCheck className="h-3.5 w-3.5 text-[var(--cabzii-brand)]" strokeWidth={2} aria-hidden /> Verified drivers
-            </span>
-            <span className="cabzii-trust-pill gap-1.5 text-xs">
-              <IndianRupee className="h-3.5 w-3.5 text-amber-600" strokeWidth={2} aria-hidden /> Upfront fares
-            </span>
+            {FOOTER_TRUST.map(({ label, iconKey }) => {
+              const Icon = getTrustIcon(iconKey);
+              const style = TRUST_ICON_STYLES[iconKey];
+              return (
+                <span key={label} className="cabzii-trust-pill gap-1.5 text-xs">
+                  <span
+                    className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full ${style.iconBg} ${style.iconColor}`}
+                    aria-hidden
+                  >
+                    <Icon className="h-3.5 w-3.5" />
+                  </span>
+                  {label}
+                </span>
+              );
+            })}
           </div>
         </div>
 

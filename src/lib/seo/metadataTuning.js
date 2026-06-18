@@ -2,6 +2,7 @@ import {
   formatSerpTitle,
   getCabBookingH1,
   getCabBookingMeta,
+  getRouteH1,
   getRouteMeta,
   getServiceH1,
   getServiceMeta,
@@ -101,4 +102,8 @@ export function tunedRouteDescription(route) {
 
 export function tunedRouteKeywords(route) {
   return routeMetaKeywords(route);
+}
+
+export function tunedRouteH1(route) {
+  return getRouteH1(route);
 }

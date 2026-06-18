@@ -257,8 +257,19 @@ function buildRouteBody(route) {
     "chennai-to-coimbatore-cab":
       "Chennai to Coimbatore is a long highway leg through Salem. Sedan one-way is economical for solo travellers; families often choose SUV or Innova for comfort on 8–9 hour drives.",
     "chennai-to-madurai-cab":
-      "Chennai to Madurai connects two major Tamil Nadu hubs. Trichy–Chennai highway traffic peaks during festival seasons. Book Innova or SUV for temple visits with extended family and prasadam luggage."
+      "Chennai to Madurai connects two major Tamil Nadu hubs. Trichy–Chennai highway traffic peaks during festival seasons. Book Innova or SUV for temple visits with extended family and prasadam luggage.",
+    "chennai-to-trichy-cab":
+      "Chennai to Trichy is a high-volume Tamil Nadu corridor — popular for Srirangam Ranganathaswamy Temple, Rock Fort (Malai Kottai), and CMC hospital visits. The route uses NH44/NH38 with multiple toll plazas. One-way taxi booking avoids train waitlists during festival weekends."
   };
+
+  const trichyDistanceSection =
+    slug === "chennai-to-trichy-cab"
+      ? `
+<h2>Chennai to Trichy distance by car</h2>
+<p>The <strong>Chennai to Trichy distance by car</strong> is approximately <strong>${distance}</strong> (about 330 km) on NH44/NH38. Typical drive time is <strong>${duration}</strong> in clear traffic — add 30–45 minutes during peak hours or monsoon. Most riders depart early morning from OMR, Guindy, T. Nagar or Chennai airport for same-day temple visits in Trichy.</p>
+<p>Popular drop points include Srirangam, Rock Fort, Trichy Junction, and CMC/VIT areas. Book a <strong>cab from Chennai to Trichy</strong> with upfront one-way pricing — sedan from ${sedan}, SUV/Innova from ${suv}.</p>
+`
+      : "";
 
   return `
 <h2>One way cab from ${from} to ${to}</h2>
@@ -273,6 +284,7 @@ ${pricingTable([
   ["SUV / Innova from", suv, "Family, extra luggage, groups"]
 ])}
 <p>Tolls, state permits and parking (if any) are shown in the Cabzii fare breakdown before payment. Night departures may include driver allowance — always review inclusions on the booking screen.</p>
+${trichyDistanceSection}
 
 <h2>Why book ${from} to ${to} cab on Cabzii?</h2>
 ${benefitsList([

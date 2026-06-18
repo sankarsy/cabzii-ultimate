@@ -4,10 +4,12 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import AdminCatalogPanel from "../../components/admin/AdminCatalogPanel";
+import AdminCrm from "../../components/admin/AdminCrm";
 import AdminCustomers from "../../components/admin/AdminCustomers";
 import AdminMasterData from "../../components/admin/AdminMasterData";
 import AdminReports from "../../components/admin/AdminReports";
 import AdminReviews from "../../components/admin/AdminReviews";
+import AdminEnterprise from "../../components/admin/enterprise/AdminEnterprise";
 import AdminShell from "../../components/admin/AdminShell";
 import AdminSiteSettings from "../../components/admin/AdminSiteSettings";
 import CabziiLogo from "../../components/brand/CabziiLogo";
@@ -22,6 +24,7 @@ export default function AdminPage() {
   const [initialViewId, setInitialViewId] = useState("");
   const [panelMode, setPanelMode] = useState("list");
   const [activeTab, setActiveTab] = useState("master");
+  const [enterpriseSection, setEnterpriseSection] = useState("dashboard");
   const [masterSection, setMasterSection] = useState("vendors");
   const [token, setToken] = useState("");
   const [user, setUser] = useState(null);
@@ -45,6 +48,8 @@ export default function AdminPage() {
       tab &&
       (tab === "master" ||
         tab === "settings" ||
+        tab === "enterprise" ||
+        tab === "crm" ||
         tab === "customers" ||
         tab === "reports" ||
         tab === "reviews" ||
@@ -52,6 +57,8 @@ export default function AdminPage() {
     ) {
       setActiveTab(tab);
     }
+    const entSection = searchParams.get("section");
+    if (entSection && tab === "enterprise") setEnterpriseSection(entSection);
     if (section && ["vendors", "cities", "locations"].includes(section)) {
       setMasterSection(section);
       setActiveTab("master");
@@ -102,14 +109,15 @@ export default function AdminPage() {
 
   const sidebarItems = [
     { key: "reports", label: "Reports & analytics", superAdminOnly: true },
+    { key: "crm", label: "CRM & leads", superAdminOnly: true },
     { key: "customers", label: "Customers", superAdminOnly: true },
     { key: "reviews", label: "Reviews", superAdminOnly: true },
-    { key: "master", label: "Vendors & locations" },
+    { key: "enterprise", label: "Enterprise CMS", superAdminOnly: true },
     { key: "settings", label: "Site settings", superAdminOnly: true },
     ...CATALOG_TAB_KEYS.map((tab) => ({ key: tab, label: CATALOG_TABS[tab].label })),
-    { key: "vendors", label: "vendors", tab: "master", section: "vendors" },
-    { key: "cities", label: "cities", tab: "master", section: "cities" },
-    { key: "locations", label: "locations", tab: "master", section: "locations" }
+    { key: "vendors", label: "Vendors", tab: "master", section: "vendors" },
+    { key: "cities", label: "Cities", tab: "master", section: "cities" },
+    { key: "locations", label: "Locations", tab: "master", section: "locations" }
   ];
 
   const panel = (
@@ -172,12 +180,16 @@ export default function AdminPage() {
           <div className="min-w-0">
             {activeTab === "reports" ? (
               <AdminReports token={token} isSuperAdmin={isSuperAdmin} />
+            ) : activeTab === "crm" ? (
+              <AdminCrm token={token} isSuperAdmin={isSuperAdmin} />
             ) : activeTab === "customers" ? (
               <AdminCustomers token={token} isSuperAdmin={isSuperAdmin} />
             ) : activeTab === "reviews" ? (
               <AdminReviews token={token} />
             ) : activeTab === "master" ? (
               <AdminMasterData token={token} isSuperAdmin={isSuperAdmin} initialSection={masterSection} />
+            ) : activeTab === "enterprise" ? (
+              <AdminEnterprise token={token} initialSection={enterpriseSection} />
             ) : activeTab === "settings" ? (
               <AdminSiteSettings token={token} isSuperAdmin={isSuperAdmin} />
             ) : CATALOG_TAB_KEYS.includes(activeTab) ? (

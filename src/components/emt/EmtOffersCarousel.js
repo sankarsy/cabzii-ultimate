@@ -3,58 +3,8 @@
 import Link from "next/link";
 import { useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { getIcon } from "../icons";
-
-const OFFERS = [
-  {
-    tag: "CABS",
-    title: "20% OFF outstation cabs",
-    desc: "Sedan, SUV & Innova from verified vendors.",
-    iconKey: "car",
-    color: "from-[var(--cabzii-brand)] to-blue-500",
-    href: "/cabs"
-  },
-  {
-    tag: "FLIGHTS",
-    title: "Flat ₹500 OFF on domestic flights",
-    desc: "Use code CABZII500 on select routes.",
-    iconKey: "plane",
-    color: "from-orange-500 to-amber-400",
-    href: "/flights"
-  },
-  {
-    tag: "HOTELS",
-    title: "Up to 40% OFF on weekend stays",
-    desc: "Free cancellation on 500+ properties.",
-    iconKey: "hotel",
-    color: "from-teal-500 to-cyan-400",
-    href: "/hotels"
-  },
-  {
-    tag: "DRIVERS",
-    title: "Acting driver from ₹900",
-    desc: "4hr, 8hr & outstation packages.",
-    iconKey: "driver",
-    color: "from-slate-700 to-slate-500",
-    href: "/drivers"
-  },
-  {
-    tag: "HOLIDAYS",
-    title: "Pilgrimage from ₹4,999",
-    desc: "Tirupati, Rameswaram & more.",
-    iconKey: "holiday",
-    color: "from-rose-500 to-pink-400",
-    href: "/holidays?category=pilgrimage"
-  },
-  {
-    tag: "DEALS",
-    title: "Airport cab Chennai",
-    desc: "Fixed fares · instant OTP booking.",
-    iconKey: "airport",
-    color: "from-indigo-500 to-violet-400",
-    href: "/cabs/results?serviceTripType=airport&from=Chennai%20Airport&to=Chennai"
-  }
-];
+import { getOfferIcon } from "../icons/heroIcons";
+import { DOMESTIC_OFFERS } from "../../lib/domesticFocus";
 
 function ScrollButton({ direction, onClick }) {
   const Icon = direction === "left" ? ChevronLeft : ChevronRight;
@@ -103,8 +53,8 @@ export default function EmtOffersCarousel() {
         aria-label="Exclusive offers"
         tabIndex={0}
       >
-        {OFFERS.map((o) => {
-          const OfferIcon = getIcon(o.iconKey);
+        {DOMESTIC_OFFERS.map((o) => {
+          const OfferIcon = getOfferIcon(o.iconKey);
           return (
             <Link
               key={o.tag}
@@ -114,10 +64,10 @@ export default function EmtOffersCarousel() {
               <span className="text-xs font-bold uppercase tracking-wider opacity-90">{o.tag}</span>
               <div className="mt-3 flex gap-3">
                 <span
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm"
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/25 text-white ring-1 ring-white/30 backdrop-blur-sm"
                   aria-hidden="true"
                 >
-                  {OfferIcon ? <OfferIcon className="h-5 w-5 text-white" strokeWidth={1.75} /> : null}
+                  <OfferIcon className="h-[1.35rem] w-[1.35rem]" />
                 </span>
                 <div>
                   <h3 className="font-bold leading-snug">{o.title}</h3>

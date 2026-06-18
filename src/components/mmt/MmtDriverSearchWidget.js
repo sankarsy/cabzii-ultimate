@@ -3,7 +3,10 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import PlaceAutocomplete from "../PlaceAutocomplete";
-import { CalendarIcon, ClockIcon, MapPinIcon, MapPinnedIcon, SearchIcon } from "../icons";
+import { CalendarIcon, ClockIcon, SearchIcon, TwoWayIcon } from "../icons";
+import { SEARCH_FIELD_ICON_CHIPS, SEARCH_FIELD_ICONS } from "../icons/heroIcons";
+import EmtHeroPills, { EmtHeroPriceHint } from "../emt/EmtHeroPills";
+import { formatEmtDate, formatTime12 } from "../../lib/emt/heroDates";
 import {
   DRIVER_HOURLY_PACKAGES,
   DRIVER_TRIP_TABS,
@@ -16,7 +19,18 @@ import { applyDistanceToTrip, fetchTripDistance } from "../../lib/fetchTripDista
 import { coordsForPlaceLabel } from "../../lib/indiaCityCoords";
 import { writeSelectedCity } from "../../lib/locationPriority";
 
-export default function MmtDriverSearchWidget({ defaultCity = "", initialTrip = null }) {
+const HERO_DRIVER_TABS = [
+  { id: "outstation", label: "Outstation" },
+  { id: "airport", label: "Airport Transfer" },
+  { id: "hourly", label: "Hourly" }
+];
+
+export default function MmtDriverSearchWidget({
+  defaultCity = "",
+  initialTrip = null,
+  emtLayout = false,
+  heroMode = false
+}) {
   const router = useRouter();
   const [tripType, setTripType] = useState("outstation");
   const [roundTrip, setRoundTrip] = useState(false);
@@ -63,6 +77,13 @@ export default function MmtDriverSearchWidget({ defaultCity = "", initialTrip = 
       }
     }
     return trip;
+  }
+
+  function swapLocations() {
+    setPickup(drop);
+    setDrop(pickup);
+    setFromCoords(toCoords);
+    setToCoords(fromCoords);
   }
 
   async function handleSearch() {
@@ -132,6 +153,246 @@ export default function MmtDriverSearchWidget({ defaultCity = "", initialTrip = 
     router.push(`/drivers/results?${driverTripToSearchQuery(trip).toString()}`);
   }
 
+  const dateTimeCell = heroMode ? (
+    <div className="cabzii-search-cell">
+      <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Pick-up Date &amp; Time</span>
+      <div className="relative">
+        <p className="truncate text-base font-bold text-slate-900 sm:text-xl">{formatEmtDate(date)}</p>
+        <p className="text-sm font-medium text-slate-500">{formatTime12(time)}</p>
+        <input
+          type="date"
+          min={todayStr()}
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+          className="emt-date-input absolute inset-x-0 top-0 h-1/2 cursor-pointer opacity-0"
+          aria-label="Pickup date"
+        />
+        <input
+          type="time"
+          value={time}
+          onChange={(e) => setTime(e.target.value)}
+          className="emt-date-input absolute inset-x-0 bottom-0 h-1/2 cursor-pointer opacity-0"
+          aria-label="Pickup time"
+        />
+      </div>
+    </div>
+  ) : (
+    <>
+      <div className="flex flex-col justify-center gap-1 bg-white p-4">
+        <label className="text-xs font-medium uppercase tracking-wide text-slate-500">Pickup Date</label>
+        <div className="relative">
+          <CalendarIcon className="pointer-events-none absolute left-0 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" aria-hidden />
+          <input
+            type="date"
+            min={todayStr()}
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            className="w-full border-0 bg-transparent pl-7 text-lg font-bold text-slate-900 focus:outline-none"
+          />
+        </div>
+      </div>
+      <div className="flex flex-col justify-center gap-1 bg-white p-4">
+        <label className="text-xs font-medium uppercase tracking-wide text-slate-500">Pickup Time</label>
+        <div className="relative">
+          <ClockIcon className="pointer-events-none absolute left-0 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" aria-hidden />
+          <input
+            type="time"
+            value={time}
+            onChange={(e) => setTime(e.target.value)}
+            className="w-full border-0 bg-transparent pl-7 text-lg font-bold text-slate-900 focus:outline-none"
+          />
+        </div>
+      </div>
+    </>
+  );
+
+  const locationFields =
+    tripType === "hourly" ? (
+      <>
+        <div className={heroMode ? "cabzii-search-cell" : "bg-white p-3 sm:p-4"}>
+          <PlaceAutocomplete
+            label="City"
+            placeholder="Pickup city or area"
+            value={pickup}
+            onChange={setPickup}
+            onResolved={(area) => {
+              setFromCoords(area?.lat != null ? { lat: area.lat, lng: area.lng } : null);
+              if (area?.city) writeSelectedCity(area.city);
+            }}
+            leadingIcon={SEARCH_FIELD_ICONS.pickup}
+            leadingIconClassName={SEARCH_FIELD_ICON_CHIPS.pickup}
+          />
+        </div>
+        <div className={heroMode ? "cabzii-search-cell" : "flex flex-col justify-center gap-1 bg-white p-4"}>
+          <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Package</span>
+          <select
+            value={packageHours}
+            onChange={(e) => setPackageHours(Number(e.target.value))}
+            className="w-full border-0 bg-transparent text-base font-bold text-slate-900 focus:outline-none sm:text-lg"
+          >
+            {DRIVER_HOURLY_PACKAGES.map((p) => (
+              <option key={p.hours} value={p.hours}>
+                {p.label}
+              </option>
+            ))}
+          </select>
+        </div>
+      </>
+    ) : tripType === "airport" ? (
+      <>
+        <div className={heroMode ? "cabzii-search-cell" : "bg-white p-3 sm:p-4"}>
+          <PlaceAutocomplete
+            label={heroMode ? "From (Pick-up)" : "Airport"}
+            placeholder={heroMode ? "Enter Airport" : "Airport name"}
+            value={pickup}
+            onChange={setPickup}
+            onResolved={(area) => {
+              setFromCoords(area?.lat != null ? { lat: area.lat, lng: area.lng } : null);
+            }}
+            leadingIcon={SEARCH_FIELD_ICONS.airport}
+            leadingIconClassName={SEARCH_FIELD_ICON_CHIPS.airport}
+          />
+        </div>
+        {heroMode ? (
+          <div className="emt-search-swap-cell hidden lg:flex">
+            <button type="button" onClick={swapLocations} className="emt-search-swap-btn" aria-label="Swap locations">
+              <TwoWayIcon className="h-4 w-4" />
+            </button>
+          </div>
+        ) : null}
+        <div className={heroMode ? "cabzii-search-cell" : "bg-white p-3 sm:p-4"}>
+          <PlaceAutocomplete
+            label={heroMode ? "To (Drop-off)" : "City"}
+            placeholder={heroMode ? "Enter Drop Location" : "City / area"}
+            value={drop}
+            onChange={setDrop}
+            onResolved={(area) => {
+              setToCoords(area?.lat != null ? { lat: area.lat, lng: area.lng } : null);
+              if (area?.city) writeSelectedCity(area.city);
+            }}
+            leadingIcon={SEARCH_FIELD_ICONS.drop}
+            leadingIconClassName={SEARCH_FIELD_ICON_CHIPS.drop}
+          />
+        </div>
+      </>
+    ) : (
+      <>
+        <div className={heroMode ? "cabzii-search-cell" : "bg-white p-3 sm:p-4"}>
+          <PlaceAutocomplete
+            label="From"
+            placeholder="Pickup location"
+            value={pickup}
+            onChange={setPickup}
+            onResolved={(area) => {
+              setFromCoords(area?.lat != null ? { lat: area.lat, lng: area.lng } : null);
+              if (area?.city) writeSelectedCity(area.city);
+            }}
+            leadingIcon={SEARCH_FIELD_ICONS.pickup}
+            leadingIconClassName={SEARCH_FIELD_ICON_CHIPS.pickup}
+          />
+        </div>
+        {tripType === "outstation" ? (
+          <>
+            {heroMode ? (
+              <div className="emt-search-swap-cell hidden lg:flex">
+                <button type="button" onClick={swapLocations} className="emt-search-swap-btn" aria-label="Swap locations">
+                  <TwoWayIcon className="h-4 w-4" />
+                </button>
+              </div>
+            ) : null}
+            <div className={heroMode ? "cabzii-search-cell" : "bg-white p-3 sm:p-4"}>
+              <PlaceAutocomplete
+                label="To"
+                placeholder="Drop location"
+                value={drop}
+                onChange={setDrop}
+                onResolved={(area) => {
+                  setToCoords(area?.lat != null ? { lat: area.lat, lng: area.lng } : null);
+                }}
+                leadingIcon={SEARCH_FIELD_ICONS.drop}
+                leadingIconClassName={SEARCH_FIELD_ICON_CHIPS.drop}
+              />
+            </div>
+          </>
+        ) : null}
+      </>
+    );
+
+  const subOptions =
+    tripType === "outstation" ? (
+      <div className={`flex flex-wrap gap-3 ${heroMode ? "emt-hero-radios mb-4" : "mt-4"}`}>
+        {[
+          { id: false, label: "One Way" },
+          { id: true, label: "Round Trip" }
+        ].map((opt) => (
+          <label
+            key={String(opt.id)}
+            className={`flex cursor-pointer items-center gap-2 text-sm font-medium ${heroMode ? "" : "text-slate-700"}`}
+          >
+            <input
+              type="radio"
+              name="driver-roundtrip"
+              checked={roundTrip === opt.id}
+              onChange={() => setRoundTrip(opt.id)}
+              className={`size-4 ${heroMode ? "accent-white" : "accent-[var(--emt-primary)]"}`}
+            />
+            {opt.label}
+          </label>
+        ))}
+      </div>
+    ) : tripType === "airport" ? (
+      <div className={`flex flex-wrap gap-4 ${heroMode ? "emt-hero-radios mb-4" : "mt-4"}`}>
+        {[
+          { id: "pickup", label: "Pickup from Airport" },
+          { id: "drop", label: "Drop to Airport" }
+        ].map((opt) => (
+          <label
+            key={opt.id}
+            className={`flex cursor-pointer items-center gap-2 text-sm font-medium ${heroMode ? "" : "text-slate-700"}`}
+          >
+            <input
+              type="radio"
+              name="driver-airportdir"
+              checked={airportDirection === opt.id}
+              onChange={() => setAirportDirection(opt.id)}
+              className={`size-4 ${heroMode ? "accent-white" : "accent-[var(--emt-primary)]"}`}
+            />
+            {opt.label}
+          </label>
+        ))}
+      </div>
+    ) : null;
+
+  if (heroMode && emtLayout) {
+    return (
+      <div className="w-full">
+        <div className="mb-4 flex items-center justify-end">
+          <EmtHeroPriceHint>Book Acting Drivers Online</EmtHeroPriceHint>
+        </div>
+        {subOptions}
+        <div className="emt-hero-search-card emt-cab-search-card">
+          <div className="emt-cab-type-bar">
+            <EmtHeroPills options={HERO_DRIVER_TABS} value={tripType} onChange={setTripType} />
+          </div>
+          <div className="emt-search-wrap">
+            <div className="emt-search-bar emt-search-bar-cabs">
+              {locationFields}
+              {dateTimeCell}
+            </div>
+            <button type="button" onClick={handleSearch} disabled={searching} className="emt-search-submit cabzii-tap">
+              {searching ? "Searching…" : "SEARCH"}
+            </button>
+          </div>
+        </div>
+        {error ? (
+          <p className="cabzii-error mt-4 font-medium text-white" role="alert">
+            {error}
+          </p>
+        ) : null}
+      </div>
+    );
+  }
+
   return (
     <div className="w-full">
       <div className="hero-tabs-scroll -mx-1 flex gap-2 overflow-x-auto border-b border-slate-200 px-1 pb-3">
@@ -151,167 +412,11 @@ export default function MmtDriverSearchWidget({ defaultCity = "", initialTrip = 
         ))}
       </div>
 
-      {tripType === "outstation" ? (
-        <div className="mt-4 flex gap-4">
-          {[
-            { id: false, label: "One Way" },
-            { id: true, label: "Round Trip" }
-          ].map((opt) => (
-            <label key={String(opt.id)} className="flex cursor-pointer items-center gap-2 text-sm font-medium text-slate-700">
-              <input
-                type="radio"
-                name="driver-roundtrip"
-                checked={roundTrip === opt.id}
-                onChange={() => setRoundTrip(opt.id)}
-                className="size-4 accent-[var(--emt-primary)]"
-              />
-              {opt.label}
-            </label>
-          ))}
-        </div>
-      ) : null}
-
-      {tripType === "airport" ? (
-        <div className="mt-4 flex flex-wrap gap-4">
-          {[
-            { id: "pickup", label: "Pickup from Airport" },
-            { id: "drop", label: "Drop to Airport" }
-          ].map((opt) => (
-            <label key={opt.id} className="flex cursor-pointer items-center gap-2 text-sm font-medium text-slate-700">
-              <input
-                type="radio"
-                name="driver-airportdir"
-                checked={airportDirection === opt.id}
-                onChange={() => setAirportDirection(opt.id)}
-                className="size-4 accent-[var(--emt-primary)]"
-              />
-              {opt.label}
-            </label>
-          ))}
-        </div>
-      ) : null}
+      {subOptions}
 
       <div className="mt-4 grid grid-cols-1 gap-px overflow-visible rounded-lg border border-slate-200 bg-slate-200 sm:grid-cols-2 lg:grid-cols-4">
-        {tripType === "hourly" ? (
-          <>
-            <div className="bg-white p-3 sm:p-4">
-              <PlaceAutocomplete
-                label="City"
-                placeholder="Pickup city or area"
-                value={pickup}
-                onChange={setPickup}
-                onResolved={(area) => {
-                  setFromCoords(area?.lat != null ? { lat: area.lat, lng: area.lng } : null);
-                  if (area?.city) writeSelectedCity(area.city);
-                }}
-                leadingIcon={MapPinIcon}
-                leadingIconClassName="text-emerald-600"
-              />
-            </div>
-            <div className="flex flex-col justify-center gap-1 bg-white p-4">
-              <span className="text-xs font-medium uppercase tracking-wide text-slate-500">Package</span>
-              <select
-                value={packageHours}
-                onChange={(e) => setPackageHours(Number(e.target.value))}
-                className="bg-transparent text-lg font-bold text-slate-900 focus:outline-none"
-              >
-                {DRIVER_HOURLY_PACKAGES.map((p) => (
-                  <option key={p.hours} value={p.hours}>
-                    {p.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </>
-        ) : tripType === "airport" ? (
-          <>
-            <div className="bg-white p-3 sm:p-4">
-              <PlaceAutocomplete
-                label="Airport"
-                placeholder="Airport name"
-                value={pickup}
-                onChange={setPickup}
-                onResolved={(area) => {
-                  setFromCoords(area?.lat != null ? { lat: area.lat, lng: area.lng } : null);
-                }}
-                leadingIcon={MapPinIcon}
-                leadingIconClassName="text-sky-600"
-              />
-            </div>
-            <div className="bg-white p-3 sm:p-4">
-              <PlaceAutocomplete
-                label="City"
-                placeholder="City / area"
-                value={drop}
-                onChange={setDrop}
-                onResolved={(area) => {
-                  setToCoords(area?.lat != null ? { lat: area.lat, lng: area.lng } : null);
-                  if (area?.city) writeSelectedCity(area.city);
-                }}
-                leadingIcon={MapPinnedIcon}
-                leadingIconClassName="text-rose-600"
-              />
-            </div>
-          </>
-        ) : (
-          <>
-            <div className="bg-white p-3 sm:p-4">
-              <PlaceAutocomplete
-                label="From"
-                placeholder="Pickup location"
-                value={pickup}
-                onChange={setPickup}
-                onResolved={(area) => {
-                  setFromCoords(area?.lat != null ? { lat: area.lat, lng: area.lng } : null);
-                  if (area?.city) writeSelectedCity(area.city);
-                }}
-                leadingIcon={MapPinIcon}
-                leadingIconClassName="text-emerald-600"
-              />
-            </div>
-            {tripType === "outstation" ? (
-              <div className="bg-white p-3 sm:p-4">
-                <PlaceAutocomplete
-                  label="To"
-                  placeholder="Drop location"
-                  value={drop}
-                  onChange={setDrop}
-                  onResolved={(area) => {
-                    setToCoords(area?.lat != null ? { lat: area.lat, lng: area.lng } : null);
-                  }}
-                  leadingIcon={MapPinnedIcon}
-                  leadingIconClassName="text-rose-600"
-                />
-              </div>
-            ) : null}
-          </>
-        )}
-
-        <div className="flex flex-col justify-center gap-1 bg-white p-4">
-          <label className="text-xs font-medium uppercase tracking-wide text-slate-500">Pickup Date</label>
-          <div className="relative">
-            <CalendarIcon className="pointer-events-none absolute left-0 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" aria-hidden />
-            <input
-              type="date"
-              min={todayStr()}
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="w-full border-0 bg-transparent pl-7 text-lg font-bold text-slate-900 focus:outline-none"
-            />
-          </div>
-        </div>
-        <div className="flex flex-col justify-center gap-1 bg-white p-4">
-          <label className="text-xs font-medium uppercase tracking-wide text-slate-500">Pickup Time</label>
-          <div className="relative">
-            <ClockIcon className="pointer-events-none absolute left-0 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" aria-hidden />
-            <input
-              type="time"
-              value={time}
-              onChange={(e) => setTime(e.target.value)}
-              className="w-full border-0 bg-transparent pl-7 text-lg font-bold text-slate-900 focus:outline-none"
-            />
-          </div>
-        </div>
+        {locationFields}
+        {!heroMode ? dateTimeCell : null}
       </div>
 
       {error ? <p className="mt-3 text-sm text-rose-600">{error}</p> : null}

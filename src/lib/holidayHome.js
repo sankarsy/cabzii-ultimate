@@ -72,11 +72,11 @@ export const INTERNATIONAL_DESTINATIONS = [
 ];
 
 export const HOLIDAY_THEMES = [
-  { id: "beach", title: "Beach", emoji: "🏖️", category: "beach" },
-  { id: "pilgrimage", title: "Pilgrimage", emoji: "🛕", category: "pilgrimage" },
-  { id: "safari", title: "Safari Trails", emoji: "🚙", category: "adventure" },
-  { id: "family", title: "Family Retreat", emoji: "👨‍👩‍👧‍👦", category: "family" },
-  { id: "luxury", title: "Luxury", emoji: "💎", category: "honeymoon" }
+  { id: "beach", title: "Beach", iconKey: "beach", category: "beach" },
+  { id: "pilgrimage", title: "Pilgrimage", iconKey: "pilgrimage", category: "pilgrimage" },
+  { id: "safari", title: "Safari Trails", iconKey: "safari", category: "adventure" },
+  { id: "family", title: "Family Retreat", iconKey: "family", category: "family" },
+  { id: "luxury", title: "Luxury", iconKey: "luxury", category: "honeymoon" }
 ];
 
 export function themeHref(theme) {

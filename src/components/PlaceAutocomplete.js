@@ -246,7 +246,7 @@ export default function PlaceAutocomplete({
             className={`pointer-events-none absolute left-3 top-1/2 z-10 -translate-y-1/2 ${leadingIconClassName}`}
             aria-hidden="true"
           >
-            <LeadingIcon className="h-5 w-5" />
+            <LeadingIcon className="h-[1.0625rem] w-[1.0625rem]" />
           </span>
         ) : null}
         <input

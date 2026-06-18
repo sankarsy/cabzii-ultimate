@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { HOLIDAY_THEMES, themeHref } from "../../lib/holidayHome";
+import { getHolidayThemeIcon, HOLIDAY_THEME_ICON_STYLES } from "../icons/heroIcons";
 
 function ScrollButton({ direction, onClick }) {
   return (
@@ -55,15 +56,21 @@ export default function EmtHolidayThemes() {
             ref={scrollRef}
             className="offers-scroll grid grid-cols-3 gap-3 py-2 min-[400px]:grid-cols-4 sm:flex sm:flex-1 sm:gap-8 sm:overflow-x-auto sm:overscroll-x-contain sm:px-0.5 sm:snap-x sm:snap-mandatory sm:scroll-smooth sm:justify-center"
           >
-            {HOLIDAY_THEMES.map((theme) => (
+            {HOLIDAY_THEMES.map((theme) => {
+              const ThemeIcon = getHolidayThemeIcon(theme.iconKey || theme.id);
+              const iconStyle = HOLIDAY_THEME_ICON_STYLES[theme.iconKey || theme.id] || HOLIDAY_THEME_ICON_STYLES.beach;
+              return (
               <Link
                 key={theme.id}
                 href={themeHref(theme)}
                 className="group flex min-w-0 flex-col items-center text-center sm:w-[140px] sm:shrink-0 sm:snap-center"
               >
-                <div className="flex aspect-square w-full max-w-[5.5rem] items-center justify-center rounded-full border-2 border-sky-200 bg-sky-50/40 transition duration-200 group-hover:border-[var(--cabzii-brand)]/45 group-hover:bg-sky-50 group-hover:shadow-[var(--cabzii-shadow-card)] sm:h-[118px] sm:w-[118px] sm:max-w-none">
-                  <span className="text-3xl leading-none sm:text-5xl" aria-hidden>
-                    {theme.emoji}
+                <div className="flex aspect-square w-full max-w-[5.5rem] items-center justify-center rounded-full border-2 border-sky-100 bg-white transition duration-200 group-hover:border-[var(--cabzii-brand)]/35 group-hover:shadow-[var(--cabzii-shadow-card)] sm:h-[118px] sm:w-[118px] sm:max-w-none">
+                  <span
+                    className={`flex h-14 w-14 items-center justify-center rounded-full sm:h-16 sm:w-16 ${iconStyle}`}
+                    aria-hidden
+                  >
+                    <ThemeIcon className="h-7 w-7 sm:h-8 sm:w-8" />
                   </span>
                 </div>
                 <p className="mt-2 line-clamp-2 text-xs font-bold leading-snug text-slate-900 sm:mt-3 sm:text-base">{theme.title}</p>
@@ -71,7 +78,8 @@ export default function EmtHolidayThemes() {
                   Explore
                 </span>
               </Link>
-            ))}
+            );
+            })}
           </div>
 
           <ScrollButton direction="right" onClick={() => scroll(1)} />
