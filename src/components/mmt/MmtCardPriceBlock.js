@@ -6,9 +6,9 @@ function formatINR(n) {
   }).format(Number(n) || 0);
 }
 
-const MIN_DISPLAY_PRICE = 100;
+const MIN_DISPLAY_PRICE = 1;
 
-export default function MmtCardPriceBlock({ originalPrice, finalPrice, discountPct = 0, compact = false }) {
+export default function MmtCardPriceBlock({ originalPrice, finalPrice, discountPct = 0, compact = false, fareNote }) {
   const original = Number(originalPrice) || 0;
   const final = Number(finalPrice) || 0;
 
@@ -49,7 +49,7 @@ export default function MmtCardPriceBlock({ originalPrice, finalPrice, discountP
         {formatINR(final)}
       </p>
       <p className={`leading-tight text-slate-500 ${compact ? "hidden text-[10px] sm:block" : "text-[10px]"}`}>
-        package fare
+        {fareNote || "package fare"}
       </p>
     </div>
   );

@@ -250,6 +250,10 @@ export function websiteJsonLd() {
     "@type": "WebSite",
     "@id": WEBSITE_ID,
     name: SITE_NAME,
+    alternateName: [
+      "Cabzii: Cab Booking Chennai | Airport Taxi, Local & Outstation Cabs",
+      "cabzii.in"
+    ],
     url: SITE_URL,
     publisher: { "@id": ORG_ID },
     inLanguage: "en-IN",

@@ -11,6 +11,7 @@ export default function CatalogVehicleCard({
   href,
   imageSrc,
   imageAlt,
+  imageProduct,
   title,
   subtitle,
   meta,
@@ -27,6 +28,7 @@ export default function CatalogVehicleCard({
           <CatalogCardImage
             src={imageSrc}
             alt={imageAlt}
+            product={imageProduct}
             className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
             objectPosition={imageObjectPosition || "center"}
             sizes="(max-width:640px) 100vw, (max-width:1024px) 50vw, 25vw"

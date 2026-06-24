@@ -20,15 +20,13 @@ import {
 } from "./productCardShared";
 import { ArrowRightIcon, PersonIcon, SeatIcon, SnowflakeIcon, StarFilledIcon } from "./icons";
 
-const FALLBACK_CAB_IMAGE =
-  "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=900&q=80";
+import { resolveCabImage } from "../lib/vehicleImages";
 
 export default function CabCard({ cab, onBook, bookHref }) {
   const discount = num(cab.discountPercentage, 0);
   const basePrice = num(cab.price);
 
-  const imageSrc =
-    resolveMediaUrl(cab.image) || FALLBACK_CAB_IMAGE;
+  const imageSrc = resolveCabImage(cab);
 
   const features = Array.isArray(cab.features)
     ? cab.features

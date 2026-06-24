@@ -4,7 +4,8 @@ import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import MmtTripSummaryBar from "../../../components/mmt/MmtTripSummaryBar";
 import TripRoutePanel from "../../../components/maps/TripRoutePanel";
-import { buildFareSlabs, num, packageYouPay } from "../../../lib/cabFare";
+import { buildFareSlabs } from "../../../lib/cabFare";
+import { resolveCabTripFare } from "../../../lib/distanceFare";
 import { buildLoginHref, getUser, isLoggedIn } from "../../../lib/auth";
 import { loadCheckoutDraft, saveCheckoutDraft } from "../../../lib/checkoutStorage";
 import { appendTripCoords } from "../../../lib/tripCoords";
@@ -70,9 +71,10 @@ function PassengerContent() {
 
   const slabs = cab ? buildFareSlabs(cab) : [];
   const slab = cabSlabForTrip(slabs, trip);
-  const listPrice = num(slab?.originalPrice) || num(slab?.list) || num(cab?.price);
-  const discount = num(slab?.discountPercentage) || num(cab?.discountPercentage);
-  const total = num(slab?.price) > 0 ? num(slab.price) : packageYouPay(listPrice, discount);
+  const fare = cab && slab ? resolveCabTripFare(cab, slab, trip) : { listPrice: 0, total: 0, discountPct: 0, discountAmount: 0, perKmRate: 0, usesDistance: false };
+  const listPrice = fare.listPrice;
+  const discount = fare.discountPct;
+  const total = fare.total;
 
   async function handleContinue() {
     setError("");
@@ -110,6 +112,7 @@ function PassengerContent() {
       if (trip.packageHours) payParams.set("packageHours", String(trip.packageHours));
       if (slab?.id) payParams.set("packageId", slab.id);
       if (slab?.label) payParams.set("package", slab.label);
+      if (fare.perKmRate) payParams.set("extraKm", String(fare.perKmRate));
       payParams.set("listPrice", String(listPrice));
       payParams.set("discountPct", String(discount));
       payParams.set("discountAmount", String(Math.max(0, listPrice - total)));
@@ -188,6 +191,17 @@ function PassengerContent() {
           <h3 className="font-bold text-slate-900">{cab.title}</h3>
           <p className="text-sm text-slate-500">{cab.type} · {cab.vendor}</p>
           <hr className="my-4 border-slate-100" />
+          {fare.usesDistance ? (
+            <div className="space-y-1 text-sm text-slate-600">
+              <p>
+                ₹{fare.perKmRate}/km × {fare.distanceKm} km
+                {trip.roundTrip ? " × 2" : ""}
+              </p>
+              {fare.driverBatta > 0 ? <p>Driver bata: {formatINR(fare.driverBatta)}</p> : null}
+            </div>
+          ) : slab?.label ? (
+            <p className="text-sm text-slate-600">Package: {slab.label}</p>
+          ) : null}
           <div className="mt-4 flex justify-between border-t border-slate-100 pt-3 text-base font-bold text-slate-900">
             <span>Total payable</span>
             <span>{formatINR(total)}</span>

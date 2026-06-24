@@ -4,11 +4,15 @@ import {
   ORG_ADDRESS,
   breadcrumbJsonLd,
   faqJsonLd,
-  homeMetadata,
   localBusinessJsonLd
 } from "../lib/seo";
+import { buildMetadataForPath } from "../lib/seo/resolvePageSeo";
+import { fetchSiteSettings } from "../lib/serverSiteSettings";
 
-export const metadata = homeMetadata;
+export async function generateMetadata() {
+  const settings = await fetchSiteSettings();
+  return buildMetadataForPath("/", settings);
+}
 
 const homeStructuredData = [
   breadcrumbJsonLd([{ name: "Home", path: "/" }]),

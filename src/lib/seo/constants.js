@@ -99,6 +99,9 @@ export function getBackendUrl() {
   return url.trim().replace(/\/+$/, "");
 }
 
+/** Homepage SERP title — brand first so Google shows full title on branded "cabzii" searches. */
+export const HOME_SEO_TITLE = "Cabzii: Cab Booking Chennai | Airport Taxi, Local & Outstation Cabs";
+
 /** Shared Next.js metadata (title, description, canonical, OG, Twitter). */
 export function buildPageMetadata({
   title,
@@ -117,10 +120,11 @@ export function buildPageMetadata({
       ? `${SITE_URL}${image.startsWith("/") ? image : `/${image}`}`
       : DEFAULT_OG_IMAGE;
 
-  /** Use absolute titles — SERP format ends with `| cabzii` (see formatSerpTitle). */
+  /** Use absolute titles — avoid layout template appending `| Cabzii` twice. */
   const isAbsoluteSerpTitle =
     /\|\s*cabzii\s*$/i.test(title) ||
     title.includes("| Cabzii") ||
+    title.startsWith("Cabzii:") ||
     title.startsWith("Cabzii —") ||
     title.startsWith("Cabzii -");
   const titleMeta = isAbsoluteSerpTitle ? { absolute: title } : title;
@@ -171,7 +175,7 @@ export function actingDriverDescription(cityName, state) {
 }
 
 export const homeMetadata = buildPageMetadata({
-  title: "Cab Booking Chennai | Airport Taxi, Local & Outstation Cabs | Cabzii",
+  title: HOME_SEO_TITLE,
   description:
     "Book airport taxi, local taxi, outstation taxi and one-way cabs in Chennai. Instant confirmation, professional drivers and affordable fares. Book online with Cabzii.",
   path: "/",

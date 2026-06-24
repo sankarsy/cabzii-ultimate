@@ -4,7 +4,8 @@ import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import MmtDriverTripSummaryBar from "../../../components/mmt/MmtDriverTripSummaryBar";
 import TripRoutePanel from "../../../components/maps/TripRoutePanel";
-import { buildDriverFareSlabs, num } from "../../../lib/driverFare";
+import { buildDriverFareSlabs } from "../../../lib/driverFare";
+import { resolveDriverTripFare } from "../../../lib/distanceFare";
 import { buildLoginHref, getUser, isLoggedIn } from "../../../lib/auth";
 import { loadCheckoutDraft, saveCheckoutDraft } from "../../../lib/checkoutStorage";
 import { appendTripCoords } from "../../../lib/tripCoords";
@@ -14,7 +15,6 @@ import {
   driverTripToSearchQuery,
   parseDriverTripSearchParams
 } from "../../../lib/driverTrip";
-import { packageYouPay } from "../../../lib/cabFare";
 
 function formatINR(n) {
   return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(
@@ -75,9 +75,10 @@ function DriverPassengerContent() {
 
   const slabs = driver ? buildDriverFareSlabs(driver) : [];
   const slab = driverSlabForTrip(slabs, trip);
-  const listPrice = num(slab?.originalPrice) || num(slab?.list) || 0;
-  const discount = num(slab?.discountPercentage) || num(driver?.discountPercentage);
-  const total = num(slab?.price) > 0 ? num(slab.price) : packageYouPay(listPrice || 1, discount);
+  const fare = driver && slab ? resolveDriverTripFare(driver, slab, trip) : { listPrice: 0, total: 0, discountPct: 0, discountAmount: 0, perKmRate: 0, usesDistance: false };
+  const listPrice = fare.listPrice;
+  const discount = fare.discountPct;
+  const total = fare.total;
   const displayName = driver?.name || driver?.serviceTitle || "Driver";
 
   async function handleContinue() {
@@ -116,6 +117,7 @@ function DriverPassengerContent() {
       if (trip.packageHours) payParams.set("packageHours", String(trip.packageHours));
       if (slab?.id) payParams.set("packageId", slab.id);
       if (slab?.label) payParams.set("package", slab.label);
+      if (fare.perKmRate) payParams.set("extraKm", String(fare.perKmRate));
       payParams.set("listPrice", String(listPrice));
       payParams.set("discountPct", String(discount));
       payParams.set("discountAmount", String(Math.max(0, listPrice - total)));
@@ -196,7 +198,13 @@ function DriverPassengerContent() {
             {driver.vendor}
             {driver.city ? ` · ${driver.city}` : ""}
           </p>
-          {slab?.label ? <p className="mt-2 text-xs text-slate-500">Package: {slab.label}</p> : null}
+          {fare.usesDistance ? (
+            <p className="mt-2 text-xs text-slate-600">
+              ₹{fare.perKmRate}/km × {fare.distanceKm} km{trip.roundTrip ? " × 2" : ""}
+            </p>
+          ) : slab?.label ? (
+            <p className="mt-2 text-xs text-slate-500">Package: {slab.label}</p>
+          ) : null}
           <hr className="my-4 border-slate-100" />
           <div className="mt-4 flex justify-between border-t border-slate-100 pt-3 text-base font-bold text-slate-900">
             <span>Total payable</span>

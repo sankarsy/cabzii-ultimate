@@ -1,4 +1,5 @@
 import { getMediaBackendBase, resolveMediaUrl } from "../../../lib/media";
+import { proxyRequest } from "../../../lib/backendProxy";
 
 const BACKEND_URL = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
 
@@ -7,7 +8,7 @@ export async function POST(req) {
     const formData = await req.formData();
     const authHeader = req.headers.get("authorization") || "";
 
-    const response = await fetch(`${BACKEND_URL}/api/v1/upload`, {
+    const response = await fetch(`${BACKEND_URL.replace(/\/+$/, "")}/api/v1/upload`, {
       method: "POST",
       headers: authHeader ? { authorization: authHeader } : {},
       body: formData
@@ -64,4 +65,9 @@ export async function POST(req) {
       { status: 503 }
     );
   }
+}
+
+export async function DELETE(req) {
+  const body = await req.text();
+  return proxyRequest(req, "/upload", { method: "DELETE", body });
 }

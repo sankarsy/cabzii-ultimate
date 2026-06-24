@@ -176,8 +176,16 @@ const SERVICE_META_OVERRIDES = {
     )
   },
   "chennai:cab-rental": {
-    title: formatSerpTitle("Cab Rental Chennai", "Hourly & Local Packages"),
-    description: localRentalServiceDescription("Chennai")
+    title: formatSerpTitle("Cab Rental Chennai", "Hourly & Full-Day Packages"),
+    description: clampDescription(
+      "Cab rental in Chennai on Cabzii.in — hourly and full-day packages for local trips, weddings and sightseeing. Book online with transparent fares 24/7."
+    )
+  },
+  "chennai:hourly-rental": {
+    title: formatSerpTitle("Full Day Taxi Chennai", "4/8/12 Hr Cab Packages"),
+    description: clampDescription(
+      "Full day taxi and cab rental in Chennai — 4, 8 and 12 hour packages with upfront fares. Ideal for weddings, meetings and city tours. Book on Cabzii.in."
+    )
   },
   "coimbatore:car-rental": {
     title: formatSerpTitle("Car Rental Coimbatore", "Hourly Cabs & Packages"),
@@ -221,6 +229,30 @@ const SERVICE_META_OVERRIDES = {
       "Cab rental in Bengaluru with Cabzii.in. Airport drops, outstation trips and local hourly hire. Clean fleets, zero hidden charges, OTP booking 24/7."
     )
   }
+};
+
+/** IATA airports for programmatic airport-taxi meta (all SEO cities with commercial airports). */
+export const AIRPORT_BY_CITY = {
+  chennai: { code: "MAA", name: "Chennai International Airport" },
+  bengaluru: { code: "BLR", name: "Kempegowda International Airport", label: "Bangalore" },
+  hyderabad: { code: "HYD", name: "Rajiv Gandhi International Airport" },
+  coimbatore: { code: "CJB", name: "Coimbatore International Airport" },
+  madurai: { code: "IXM", name: "Madurai Airport" },
+  trichy: { code: "TRZ", name: "Tiruchirappalli International Airport" },
+  kochi: { code: "COK", name: "Cochin International Airport" },
+  goa: { code: "GOI", name: "Goa International Airport" },
+  mumbai: { code: "BOM", name: "Chhatrapati Shivaji Maharaj International Airport" },
+  delhi: { code: "DEL", name: "Indira Gandhi International Airport" },
+  pune: { code: "PNQ", name: "Pune Airport" },
+  kolkata: { code: "CCU", name: "Netaji Subhash Chandra Bose International Airport" },
+  visakhapatnam: { code: "VTZ", name: "Visakhapatnam Airport" },
+  ahmedabad: { code: "AMD", name: "Sardar Vallabhbhai Patel International Airport" },
+  jaipur: { code: "JAI", name: "Jaipur International Airport" },
+  chandigarh: { code: "IXC", name: "Chandigarh International Airport" },
+  tirupati: { code: "TIR", name: "Tirupati Airport" },
+  mysore: { code: "MYQ", name: "Mysore Airport" },
+  pondicherry: { code: "PNY", name: "Pondicherry Airport" },
+  salem: { code: "SXV", name: "Salem Airport" }
 };
 
 /** Cab hub /cab-booking/{city} */
@@ -331,6 +363,46 @@ export function getServiceMeta(service, city) {
   const override = SERVICE_META_OVERRIDES[key];
   if (override) return override;
 
+  if (service.slug === "hourly-rental") {
+    return {
+      title: formatSerpTitle(`Full Day Taxi ${city.name}`, "4/8/12 Hr Cab Packages"),
+      description: clampDescription(
+        `Full day taxi and cab rental in ${city.name} — 4, 8 and 12 hour packages with upfront fares. Book online on Cabzii.in.`
+      )
+    };
+  }
+
+  if (service.slug === "cab-rental") {
+    return {
+      title: formatSerpTitle(`Cab Rental ${city.name}`, "Hourly & Full-Day Packages"),
+      description: clampDescription(
+        `Cab rental in ${city.name} on Cabzii.in — hourly and full-day packages for local trips, weddings and sightseeing. Book online with transparent fares 24/7.`
+      )
+    };
+  }
+
+  if (service.slug === "airport-taxi") {
+    const airport = AIRPORT_BY_CITY[city.slug];
+    if (airport) {
+      const label = airport.label || city.name;
+      return {
+        title: formatSerpTitle(`${label} Airport Taxi`, `${airport.code} Pickup & Drop`),
+        description: clampDescription(
+          `${label} airport taxi (${airport.code}) — ${airport.name} pickup and drop. Fixed fares, flight tracking. Book online on Cabzii.in 24/7.`
+        )
+      };
+    }
+  }
+
+  if (service.slug === "outstation-cab") {
+    return {
+      title: formatSerpTitle(`Outstation Cab ${city.name}`, "Round Trip Packages"),
+      description: clampDescription(
+        `Outstation cab from ${city.name} on Cabzii — round-trip and multi-day highway packages with per-km clarity. Book sedan, SUV or Innova online 24/7.`
+      )
+    };
+  }
+
   const templateId = SERVICE_TEMPLATE[service.slug] || "outstation";
   return templateMeta(templateId, city.name);
 }
@@ -425,11 +497,21 @@ export function getRouteMeta(route) {
 }
 
 export function getServiceH1(service, city) {
+  if (service.slug === "hourly-rental") {
+    return `Full Day Taxi in ${city.name} — 4/8/12 Hour Packages`;
+  }
   if (city.slug === "chennai" && service.slug === "car-rental") {
     return "Chennai Cabs — Car Rental Packages & Hourly Hire";
   }
   if (city.slug === "chennai" && service.slug === "cab-rental") {
     return "Chennai Cabs — Cab Rental Packages & Hourly Hire";
+  }
+  if (service.slug === "cab-rental") {
+    return `Cab Rental in ${city.name} — Hourly & Full-Day Packages`;
+  }
+  if (service.slug === "airport-taxi" && AIRPORT_BY_CITY[city.slug]) {
+    const label = AIRPORT_BY_CITY[city.slug].label || city.name;
+    return `${label} Airport Taxi — Pickup & Drop 24/7`;
   }
   const templateId = SERVICE_TEMPLATE[service.slug] || "outstation";
   if (templateId === "airport") return `24/7 Airport Taxi in ${city.name}`;
@@ -493,11 +575,53 @@ export function serviceMetaKeywords(service, city) {
     `cabzii ${cityLower}`
   ];
 
+  if (service.slug === "hourly-rental") {
+    return [
+      `full day taxi ${cityLower}`,
+      `full day taxi in ${cityLower}`,
+      `full day cab in ${cityLower}`,
+      `cab package in ${cityLower}`,
+      `hourly cab rental ${cityLower}`,
+      `daily cab service ${cityLower}`,
+      ...base
+    ];
+  }
+
+  if (service.slug === "cab-rental") {
+    return [
+      `cab rental ${cityLower}`,
+      `cab rental in ${cityLower}`,
+      `${cityLower} cab rental`,
+      `${cityLower} taxi rental`,
+      `taxi rental in ${cityLower}`,
+      ...base
+    ];
+  }
+
   if (templateId === "outstation") {
-    return [`one way cab ${cityLower}`, `outstation cab ${cityLower}`, ...base];
+    return [
+      `one way cab ${cityLower}`,
+      `outstation cab ${cityLower}`,
+      `outstation taxi ${cityLower}`,
+      `outstation taxi in ${cityLower}`,
+      `outstation cab booking ${cityLower}`,
+      `outstation cabs ${cityLower}`,
+      `outstation car rental ${cityLower}`,
+      `cab for outstation from ${cityLower}`,
+      ...base
+    ];
   }
   if (templateId === "airport") {
-    return [`airport taxi ${cityLower}`, `airport drop ${cityLower}`, ...base];
+    const airport = AIRPORT_BY_CITY[city.slug];
+    const label = (airport?.label || city.name).toLowerCase();
+    return [
+      `airport taxi ${cityLower}`,
+      `${label} airport taxi`,
+      `airport drop ${cityLower}`,
+      `airport pickup ${cityLower}`,
+      `${cityLower} airport transfer`,
+      ...base
+    ];
   }
   const rentalKw = [
     `car rental in ${cityLower}`,
@@ -520,12 +644,34 @@ export function serviceMetaKeywords(service, city) {
 
 export function cabBookingMetaKeywords(city) {
   const cityLower = city.name.toLowerCase();
+  const bangaloreExtras =
+    city.slug === "bengaluru"
+      ? ["cab booking bangalore", "bangalore cab booking", "cab services bangalore"]
+      : [];
   return [
     `cab booking in ${cityLower}`,
     `cab booking ${cityLower}`,
+    `${cityLower} cab booking`,
+    `book cab in ${cityLower}`,
+    `book a cab in ${cityLower}`,
+    `book taxi ${cityLower}`,
+    `cab ${cityLower}`,
+    `${cityLower} cab`,
+    `${cityLower} cabs`,
+    `cab in ${cityLower}`,
+    `${cityLower} cab service`,
+    `${cityLower} cab hire`,
+    `${cityLower} taxi hire`,
+    `cab service in ${cityLower}`,
+    `cab services in ${cityLower}`,
+    `cab services ${cityLower}`,
+    `cabs services in ${cityLower}`,
+    `${cityLower} cab services`,
+    `daily cab service ${cityLower}`,
     `taxi ${cityLower}`,
     `outstation cab ${cityLower}`,
     `airport taxi ${cityLower}`,
+    ...bangaloreExtras,
     "cabzii"
   ];
 }

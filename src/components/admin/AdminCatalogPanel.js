@@ -44,6 +44,7 @@ import { normalizeStoredImagePath, resolveMediaUrl } from "../../lib/media";
 import AdminBookingEditor from "./AdminBookingEditor";
 import { AdminSeoCityPageForm, AdminSeoRouteForm, AdminSeoServiceForm } from "./AdminSeoForm";
 import { AdminProductSeoSection } from "./AdminProductSeoSection";
+import { AdminGalleryField, AdminProductImageField, parseGallery } from "./AdminProductImageField";
 import FarePackagesEditor from "./FarePackagesEditor";
 
 function Field({ label, children, hint }) {
@@ -115,7 +116,10 @@ export default function AdminCatalogPanel({
   isSuperAdmin,
   initialEditId = "",
   pageMode = "list",
-  viewId = ""
+  viewId = "",
+  prefillCity = "",
+  prefillType = "",
+  prefillSlug = ""
 }) {
   const router = useRouter();
   const tab = CATALOG_TABS[tabKey];
@@ -147,6 +151,7 @@ export default function AdminCatalogPanel({
   const [uploading, setUploading] = useState(false);
   const [uploadedUrl, setUploadedUrl] = useState("");
   const [uploadError, setUploadError] = useState("");
+  const [deletingImagePath, setDeletingImagePath] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [query, setQuery] = useState("");
@@ -194,12 +199,35 @@ export default function AdminCatalogPanel({
       resetForm();
       setEditingId("");
       setViewingId("");
+      if (tabKey === "seoCityPages" && prefillCity) {
+        setSeoCityPageForm({
+          ...emptySeoCityPageForm(),
+          citySlug: prefillCity,
+          pageType: prefillType || "cab-booking"
+        });
+      }
+      if (tabKey === "seoServices" && prefillSlug) {
+        setSeoServiceForm({
+          ...emptySeoServiceForm(),
+          slug: prefillSlug,
+          menuCitySlug: prefillCity || "chennai"
+        });
+      }
+      if (tabKey === "seoRoutes" && prefillSlug) {
+        const parts = prefillSlug.match(/^([a-z]+)-to-([a-z]+)-cab$/);
+        setSeoRouteForm({
+          ...emptySeoRouteForm(),
+          slug: prefillSlug,
+          fromCitySlug: parts?.[1] || "",
+          toCitySlug: parts?.[2] || ""
+        });
+      }
       createModeReady.current = true;
     }
     if (pageMode !== "create") {
       createModeReady.current = false;
     }
-  }, [pageMode, resetForm]);
+  }, [pageMode, resetForm, tabKey, prefillCity, prefillType, prefillSlug]);
 
   const loadData = useCallback(async () => {
     if (!token || !tab) return;
@@ -438,6 +466,60 @@ export default function AdminCatalogPanel({
     else if (tab?.form === "seoCityPage") setSeoCityPageForm(seoCityPageFormFromItem(tab.sample));
     else setFormJson(JSON.stringify(tab.sample, null, 2));
     setErrorMessage("");
+  };
+
+  const clearImageOnForm = (setter, path) => {
+    const normalized = normalizeStoredImagePath(path) || path;
+    setter((prev) => {
+      const gallery = parseGallery(prev.gallery).filter((g) => g !== normalized);
+      return {
+        ...prev,
+        image: prev.image === normalized ? "" : prev.image,
+        gallery: gallery.join(", ")
+      };
+    });
+  };
+
+  const deleteProductImage = async (imagePath) => {
+    const path = normalizeStoredImagePath(imagePath) || String(imagePath || "").trim();
+    if (!path) return;
+    if (!window.confirm("Remove this image from the product and delete the file from the server?")) return;
+
+    setDeletingImagePath(path);
+    setUploadError("");
+    try {
+      if (path.startsWith("/uploads/")) {
+        const res = await fetch("/api/upload", {
+          method: "DELETE",
+          headers: { ...authHeaders, "Content-Type": "application/json" },
+          body: JSON.stringify({ path })
+        });
+        const data = await res.json();
+        if (!res.ok || data?.success === false) {
+          throw new Error(data?.message || "Could not delete image file.");
+        }
+      }
+
+      if (tab?.form === "cab") clearImageOnForm(setCabForm, path);
+      else if (tab?.form === "driver") clearImageOnForm(setDriverForm, path);
+      else if (tab?.form === "tourPackage") clearImageOnForm(setTourPackageForm, path);
+      else {
+        try {
+          const parsed = formJson.trim() ? JSON.parse(formJson) : {};
+          if (parsed.image === path) parsed.image = "";
+          setFormJson(JSON.stringify(parsed, null, 2));
+        } catch {
+          /* ignore */
+        }
+      }
+
+      if (uploadedUrl === path) setUploadedUrl("");
+      setStatusMessage("Image deleted. Click Save to update the live product.");
+    } catch (err) {
+      setErrorMessage(err instanceof Error ? err.message : "Could not delete image.");
+    } finally {
+      setDeletingImagePath("");
+    }
   };
 
   const patchFormImage = (imagePath, fileName) => {
@@ -810,6 +892,14 @@ export default function AdminCatalogPanel({
                 alt="Upload preview"
                 className="mt-2 h-24 w-auto max-w-full rounded-md border border-emerald-200 bg-white object-contain"
               />
+              <button
+                type="button"
+                disabled={!canEdit || deletingImagePath === uploadedUrl}
+                onClick={() => deleteProductImage(uploadedUrl)}
+                className="mt-2 rounded-lg border border-rose-300 bg-white px-3 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-50 disabled:opacity-50"
+              >
+                {deletingImagePath === uploadedUrl ? "Deleting…" : "Delete uploaded image"}
+              </button>
             </div>
           ) : null}
           {uploadError ? (
@@ -908,64 +998,87 @@ export default function AdminCatalogPanel({
           </div>
         ) : tab.form === "cab" ? (
           <div className="mt-3 space-y-4">
+            <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-900">
+              <p className="font-semibold">Product catalog fields (Cabzii)</p>
+              <p className="mt-0.5">Same structure as enterprise product SEO — fill all fields for Google ranking & correct cab photos.</p>
+            </div>
             <div className="grid gap-3 sm:grid-cols-2">
-              <Field label="Title *">
+              <Field label="Product name *" hint="Full listing title — e.g. Dzire Tour S Sedan Car Rental Chennai">
                 <input className={inputCls()} value={cabForm.title} onChange={(e) => setCabForm((p) => ({ ...p, title: e.target.value }))} />
               </Field>
-              <Field label="Vendor *">
-                <input className={inputCls()} value={cabForm.vendor} onChange={(e) => setCabForm((p) => ({ ...p, vendor: e.target.value }))} />
+              <Field label="Vehicle model (Salt) *" hint="Base model — Maruti Dzire, Wagon R, Innova Crysta">
+                <input className={inputCls()} value={cabForm.vehicleModel} onChange={(e) => setCabForm((p) => ({ ...p, vehicleModel: e.target.value }))} placeholder="Maruti Dzire" />
               </Field>
-              <Field label="Type *">
+              <Field label="Service form (Packing form)" hint="One Way, Round Trip, Hourly, Local Package">
+                <select className={inputCls()} value={cabForm.serviceForm} onChange={(e) => setCabForm((p) => ({ ...p, serviceForm: e.target.value }))}>
+                  {["One Way", "Round Trip", "Hourly", "Local Package", "Airport Transfer"].map((v) => (
+                    <option key={v} value={v}>{v}</option>
+                  ))}
+                </select>
+              </Field>
+              <Field label="Vehicle category (Dosage form) *">
                 <select className={inputCls()} value={cabForm.type} onChange={(e) => setCabForm((p) => ({ ...p, type: e.target.value }))}>
-                  {["Sedan", "SUV", "Van", "Bus"].map((t) => (
+                  {["Sedan", "Hatchback", "SUV", "Van", "Bus"].map((t) => (
                     <option key={t} value={t}>{t}</option>
                   ))}
                 </select>
               </Field>
-              <Field label="Status" hint="Active cabs appear on the website">
-                <select
-                  className={inputCls()}
-                  value={cabForm.status}
-                  onChange={(e) => setCabForm((p) => ({ ...p, status: e.target.value }))}
-                >
+              <Field label="Seats (Packing size)">
+                <input type="number" min={1} className={inputCls()} value={cabForm.seats} onChange={(e) => setCabForm((p) => ({ ...p, seats: Number(e.target.value) }))} />
+              </Field>
+              <Field label="Bags">
+                <input type="number" min={0} className={inputCls()} value={cabForm.bags} onChange={(e) => setCabForm((p) => ({ ...p, bags: Number(e.target.value) }))} />
+              </Field>
+              <Field label="Similar models" hint="Comma-separated — Dzire, Etios, Xcent">
+                <input className={inputCls()} value={cabForm.examples} onChange={(e) => setCabForm((p) => ({ ...p, examples: e.target.value }))} />
+              </Field>
+              <Field label="Vendor *">
+                <input className={inputCls()} value={cabForm.vendor} onChange={(e) => setCabForm((p) => ({ ...p, vendor: e.target.value }))} />
+              </Field>
+              <Field label="MRP (₹)" hint="List price before discount">
+                <input type="number" min={0} className={inputCls()} value={cabForm.originalPrice} onChange={(e) => setCabForm((p) => ({ ...p, originalPrice: Number(e.target.value) }))} />
+              </Field>
+              <Field label="Cabzii price (₹) *" hint="Selling price shown on website">
+                <input type="number" min={0} className={inputCls()} value={cabForm.price} onChange={(e) => setCabForm((p) => ({ ...p, price: Number(e.target.value) }))} />
+              </Field>
+              <Field label="Discount %">
+                <input type="number" min={0} max={99} className={inputCls()} value={cabForm.discountPercentage} onChange={(e) => setCabForm((p) => ({ ...p, discountPercentage: Number(e.target.value) }))} />
+              </Field>
+              <Field label="Status">
+                <select className={inputCls()} value={cabForm.status} onChange={(e) => setCabForm((p) => ({ ...p, status: e.target.value }))}>
                   <option value="active">Active — show on website</option>
                   <option value="inactive">Inactive — admin only</option>
                 </select>
               </Field>
-              <Field label="Seats">
-                <input type="number" min={1} className={inputCls()} value={cabForm.seats} onChange={(e) => setCabForm((p) => ({ ...p, seats: Number(e.target.value) }))} />
-              </Field>
-              <Field label="Base price (outstation reference) *" hint="Used when package price is missing">
-                <input type="number" min={0} className={inputCls()} value={cabForm.price} onChange={(e) => setCabForm((p) => ({ ...p, price: Number(e.target.value) }))} />
-              </Field>
-              <Field label="Image path">
-                <input
-                  className={inputCls()}
-                  value={cabForm.image}
-                  onChange={(e) => setCabForm((p) => ({ ...p, image: normalizeStoredImagePath(e.target.value) }))}
-                  placeholder="/uploads/cab.jpg"
-                />
-                {cabForm.image ? (
-                  <img
-                    src={resolveMediaUrl(cabForm.image)}
-                    alt="Cab preview"
-                    className="mt-2 h-20 w-auto max-w-full rounded-md border border-slate-200 bg-white object-contain"
-                  />
-                ) : null}
-              </Field>
               <Field label="City">
-                <input className={inputCls()} value={cabForm.city} onChange={(e) => setCabForm((p) => ({ ...p, city: e.target.value }))} placeholder="Bengaluru" />
+                <input className={inputCls()} value={cabForm.city} onChange={(e) => setCabForm((p) => ({ ...p, city: e.target.value }))} placeholder="Chennai" />
               </Field>
               <Field label="Location">
-                <input className={inputCls()} value={cabForm.location} onChange={(e) => setCabForm((p) => ({ ...p, location: e.target.value }))} placeholder="Airport, Indiranagar, etc." />
+                <input className={inputCls()} value={cabForm.location} onChange={(e) => setCabForm((p) => ({ ...p, location: e.target.value }))} placeholder="Airport, OMR, etc." />
               </Field>
               <div className="sm:col-span-2">
-                <Field label="Gallery images (max 3)" hint="Comma-separated image paths">
-                  <input className={inputCls()} value={cabForm.gallery} onChange={(e) => setCabForm((p) => ({ ...p, gallery: e.target.value }))} placeholder="/uploads/cab1.jpg, /uploads/cab2.jpg, /uploads/cab3.jpg" />
-                </Field>
+                <AdminProductImageField
+                  label="Product image"
+                  hint="Upload below or paste /uploads/ path — click Delete to remove"
+                  value={cabForm.image}
+                  onChange={(v) => setCabForm((p) => ({ ...p, image: normalizeStoredImagePath(v) }))}
+                  onDelete={() => deleteProductImage(cabForm.image)}
+                  deleting={deletingImagePath === cabForm.image}
+                  disabled={!canEdit}
+                  alt={cabForm.imageAlt || cabForm.title}
+                />
               </div>
               <div className="sm:col-span-2">
-                <Field label="Features" hint="Comma-separated, e.g. AC, GPS, Music">
+                <AdminGalleryField
+                  value={cabForm.gallery}
+                  onChange={(v) => setCabForm((p) => ({ ...p, gallery: v }))}
+                  onRemoveImage={(path) => deleteProductImage(path)}
+                  removingPath={deletingImagePath}
+                  disabled={!canEdit}
+                />
+              </div>
+              <div className="sm:col-span-2">
+                <Field label="Features" hint="AC, GPS, Music — comma-separated">
                   <input className={inputCls()} value={cabForm.features} onChange={(e) => setCabForm((p) => ({ ...p, features: e.target.value }))} />
                 </Field>
               </div>
@@ -981,7 +1094,16 @@ export default function AdminCatalogPanel({
               onUpdateLabel={updateCabLabel}
             />
 
-            <AdminProductSeoSection form={cabForm} onChange={setCabForm} pathPrefix="/cabs" titleField="title" cityField="city" />
+            <AdminProductSeoSection
+              form={cabForm}
+              onChange={setCabForm}
+              pathPrefix="/cabs"
+              titleField="title"
+              cityField="city"
+              hideProductName
+              createdAt={cabForm.createdAt}
+              updatedAt={cabForm.updatedAt}
+            />
 
             {tab.sample ? (
               <button
@@ -997,8 +1119,8 @@ export default function AdminCatalogPanel({
         ) : tab.form === "driver" ? (
           <div className="mt-3 space-y-4">
             <div className="grid gap-3 sm:grid-cols-2">
-              <Field label="Name *">
-                <input className={inputCls()} value={driverForm.name} onChange={(e) => setDriverForm((p) => ({ ...p, name: e.target.value }))} />
+              <Field label="Product name *">
+                <input className={inputCls()} value={driverForm.name} onChange={(e) => setDriverForm((p) => ({ ...p, name: e.target.value }))} placeholder="Rajesh — Acting Driver Chennai" />
               </Field>
               <Field label="Vendor">
                 <input className={inputCls()} value={driverForm.vendor} onChange={(e) => setDriverForm((p) => ({ ...p, vendor: e.target.value }))} />
@@ -1021,21 +1143,18 @@ export default function AdminCatalogPanel({
               <Field label="Discount %">
                 <input type="number" min={0} max={99} className={inputCls()} value={driverForm.discountPercentage} onChange={(e) => setDriverForm((p) => ({ ...p, discountPercentage: Number(e.target.value) }))} />
               </Field>
-              <Field label="Image path">
-                <input
-                  className={inputCls()}
+              <div className="sm:col-span-2">
+                <AdminProductImageField
+                  label="Product image"
+                  hint="Upload below or paste /uploads/ path — click Delete to remove"
                   value={driverForm.image}
-                  onChange={(e) => setDriverForm((p) => ({ ...p, image: normalizeStoredImagePath(e.target.value) }))}
-                  placeholder="/uploads/driver.jpg"
+                  onChange={(v) => setDriverForm((p) => ({ ...p, image: normalizeStoredImagePath(v) }))}
+                  onDelete={() => deleteProductImage(driverForm.image)}
+                  deleting={deletingImagePath === driverForm.image}
+                  disabled={!canEdit}
+                  alt={driverForm.name || "Driver preview"}
                 />
-                {driverForm.image ? (
-                  <img
-                    src={resolveMediaUrl(driverForm.image)}
-                    alt="Driver preview"
-                    className="mt-2 h-20 w-auto max-w-full rounded-md border border-slate-200 bg-white object-contain"
-                  />
-                ) : null}
-              </Field>
+              </div>
               <Field label="Status" hint="Active drivers appear on the website">
                 <select
                   className={inputCls()}
@@ -1053,9 +1172,15 @@ export default function AdminCatalogPanel({
                 <input className={inputCls()} value={driverForm.location} onChange={(e) => setDriverForm((p) => ({ ...p, location: e.target.value }))} placeholder="Koramangala, Whitefield, etc." />
               </Field>
               <div className="sm:col-span-2">
-                <Field label="Gallery images (max 3)" hint="Comma-separated image paths">
-                  <input className={inputCls()} value={driverForm.gallery} onChange={(e) => setDriverForm((p) => ({ ...p, gallery: e.target.value }))} placeholder="/uploads/driver1.jpg, /uploads/driver2.jpg, /uploads/driver3.jpg" />
-                </Field>
+                <AdminGalleryField
+                  label="Gallery images (max 3)"
+                  hint="Comma-separated image paths"
+                  value={driverForm.gallery}
+                  onChange={(v) => setDriverForm((p) => ({ ...p, gallery: v }))}
+                  onRemoveImage={(path) => deleteProductImage(path)}
+                  removingPath={deletingImagePath}
+                  disabled={!canEdit}
+                />
               </div>
               <Field label="Languages" hint="Comma-separated">
                 <input className={inputCls()} value={driverForm.languages} onChange={(e) => setDriverForm((p) => ({ ...p, languages: e.target.value }))} placeholder="English, Tamil" />
@@ -1100,8 +1225,8 @@ export default function AdminCatalogPanel({
         ) : tab.form === "tourPackage" ? (
           <div className="mt-3 space-y-4">
             <div className="grid gap-3 sm:grid-cols-2">
-              <Field label="Name *">
-                <input className={inputCls()} value={tourPackageForm.name} onChange={(e) => setTourPackageForm((p) => ({ ...p, name: e.target.value }))} />
+              <Field label="Product name *">
+                <input className={inputCls()} value={tourPackageForm.name} onChange={(e) => setTourPackageForm((p) => ({ ...p, name: e.target.value }))} placeholder="Madurai Rameswaram 2D Tour" />
               </Field>
               <Field label="Vendor *">
                 <input className={inputCls()} value={tourPackageForm.vendor} onChange={(e) => setTourPackageForm((p) => ({ ...p, vendor: e.target.value }))} />
@@ -1143,21 +1268,18 @@ export default function AdminCatalogPanel({
               <Field label="Extra hour rate ₹">
                 <input type="number" min={0} className={inputCls()} value={tourPackageForm.extraHourRate} onChange={(e) => setTourPackageForm((p) => ({ ...p, extraHourRate: Number(e.target.value) }))} />
               </Field>
-              <Field label="Image path">
-                <input
-                  className={inputCls()}
+              <div className="sm:col-span-2">
+                <AdminProductImageField
+                  label="Product image"
+                  hint="Upload below or paste /uploads/ path — click Delete to remove"
                   value={tourPackageForm.image}
-                  onChange={(e) => setTourPackageForm((p) => ({ ...p, image: normalizeStoredImagePath(e.target.value) }))}
-                  placeholder="/uploads/package.jpg"
+                  onChange={(v) => setTourPackageForm((p) => ({ ...p, image: normalizeStoredImagePath(v) }))}
+                  onDelete={() => deleteProductImage(tourPackageForm.image)}
+                  deleting={deletingImagePath === tourPackageForm.image}
+                  disabled={!canEdit}
+                  alt={tourPackageForm.title || "Package preview"}
                 />
-                {tourPackageForm.image ? (
-                  <img
-                    src={resolveMediaUrl(tourPackageForm.image)}
-                    alt="Package preview"
-                    className="mt-2 h-20 w-auto max-w-full rounded-md border border-slate-200 bg-white object-contain"
-                  />
-                ) : null}
-              </Field>
+              </div>
               <Field label="Status" hint="Active packages appear on the website">
                 <select
                   className={inputCls()}
@@ -1175,9 +1297,15 @@ export default function AdminCatalogPanel({
                 <input className={inputCls()} value={tourPackageForm.location} onChange={(e) => setTourPackageForm((p) => ({ ...p, location: e.target.value }))} placeholder="Pickup / destination hub" />
               </Field>
               <div className="sm:col-span-2">
-                <Field label="Gallery images (max 3)" hint="Comma-separated image paths">
-                  <input className={inputCls()} value={tourPackageForm.gallery} onChange={(e) => setTourPackageForm((p) => ({ ...p, gallery: e.target.value }))} placeholder="/uploads/pkg1.jpg, /uploads/pkg2.jpg, /uploads/pkg3.jpg" />
-                </Field>
+                <AdminGalleryField
+                  label="Gallery images (max 3)"
+                  hint="Comma-separated image paths"
+                  value={tourPackageForm.gallery}
+                  onChange={(v) => setTourPackageForm((p) => ({ ...p, gallery: v }))}
+                  onRemoveImage={(path) => deleteProductImage(path)}
+                  removingPath={deletingImagePath}
+                  disabled={!canEdit}
+                />
               </div>
               <div className="sm:col-span-2">
                 <Field label="Tags" hint="Comma-separated, e.g. Family, Outstation">

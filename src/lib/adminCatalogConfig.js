@@ -133,9 +133,13 @@ export function emptyCabForm() {
   return {
     ...emptyProductFields(),
     title: "",
+    vehicleModel: "",
+    serviceForm: "One Way",
     vendor: "",
     type: "Sedan",
     seats: 4,
+    bags: 2,
+    examples: "",
     price: 0,
     hourlyRate: 0,
     dayRate: 0,
@@ -160,9 +164,13 @@ export function cabFormFromItem(item) {
   return {
     ...productFieldsFromItem(item),
     title: item?.title || "",
+    vehicleModel: item?.vehicleModel || "",
+    serviceForm: item?.serviceForm || "One Way",
     vendor: item?.vendor || "",
     type: item?.type || "Sedan",
     seats: numField(item?.seats) || 4,
+    bags: numField(item?.bags) || 2,
+    examples: item?.examples || "",
     price: numField(item?.price),
     hourlyRate: numField(item?.hourlyRate),
     dayRate: numField(item?.dayRate),
@@ -179,7 +187,9 @@ export function cabFormFromItem(item) {
     seoDescription: item?.seoDescription || "",
     status: item?.status === "inactive" ? "inactive" : "active",
     farePackages: packagesFromItem(item?.farePackages, CAB_PACKAGE_FIELDS),
-    farePackageLabels: labelsFromItem(item?.farePackageLabels, CAB_PACKAGE_FIELDS)
+    farePackageLabels: labelsFromItem(item?.farePackageLabels, CAB_PACKAGE_FIELDS),
+    createdAt: item?.createdAt ? new Date(item.createdAt).toLocaleString("en-IN") : "",
+    updatedAt: item?.updatedAt ? new Date(item.updatedAt).toLocaleString("en-IN") : ""
   };
 }
 
@@ -208,9 +218,13 @@ export function cabFormToPayload(form) {
 
   return {
     title: form.title,
+    vehicleModel: String(form.vehicleModel || "").trim(),
+    serviceForm: String(form.serviceForm || "One Way").trim() || "One Way",
     vendor: form.vendor,
     type: form.type,
     seats: numField(form.seats) || 4,
+    bags: numField(form.bags) || 2,
+    examples: String(form.examples || "").trim(),
     price: numField(form.price),
     hourlyRate: numField(form.hourlyRate),
     dayRate: numField(form.dayRate),
@@ -748,6 +762,9 @@ export function emptySeoCityPageForm() {
     seo: "",
     h1: "",
     body: "",
+    airportDetails: "",
+    popularLocations: "",
+    popularRoutes: "",
     published: true
   };
 }
@@ -761,6 +778,9 @@ export function seoCityPageFormFromItem(item) {
     seo: item?.seo || "",
     h1: item?.h1 || "",
     body: item?.body || "",
+    airportDetails: item?.airportDetails || "",
+    popularLocations: Array.isArray(item?.popularLocations) ? item.popularLocations.join(", ") : "",
+    popularRoutes: Array.isArray(item?.popularRoutes) ? item.popularRoutes.join(", ") : "",
     published: item?.published !== false
   };
 }
@@ -774,6 +794,15 @@ export function seoCityPageFormToPayload(form) {
     seo: String(form.seo || "").trim(),
     h1: String(form.h1 || "").trim(),
     body: form.body || "",
+    airportDetails: String(form.airportDetails || "").trim(),
+    popularLocations: String(form.popularLocations || "")
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean),
+    popularRoutes: String(form.popularRoutes || "")
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean),
     published: form.published !== false
   };
 }
@@ -789,7 +818,8 @@ export function buildCatalogListUrl(tabKey) {
     tabKey === "packages" ||
     tabKey === "bookings" ||
     tabKey === "seoServices" ||
-    tabKey === "seoRoutes"
+    tabKey === "seoRoutes" ||
+    tabKey === "seoCityPages"
   ) {
     params.set("admin", "1");
   }

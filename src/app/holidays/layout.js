@@ -1,21 +1,11 @@
 import TravelLayoutClient from "../../components/mmt/TravelLayoutClient";
-import { buildPageMetadata } from "../../lib/seo/constants";
+import { buildMetadataForPath } from "../../lib/seo/resolvePageSeo";
+import { fetchSiteSettings } from "../../lib/serverSiteSettings";
 
-export const metadata = buildPageMetadata({
-  title: "Holiday Packages — Pilgrimage, Beach & Hill Trips",
-  description:
-    "Book pilgrimage, beach, heritage and family holiday packages on cabzii.in. Choose cab type — sedan, SUV, Innova or tempo. Toll, permit & driver bata extra.",
-  path: "/holidays",
-  keywords: [
-    "holiday packages India",
-    "pilgrimage tour packages",
-    "Tirupati package",
-    "Rameswaram tour",
-    "Goa holiday package",
-    "cab with holiday package",
-    "cabzii holidays"
-  ]
-});
+export async function generateMetadata() {
+  const settings = await fetchSiteSettings();
+  return buildMetadataForPath("/holidays", settings);
+}
 
 export default function HolidaysLayout({ children }) {
   return <TravelLayoutClient>{children}</TravelLayoutClient>;

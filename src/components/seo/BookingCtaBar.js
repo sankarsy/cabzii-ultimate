@@ -24,15 +24,15 @@ export default function BookingCtaBar({
   const isCompact = variant === "compact";
 
   return (
-    <div className={`flex flex-wrap gap-3 ${isCompact ? "" : "mt-6"}`}>
-      <Link href={bookHref} className="cabzii-btn cabzii-btn-primary cabzii-tap">
+    <div className={`flex flex-col gap-3 sm:flex-row sm:flex-wrap ${isCompact ? "" : "mt-6"}`}>
+      <Link href={bookHref} className="cabzii-btn cabzii-btn-primary cabzii-tap w-full justify-center sm:w-auto">
         {bookLabel}
       </Link>
-      <a href={whatsappHref} target="_blank" rel="noreferrer" className="cabzii-btn cabzii-btn-whatsapp cabzii-tap">
-        <WhatsAppIcon className="h-4 w-4 text-white" />
-        {quoteLabel}
+      <a href={whatsappHref} target="_blank" rel="noreferrer" className="cabzii-btn cabzii-btn-whatsapp cabzii-tap w-full justify-center sm:w-auto">
+        <WhatsAppIcon className="h-4 w-4 shrink-0 text-white" />
+        <span className="min-w-0 text-center">{quoteLabel}</span>
       </a>
-      <a href={telUrl()} className="cabzii-btn cabzii-btn-secondary cabzii-tap">
+      <a href={telUrl()} className="cabzii-btn cabzii-btn-secondary cabzii-tap w-full justify-center sm:w-auto">
         {callLabel}
       </a>
     </div>

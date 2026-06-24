@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { buildDriverFareSlabs, formatDriverRating, num } from "../../lib/driverFare";
-import { packageYouPay } from "../../lib/cabFare";
+import { buildDriverFareSlabs, formatDriverRating } from "../../lib/driverFare";
+import { resolveDriverTripFare } from "../../lib/distanceFare";
 import { driverSlabForTrip, driverTripToSearchQuery } from "../../lib/driverTrip";
 import { resolveMediaUrl } from "../../lib/media";
 import { BriefcaseIcon, CarIcon, CheckIcon, LangIcon, RouteIcon } from "../icons";
@@ -15,10 +15,10 @@ export default function MmtDriverResultCard({ driver, trip, layout = "row" }) {
   const id = String(driver._id ?? driver.id ?? "");
   const slabs = buildDriverFareSlabs(driver);
   const slab = driverSlabForTrip(slabs, trip);
-  const listPrice = num(slab?.originalPrice) || num(slab?.list) || 0;
-  const discount = num(slab?.discountPercentage) || num(driver.discountPercentage);
-  const total =
-    num(slab?.price) > 0 ? num(slab.price) : listPrice > 0 ? packageYouPay(listPrice, discount) : 0;
+  const fare = resolveDriverTripFare(driver, slab, trip);
+  const listPrice = fare.listPrice;
+  const discount = fare.discountPct;
+  const total = fare.total;
   const imageSrc = resolveMediaUrl(driver.image);
   const displayName = driver.name || driver.serviceTitle || "Driver";
   const vehicle = driver.supportedVehicles?.[0] || "Your vehicle";
@@ -31,7 +31,11 @@ export default function MmtDriverResultCard({ driver, trip, layout = "row" }) {
   const href = `/drivers/passenger?${detailParams.toString()}`;
 
   const subtitle = `${driver.vendor || "Cabzii Partner"}${driver.city ? ` · ${driver.city}` : ""}`;
-  const packageLine = slab?.label ? `Package: ${slab.label}` : null;
+  const packageLine = fare.usesDistance
+    ? `₹${fare.perKmRate}/km · ${fare.fareNote}`
+    : slab?.label
+      ? `Package: ${slab.label}`
+      : null;
 
   if (layout === "card") {
     return (
@@ -60,7 +64,8 @@ export default function MmtDriverResultCard({ driver, trip, layout = "row" }) {
           originalPrice: listPrice,
           finalPrice: total,
           discountPct: discount,
-          compact: true
+          compact: true,
+          fareNote: fare.usesDistance ? `₹${fare.perKmRate}/km` : undefined
         }}
       />
     );
@@ -109,7 +114,12 @@ export default function MmtDriverResultCard({ driver, trip, layout = "row" }) {
         {packageLine ? <p className="mt-2 text-xs text-slate-500">{packageLine}</p> : null}
       </div>
       <div className="flex flex-row items-center justify-between gap-3 border-t border-slate-100 pt-3 sm:flex-col sm:items-end sm:border-l sm:border-t-0 sm:pl-4 sm:pt-0">
-        <MmtCardPriceBlock originalPrice={listPrice} finalPrice={total} discountPct={discount} />
+        <MmtCardPriceBlock
+          originalPrice={listPrice}
+          finalPrice={total}
+          discountPct={discount}
+          fareNote={fare.usesDistance ? `₹${fare.perKmRate}/km` : undefined}
+        />
         <Link href={href} className="cabzii-btn cabzii-btn-primary shrink-0">
           Select
         </Link>

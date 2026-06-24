@@ -1,22 +1,13 @@
 import TravelLayoutClient from "../../components/mmt/TravelLayoutClient";
 import JsonLd from "../../components/seo/JsonLd";
-import { buildPageMetadata, driversCatalogJsonLd, formatSerpTitle } from "../../lib/seo";
+import { driversCatalogJsonLd } from "../../lib/seo";
+import { buildMetadataForPath } from "../../lib/seo/resolvePageSeo";
+import { fetchSiteSettings } from "../../lib/serverSiteSettings";
 
-export const metadata = buildPageMetadata({
-  title: formatSerpTitle("Hire Acting Drivers Online", "Dzire, Ertiga, Innova"),
-  description:
-    "Hire acting drivers for your Maruti Dzire, Ertiga, Toyota Innova or Tempo Traveller. Same 4hr/8hr & outstation packages as cab booking on cabzii.in.",
-  path: "/drivers",
-  keywords: [
-    "acting driver Dzire",
-    "Ertiga chauffeur hire",
-    "Innova acting driver",
-    "tempo traveller driver",
-    "driver on hire",
-    "chauffeur service",
-    "cabzii acting driver"
-  ]
-});
+export async function generateMetadata() {
+  const settings = await fetchSiteSettings();
+  return buildMetadataForPath("/drivers", settings);
+}
 
 export default function DriversLayout({ children }) {
   return (

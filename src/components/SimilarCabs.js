@@ -6,8 +6,7 @@ import { num } from "../lib/cabFare";
 import { catalogPublicPath } from "../lib/catalogProduct";
 import { resolveMediaUrl } from "../lib/media";
 
-const FALLBACK_IMAGE =
-  "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=600&q=60";
+import { resolveCabImage } from "../lib/vehicleImages";
 
 export default function SimilarCabs({ currentCabId, cabType, vendor }) {
   const [similar, setSimilar] = useState([]);
@@ -66,7 +65,7 @@ export default function SimilarCabs({ currentCabId, cabType, vendor }) {
             const price = num(cab.price);
             const discount = num(cab.discountPercentage);
             const youPay = discount > 0 ? Math.round(price * (1 - discount / 100)) : price;
-            const img = resolveMediaUrl(cab.image) || FALLBACK_IMAGE;
+            const img = resolveCabImage(cab);
             return (
               <Link
                 key={id}

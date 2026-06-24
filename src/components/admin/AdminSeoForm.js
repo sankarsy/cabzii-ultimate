@@ -33,13 +33,14 @@ function routeSlugPreview(form) {
 
 export function AdminSeoServiceForm({ form, onChange }) {
   const set = (patch) => onChange((prev) => ({ ...prev, ...patch }));
+  const productName = form.name || form.menuLabel || "";
 
   return (
     <div className="mt-3 space-y-4">
       <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-900">
         <p className="font-semibold">SEO maintenance checklist</p>
         <ul className="mt-1 list-inside list-disc space-y-0.5 text-emerald-800">
-          <li>SEO title: 50–60 chars, city + service + cabzii.in</li>
+          <li>Meta title: 50–60 chars, city + service + cabzii.in</li>
           <li>Description & keywords auto-fill if left empty on save</li>
           <li>Published ON → live on /services/ and in sitemap</li>
         </ul>
@@ -48,17 +49,27 @@ export function AdminSeoServiceForm({ form, onChange }) {
         <p className="text-sm font-semibold text-slate-800">Google SEO (required for ranking)</p>
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
           <div className="sm:col-span-2">
-            <Field label="SEO title *" hint="Google search title — e.g. Airport Taxi Chennai: Book Online | cabzii.in">
+            <Field label="Product name *" hint="Service name shown on page — e.g. Airport Taxi Chennai">
+              <input
+                className={inputCls()}
+                value={productName}
+                onChange={(e) => set({ name: e.target.value })}
+                placeholder="Airport Taxi Chennai"
+              />
+            </Field>
+          </div>
+          <div className="sm:col-span-2">
+            <Field label="Meta title *" hint="Google search title — e.g. Airport Taxi Chennai: Book Online | cabzii.in">
               <input
                 className={inputCls()}
                 value={form.seoTitle || ""}
-                onChange={(e) => set({ seoTitle: e.target.value, name: e.target.value })}
+                onChange={(e) => set({ seoTitle: e.target.value })}
                 placeholder="Airport Taxi Chennai: Book Online, Fares & 24×7 Pickup"
               />
             </Field>
           </div>
           <div className="sm:col-span-2">
-            <Field label="SEO description *" hint="Meta description — 150–160 characters ideal">
+            <Field label="Meta description *" hint="Google snippet — 120–155 characters ideal">
               <textarea
                 className={inputCls()}
                 rows={2}
@@ -69,7 +80,7 @@ export function AdminSeoServiceForm({ form, onChange }) {
             </Field>
           </div>
           <div className="sm:col-span-2">
-            <Field label="SEO keywords" hint="Comma-separated — e.g. airport taxi chennai, chennai airport cab booking">
+            <Field label="Search keywords" hint="Comma-separated — e.g. airport taxi chennai, chennai airport cab booking">
               <input className={inputCls()} value={form.seo || ""} onChange={(e) => set({ seo: e.target.value })} />
             </Field>
           </div>
@@ -154,7 +165,17 @@ export function AdminSeoCityPageForm({ form, onChange }) {
             <input className={inputCls()} value={form.citySlug || ""} onChange={(e) => set({ citySlug: e.target.value })} placeholder="chennai" />
           </Field>
           <div className="sm:col-span-2">
-            <Field label="SEO title *" hint="Google search title — 50–60 chars ideal">
+            <Field label="Product name" hint="City hub title — e.g. Cab Booking Chennai">
+              <input
+                className={inputCls()}
+                value={form.h1 || ""}
+                onChange={(e) => set({ h1: e.target.value })}
+                placeholder="Cab Booking Chennai"
+              />
+            </Field>
+          </div>
+          <div className="sm:col-span-2">
+            <Field label="Meta title *" hint="Google search title — 50–60 chars ideal">
               <input
                 className={inputCls()}
                 value={form.seoTitle || ""}
@@ -164,7 +185,7 @@ export function AdminSeoCityPageForm({ form, onChange }) {
             </Field>
           </div>
           <div className="sm:col-span-2">
-            <Field label="SEO description" hint="Meta description — 120–155 characters ideal">
+            <Field label="Meta description" hint="Google snippet — 120–155 characters ideal">
               <textarea
                 className={inputCls()}
                 rows={2}
@@ -175,7 +196,7 @@ export function AdminSeoCityPageForm({ form, onChange }) {
             </Field>
           </div>
           <div className="sm:col-span-2">
-            <Field label="SEO keywords" hint="Comma-separated">
+            <Field label="Search keywords" hint="Comma-separated">
               <input className={inputCls()} value={form.seo || ""} onChange={(e) => set({ seo: e.target.value })} />
             </Field>
           </div>
@@ -187,15 +208,21 @@ export function AdminSeoCityPageForm({ form, onChange }) {
 
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="sm:col-span-2">
-          <Field label="H1 heading override" hint="Leave blank to keep auto heading">
-            <input className={inputCls()} value={form.h1 || ""} onChange={(e) => set({ h1: e.target.value })} />
-          </Field>
-        </div>
-        <div className="sm:col-span-2">
           <Field label="Extra page content (optional HTML)" hint="Shown above the auto-generated city content">
             <textarea className={inputCls()} rows={4} value={form.body || ""} onChange={(e) => set({ body: e.target.value })} />
           </Field>
         </div>
+        <div className="sm:col-span-2">
+          <Field label="Airport details" hint="Shown on city hub — terminal, IATA code, pickup notes">
+            <textarea className={inputCls()} rows={2} value={form.airportDetails || ""} onChange={(e) => set({ airportDetails: e.target.value })} placeholder="Chennai International Airport (MAA) — domestic & international terminal pickup." />
+          </Field>
+        </div>
+        <Field label="Popular locations" hint="Comma-separated neighbourhoods">
+          <input className={inputCls()} value={form.popularLocations || ""} onChange={(e) => set({ popularLocations: e.target.value })} placeholder="OMR, Anna Nagar, T. Nagar, Maduravoyal" />
+        </Field>
+        <Field label="Popular routes" hint="Comma-separated route slugs or labels">
+          <input className={inputCls()} value={form.popularRoutes || ""} onChange={(e) => set({ popularRoutes: e.target.value })} placeholder="chennai-to-bangalore-cab, chennai-to-pondicherry-cab" />
+        </Field>
         <label className="flex items-center gap-2 text-sm text-slate-700 sm:col-span-2">
           <input type="checkbox" checked={form.published !== false} onChange={(e) => set({ published: e.target.checked })} />
           Published (overrides live page meta)
@@ -207,13 +234,14 @@ export function AdminSeoCityPageForm({ form, onChange }) {
 
 export function AdminSeoRouteForm({ form, onChange }) {
   const set = (patch) => onChange((prev) => ({ ...prev, ...patch }));
+  const routeName = form.title || "";
 
   return (
     <div className="mt-3 space-y-4">
       <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-900">
         <p className="font-semibold">SEO maintenance checklist</p>
         <ul className="mt-1 list-inside list-disc space-y-0.5 text-emerald-800">
-          <li>SEO title: route + fare + cabzii.in</li>
+          <li>Meta title: route + fare + cabzii.in</li>
           <li>From/to city slugs must match site cities (chennai, bengaluru)</li>
           <li>Published ON → appears on /routes/ and in sitemap</li>
         </ul>
@@ -222,17 +250,27 @@ export function AdminSeoRouteForm({ form, onChange }) {
         <p className="text-sm font-semibold text-slate-800">Google SEO (required for ranking)</p>
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
           <div className="sm:col-span-2">
-            <Field label="SEO title *" hint="e.g. Chennai to Bengaluru Cab: Book One-Way & Round Trip | cabzii.in">
+            <Field label="Product name *" hint="Route title — e.g. Chennai to Bengaluru Cab">
+              <input
+                className={inputCls()}
+                value={routeName}
+                onChange={(e) => set({ title: e.target.value })}
+                placeholder="Chennai to Bengaluru Cab"
+              />
+            </Field>
+          </div>
+          <div className="sm:col-span-2">
+            <Field label="Meta title *" hint="e.g. Chennai to Bengaluru Cab: Book One-Way & Round Trip | cabzii.in">
               <input
                 className={inputCls()}
                 value={form.seoTitle || ""}
-                onChange={(e) => set({ seoTitle: e.target.value, title: e.target.value })}
+                onChange={(e) => set({ seoTitle: e.target.value })}
                 placeholder="Chennai to Bengaluru Cab: Fares, Distance & Online Booking"
               />
             </Field>
           </div>
           <div className="sm:col-span-2">
-            <Field label="SEO description *">
+            <Field label="Meta description *">
               <textarea
                 className={inputCls()}
                 rows={2}
@@ -243,7 +281,7 @@ export function AdminSeoRouteForm({ form, onChange }) {
             </Field>
           </div>
           <div className="sm:col-span-2">
-            <Field label="SEO keywords" hint="Comma-separated">
+            <Field label="Search keywords" hint="Comma-separated">
               <input className={inputCls()} value={form.seo || ""} onChange={(e) => set({ seo: e.target.value })} />
             </Field>
           </div>

@@ -136,7 +136,8 @@ export const DEFAULT_SITE_SETTINGS = {
       viewAllHref: "/blogs"
     }
   ],
-  whatsappFab: { enabled: true, number: "9944197416" }
+  whatsappFab: { enabled: true, number: "9944197416" },
+  pageSeo: {}
 };
 
 export function getHomeSection(settings, key) {

@@ -31,8 +31,7 @@ import {
 
 const PinIcon = MapPinIcon;
 
-const FALLBACK_CAB_IMAGE =
-  "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=1200&q=80";
+import { resolveCabImage } from "../lib/vehicleImages";
 
 export default function CabBookingDetail({ cab, onSelectionChange }) {
   const discount = num(cab.discountPercentage, 0);
@@ -48,7 +47,7 @@ export default function CabBookingDetail({ cab, onSelectionChange }) {
     () => buildCabChargeItems(cab, { extraKm: extraKmRate, extraHr: extraHour, nightCharge }),
     [cab, extraKmRate, extraHour, nightCharge]
   );
-  const imageSrc = resolveMediaUrl(cab.image) || FALLBACK_CAB_IMAGE;
+  const imageSrc = resolveCabImage(cab);
   const features = Array.isArray(cab.features) ? cab.features : [];
   const hasAc = features.some((f) => /^(ac|a\/c|air\s*condition)/i.test(String(f).trim()));
   const amenityLabel = hasAc ? "AC" : features[0] ? String(features[0]) : "—";

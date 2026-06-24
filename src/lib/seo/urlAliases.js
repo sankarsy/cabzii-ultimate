@@ -1,3 +1,5 @@
+import { CITY_SEO_KEYWORD_ALIASES } from "./citySeoAliases";
+
 /** Short URL prefixes → canonical /services/{service}/{city} */
 export const SERVICE_URL_PREFIXES = new Set([
   "car-rental",
@@ -76,7 +78,7 @@ export function resolveSeoAliasPath(pathname) {
     const cabRentalIn = slug.match(/^cab-rental-in-(.+)$/i);
     if (cabRentalIn) return `/services/cab-rental/${resolveCitySlug(cabRentalIn[1])}`;
 
-    const keywordAliases = {
+    const manualKeywordAliases = {
       "cab-booking-chennai": "/cab-booking/chennai",
       "taxi-service-chennai": "/cab-booking/chennai",
       "online-cab-booking-chennai": "/cab-booking/chennai",
@@ -102,6 +104,7 @@ export function resolveSeoAliasPath(pathname) {
       "bangalore-airport-pickup-12-hour-package": "/cabs/results?serviceTripType=hourly&from=Kempegowda+International+Airport%2C+Bengaluru&to=Bengaluru&city=Bengaluru&packageHours=12",
       "bangalore-12-hour-cab-package": "/cabs/results?serviceTripType=hourly&from=Kempegowda+International+Airport%2C+Bengaluru&to=Bengaluru&city=Bengaluru&packageHours=12"
     };
+    const keywordAliases = { ...CITY_SEO_KEYWORD_ALIASES, ...manualKeywordAliases };
     if (keywordAliases[slug.toLowerCase()]) return keywordAliases[slug.toLowerCase()];
 
     const routeCab = slug.match(/^([a-z]+)-to-([a-z]+)-cab$/i);

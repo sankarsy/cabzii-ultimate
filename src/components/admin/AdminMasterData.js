@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-const emptyVendor = { name: "", contactPhone: "", contactEmail: "", adminPhone: "", isActive: true };
+const emptyVendor = { name: "", contactPhone: "", contactEmail: "", adminPhone: "", adminPassword: "", isActive: true };
 const emptyCity = {
   name: "",
   slug: "",
@@ -36,7 +36,7 @@ function inputCls() {
   return "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 outline-none focus:border-sky-600";
 }
 
-export default function AdminMasterData({ token, isSuperAdmin, initialSection = "vendors" }) {
+export default function AdminMasterData({ token, isSuperAdmin, initialSection = "vendors", focusCreateVendor = false }) {
   const [section, setSection] = useState(initialSection);
   const [vendors, setVendors] = useState([]);
   const [cities, setCities] = useState([]);
@@ -87,10 +87,20 @@ export default function AdminMasterData({ token, isSuperAdmin, initialSection = 
     }
   }, [initialSection]);
 
+  useEffect(() => {
+    if (focusCreateVendor && isSuperAdmin) {
+      setSection("vendors");
+      setEditVendorId("");
+      setVendorForm(emptyVendor);
+    }
+  }, [focusCreateVendor, isSuperAdmin]);
+
   const saveVendor = async () => {
     const url = editVendorId ? `/api/vendors/${editVendorId}` : "/api/vendors";
     const method = editVendorId ? "PUT" : "POST";
-    const res = await fetch(url, { method, headers, body: JSON.stringify(vendorForm) });
+    const payload = { ...vendorForm };
+    if (editVendorId && !payload.adminPassword) delete payload.adminPassword;
+    const res = await fetch(url, { method, headers, body: JSON.stringify(payload) });
     const data = await res.json();
     if (!res.ok) {
       setMessage(data?.message || "Vendor save failed");
@@ -205,9 +215,22 @@ export default function AdminMasterData({ token, isSuperAdmin, initialSection = 
               section === tab ? "bg-sky-600 text-white" : "border border-slate-300 bg-white text-slate-700"
             }`}
           >
-            {tab}
+            {tab === "vendors" ? "Vendor admins" : tab}
           </button>
         ))}
+        {section === "vendors" ? (
+          <button
+            type="button"
+            onClick={() => {
+              setEditVendorId("");
+              setVendorForm(emptyVendor);
+              document.getElementById("vendor-admin-form")?.scrollIntoView({ behavior: "smooth", block: "start" });
+            }}
+            className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700"
+          >
+            + Create vendor admin
+          </button>
+        ) : null}
       </div>
       <input className={inputCls()} value={search} onChange={(e) => setSearch(e.target.value)} placeholder={`Search ${section}...`} />
 
@@ -216,14 +239,28 @@ export default function AdminMasterData({ token, isSuperAdmin, initialSection = 
 
       {section === "vendors" && (
         <div className="grid gap-4 lg:grid-cols-2">
-          <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
-            <p className="text-sm font-bold text-slate-800">{editVendorId ? "Edit vendor" : "Create vendor"}</p>
+          <div id="vendor-admin-form" className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+            <p className="text-sm font-bold text-slate-800">{editVendorId ? "Edit vendor admin" : "Create vendor admin"}</p>
+            <p className="mt-1 text-xs text-slate-600">
+              Sets vendor name, admin mobile login and password. Partner signs in at{" "}
+              <span className="font-mono text-sky-800">/login?role=partner</span>.
+            </p>
             <div className="mt-3 grid gap-3 sm:grid-cols-2">
               <Field label="Vendor name *">
-                <input className={inputCls()} value={vendorForm.name} onChange={(e) => setVendorForm((p) => ({ ...p, name: e.target.value }))} />
+                <input className={inputCls()} value={vendorForm.name} onChange={(e) => setVendorForm((p) => ({ ...p, name: e.target.value }))} placeholder="ABC Travels Chennai" />
               </Field>
-              <Field label="Admin phone (vendor login)">
-                <input className={inputCls()} value={vendorForm.adminPhone} onChange={(e) => setVendorForm((p) => ({ ...p, adminPhone: e.target.value }))} placeholder="10-digit mobile" />
+              <Field label="Admin phone (vendor login) *">
+                <input className={inputCls()} value={vendorForm.adminPhone} onChange={(e) => setVendorForm((p) => ({ ...p, adminPhone: e.target.value }))} placeholder="10-digit mobile (not your super admin phone)" />
+              </Field>
+              <Field label={editVendorId ? "New login password (optional)" : "Admin login password *"}>
+                <input
+                  type="password"
+                  className={inputCls()}
+                  value={vendorForm.adminPassword}
+                  onChange={(e) => setVendorForm((p) => ({ ...p, adminPassword: e.target.value }))}
+                  placeholder={editVendorId ? "Leave blank to keep current" : "Min 6 characters"}
+                  autoComplete="new-password"
+                />
               </Field>
               <Field label="Contact phone">
                 <input className={inputCls()} value={vendorForm.contactPhone} onChange={(e) => setVendorForm((p) => ({ ...p, contactPhone: e.target.value }))} />
@@ -238,7 +275,7 @@ export default function AdminMasterData({ token, isSuperAdmin, initialSection = 
             </label>
             <div className="mt-3 flex gap-2">
               <button type="button" onClick={saveVendor} className="rounded-lg bg-emerald-600 px-4 py-2 text-xs font-semibold text-white hover:bg-emerald-700">
-                {editVendorId ? "Update" : "Create"} vendor
+                {editVendorId ? "Update vendor admin" : "Create vendor admin"}
               </button>
               <button type="button" onClick={() => { setVendorForm(emptyVendor); setEditVendorId(""); }} className="rounded-lg border border-slate-300 px-4 py-2 text-xs font-semibold text-slate-700">
                 Reset
@@ -260,7 +297,7 @@ export default function AdminMasterData({ token, isSuperAdmin, initialSection = 
                 </td>
                 <td className="px-3 py-2">
                   <div className="flex gap-2">
-                  <button type="button" className="text-xs font-semibold text-sky-700" onClick={() => { setEditVendorId(v._id); setVendorForm({ name: v.name, contactPhone: v.contactPhone || "", contactEmail: v.contactEmail || "", adminPhone: v.adminPhone || "", isActive: v.isActive !== false }); }}>Edit</button>
+                  <button type="button" className="text-xs font-semibold text-sky-700" onClick={() => { setEditVendorId(v._id); setVendorForm({ name: v.name, contactPhone: v.contactPhone || "", contactEmail: v.contactEmail || "", adminPhone: v.adminPhone || "", adminPassword: "", isActive: v.isActive !== false }); }}>Edit</button>
                   <button type="button" className="text-xs font-semibold text-rose-700" onClick={() => deleteEntity("vendors", v._id)}>Delete</button>
                   </div>
                 </td>

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import AdminCatalogPanel from "../../components/admin/AdminCatalogPanel";
+import AdminSeoPagesIndex from "../../components/admin/AdminSeoPagesIndex";
 import AdminCrm from "../../components/admin/AdminCrm";
 import AdminCustomers from "../../components/admin/AdminCustomers";
 import AdminMasterData from "../../components/admin/AdminMasterData";
@@ -22,6 +23,9 @@ export default function AdminPage() {
   const searchParams = useSearchParams();
   const [initialEditId, setInitialEditId] = useState("");
   const [initialViewId, setInitialViewId] = useState("");
+  const [prefillCity, setPrefillCity] = useState("");
+  const [prefillType, setPrefillType] = useState("");
+  const [prefillSlug, setPrefillSlug] = useState("");
   const [panelMode, setPanelMode] = useState("list");
   const [activeTab, setActiveTab] = useState("master");
   const [enterpriseSection, setEnterpriseSection] = useState("dashboard");
@@ -53,18 +57,27 @@ export default function AdminPage() {
         tab === "customers" ||
         tab === "reports" ||
         tab === "reviews" ||
+        tab === "seoPagesHub" ||
         CATALOG_TAB_KEYS.includes(tab))
     ) {
       setActiveTab(tab);
     }
     const entSection = searchParams.get("section");
     if (entSection && tab === "enterprise") setEnterpriseSection(entSection);
+    const createVendor = searchParams.get("createVendor");
     if (section && ["vendors", "cities", "locations"].includes(section)) {
       setMasterSection(section);
       setActiveTab("master");
     }
+    if (createVendor === "1") {
+      setMasterSection("vendors");
+      setActiveTab("master");
+    }
     setInitialEditId(edit || "");
     setInitialViewId(view || "");
+    setPrefillCity(searchParams.get("prefillCity") || "");
+    setPrefillType(searchParams.get("prefillType") || "");
+    setPrefillSlug(searchParams.get("prefillSlug") || "");
     if (mode && ["list", "create", "edit", "view"].includes(mode)) {
       setPanelMode(mode);
     } else if (!mode) {
@@ -82,9 +95,7 @@ export default function AdminPage() {
       if (res.ok && data?.data) {
         const role = data.data.role;
         if (role !== "super_admin" && role !== "vendor_admin") {
-          setToken("");
-          setUser(null);
-          clearSession();
+          router.replace("/login?role=admin&next=/admin");
           return;
         }
         setUser(data.data);
@@ -114,8 +125,9 @@ export default function AdminPage() {
     { key: "reviews", label: "Reviews", superAdminOnly: true },
     { key: "enterprise", label: "Enterprise CMS", superAdminOnly: true },
     { key: "settings", label: "Site settings", superAdminOnly: true },
+    { key: "seoPagesHub", label: "SEO & ads dashboard", superAdminOnly: true },
     ...CATALOG_TAB_KEYS.map((tab) => ({ key: tab, label: CATALOG_TABS[tab].label })),
-    { key: "vendors", label: "Vendors", tab: "master", section: "vendors" },
+    { key: "vendors", label: "Vendor admins", tab: "master", section: "vendors" },
     { key: "cities", label: "Cities", tab: "master", section: "cities" },
     { key: "locations", label: "Locations", tab: "master", section: "locations" }
   ];
@@ -187,9 +199,16 @@ export default function AdminPage() {
             ) : activeTab === "reviews" ? (
               <AdminReviews token={token} />
             ) : activeTab === "master" ? (
-              <AdminMasterData token={token} isSuperAdmin={isSuperAdmin} initialSection={masterSection} />
+              <AdminMasterData
+                token={token}
+                isSuperAdmin={isSuperAdmin}
+                initialSection={masterSection}
+                focusCreateVendor={searchParams.get("createVendor") === "1"}
+              />
             ) : activeTab === "enterprise" ? (
               <AdminEnterprise token={token} initialSection={enterpriseSection} />
+            ) : activeTab === "seoPagesHub" ? (
+              <AdminSeoPagesIndex token={token} />
             ) : activeTab === "settings" ? (
               <AdminSiteSettings token={token} isSuperAdmin={isSuperAdmin} />
             ) : CATALOG_TAB_KEYS.includes(activeTab) ? (
@@ -200,6 +219,9 @@ export default function AdminPage() {
                 initialEditId={initialEditId}
                 viewId={initialViewId}
                 pageMode={panelMode}
+                prefillCity={prefillCity}
+                prefillType={prefillType}
+                prefillSlug={prefillSlug}
               />
             ) : null}
           </div>

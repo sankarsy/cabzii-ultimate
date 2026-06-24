@@ -2,36 +2,39 @@
 
 import { useEffect, useState } from "react";
 import { resolveMediaUrl } from "../../lib/media";
+import { stockImageForProduct } from "../../lib/vehicleImages";
 
-const FALLBACK =
-  "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=400&q=80";
-
-/** Cab/driver card image with fallback when upload URL 404s. */
+/** Cab/driver card image — uploaded photo or type-aware stock image. */
 export default function CatalogCardImage({
   src,
   alt,
+  product,
   className = "object-cover",
   objectPosition,
   sizes = "(max-width:640px) 108px, 280px"
 }) {
-  const resolved = resolveMediaUrl(src) || FALLBACK;
+  const uploaded = resolveMediaUrl(src);
+  const fallback = stockImageForProduct(product || { title: alt });
+  const resolved = uploaded || fallback;
   const [current, setCurrent] = useState(resolved);
 
   useEffect(() => {
-    setCurrent(resolveMediaUrl(src) || FALLBACK);
-  }, [src]);
+    setCurrent(resolveMediaUrl(src) || stockImageForProduct(product || { title: alt }));
+  }, [src, alt, product]);
 
   return (
     <img
       src={current}
-      alt={alt}
+      alt={alt || "Cab"}
+      title={product?.imageTitle || alt || undefined}
       loading="lazy"
       decoding="async"
       sizes={sizes}
       className={`absolute inset-0 h-full w-full ${className}`}
       style={objectPosition ? { objectPosition } : undefined}
       onError={() => {
-        if (current !== FALLBACK) setCurrent(FALLBACK);
+        const next = stockImageForProduct(product || { title: alt });
+        if (current !== next) setCurrent(next);
       }}
     />
   );

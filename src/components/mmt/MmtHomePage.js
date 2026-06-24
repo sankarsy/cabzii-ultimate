@@ -59,7 +59,7 @@ function HomePageBody({
       <Suspense fallback={null}>
         <HeroTabUrlSync />
       </Suspense>
-      <MmtLayout homeLayout>
+      <MmtLayout>
         <EmtHeroSearch
           defaultCity={displayCity}
           defaultTab={heroTab}

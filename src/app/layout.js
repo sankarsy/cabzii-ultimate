@@ -8,7 +8,7 @@ import CookieConsent from "../components/CookieConsent";
 import ServiceWorkerRegister from "../components/ServiceWorkerRegister";
 import { fetchSiteSettings } from "../lib/serverSiteSettings";
 import { SITE_ICONS } from "../lib/brandAssets";
-import { DEFAULT_KEYWORDS, DEFAULT_OG_IMAGE, DEFAULT_TWITTER_IMAGE, SITE_URL, organizationJsonLd, taxiServiceJsonLd, websiteJsonLd } from "../lib/seo";
+import { DEFAULT_KEYWORDS, DEFAULT_OG_IMAGE, DEFAULT_TWITTER_IMAGE, HOME_SEO_TITLE, SITE_URL, organizationJsonLd, taxiServiceJsonLd, websiteJsonLd } from "../lib/seo";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -19,7 +19,7 @@ const manrope = Manrope({
 export const metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Cab Booking Chennai | Airport Taxi, Local & Outstation Cabs | Cabzii",
+    default: HOME_SEO_TITLE,
     template: "%s | Cabzii"
   },
   description:
@@ -31,19 +31,19 @@ export const metadata = {
   keywords: DEFAULT_KEYWORDS,
   icons: SITE_ICONS,
   openGraph: {
-    title: "Cabzii — cabzii.in",
+    title: HOME_SEO_TITLE,
     description:
-      "India's online platform for cab booking, acting driver hire and tour packages with transparent pricing.",
+      "Book airport taxi, local taxi, outstation taxi and one-way cabs in Chennai. Instant confirmation, professional drivers and affordable fares on cabzii.in.",
     url: "/",
     siteName: "Cabzii",
     locale: "en_IN",
     type: "website",
-    images: [{ url: DEFAULT_OG_IMAGE, width: 1200, height: 630, alt: "Cabzii — online cab and taxi booking" }]
+    images: [{ url: DEFAULT_OG_IMAGE, width: 1200, height: 630, alt: "Cabzii — Cab Booking Chennai, Airport Taxi & Outstation Cabs" }]
   },
   twitter: {
     card: "summary_large_image",
-    title: "Cabzii",
-    description: "Book cabs, acting drivers and tours on cabzii.in.",
+    title: HOME_SEO_TITLE,
+    description: "Book airport taxi, local & outstation cabs in Chennai on cabzii.in.",
     images: [DEFAULT_TWITTER_IMAGE]
   },
   robots: {
