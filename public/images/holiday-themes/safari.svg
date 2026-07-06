@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none" role="img" aria-label="Safari">
+  <rect width="80" height="80" rx="20" fill="#DCFCE7"/>
+  <circle cx="32" cy="38" r="14" stroke="#16A34A" stroke-width="3"/>
+  <circle cx="48" cy="38" r="14" stroke="#16A34A" stroke-width="3"/>
+  <path d="M46 38h8" stroke="#16A34A" stroke-width="3" stroke-linecap="round"/>
+  <path d="M18 48c4-8 12-12 22-12s18 4 22 12" stroke="#4ADE80" stroke-width="3" stroke-linecap="round"/>
+  <path d="M24 54h32" stroke="#15803D" stroke-width="2.5" stroke-linecap="round"/>
+</svg>

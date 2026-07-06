@@ -1,9 +1,10 @@
 import Footer from "../../components/Footer";
 import Navbar from "../../components/Navbar";
-import { buildPageMetadata } from "../../lib/seo";
+import JsonLd from "../../components/seo/JsonLd";
+import { buildPageMetadata, legalWebPageJsonLd } from "../../lib/seo";
 
 export const metadata = buildPageMetadata({
-  title: "Terms and Conditions",
+  title: "Terms and Conditions | Cabzii",
   description:
     "Terms and conditions governing cab, taxi, acting driver and tour bookings on Cabzii (cabzii.in).",
   path: "/terms-and-conditions"
@@ -12,6 +13,13 @@ export const metadata = buildPageMetadata({
 export default function TermsAndConditionsPage() {
   return (
     <main className="min-h-screen bg-linear-to-b from-slate-50 via-sky-50/60 to-violet-50/40">
+      <JsonLd
+        data={legalWebPageJsonLd({
+          name: "Terms and Conditions — Cabzii",
+          description: "Terms governing cab, taxi, acting driver and tour bookings on Cabzii.in.",
+          urlPath: "/terms-and-conditions"
+        })}
+      />
       <Navbar />
       <section className="py-10 md:py-14">
         <div className="mx-auto max-w-5xl px-4 md:px-6 lg:px-8">

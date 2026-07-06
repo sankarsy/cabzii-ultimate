@@ -35,8 +35,10 @@ export default function RouteLandingPage({ route, faqs, extraBody = "" }) {
 
       <BookingCtaBar
         bookHref={searchHref}
-        bookLabel="Book & get instant quote"
-        quoteLabel="WhatsApp fare quote"
+        bookLabel="Book Now"
+        quoteLabel="Get Quote"
+        callLabel="Call Now"
+        availabilityLabel="Check Availability"
         routeFrom={fromCity.name}
         routeTo={toCity.name}
       />

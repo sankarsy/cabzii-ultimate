@@ -5,6 +5,7 @@ import FaqSection from "../seo/FaqSection";
 import WhatsAppIcon from "../WhatsAppIcon";
 import { resolveMediaUrl } from "../../lib/media";
 import { whatsappBookingUrl, telUrl } from "../../lib/conversion";
+import { formatCabSeatLabel } from "../../lib/cabSeats";
 
 function inr(n) {
   return `₹${Number(n || 0).toLocaleString("en-IN")}`;
@@ -182,7 +183,7 @@ export default function TourPackageLanding({ pkg, related = [] }) {
                   {pkg.cabTypes.map((ct) => (
                     <tr key={ct.id || ct.label} className="border-b border-slate-100 last:border-0">
                       <td className="py-2.5 pr-4 font-semibold text-slate-800">{ct.label}</td>
-                      <td className="py-2.5 pr-4 text-slate-600">{ct.seats}</td>
+                      <td className="py-2.5 pr-4 text-slate-600">{formatCabSeatLabel({ seats: ct.seats })}</td>
                       <td className="py-2.5 font-bold text-slate-900">
                         {inr(Math.round(Number(pkg.price || 0) * Number(ct.multiplier || 1)))}
                       </td>

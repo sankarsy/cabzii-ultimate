@@ -149,6 +149,52 @@ export function getRouteFaqs(route) {
   const { fromCity, toCity, distance, duration, sedanFrom, suvFrom, slug } = route;
 
   const bySlug = {
+    "chennai-to-tirupati-cab": [
+      [
+        "How much is Chennai to Tirupati cab fare?",
+        `Chennai to Tirupati one-way cab fares start around ₹${sedanFrom.toLocaleString("en-IN")} for sedan (Swift Dzire / Etios) and from ₹${suvFrom.toLocaleString("en-IN")} for SUV or Innova. Exact fare is shown on Cabzii before booking.`
+      ],
+      [
+        "What is the Chennai to Tirupati distance by car?",
+        `Chennai to Tirupati is approximately ${distance} by road (${duration} by car), ideal for temple darshan and same-day return trips.`
+      ],
+      [
+        "Can I book Tirupati car booking online from Chennai?",
+        "Yes. Book Chennai to Tirupati cab on Cabzii — enter pickup and drop, choose sedan or SUV, and confirm with mobile OTP. Driver details are shared before departure."
+      ],
+      [
+        "Which cars are available for Chennai to Tirupati cab?",
+        "Swift Dzire, Toyota Etios, Honda Amaze (sedan), Ertiga (SUV) and Toyota Innova Crysta are popular on this route. Select your vehicle while booking on Cabzii."
+      ],
+      [
+        "Is toll included in Chennai to Tirupati taxi fare?",
+        "Toll and state tax treatment varies by package. Cabzii shows inclusions and any extra charges clearly in the fare breakdown before payment."
+      ]
+    ],
+    "chennai-to-rameswaram-cab": [
+      [
+        "How much is Chennai to Rameswaram cab fare?",
+        `Chennai to Rameswaram one-way cab fares start around ₹${sedanFrom.toLocaleString("en-IN")} for sedan and from ₹${suvFrom.toLocaleString("en-IN")} for SUV/Innova. Exact fare is shown on Cabzii before booking.`
+      ],
+      [
+        "What is the Chennai to Rameswaram distance by car?",
+        `Chennai to Rameswaram is approximately ${distance} by road (${duration}), including the scenic Pamban bridge approach.`
+      ],
+      [
+        "Can I book Chennai to Rameswaram pilgrimage cab online?",
+        "Yes. Book Chennai to Rameswaram cab on Cabzii — choose sedan or SUV, confirm with mobile OTP, and receive driver details before departure."
+      ]
+    ],
+    "madurai-to-rameswaram-cab": [
+      [
+        "How much is Madurai to Rameswaram cab fare?",
+        `Madurai to Rameswaram day-trip cab fares start around ₹${sedanFrom.toLocaleString("en-IN")} for sedan. SUV/Innova from ₹${suvFrom.toLocaleString("en-IN")}.`
+      ],
+      [
+        "What is Madurai to Rameswaram travel time?",
+        `The drive is approximately ${distance} and usually takes ${duration} one way, ideal for same-day temple darshan.`
+      ]
+    ],
     "chennai-to-trichy-cab": [
       [
         "What is the Chennai to Trichy distance by car?",
@@ -181,6 +227,40 @@ export function getRouteFaqs(route) {
     [`Can I book one way cab ${fromCity.name} to ${toCity.name} online?`, `Yes. Enter pickup in ${fromCity.name} and drop in ${toCity.name} on Cabzii, choose cab type and confirm with OTP.`],
     [`Is toll included in ${fromCity.name} to ${toCity.name} cab fare?`, `Toll treatment varies by vendor. Cabzii shows inclusions and any extra charges clearly in the fare breakdown.`],
     [`Can I book return cab ${toCity.name} to ${fromCity.name}?`, `Yes. Book the reverse route separately or choose round trip if you need the same cab to wait or return.`]
+  ];
+}
+
+/** Vehicle / cab detail page FAQs — dynamic from catalog data. */
+export function getCabFaqs(cab) {
+  const title = cab?.title || "this cab";
+  const city = cab?.city || "your city";
+  const type = cab?.type || "AC cab";
+  const priceFrom =
+    cab?.price && Number(cab.price) > 0
+      ? `₹${Number(cab.price).toLocaleString("en-IN")}`
+      : "rates shown at checkout";
+
+  return [
+    [
+      `How much does ${title} cost on Cabzii?`,
+      `Packages for ${title} start from ${priceFrom}. Local 4hr/8hr and outstation fares are displayed before you pay on Cabzii.in.`
+    ],
+    [
+      `Is driver included when I book ${title}?`,
+      "Yes. All Cabzii cab packages include a professional driver. Package km/hour limits and extras are shown in the fare breakdown."
+    ],
+    [
+      `Can I book ${title} for airport pickup in ${city}?`,
+      `Yes. Choose a local or airport package while booking ${title} on Cabzii for ${city} pickup, drop or outstation trips.`
+    ],
+    [
+      `What vehicles are similar to ${title}?`,
+      `${title} is listed as ${type}. Browse similar cabs on Cabzii or contact us on WhatsApp for the best match for your group size.`
+    ],
+    [
+      `How do I book ${title} online?`,
+      "Select your package on this page, continue to payment, verify with mobile OTP and receive instant booking confirmation with driver details."
+    ]
   ];
 }
 

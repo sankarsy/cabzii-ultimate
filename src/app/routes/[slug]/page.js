@@ -3,7 +3,7 @@ import JsonLd from "../../../components/seo/JsonLd";
 import RouteLandingPage from "../../../components/seo/RouteLandingPage";
 import { resolveRouteBySlug } from "../../../lib/seo/cmsResolve";
 import {
-  SEO_ROUTES,
+  allRouteSlugsForBuild,
   breadcrumbJsonLd,
   buildPageMetadata,
   faqFromPairs,
@@ -16,8 +16,10 @@ import {
 
 export const revalidate = 600;
 
+export const dynamicParams = true;
+
 export function generateStaticParams() {
-  return SEO_ROUTES.map((route) => ({ slug: route.slug }));
+  return allRouteSlugsForBuild().map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }) {

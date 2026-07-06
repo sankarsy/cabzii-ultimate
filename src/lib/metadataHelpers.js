@@ -1,6 +1,13 @@
 import { catalogPublicPath } from "./catalogProduct";
 import { resolveMediaUrl } from "./media";
-import { buildPageMetadata, productJsonLd } from "./seo";
+import { buildPageMetadata, productJsonLd, tourPackageJsonLd } from "./seo";
+import { clampDescription } from "./seo/programmaticMeta";
+import { serpPriceLine, tourPackageSerpBadges, vehicleSerpBadges } from "./seo/serpRichData";
+
+function tourPackageSeoPath(pkg) {
+  const slug = pkg?.slug ? String(pkg.slug).trim() : "";
+  return slug ? `/tour-packages/${slug}` : null;
+}
 
 function detailPath(item, basePath, fallbackId) {
   if (item?.slug) return catalogPublicPath(item, basePath);
@@ -21,10 +28,15 @@ export function cabDetailMetadata(cab, id) {
     };
   }
 
-  const title = cab.seoTitle || `Book ${cab.title} in ${cab.city || "South India"} | Taxi & Outstation | cabzii.in`;
+  const title =
+    cab.seoTitle ||
+    (cab.city ? `${cab.title} Rental in ${cab.city} | Best Price | Cabzii` : `${cab.title} Rental | Best Price | Cabzii`);
+  const priceLine = serpPriceLine(cab.price);
   const description =
     cab.seoDescription ||
-    `Rent ${cab.title} — ${cab.type} taxi car with AC, local 4hr/8hr & outstation packages from ${cab.vendor} on cabzii.in.`;
+    clampDescription(
+      `${priceLine}Book ${cab.title} — ${cab.type || "AC cab"} with driver included, sanitized car, local 4hr/8hr & outstation packages on Cabzii.in.`
+    );
   const keywords = (cab.seo || "")
     .split(",")
     .map((s) => s.trim())
@@ -52,7 +64,8 @@ export function cabDetailMetadata(cab, id) {
         : {}),
       ratingValue: cab.rating,
       reviewCount: cab.reviewCount,
-      category: `${cab.type || "Cab"} · Taxi Booking`
+      category: `${cab.type || "Cab"} · Taxi Booking`,
+      additionalBadges: vehicleSerpBadges(cab)
     })
   };
 }
@@ -72,7 +85,7 @@ export function driverDetailMetadata(driver, id) {
 
   const title =
     driver.seoTitle ||
-    `Hire ${driver.name} Acting Driver in ${driver.city || "South India"} | Chauffeur on Your Car | cabzii.in`;
+    `${driver.name} Acting Driver | ${driver.city || "South India"} | Cabzii`;
   const description =
     driver.seoDescription ||
     `Professional acting driver for your ${driver.name} in ${driver.city || "South India"}. Same package fares as cab booking on cabzii.in.`;
@@ -120,36 +133,44 @@ export function packageDetailMetadata(pkg, id) {
     };
   }
 
-  const path = detailPath(pkg, "/holidays", id);
-  const title = pkg.seoTitle || `${pkg.name} – Holiday Package | cabzii.in`;
+  const origin = pkg.city || pkg.originCity || "Chennai";
+  const title = pkg.seoTitle || `${pkg.name} Tour Package from ${origin} | Cabzii`;
+  const priceLine = serpPriceLine(pkg.price);
   const description =
     pkg.seoDescription ||
-    `Book ${pkg.name} with ${pkg.vendor} on cabzii.in. Toll, permit and driver bata billed separately.`;
+    clampDescription(
+      `${priceLine}Book ${pkg.name} with ${pkg.vendor} on Cabzii.in — hotel, sightseeing, meals & customizable itinerary. Instant confirmation.`
+    );
   const keywords = (pkg.seo || "")
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean);
   const image = resolveMediaUrl(pkg.image);
+  const catalogPath = detailPath(pkg, "/holidays", id);
+  const seoLandingPath = tourPackageSeoPath(pkg);
+  const canonicalPath = seoLandingPath || catalogPath;
 
   return {
     metadata: buildPageMetadata({
       title,
       description,
-      path,
+      path: canonicalPath,
       keywords: keywords.length ? keywords : undefined,
       image,
-      imageAlt: pkg.imageAlt || pkg.imageTitle || pkg.name
+      imageAlt: pkg.imageAlt || pkg.imageTitle || pkg.name,
+      noindex: Boolean(seoLandingPath)
     }),
-    jsonLd: productJsonLd({
+    jsonLd: tourPackageJsonLd({
       name: pkg.name,
       description,
-      urlPath: path,
+      urlPath: canonicalPath,
       image: image || undefined,
       price: pkg.price,
+      originCity: origin,
       ...(pkg.originalPrice && Number(pkg.originalPrice) > Number(pkg.price)
         ? { lowPrice: pkg.price, highPrice: pkg.originalPrice }
         : {}),
-      category: "Holiday Tour Package"
+      additionalBadges: tourPackageSerpBadges(pkg)
     })
   };
 }

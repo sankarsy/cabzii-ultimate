@@ -19,6 +19,8 @@ const CITY_DISTANCE_FROM_CHENNAI = {
   erode: { km: 400, duration: "6–7 hours", sedan: 4800, suv: 6600 },
   hosur: { km: 320, duration: "5–6 hours", sedan: 4200, suv: 5800 },
   tirunelveli: { km: 625, duration: "9–10 hours", sedan: 7800, suv: 9800 },
+  rameswaram: { km: 560, duration: "8–9 hours", sedan: 5200, suv: 6800 },
+  ooty: { km: 555, duration: "9–10 hours", sedan: 6800, suv: 8800 },
   mumbai: { km: 1330, duration: "18–20 hours", sedan: 14500, suv: 18500 },
   delhi: { km: 2200, duration: "30+ hours", sedan: 22000, suv: 28000 },
   pune: { km: 1150, duration: "16–18 hours", sedan: 12800, suv: 16500 },
@@ -53,7 +55,9 @@ const CITY_DISTANCE_FROM_COIMBATORE = {
   pondicherry: { km: 380, duration: "6–7 hours", sedan: 5000, suv: 6800 },
   tirupati: { km: 420, duration: "7–8 hours", sedan: 5500, suv: 7200 },
   salem: { km: 165, duration: "3–4 hours", sedan: 2800, suv: 3800 },
-  trichy: { km: 195, duration: "4 hours", sedan: 3000, suv: 4200 }
+  trichy: { km: 195, duration: "4 hours", sedan: 3000, suv: 4200 },
+  ooty: { km: 85, duration: "3 hours", sedan: 2200, suv: 3200 },
+  rameswaram: { km: 240, duration: "4–5 hours", sedan: 3800, suv: 5200 }
 };
 
 const CITY_DISTANCE_FROM_HYDERABAD = {
@@ -71,7 +75,8 @@ const CITY_DISTANCE_FROM_MADURAI = {
   trichy: { km: 135, duration: "2–3 hours", sedan: 2200, suv: 3200 },
   kodaikanal: { km: 120, duration: "3–4 hours", sedan: 2800, suv: 3800 },
   tirunelveli: { km: 160, duration: "3 hours", sedan: 2600, suv: 3600 },
-  coimbatore: { km: 215, duration: "4–5 hours", sedan: 3200, suv: 4400 }
+  coimbatore: { km: 215, duration: "4–5 hours", sedan: 3200, suv: 4400 },
+  rameswaram: { km: 170, duration: "3–4 hours", sedan: 2800, suv: 3800 }
 };
 
 function estimateFromKm(km) {
@@ -81,6 +86,28 @@ function estimateFromKm(km) {
   const duration =
     hours <= 2 ? `${hours}–${hours + 1} hours` : `${hours}–${hours + 1} hours`;
   return { km, duration, sedan, suv };
+}
+
+/** Lookup trip data between two city slugs (hub matrices + estimate fallback). */
+export function lookupRouteTripData(fromSlug, toSlug) {
+  const from = fromSlug;
+  const to = toSlug;
+
+  const hubMatrices = {
+    chennai: CITY_DISTANCE_FROM_CHENNAI,
+    bengaluru: CITY_DISTANCE_FROM_BENGALURU,
+    coimbatore: CITY_DISTANCE_FROM_COIMBATORE,
+    hyderabad: CITY_DISTANCE_FROM_HYDERABAD,
+    madurai: CITY_DISTANCE_FROM_MADURAI
+  };
+
+  const fromMatrix = hubMatrices[from];
+  if (fromMatrix?.[to]) return { ...fromMatrix[to], km: fromMatrix[to].km };
+
+  const toMatrix = hubMatrices[to];
+  if (toMatrix?.[from]) return { ...toMatrix[from], km: toMatrix[from].km };
+
+  return estimateFromKm(320);
 }
 
 function makeRoute(fromSlug, toSlug, data) {
@@ -127,7 +154,9 @@ function regionalRoutes() {
     ["pondicherry", "bengaluru", { km: 310, duration: "5–6 hours", sedan: 4200, suv: 5800 }],
     ["tirupati", "bengaluru", { km: 255, duration: "4–5 hours", sedan: 3500, suv: 4800 }],
     ["vellore", "bengaluru", { km: 215, duration: "4 hours", sedan: 3200, suv: 4400 }],
-    ["hosur", "chennai", { km: 320, duration: "5–6 hours", sedan: 4200, suv: 5800 }]
+    ["hosur", "chennai", { km: 320, duration: "5–6 hours", sedan: 4200, suv: 5800 }],
+    ["madurai", "rameswaram", { km: 170, duration: "3–4 hours", sedan: 2800, suv: 3800 }],
+    ["coimbatore", "ooty", { km: 85, duration: "3 hours", sedan: 2200, suv: 3200 }]
   ];
 
   const routes = [];

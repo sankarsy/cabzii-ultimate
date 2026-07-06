@@ -17,6 +17,8 @@ import {
 } from "../../../lib/seo";
 import { getCityLandingBody } from "../../../lib/seo/landingContent";
 import { fetchSeoCityPage } from "../../../lib/serverCatalog";
+import { fetchSiteReviewStats } from "../../../lib/serverReviewStats";
+import { formatSerpPrice } from "../../../lib/seo/serpRichData";
 
 export const revalidate = 600;
 
@@ -56,6 +58,7 @@ export default async function CabBookingCityPage({ params }) {
   const title = cms?.seoTitle || tunedCabBookingTitle(city);
   const description = cms?.seoDescription || tunedCabBookingDescription(city);
   const faqs = getCityFaqs(city, "cab");
+  const reviewStats = await fetchSiteReviewStats();
   const jsonLd = [
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
@@ -67,7 +70,8 @@ export default async function CabBookingCityPage({ params }) {
       description,
       urlPath: path,
       priceLow: CITY_CAB_PRICE_RANGE.low,
-      priceHigh: CITY_CAB_PRICE_RANGE.high
+      priceHigh: CITY_CAB_PRICE_RANGE.high,
+      reviewStats
     }),
     localBusinessJsonLd(city.name, city.state, path),
     faqFromPairs(faqs)
@@ -80,7 +84,14 @@ export default async function CabBookingCityPage({ params }) {
   return (
     <>
       <JsonLd data={jsonLd} />
-      <CitySeoPage city={city} variant="cab" extraBody={extraBody} headingOverride={cms?.h1 || ""} />
+      <CitySeoPage
+        city={city}
+        variant="cab"
+        extraBody={extraBody}
+        headingOverride={cms?.h1 || ""}
+        reviewStats={reviewStats}
+        priceFrom={CITY_CAB_PRICE_RANGE.low}
+      />
     </>
   );
 }

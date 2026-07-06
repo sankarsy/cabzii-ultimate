@@ -4,6 +4,8 @@ import Link from "next/link";
 import { buildDriverFareSlabs, formatDriverRating } from "../../lib/driverFare";
 import { resolveDriverTripFare } from "../../lib/distanceFare";
 import { driverSlabForTrip, driverTripToSearchQuery } from "../../lib/driverTrip";
+import { getCatalogHourlyFare, getDriverCatalogSubtitle, getDriverDisplaySubtitle, getDriverDisplayTitle } from "../../lib/catalogDisplay";
+import { catalogPublicPath } from "../../lib/catalogProduct";
 import { resolveMediaUrl } from "../../lib/media";
 import { BriefcaseIcon, CarIcon, CheckIcon, LangIcon, RouteIcon } from "../icons";
 import CatalogCardImage from "./CatalogCardImage";
@@ -11,31 +13,34 @@ import MmtCardPriceBlock from "./MmtCardPriceBlock";
 import CatalogVehicleCard, { FeatureChip } from "../ui/CatalogVehicleCard";
 import RatingBadge from "../ui/RatingBadge";
 
-export default function MmtDriverResultCard({ driver, trip, layout = "row" }) {
+export default function MmtDriverResultCard({ driver, trip, layout = "row", catalogMode = false, displayCity = "" }) {
   const id = String(driver._id ?? driver.id ?? "");
   const slabs = buildDriverFareSlabs(driver);
-  const slab = driverSlabForTrip(slabs, trip);
-  const fare = resolveDriverTripFare(driver, slab, trip);
-  const listPrice = fare.listPrice;
-  const discount = fare.discountPct;
-  const total = fare.total;
+  const catalogHourly = catalogMode ? getCatalogHourlyFare(driver, slabs) : null;
+  const slab = catalogMode ? null : driverSlabForTrip(slabs, trip);
+  const fare = catalogMode ? null : resolveDriverTripFare(driver, slab, trip);
+  const listPrice = catalogMode ? 0 : fare.listPrice;
+  const discount = catalogMode ? 0 : fare.discountPct;
+  const total = catalogMode ? 0 : fare.total;
   const imageSrc = resolveMediaUrl(driver.image);
-  const displayName = driver.name || driver.serviceTitle || "Driver";
+  const displayName = catalogMode
+    ? getDriverDisplayTitle(driver, null)
+    : getDriverDisplayTitle(driver, trip);
+  const subtitle = catalogMode
+    ? getDriverCatalogSubtitle(driver, displayCity)
+    : getDriverDisplaySubtitle(driver, trip);
   const vehicle = driver.supportedVehicles?.[0] || "Your vehicle";
   const languages = Array.isArray(driver.languages) ? driver.languages.slice(0, 2).join(", ") : "";
   const rating = formatDriverRating(driver);
   const reviewCount = driver.reviewCount ?? driver.reviews;
 
-  const detailParams = driverTripToSearchQuery(trip);
-  detailParams.set("driverId", id);
-  const href = `/drivers/passenger?${detailParams.toString()}`;
-
-  const subtitle = `${driver.vendor || "Cabzii Partner"}${driver.city ? ` · ${driver.city}` : ""}`;
-  const packageLine = fare.usesDistance
-    ? `₹${fare.perKmRate}/km · ${fare.fareNote}`
-    : slab?.label
-      ? `Package: ${slab.label}`
-      : null;
+  const href = catalogMode
+    ? catalogPublicPath(driver, "/drivers")
+    : `/drivers/passenger?${(() => {
+        const detailParams = driverTripToSearchQuery(trip);
+        detailParams.set("driverId", id);
+        return detailParams.toString();
+      })()}`;
 
   if (layout === "card") {
     return (
@@ -59,13 +64,20 @@ export default function MmtDriverResultCard({ driver, trip, layout = "row" }) {
             {languages ? <FeatureChip icon={LangIcon}>{languages}</FeatureChip> : null}
           </>
         }
-        packageLine={packageLine}
         priceBlockProps={{
           originalPrice: listPrice,
           finalPrice: total,
           discountPct: discount,
           compact: true,
-          fareNote: fare.usesDistance ? `₹${fare.perKmRate}/km` : undefined
+          perHourRate: catalogMode ? catalogHourly.perHourRate : undefined,
+          perKmRate: !catalogMode && fare?.usesDistance ? fare.perKmRate : undefined,
+          fareNote: catalogMode
+            ? catalogHourly.fareNote
+            : fare?.usesDistance
+              ? `₹${fare.perKmRate}/km`
+              : slab?.extraHr
+                ? `₹${slab.extraHr}/hr`
+                : undefined
         }}
       />
     );
@@ -111,17 +123,26 @@ export default function MmtDriverResultCard({ driver, trip, layout = "row" }) {
         </div>
         <p className="text-sm text-slate-500">{subtitle}</p>
         <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-500">{features}</div>
-        {packageLine ? <p className="mt-2 text-xs text-slate-500">{packageLine}</p> : null}
       </div>
       <div className="flex flex-row items-center justify-between gap-3 border-t border-slate-100 pt-3 sm:flex-col sm:items-end sm:border-l sm:border-t-0 sm:pl-4 sm:pt-0">
         <MmtCardPriceBlock
           originalPrice={listPrice}
           finalPrice={total}
           discountPct={discount}
-          fareNote={fare.usesDistance ? `₹${fare.perKmRate}/km` : undefined}
+          perHourRate={catalogMode ? catalogHourly?.perHourRate : undefined}
+          perKmRate={!catalogMode && fare?.usesDistance ? fare.perKmRate : undefined}
+          fareNote={
+            catalogMode
+              ? catalogHourly?.fareNote
+              : fare?.usesDistance
+                ? `₹${fare.perKmRate}/km`
+                : slab?.extraHr
+                  ? `₹${slab.extraHr}/hr`
+                  : undefined
+          }
         />
         <Link href={href} className="cabzii-btn cabzii-btn-primary shrink-0">
-          Select
+          {catalogMode ? "View" : "Select"}
         </Link>
       </div>
     </article>

@@ -15,6 +15,8 @@ export const SEO_CITIES = [
   { slug: "erode", name: "Erode", state: "Tamil Nadu", region: "IN-TN", langs: ["ta", "en"] },
   { slug: "hosur", name: "Hosur", state: "Tamil Nadu", region: "IN-TN", langs: ["ta", "en"] },
   { slug: "tirunelveli", name: "Tirunelveli", state: "Tamil Nadu", region: "IN-TN", langs: ["ta", "en"] },
+  { slug: "rameswaram", name: "Rameswaram", state: "Tamil Nadu", region: "IN-TN", langs: ["ta", "en"] },
+  { slug: "ooty", name: "Ooty", state: "Tamil Nadu", region: "IN-TN", langs: ["ta", "en"] },
   { slug: "mumbai", name: "Mumbai", state: "Maharashtra", region: "IN-MH", langs: ["en"] },
   { slug: "delhi", name: "Delhi", state: "Delhi NCR", region: "IN-DL", langs: ["en"] },
   { slug: "pune", name: "Pune", state: "Maharashtra", region: "IN-MH", langs: ["en"] },

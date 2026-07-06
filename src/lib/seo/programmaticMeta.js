@@ -9,8 +9,8 @@ export const META_TITLE_MAX = 60;
 export const META_DESC_MIN = 120;
 export const META_DESC_MAX = 155;
 
-/** Trailing brand in Google SERP titles (MrMed-style: `Product | Detail | cabzii`). */
-export const SERP_BRAND = "cabzii";
+/** Trailing brand in Google SERP titles (e.g. `Chennai to Tirupati Cab Booking | Cabzii`). */
+export const SERP_BRAND = "Cabzii";
 
 /** Standard meta title for rich search results: `Primary | Detail | cabzii` */
 export function formatSerpTitle(primary, detail) {
@@ -134,9 +134,9 @@ function templateMeta(templateId, cityName) {
 /** Per city+service overrides when template copy needs a tweak */
 const SERVICE_META_OVERRIDES = {
   "chennai:airport-taxi": {
-    title: formatSerpTitle("Chennai Airport Taxi", "Pickup & Drop 24/7"),
+    title: formatSerpTitle("Airport Taxi from Chennai Airport", "Book Now"),
     description: clampDescription(
-      "Chennai airport taxi — MAA pickup and drop, fixed fares, flight tracking. Book Chennai airport transfer online. Sedan, SUV & Innova. Instant confirmation on Cabzii."
+      "Starting from ₹899. Book reliable airport taxi in Chennai with professional drivers, 24×7 MAA pickup & drop, fixed fares and instant confirmation on Cabzii.in."
     )
   },
   "chennai:local-taxi": {
@@ -315,9 +315,27 @@ const ROUTE_META_OVERRIDES = {
     )
   },
   "chennai-to-tirupati-cab": {
-    title: formatSerpTitle("Chennai to Tirupati Cab", "One-Way Best Rates"),
+    title: formatSerpTitle("Chennai to Tirupati Cab Booking", "From ₹3,200"),
     description: clampDescription(
-      "Book safe, affordable one-way cab from Chennai to Tirupati with Cabzii.in. Clean cars, expert drivers, and zero hidden charges. Get a free quote!"
+      "Chennai to Tirupati cab booking on Cabzii — sedan from ₹3,200, SUV from ₹4,200. Swift Dzire, Etios & Innova. 135 km, 3–4 hrs. Book online 24/7 with instant quote."
+    )
+  },
+  "chennai-to-rameswaram-cab": {
+    title: formatSerpTitle("Chennai to Rameswaram Cab Booking", "From ₹5,200"),
+    description: clampDescription(
+      "Chennai to Rameswaram cab on Cabzii — pilgrimage taxi from ₹5,200 sedan. Pamban bridge route, 560 km, 8–9 hrs. Book Dzire, Etios or Innova online 24/7."
+    )
+  },
+  "madurai-to-rameswaram-cab": {
+    title: formatSerpTitle("Madurai to Rameswaram Cab", "Temple Day Trip"),
+    description: clampDescription(
+      "Madurai to Rameswaram cab on Cabzii — temple day trip from ₹2,800 sedan. 170 km, 3–4 hrs via Pamban. Book online with instant quote and verified drivers."
+    )
+  },
+  "coimbatore-to-ooty-cab": {
+    title: formatSerpTitle("Coimbatore to Ooty Cab", "Hill Station Taxi"),
+    description: clampDescription(
+      "Coimbatore to Ooty cab on Cabzii — hill drive taxi from ₹2,200 sedan. 85 km, 3 hrs through Nilgiri ghats. Book sedan, SUV or Innova online with upfront fare."
     )
   },
   "chennai-to-vellore-cab": {
@@ -385,10 +403,11 @@ export function getServiceMeta(service, city) {
     const airport = AIRPORT_BY_CITY[city.slug];
     if (airport) {
       const label = airport.label || city.name;
+      const priceFrom = service.priceFrom || 699;
       return {
-        title: formatSerpTitle(`${label} Airport Taxi`, `${airport.code} Pickup & Drop`),
+        title: formatSerpTitle(`Airport Taxi from ${label} Airport`, "Book Now"),
         description: clampDescription(
-          `${label} airport taxi (${airport.code}) — ${airport.name} pickup and drop. Fixed fares, flight tracking. Book online on Cabzii.in 24/7.`
+          `Starting from ₹${priceFrom.toLocaleString("en-IN")}. Book reliable airport taxi in ${label} with professional drivers, 24×7 ${airport.code} service, and instant confirmation on Cabzii.in.`
         )
       };
     }
@@ -703,6 +722,35 @@ export function servicesForCityHub(citySlug, limit = 8) {
 }
 
 const ROUTE_KEYWORD_OVERRIDES = {
+  "chennai-to-rameswaram-cab": [
+    "chennai to rameswaram cab",
+    "chennai to rameswaram taxi",
+    "rameswaram cab from chennai",
+    "chennai rameswaram pilgrimage cab",
+    "pamban bridge cab booking"
+  ],
+  "madurai-to-rameswaram-cab": [
+    "madurai to rameswaram cab",
+    "madurai to rameswaram taxi",
+    "rameswaram temple cab from madurai",
+    "madurai rameswaram day trip cab"
+  ],
+  "coimbatore-to-ooty-cab": [
+    "coimbatore to ooty cab",
+    "coimbatore to ooty taxi",
+    "ooty cab from coimbatore",
+    "nilgiri hill station cab"
+  ],
+  "chennai-to-tirupati-cab": [
+    "tirupati car booking",
+    "chennai to tirupati cab booking",
+    "chennai tirupati car rental",
+    "chennai to tirupati taxi",
+    "chennai to tirupati cab",
+    "one way cab chennai to tirupati",
+    "tirupati cab from chennai",
+    "chennai to tirupati car rental"
+  ],
   "chennai-to-trichy-cab": [
     "chennai to trichy taxi",
     "chennai to trichy distance by car",
@@ -719,6 +767,9 @@ const ROUTE_KEYWORD_OVERRIDES = {
 export function getRouteH1(route) {
   if (route.slug === "chennai-to-trichy-cab") {
     return "Chennai to Trichy Taxi — One-Way Cab Service";
+  }
+  if (route.slug === "chennai-to-tirupati-cab") {
+    return "Chennai to Tirupati Cab Booking — One-Way Taxi";
   }
   return `${route.fromCity.name} to ${route.toCity.name} Cab — One Way Taxi`;
 }

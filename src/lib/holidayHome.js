@@ -26,51 +26,6 @@ export const DOMESTIC_DESTINATION_IMAGES = {
     "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=600&h=400&q=80"
 };
 
-export const INTERNATIONAL_DESTINATIONS = [
-  {
-    slug: "dubai",
-    name: "Dubai",
-    priceFrom: 24999,
-    image: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=400&h=280&q=80",
-    href: "/flights?from=DEL&to=DXB"
-  },
-  {
-    slug: "singapore",
-    name: "Singapore",
-    priceFrom: 27999,
-    image: "https://images.unsplash.com/photo-1525629920041-4fffe988b9a0?auto=format&fit=crop&w=600&h=400&q=80",
-    href: "/flights?from=DEL&to=SIN"
-  },
-  {
-    slug: "bangkok",
-    name: "Bangkok",
-    priceFrom: 18999,
-    image: "https://images.unsplash.com/photo-1508009603885-50cf7c579365?auto=format&fit=crop&w=400&h=280&q=80",
-    href: "/flights?from=DEL&to=BKK"
-  },
-  {
-    slug: "bali",
-    name: "Bali",
-    priceFrom: 32999,
-    image: "https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=400&h=280&q=80",
-    href: "/holidays"
-  },
-  {
-    slug: "maldives",
-    name: "Maldives",
-    priceFrom: 45999,
-    image: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=400&h=280&q=80",
-    href: "/holidays?category=honeymoon"
-  },
-  {
-    slug: "paris",
-    name: "Paris",
-    priceFrom: 65999,
-    image: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=400&h=280&q=80",
-    href: "/holidays"
-  }
-];
-
 export const HOLIDAY_THEMES = [
   { id: "beach", title: "Beach", iconKey: "beach", category: "beach" },
   { id: "pilgrimage", title: "Pilgrimage", iconKey: "pilgrimage", category: "pilgrimage" },

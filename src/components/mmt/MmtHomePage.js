@@ -19,7 +19,7 @@ import { HOME_PAGE_FAQS } from "../../lib/seo/content";
 import { sortBySelectedCity } from "../../lib/locationPriority";
 import { useSelectedCity } from "../../lib/useSelectedCity";
 import { isValidDriverTripSearch, parseDriverTripSearchParams } from "../../lib/driverTrip";
-import { isValidTripSearch, parseTripSearchParams, todayStr } from "../../lib/mmtTrip";
+import { isValidTripSearch, parseTripSearchParams } from "../../lib/mmtTrip";
 import { extractCabList, extractDriverList, fetchJson } from "../../lib/apiClient";
 
 const EmtHolidayExplore = dynamic(() => import("../emt/EmtHolidayExplore"), { ssr: false });
@@ -49,7 +49,6 @@ function HomePageBody({
   loadingDrivers,
   cabsError,
   driversError,
-  defaultTrip,
   heroTab,
   initialCabTrip,
   initialDriverTrip
@@ -92,7 +91,7 @@ function HomePageBody({
           <MmtHomeCatalogScroll>
             {cabs.map((cab) => (
               <MmtHomeCatalogScrollItem key={String(cab._id ?? cab.id)}>
-                <MmtCabResultCard cab={cab} trip={defaultTrip} layout="card" />
+                <MmtCabResultCard cab={cab} layout="card" catalogMode displayCity={displayCity} />
               </MmtHomeCatalogScrollItem>
             ))}
           </MmtHomeCatalogScroll>
@@ -116,7 +115,7 @@ function HomePageBody({
           <MmtHomeCatalogScroll>
             {drivers.map((driver) => (
               <MmtHomeCatalogScrollItem key={String(driver._id ?? driver.id)}>
-                <MmtDriverResultCard driver={driver} trip={defaultTrip} layout="card" />
+                <MmtDriverResultCard driver={driver} layout="card" catalogMode displayCity={displayCity} />
               </MmtHomeCatalogScrollItem>
             ))}
           </MmtHomeCatalogScroll>
@@ -174,18 +173,6 @@ export default function MmtHomePage() {
   const [cabsError, setCabsError] = useState("");
   const [driversError, setDriversError] = useState("");
 
-  const defaultTrip = {
-    tripType: "outstation",
-    from: displayCity,
-    to: "Bengaluru",
-    date: todayStr(),
-    time: "09:00",
-    roundTrip: false,
-    direction: "pickup",
-    packageHours: 8,
-    city: displayCity
-  };
-
   const sharedProps = {
     displayCity,
     cabs,
@@ -193,8 +180,7 @@ export default function MmtHomePage() {
     loadingCabs,
     loadingDrivers,
     cabsError,
-    driversError,
-    defaultTrip
+    driversError
   };
 
   useEffect(() => {

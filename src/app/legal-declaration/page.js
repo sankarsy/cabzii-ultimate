@@ -1,9 +1,10 @@
 import Footer from "../../components/Footer";
 import Navbar from "../../components/Navbar";
-import { buildPageMetadata } from "../../lib/seo";
+import JsonLd from "../../components/seo/JsonLd";
+import { buildPageMetadata, legalWebPageJsonLd } from "../../lib/seo";
 
 export const metadata = buildPageMetadata({
-  title: "Legal Declaration",
+  title: "Legal Declaration | Cabzii",
   description:
     "Legal declaration for taxi, driver hire and tour services offered through Cabzii Travels on cabzii.in.",
   path: "/legal-declaration"
@@ -12,6 +13,13 @@ export const metadata = buildPageMetadata({
 export default function LegalDeclarationPage() {
   return (
     <main className="min-h-screen bg-linear-to-b from-slate-50 via-sky-50/60 to-violet-50/40">
+      <JsonLd
+        data={legalWebPageJsonLd({
+          name: "Legal Declaration — Cabzii",
+          description: "Legal declaration for taxi, driver hire and tour services on Cabzii.in.",
+          urlPath: "/legal-declaration"
+        })}
+      />
       <Navbar />
       <section className="py-10 md:py-14">
         <div className="mx-auto max-w-5xl px-4 md:px-6 lg:px-8">

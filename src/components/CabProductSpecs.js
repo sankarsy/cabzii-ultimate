@@ -1,4 +1,6 @@
 import { formatRating, num } from "../lib/cabFare";
+import { formatCabSeatLabel, inferPassengerSeats } from "../lib/cabSeats";
+import { formatInrCurrency } from "../lib/formatInr";
 
 export default function CabProductSpecs({ cab }) {
   const features = Array.isArray(cab.features) ? cab.features : [];
@@ -10,14 +12,14 @@ export default function CabProductSpecs({ cab }) {
 
   const rows = [
     { label: "Vehicle", value: cab.title || cab.examples?.split(",")[0]?.trim() || "—" },
-    { label: "Category", value: cab.seats > 8 || String(cab.type).includes("Tempo") ? "Van / Bus" : "Taxi Car" },
+    { label: "Category", value: inferPassengerSeats(cab) > 8 || String(cab.type).includes("Tempo") ? "Van / Bus" : "Taxi Car" },
     { label: "Body type", value: cab.type },
     { label: "Vendor", value: cab.vendor },
-    { label: "Seats", value: cab.seats ?? "—" },
-    { label: "Base price", value: cab.price ? `₹${num(cab.price).toLocaleString("en-IN")}` : "—" },
-    { label: "Hourly rate", value: hourly > 0 ? `₹${hourly.toLocaleString("en-IN")}/hr` : "—" },
-    { label: "Day rate", value: day > 0 ? `₹${day.toLocaleString("en-IN")}/day` : "—" },
-    { label: "Extra hour", value: extra > 0 ? `₹${extra.toLocaleString("en-IN")}/hr` : "—" },
+    { label: "Seats", value: formatCabSeatLabel(cab) },
+    { label: "Base price", value: cab.price ? formatInrCurrency(num(cab.price)) : "—" },
+    { label: "Hourly rate", value: hourly > 0 ? `${formatInrCurrency(hourly)}/hr` : "—" },
+    { label: "Day rate", value: day > 0 ? `${formatInrCurrency(day)}/day` : "—" },
+    { label: "Extra hour", value: extra > 0 ? `${formatInrCurrency(extra)}/hr` : "—" },
     { label: "Discount", value: cab.discountPercentage ? `${cab.discountPercentage}% OFF` : "—" },
     ...(ratingText ? [{ label: "Rating", value: `${ratingText} / 5 · ${cab.reviewCount} verified` }] : [])
   ];

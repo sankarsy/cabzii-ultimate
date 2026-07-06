@@ -77,11 +77,13 @@ export default function TrustCounters() {
   return (
     <section ref={ref} className="border-t border-slate-200 bg-slate-50/70 py-8 sm:py-10" aria-label="Cabzii in numbers">
       <div className="section-shell">
-        <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-          {counters.map((item) => (
-            <CounterCard key={item.label} item={item} start={start} />
-          ))}
-        </div>
+        {counters.length ? (
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+            {counters.map((item) => (
+              <CounterCard key={item.label} item={item} start={start} />
+            ))}
+          </div>
+        ) : null}
       </div>
     </section>
   );

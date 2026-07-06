@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useRef } from "react";
-import { routeToCabSearchHref } from "../../lib/routeTrip";
 import { SEO_ROUTES } from "../../lib/seo/routes";
 import { cityBySlug } from "../../lib/seo/cities";
 
@@ -93,7 +92,7 @@ export default function MmtPopularRoutes() {
             return (
               <Link
                 key={route.slug}
-                href={routeToCabSearchHref(route)}
+                href={`/routes/${route.slug}`}
                 className="cabzii-card cabzii-card-interactive group flex h-full min-w-[200px] max-w-[200px] shrink-0 snap-start flex-col justify-between px-3.5 py-3.5"
               >
                 <p className="line-clamp-1 text-sm font-bold leading-snug text-slate-900 group-hover:text-[var(--emt-primary)]">
@@ -107,7 +106,7 @@ export default function MmtPopularRoutes() {
                     From {formatINR(route.sedanFrom)}
                   </p>
                   <p className="mt-0.5 text-[10px] font-medium text-slate-400 group-hover:text-[var(--emt-primary)]/80">
-                    One way · View cabs →
+                    One way · SEO route page →
                   </p>
                 </div>
               </Link>

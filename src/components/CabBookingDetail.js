@@ -13,6 +13,8 @@ import {
   selectionFromPackage,
   vendorInitials
 } from "../lib/cabFare";
+import { formatInrCurrency } from "../lib/formatInr";
+import { formatCabSeatPill } from "../lib/cabSeats";
 import { MetaPill, ProductImageFrame, ProductMetaBlock } from "./productCardShared";
 import {
   CalendarIcon,
@@ -52,7 +54,7 @@ export default function CabBookingDetail({ cab, onSelectionChange }) {
   const hasAc = features.some((f) => /^(ac|a\/c|air\s*condition)/i.test(String(f).trim()));
   const amenityLabel = hasAc ? "AC" : features[0] ? String(features[0]) : "—";
   const dayHireLabel =
-    day > 0 ? `Day hire ₹${day.toLocaleString("en-IN")}/day` : hourly > 0 ? `From ₹${hourly.toLocaleString("en-IN")}/hr` : null;
+    day > 0 ? `Day hire ${formatInrCurrency(day)}/day` : hourly > 0 ? `From ${formatInrCurrency(hourly)}/hr` : null;
   const ratingText = formatRating(cab);
   const reviewCountRaw = cab.reviewCount ?? cab.reviews;
   const reviewCount =
@@ -113,7 +115,7 @@ export default function CabBookingDetail({ cab, onSelectionChange }) {
       <ProductImageFrame src={imageSrc} alt={cab.title || "Cab"} badges={imageBadges} imageClassName="h-[200px] w-full object-contain p-2 sm:h-[220px]" />
 
       <ProductMetaBlock title={cab.title} vendor={cab.vendor}>
-        <MetaPill icon={<SeatIcon className="h-2.5 w-2.5" />} label={`${cab.seats ?? "4"} Seats`} />
+        <MetaPill icon={<SeatIcon className="h-2.5 w-2.5" />} label={formatCabSeatPill(cab)} />
         <MetaPill icon={<SnowflakeIcon className="h-2.5 w-2.5" />} label={amenityLabel} />
         <MetaPill icon={<PersonIcon className="h-2.5 w-2.5" />} label="Driver Included" />
         {dayHireLabel ? <MetaPill icon={<RupeeIcon className="h-2.5 w-2.5" />} label={dayHireLabel} /> : null}

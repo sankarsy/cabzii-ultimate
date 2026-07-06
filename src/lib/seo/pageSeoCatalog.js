@@ -11,7 +11,7 @@ export const STATIC_PAGE_SEO_LIST = [
     productName: "Cabzii Home",
     seoTitle: HOME_SEO_TITLE,
     seoDescription:
-      "Book airport taxi, local taxi, outstation taxi and one-way cabs in Chennai. Instant confirmation, professional drivers and affordable fares. Book online with Cabzii.",
+      "Book cabs, taxis, airport transfers, outstation trips, acting drivers and tour packages across India. Instant confirmation on Cabzii.in.",
     seoKeywords:
       "cab booking chennai, taxi service chennai, airport taxi chennai, outstation cab chennai, cabzii, cabzii.in"
   },
@@ -58,6 +58,61 @@ export const STATIC_PAGE_SEO_LIST = [
     seoTitle: "Travel Blog — Cabs, Pilgrimage & Holiday Tips",
     seoDescription: "Guides on cab booking, pilgrimage packages, airport transfers and holiday planning on cabzii.in.",
     seoKeywords: "cab booking tips, pilgrimage travel guide, cabzii blog"
+  },
+  {
+    id: "site:about",
+    path: "/about",
+    type: "site",
+    typeLabel: "About page",
+    productName: "About Cabzii",
+    seoTitle: "About Cabzii — Trusted Cab Booking Across India",
+    seoDescription:
+      "Cabzii connects riders with verified cab partners for airport transfers, outstation trips, local rentals and acting drivers across Chennai, Bengaluru and 20+ cities.",
+    seoKeywords: "about cabzii, cab booking company India, cabzii.in about"
+  },
+  {
+    id: "site:contact",
+    path: "/contact",
+    type: "site",
+    typeLabel: "Contact page",
+    productName: "Contact Cabzii",
+    seoTitle: "Contact Cabzii — Call, WhatsApp & Email Support 24×7",
+    seoDescription:
+      "Reach Cabzii for cab quotes, booking help and support. Phone, WhatsApp and email — available 24×7 across India.",
+    seoKeywords: "contact cabzii, cab booking support, cabzii phone number"
+  },
+  {
+    id: "site:faq",
+    path: "/faq",
+    type: "site",
+    typeLabel: "FAQ page",
+    productName: "Cabzii FAQ",
+    seoTitle: "FAQ — Cab Booking, Airport Taxi & Outstation Cabs | Cabzii",
+    seoDescription:
+      "Answers about cab booking on cabzii.in — fares, airport pickup, outstation trips, acting drivers, payment and cancellation.",
+    seoKeywords: "cab booking faq, airport taxi faq, cabzii help"
+  },
+  {
+    id: "site:locations",
+    path: "/locations",
+    type: "site",
+    typeLabel: "Locations hub",
+    productName: "Service Locations",
+    seoTitle: "Cab & Taxi Service Locations in South India | Cabzii",
+    seoDescription:
+      "Cabzii service areas across Chennai, Bengaluru, Hyderabad, Coimbatore, Madurai, Tirupati and 20+ cities. Book cabs online.",
+    seoKeywords: "cab service locations, taxi near me South India, cabzii cities"
+  },
+  {
+    id: "site:testimonials",
+    path: "/testimonials",
+    type: "site",
+    typeLabel: "Reviews page",
+    productName: "Customer Reviews",
+    seoTitle: "Customer Reviews & Ratings | Cabzii",
+    seoDescription:
+      "Read verified Cabzii customer reviews for cab booking, airport taxi, outstation trips and acting drivers across South India.",
+    seoKeywords: "cabzii reviews, cab booking reviews, taxi service ratings"
   }
 ];
 

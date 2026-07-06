@@ -3,11 +3,13 @@ import {
   SEO_ROUTES,
   SEO_SERVICES,
   SITE_URL,
+  FEATURED_ROUTE_SLUGS,
   getBackendUrl,
   servicePath
 } from "../lib/seo";
 import { catalogPublicPath } from "../lib/catalogProduct";
 import { resolveMediaUrl } from "../lib/media";
+import { dedupeSitemapEntries, isPublishedBlogPost, isPublishedCatalogItem } from "../lib/seo/sitemapUtils";
 
 const HERO_IMAGE = `${SITE_URL}/images/hero-banner.svg`;
 
@@ -49,10 +51,13 @@ export default async function sitemap() {
     { url: `${base}/drivers`, lastModified: now, changeFrequency: "daily", priority: 0.95, images: [HERO_IMAGE] },
     { url: `${base}/holidays`, lastModified: now, changeFrequency: "daily", priority: 0.92, images: [HERO_IMAGE] },
     { url: `${base}/blogs`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
+    { url: `${base}/about`, lastModified: now, changeFrequency: "monthly", priority: 0.75 },
+    { url: `${base}/contact`, lastModified: now, changeFrequency: "monthly", priority: 0.75 },
+    { url: `${base}/faq`, lastModified: now, changeFrequency: "monthly", priority: 0.78 },
+    { url: `${base}/track-booking`, lastModified: now, changeFrequency: "monthly", priority: 0.65 },
     { url: `${base}/blog/cab-booking-in-chennai-complete-guide-2026`, lastModified: now, changeFrequency: "weekly", priority: 0.88 },
     { url: `${base}/locations`, lastModified: now, changeFrequency: "weekly", priority: 0.85 },
     { url: `${base}/testimonials`, lastModified: now, changeFrequency: "weekly", priority: 0.75 },
-    { url: `${base}/holidays?category=pilgrimage`, lastModified: now, changeFrequency: "weekly", priority: 0.85 },
     { url: `${base}/terms-and-conditions`, lastModified: now, changeFrequency: "yearly", priority: 0.4 },
     { url: `${base}/legal-declaration`, lastModified: now, changeFrequency: "yearly", priority: 0.4 },
     { url: `${base}/cancellation-policy`, lastModified: now, changeFrequency: "yearly", priority: 0.4 }
@@ -116,7 +121,14 @@ export default async function sitemap() {
     url: `${base}/routes/${route.slug}`,
     lastModified: now,
     changeFrequency: "weekly",
-    priority: route.slug.includes("tirupati") || route.slug.includes("chennai") ? 0.9 : 0.87
+    priority:
+      route.slug === "chennai-to-tirupati-cab" || route.slug === "chennai-to-rameswaram-cab"
+        ? 0.98
+        : FEATURED_ROUTE_SLUGS.includes(route.slug)
+          ? 0.94
+          : route.slug.includes("tirupati") || route.slug.includes("chennai")
+            ? 0.9
+            : 0.87
   }));
 
   const cmsRoutePages = (cmsRoutes || [])
@@ -129,7 +141,7 @@ export default async function sitemap() {
     }));
 
   const cabRoutes = cabs
-    .filter((item) => item._id || item.slug)
+    .filter(isPublishedCatalogItem)
     .map((item) => {
       const image = absoluteImage(item.image);
       return {
@@ -142,7 +154,7 @@ export default async function sitemap() {
     });
 
   const driverRoutes = drivers
-    .filter((item) => item._id || item.slug)
+    .filter(isPublishedCatalogItem)
     .map((item) => {
       const image = absoluteImage(item.image);
       return {
@@ -154,8 +166,14 @@ export default async function sitemap() {
       };
     });
 
+  const tourPackageSlugs = new Set(
+    packages.filter((item) => item.slug).map((item) => String(item.slug))
+  );
+
+  /* Booking detail URLs — skip when a richer /tour-packages/{slug} landing exists */
   const packageRoutes = packages
-    .filter((item) => item._id || item.slug)
+    .filter(isPublishedCatalogItem)
+    .filter((item) => !item.slug || !tourPackageSlugs.has(String(item.slug)))
     .map((item) => {
       const image = absoluteImage(item.image);
       return {
@@ -169,6 +187,7 @@ export default async function sitemap() {
 
   /* SEO landing pages for tour packages (slug-based, richer than /holidays detail) */
   const tourPackageRoutes = packages
+    .filter(isPublishedCatalogItem)
     .filter((item) => item.slug)
     .map((item) => {
       const image = absoluteImage(item.image);
@@ -182,7 +201,7 @@ export default async function sitemap() {
     });
 
   const blogRoutes = blogPosts
-    .filter((item) => item.slug)
+    .filter(isPublishedBlogPost)
     .map((item) => ({
       url: `${base}/blog/${item.slug}`,
       lastModified: item.updatedAt ? new Date(item.updatedAt) : now,
@@ -190,7 +209,7 @@ export default async function sitemap() {
       priority: item.slug?.includes("chennai") ? 0.82 : 0.6
     }));
 
-  return [
+  return dedupeSitemapEntries([
     ...staticRoutes,
     ...cityRoutes,
     ...staticServiceRoutes,
@@ -202,5 +221,5 @@ export default async function sitemap() {
     ...packageRoutes,
     ...tourPackageRoutes,
     ...blogRoutes
-  ];
+  ]);
 }

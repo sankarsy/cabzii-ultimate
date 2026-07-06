@@ -11,6 +11,8 @@ import {
   faqFromPairs,
   formatSerpTitle
 } from "../../../lib/seo";
+import { formatBlogAuthor, formatBlogDate } from "../../../lib/seo/serpRichData";
+import { resolveMediaUrl } from "../../../lib/media";
 
 const CHENNAI_GUIDE_FAQS = [
   [
@@ -67,8 +69,9 @@ export async function generateMetadata({ params }) {
     description: post.seoDescription || post.excerpt,
     path: `/blog/${params.slug}`,
     keywords: (post.seo || "").split(",").map((s) => s.trim()).filter(Boolean),
-    image: "/images/hero-banner.png",
-    imageAlt: post.title
+    image: resolveMediaUrl(post.image) || "/images/hero-banner.png",
+    imageAlt: post.title,
+    type: "article"
   });
 }
 
@@ -84,6 +87,9 @@ export default async function BlogPostPage({ params }) {
 
   const isChennaiGuide = slug.includes("chennai") && slug.includes("guide");
   const faqs = isChennaiGuide ? CHENNAI_GUIDE_FAQS : [];
+  const authorLabel = formatBlogAuthor(post.author);
+  const dateLabel = formatBlogDate(post.date || post.publishedAt);
+  const heroImage = resolveMediaUrl(post.image) || "https://cabzii.in/images/hero-banner.png";
 
   const jsonLd = [
     breadcrumbJsonLd([
@@ -95,9 +101,9 @@ export default async function BlogPostPage({ params }) {
       title: post.title,
       description: post.seoDescription || post.excerpt,
       urlPath: `/blog/${slug}`,
-      author: post.author,
-      datePublished: post.date || undefined,
-      image: "https://cabzii.in/images/hero-banner.png"
+      author: authorLabel,
+      datePublished: post.date || post.publishedAt || undefined,
+      image: heroImage
     }),
     ...(faqs.length ? [faqFromPairs(faqs)] : [])
   ];
@@ -123,8 +129,8 @@ export default async function BlogPostPage({ params }) {
             : post.title}
         </h1>
         <p className="mt-3 text-sm text-slate-500">
-          {post.author}
-          {post.date ? ` · ${post.date}` : ""}
+          By {authorLabel}
+          {dateLabel ? ` · ${dateLabel}` : ""}
         </p>
         <p className="mt-6 text-base leading-relaxed text-slate-700">{post.excerpt}</p>
 

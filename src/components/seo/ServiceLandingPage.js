@@ -2,19 +2,22 @@ import Link from "next/link";
 import Breadcrumbs from "./Breadcrumbs";
 import BookingCtaBar from "./BookingCtaBar";
 import FaqSection from "./FaqSection";
+import SerpRichBar from "./SerpRichBar";
 import { cityAreas } from "../../lib/seo/content";
 import { serviceSearchHref, tunedServiceDescription, tunedServiceH1 } from "../../lib/seo/metadataTuning";
+import { formatSerpPrice, serviceSerpBadges } from "../../lib/seo/serpRichData";
 import { servicePath } from "../../lib/seo/services";
 import { routeToCabSearchHref } from "../../lib/routeTrip";
 import { routesForCity } from "../../lib/seo/routes";
 
-export default function ServiceLandingPage({ city, service, faqs, extraBody = "" }) {
+export default function ServiceLandingPage({ city, service, faqs, extraBody = "", reviewStats }) {
   const path = servicePath(service, city);
   const areas = cityAreas(city.slug);
   const cityRoutes = routesForCity(city.slug).slice(0, 6);
   const searchHref = serviceSearchHref(service, city);
   const h1 = tunedServiceH1(service, city);
   const lead = tunedServiceDescription(service, city);
+  const serpBadges = serviceSerpBadges(service, city);
 
   return (
     <article className="mx-auto max-w-4xl px-4 py-10 md:py-14">
@@ -31,6 +34,14 @@ export default function ServiceLandingPage({ city, service, faqs, extraBody = ""
       </p>
       <h1 className="mt-3 text-3xl font-extrabold text-slate-900 md:text-4xl">{h1}</h1>
       <p className="mt-4 text-base leading-relaxed text-slate-700 md:text-lg">{lead}</p>
+
+      <SerpRichBar
+        ratingValue={reviewStats?.ratingValue}
+        reviewCount={reviewStats?.reviewCount}
+        priceLabel={formatSerpPrice(service.priceFrom)}
+        badges={serpBadges}
+      />
+
       {extraBody ? (
         <div
           className="prose prose-slate mt-4 max-w-none text-sm text-slate-700"

@@ -15,6 +15,7 @@ import {
   driverTripToSearchQuery,
   parseDriverTripSearchParams
 } from "../../../lib/driverTrip";
+import { getDriverDisplaySubtitle, getDriverDisplayTitle } from "../../../lib/catalogDisplay";
 
 function formatINR(n) {
   return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(
@@ -79,7 +80,8 @@ function DriverPassengerContent() {
   const listPrice = fare.listPrice;
   const discount = fare.discountPct;
   const total = fare.total;
-  const displayName = driver?.name || driver?.serviceTitle || "Driver";
+  const displayName = driver ? getDriverDisplayTitle(driver, trip) : "Driver";
+  const displaySubtitle = driver ? getDriverDisplaySubtitle(driver, trip) : "";
 
   async function handleContinue() {
     setError("");
@@ -114,7 +116,9 @@ function DriverPassengerContent() {
       payParams.set("date", trip.date);
       payParams.set("time", trip.time);
       if (trip.roundTrip) payParams.set("roundTrip", "true");
-      if (trip.packageHours) payParams.set("packageHours", String(trip.packageHours));
+      if (trip.packageHours && trip.tripType === "hourly") {
+        payParams.set("packageHours", String(trip.packageHours));
+      }
       if (slab?.id) payParams.set("packageId", slab.id);
       if (slab?.label) payParams.set("package", slab.label);
       if (fare.perKmRate) payParams.set("extraKm", String(fare.perKmRate));
@@ -194,10 +198,7 @@ function DriverPassengerContent() {
             <img src={resolveMediaUrl(driver.image)} alt="" className="mb-3 h-24 w-full rounded-lg object-cover object-top" />
           ) : null}
           <h3 className="font-bold text-slate-900">{displayName}</h3>
-          <p className="text-sm text-slate-500">
-            {driver.vendor}
-            {driver.city ? ` · ${driver.city}` : ""}
-          </p>
+          <p className="text-sm text-slate-500">{displaySubtitle}</p>
           {fare.usesDistance ? (
             <p className="mt-2 text-xs text-slate-600">
               ₹{fare.perKmRate}/km × {fare.distanceKm} km{trip.roundTrip ? " × 2" : ""}

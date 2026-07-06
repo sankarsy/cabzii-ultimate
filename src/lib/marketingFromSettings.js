@@ -98,7 +98,9 @@ export function resolveWhyFeatures(settings) {
 /** Animated trust counters — reads admin Hero stats when available. */
 export function resolveTrustCounters(settings) {
   const stats = Array.isArray(settings?.heroStats) ? settings.heroStats : null;
-  if (!stats?.length) return TRUST_COUNTERS;
+  if (!stats?.length) {
+    return TRUST_COUNTERS.filter((item) => item.display || item.value > 0);
+  }
 
   return stats.slice(0, 4).map((stat, index) => {
     const parsed = parseStatValue(stat.value);
@@ -115,5 +117,5 @@ export function resolveTrustCounters(settings) {
       bg: style.bg,
       animate: parsed.animate
     };
-  });
+  }).filter((item) => item.label && (item.display || item.value > 0));
 }

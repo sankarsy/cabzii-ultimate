@@ -14,6 +14,12 @@ import { fetchJson } from "../../lib/apiClient";
 import { clearCheckoutDraft, loadCheckoutDraft } from "../../lib/checkoutStorage";
 import { isPaymentMethodEnabled } from "../../lib/paymentMethods";
 import { readTripCoords } from "../../lib/tripCoords";
+import { parseTripSearchParams } from "../../lib/mmtTrip";
+import {
+  getCabDisplaySubtitle,
+  getCabDisplayTitle,
+  getDriverDisplayTitle
+} from "../../lib/catalogDisplay";
 
 function firstParam(value) {
   if (Array.isArray(value)) return String(value[0] ?? "").trim();
@@ -55,10 +61,12 @@ export default function PaymentPage({ searchParams }) {
   });
 
   const [selectedItem, setSelectedItem] = useState(null);
+  const cabTrip = useMemo(() => parseTripSearchParams(searchParams), [searchParams]);
   const paymentTrip = {
-    tripType: firstParam(searchParams?.serviceTripType) || serviceTab || "outstation",
-    from: pickup,
-    to: drop,
+    tripType: cabTrip.tripType || firstParam(searchParams?.serviceTripType) || serviceTab || "outstation",
+    from: pickup || cabTrip.from,
+    to: drop || cabTrip.to,
+    roundTrip: cabTrip.roundTrip,
     ...tripCoords
   };
 
@@ -283,13 +291,18 @@ export default function PaymentPage({ searchParams }) {
             item={
               type === "driver"
                 ? {
-                    title: selectedItem.name,
+                    title: getDriverDisplayTitle(selectedItem, cabTrip),
                     type: selectedItem.type || "Driver",
                     vendor: selectedItem.vendor || "Cabzii Partner"
                   }
-                : undefined
+                : {
+                    title: getCabDisplayTitle(selectedItem, cabTrip),
+                    type: selectedItem.type,
+                    vendor: selectedItem.vendor,
+                    subtitle: getCabDisplaySubtitle(selectedItem, cabTrip)
+                  }
             }
-            cab={type === "cab" ? selectedItem : undefined}
+            cab={undefined}
             selection={bookingSelection}
             showExtrasNote
           />

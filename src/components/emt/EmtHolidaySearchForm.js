@@ -1,11 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { SearchIcon } from "../icons";
-import { getHolidayThemeIcon, HOLIDAY_THEME_ICON_STYLES } from "../icons/heroIcons";
 import { HOLIDAY_THEMES, themeHref } from "../../lib/holidayHome";
+import HolidayThemeTile from "./HolidayThemeTile";
 
 const HERO_IMAGE =
   "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1600&h=700&q=80";
@@ -47,18 +46,14 @@ export default function EmtHolidaySearchForm({ emtHero = false }) {
         </form>
 
         <div className="emt-holiday-themes">
-          {HOLIDAY_THEMES.map((theme) => {
-            const ThemeIcon = getHolidayThemeIcon(theme.iconKey || theme.id);
-            const iconStyle = HOLIDAY_THEME_ICON_STYLES[theme.iconKey || theme.id] || HOLIDAY_THEME_ICON_STYLES.beach;
-            return (
-            <Link key={theme.id} href={themeHref(theme)} className="emt-holiday-theme cabzii-tap">
-              <span className={`emt-holiday-theme-icon flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${iconStyle}`} aria-hidden>
-                <ThemeIcon className="h-4 w-4" />
-              </span>
-              <span>{theme.title}</span>
-            </Link>
-            );
-          })}
+          {HOLIDAY_THEMES.map((theme) => (
+            <HolidayThemeTile
+              key={theme.id}
+              theme={{ ...theme, href: themeHref(theme) }}
+              size="compact"
+              variant="onDark"
+            />
+          ))}
         </div>
       </div>
     </div>

@@ -1,8 +1,10 @@
 import Link from "next/link";
 import Breadcrumbs from "./seo/Breadcrumbs";
 import FaqSection from "./seo/FaqSection";
+import SerpRichBar from "./seo/SerpRichBar";
 import { SEO_CITIES } from "../lib/seo";
 import { getCityFaqs } from "../lib/seo/content";
+import { formatSerpPrice } from "../lib/seo/serpRichData";
 import {
   tunedCabBookingDescription,
   tunedCabBookingH1,
@@ -13,7 +15,14 @@ import { routeToCabSearchHref } from "../lib/routeTrip";
 import { routesForCity } from "../lib/seo/routes";
 import { servicePath } from "../lib/seo/services";
 
-export default function CitySeoPage({ city, variant, extraBody = "", headingOverride = "" }) {
+export default function CitySeoPage({
+  city,
+  variant,
+  extraBody = "",
+  headingOverride = "",
+  reviewStats,
+  priceFrom
+}) {
   const isCab = variant === "cab";
   const title = headingOverride || (isCab ? tunedCabBookingH1(city) : tunedActingDriverH1(city));
   const lead = isCab ? tunedCabBookingDescription(city) : `Hire verified acting drivers and chauffeurs in ${city.name} for hourly, daily and outstation trips on Cabzii.`;
@@ -38,6 +47,20 @@ export default function CitySeoPage({ city, variant, extraBody = "", headingOver
         </p>
         <h1 className="mt-3 text-3xl font-extrabold text-slate-900 md:text-4xl">{title}</h1>
         <p className="mt-4 text-base leading-relaxed text-slate-700 md:text-lg">{lead}</p>
+
+        {isCab ? (
+          <SerpRichBar
+            ratingValue={reviewStats?.ratingValue}
+            reviewCount={reviewStats?.reviewCount}
+            priceLabel={formatSerpPrice(priceFrom || 999)}
+            badges={[
+              { label: "Vehicles: Dzire, Etios, Innova, Crysta" },
+              { label: "Service: 24×7 Available" },
+              { label: `City: ${city.name}` }
+            ]}
+          />
+        ) : null}
+
         {extraBody ? (
           <div
             className="prose prose-slate mt-6 max-w-none text-sm text-slate-700 md:text-base"

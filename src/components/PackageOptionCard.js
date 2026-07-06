@@ -2,6 +2,7 @@
 
 import { Sparkles } from "lucide-react";
 import { packageYouPay } from "../lib/cabFare";
+import { formatInrCurrency } from "../lib/formatInr";
 import { ClockIcon, RoadIcon, TwoWayIcon } from "./icons";
 
 const COMPACT_MIN_H = "min-h-[8.75rem]";
@@ -51,7 +52,7 @@ export default function PackageOptionCard({ pkg, selected, discount, onSelect, c
         {d > 0 ? (
           <>
             <span className={`text-slate-400 line-through ${compact ? "text-[10px]" : "text-sm"}`}>
-              ₹{list.toLocaleString("en-IN")}
+              {formatInrCurrency(list)}
             </span>
             <span
               className={`rounded-full bg-emerald-50 font-bold text-emerald-700 ${
@@ -65,7 +66,7 @@ export default function PackageOptionCard({ pkg, selected, discount, onSelect, c
       </div>
 
       <p className={`shrink-0 font-extrabold text-[#0056D2] ${compact ? "mt-0.5 text-base" : "mt-1 text-2xl"}`}>
-        ₹{youPay.toLocaleString("en-IN")}
+        {formatInrCurrency(youPay)}
       </p>
 
       <div className={`mt-auto min-h-[2rem] ${compact ? "pt-0.5" : "pt-1"}`}>
@@ -74,10 +75,10 @@ export default function PackageOptionCard({ pkg, selected, discount, onSelect, c
         ) : (
           <div className={compact ? "space-y-px" : "space-y-0.5"}>
             <p className={`text-slate-500 ${compact ? "text-[9px]" : "text-xs"}`}>
-              Extra Hour: ₹{pkg.extraHr?.toLocaleString("en-IN") ?? "—"}/hr
+              Extra Hour: {pkg.extraHr != null ? `${formatInrCurrency(pkg.extraHr)}/hr` : "—"}
             </p>
             <p className={`text-slate-500 ${compact ? "text-[9px]" : "text-xs"}`}>
-              Extra Km: ₹{pkg.extraKm?.toLocaleString("en-IN") ?? "—"}/km
+              Extra Km: {pkg.extraKm != null ? `${formatInrCurrency(pkg.extraKm)}/km` : "—"}
             </p>
           </div>
         )}

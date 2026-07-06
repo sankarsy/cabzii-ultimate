@@ -28,16 +28,20 @@ export function resolveMediaUrl(path) {
   if (!trimmed) return "";
 
   const normalized = normalizeStoredImagePath(trimmed);
-  const base = getMediaBackendBase();
 
+  /* Same-origin `/uploads/*` — proxied by Next.js; keeps SSR and client URLs identical. */
   if (normalized.startsWith("/uploads/")) {
-    return `${base}${normalized}`;
+    return normalized;
+  }
+
+  if (normalized.startsWith("uploads/")) {
+    return `/${normalized}`;
   }
 
   if (/^https?:\/\//i.test(normalized)) return normalized;
 
+  const base = getMediaBackendBase();
   if (normalized.startsWith("/")) return `${base}${normalized}`;
-  if (normalized.startsWith("uploads/")) return `${base}/${normalized}`;
   return normalized;
 }
 

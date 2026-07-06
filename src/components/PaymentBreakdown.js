@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { formatInrCurrency } from "../lib/formatInr";
 
 function inr(n) {
-  return `₹${Number(n || 0).toLocaleString("en-IN")}`;
+  return formatInrCurrency(n);
 }
 
 export default function PaymentBreakdown({
@@ -34,7 +35,7 @@ export default function PaymentBreakdown({
         <div className={`mt-4 rounded-lg bg-slate-50 ${compact ? "p-2.5" : "p-3"}`}>
           <p className={`font-semibold text-slate-900 ${compact ? "text-xs" : "text-sm"}`}>{product.title}</p>
           <p className={`text-slate-600 ${compact ? "text-[10px]" : "text-xs"}`}>
-            {product.type} · by {product.vendor}
+            {product.subtitle || `${product.type} · by ${product.vendor}`}
           </p>
         </div>
       ) : null}

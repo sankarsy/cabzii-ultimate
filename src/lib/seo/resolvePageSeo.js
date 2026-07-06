@@ -1,4 +1,4 @@
-import { buildPageMetadata } from "./constants";
+import { buildSeoMetadata } from "./buildSeoMetadata";
 import { STATIC_PAGE_SEO_BY_PATH } from "./pageSeoCatalog";
 
 function keywordsArray(value) {
@@ -31,7 +31,7 @@ export function buildMetadataForPath(path, settings) {
   const seoDescription = entry?.seoDescription || defaults?.seoDescription || "";
   const keywords = keywordsArray(entry?.seoKeywords || defaults?.seoKeywords);
 
-  return buildPageMetadata({
+  return buildSeoMetadata({
     title: seoTitle,
     description: seoDescription,
     path,

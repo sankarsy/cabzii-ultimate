@@ -1,25 +1,21 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import Link from "next/link";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { HOLIDAY_THEMES, themeHref } from "../../lib/holidayHome";
-import { getHolidayThemeIcon, HOLIDAY_THEME_ICON_STYLES } from "../icons/heroIcons";
+import HolidayThemeTile from "./HolidayThemeTile";
 
 function ScrollButton({ direction, onClick }) {
+  const Icon = direction === "left" ? ChevronLeft : ChevronRight;
   return (
     <button
       type="button"
       onClick={onClick}
       aria-label={direction === "left" ? "Scroll themes left" : "Scroll themes right"}
-      className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-[var(--cabzii-brand)] shadow-[var(--cabzii-shadow-card)] transition hover:border-[var(--cabzii-brand)]/35 hover:bg-blue-50/80 sm:flex"
+      className="cabzii-tap flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-[var(--cabzii-brand)]/30 hover:text-[var(--cabzii-brand)]"
     >
-      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden>
-        {direction === "left" ? (
-          <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-        ) : (
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-        )}
-      </svg>
+      <Icon className="h-5 w-5" strokeWidth={2.25} aria-hidden />
     </button>
   );
 }
@@ -30,56 +26,36 @@ export default function EmtHolidayThemes() {
   const scroll = (dir) => {
     const el = scrollRef.current;
     if (!el) return;
-    el.scrollBy({ left: dir * 300, behavior: "smooth" });
+    const step = Math.max(160, Math.round(el.clientWidth * 0.55));
+    el.scrollBy({ left: dir * step, behavior: "smooth" });
   };
 
   return (
-    <section className="border-t border-slate-200 bg-white py-8 sm:py-10">
+    <section className="border-t border-slate-200 bg-[var(--cabzii-bg)] py-6 sm:py-8">
       <div className="section-shell">
-        <div className="mb-6 flex flex-col items-center gap-2 text-center sm:mb-8">
-          <h2 className="text-xl font-bold text-slate-900 sm:text-2xl">Explore Holidays By Theme</h2>
-          <p className="max-w-lg text-sm text-slate-600">
-            Find your perfect getaway, tailored to your interests
-          </p>
+        <div className="mb-4 flex items-end justify-between gap-3 sm:mb-5">
+          <div>
+            <h2 className="text-lg font-bold text-slate-900 sm:text-xl">Explore by theme</h2>
+            <p className="mt-0.5 text-xs text-slate-500 sm:text-sm">Beach, temple tours, family &amp; more</p>
+          </div>
           <Link
             href="/holidays"
-            className="text-sm font-semibold text-[var(--cabzii-brand)] hover:underline"
+            className="shrink-0 text-xs font-semibold text-[var(--cabzii-brand)] hover:underline sm:text-sm"
           >
-            View all holiday packages →
+            View all →
           </Link>
         </div>
 
-        <div className="sm:flex sm:items-center sm:gap-4">
+        <div className="flex items-center gap-2 sm:gap-3">
           <ScrollButton direction="left" onClick={() => scroll(-1)} />
 
           <div
             ref={scrollRef}
-            className="offers-scroll grid grid-cols-3 gap-3 py-2 min-[400px]:grid-cols-4 sm:flex sm:flex-1 sm:gap-8 sm:overflow-x-auto sm:overscroll-x-contain sm:px-0.5 sm:snap-x sm:snap-mandatory sm:scroll-smooth sm:justify-center"
+            className="scroll-x-touch flex min-w-0 flex-1 items-start justify-between gap-3 overflow-x-auto overscroll-x-contain px-0.5 py-1 snap-x snap-mandatory scroll-smooth [-ms-overflow-style:none] [scrollbar-width:none] sm:gap-4 [&::-webkit-scrollbar]:hidden"
           >
-            {HOLIDAY_THEMES.map((theme) => {
-              const ThemeIcon = getHolidayThemeIcon(theme.iconKey || theme.id);
-              const iconStyle = HOLIDAY_THEME_ICON_STYLES[theme.iconKey || theme.id] || HOLIDAY_THEME_ICON_STYLES.beach;
-              return (
-              <Link
-                key={theme.id}
-                href={themeHref(theme)}
-                className="group flex min-w-0 flex-col items-center text-center sm:w-[140px] sm:shrink-0 sm:snap-center"
-              >
-                <div className="flex aspect-square w-full max-w-[5.5rem] items-center justify-center rounded-full border-2 border-sky-100 bg-white transition duration-200 group-hover:border-[var(--cabzii-brand)]/35 group-hover:shadow-[var(--cabzii-shadow-card)] sm:h-[118px] sm:w-[118px] sm:max-w-none">
-                  <span
-                    className={`flex h-14 w-14 items-center justify-center rounded-full sm:h-16 sm:w-16 ${iconStyle}`}
-                    aria-hidden
-                  >
-                    <ThemeIcon className="h-7 w-7 sm:h-8 sm:w-8" />
-                  </span>
-                </div>
-                <p className="mt-2 line-clamp-2 text-xs font-bold leading-snug text-slate-900 sm:mt-3 sm:text-base">{theme.title}</p>
-                <span className="mt-0.5 text-[11px] font-semibold text-[var(--cabzii-brand)] group-hover:underline sm:mt-1 sm:text-sm">
-                  Explore
-                </span>
-              </Link>
-            );
-            })}
+            {HOLIDAY_THEMES.map((theme) => (
+              <HolidayThemeTile key={theme.id} theme={{ ...theme, href: themeHref(theme) }} />
+            ))}
           </div>
 
           <ScrollButton direction="right" onClick={() => scroll(1)} />
@@ -89,28 +65,4 @@ export default function EmtHolidayThemes() {
   );
 }
 
-/** Prefetch packages for destination tiles */
-export function useHomeHolidayPackages() {
-  const [packages, setPackages] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    let cancelled = false;
-    fetch("/api/packages?limit=100&page=1", { cache: "no-store" })
-      .then((r) => r.json())
-      .then((json) => {
-        if (!cancelled) setPackages(Array.isArray(json?.data) ? json.data : []);
-      })
-      .catch(() => {
-        if (!cancelled) setPackages([]);
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  return { packages, loading };
-}
+export { useHomeHolidayPackages } from "./useHomeHolidayPackages";

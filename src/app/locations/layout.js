@@ -1,5 +1,6 @@
 import TravelLayoutClient from "../../components/mmt/TravelLayoutClient";
-import { buildPageMetadata } from "../../lib/seo";
+import JsonLd from "../../components/seo/JsonLd";
+import { buildPageMetadata, SEO_CITIES, locationsIndexJsonLd } from "../../lib/seo";
 
 export const metadata = buildPageMetadata({
   title: "Cab & Taxi Service Locations in South India | Cabzii",
@@ -16,5 +17,10 @@ export const metadata = buildPageMetadata({
 });
 
 export default function LocationsLayout({ children }) {
-  return <TravelLayoutClient>{children}</TravelLayoutClient>;
+  return (
+    <TravelLayoutClient>
+      <JsonLd data={locationsIndexJsonLd(SEO_CITIES)} />
+      {children}
+    </TravelLayoutClient>
+  );
 }

@@ -8,7 +8,54 @@ function formatINR(n) {
 
 const MIN_DISPLAY_PRICE = 1;
 
-export default function MmtCardPriceBlock({ originalPrice, finalPrice, discountPct = 0, compact = false, fareNote }) {
+export default function MmtCardPriceBlock({
+  originalPrice,
+  finalPrice,
+  discountPct = 0,
+  compact = false,
+  fareNote,
+  perKmRate,
+  perHourRate
+}) {
+  const kmRate = Number(perKmRate) || 0;
+  const hrRate = Number(perHourRate) || 0;
+
+  if (hrRate >= MIN_DISPLAY_PRICE) {
+    return (
+      <div className={compact ? "min-w-0" : "min-w-0 text-right"}>
+        <p
+          className={`font-extrabold leading-none text-slate-900 ${compact ? "text-base sm:text-lg" : "text-lg sm:text-2xl"}`}
+        >
+          {formatINR(hrRate)}
+          <span className={`font-bold text-slate-600 ${compact ? "text-xs sm:text-sm" : "text-sm sm:text-base"}`}>
+            /hr
+          </span>
+        </p>
+        <p className={`leading-tight text-slate-500 ${compact ? "hidden text-[10px] sm:block" : "text-[10px]"}`}>
+          {fareNote || "per hour · chauffeur"}
+        </p>
+      </div>
+    );
+  }
+
+  if (kmRate >= MIN_DISPLAY_PRICE) {
+    return (
+      <div className={compact ? "min-w-0" : "min-w-0 text-right"}>
+        <p
+          className={`font-extrabold leading-none text-slate-900 ${compact ? "text-base sm:text-lg" : "text-lg sm:text-2xl"}`}
+        >
+          {formatINR(kmRate)}
+          <span className={`font-bold text-slate-600 ${compact ? "text-xs sm:text-sm" : "text-sm sm:text-base"}`}>
+            /km
+          </span>
+        </p>
+        <p className={`leading-tight text-slate-500 ${compact ? "hidden text-[10px] sm:block" : "text-[10px]"}`}>
+          {fareNote || "per km · one way"}
+        </p>
+      </div>
+    );
+  }
+
   const original = Number(originalPrice) || 0;
   const final = Number(finalPrice) || 0;
 

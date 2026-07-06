@@ -68,7 +68,7 @@ export const POPULAR_DOMESTIC_ROUTES = [
   { label: "Chennai → Trichy", href: "/routes/chennai-to-trichy-cab", fare: "From ₹4,200" },
   { label: "Chennai → Bangalore", href: "/routes/chennai-to-bangalore-cab", fare: "From ₹4,500" },
   { label: "Chennai → Rameswaram", href: "/routes/chennai-to-rameswaram-cab", fare: "From ₹5,200" },
-  { label: "Bangalore → Tirupati", href: "/search?q=tirupati&city=Bengaluru", fare: "From ₹4,800" },
+  { label: "Bangalore → Tirupati", href: "/routes/bengaluru-to-tirupati-cab", fare: "From ₹4,800" },
   { label: "Chennai Airport Taxi", href: "/services/airport-taxi/chennai", fare: "From ₹899" },
   { label: "Bangalore Airport · 12 hr", href: "/cabs/results?serviceTripType=hourly&from=Kempegowda+International+Airport%2C+Bengaluru&to=Bengaluru&city=Bengaluru&packageHours=12", fare: "From ₹1,400" },
   { label: "Madurai Temple Tour", href: "/holidays?category=pilgrimage&q=madurai", fare: "From ₹3,999" }
@@ -78,8 +78,8 @@ export const SEO_CITY_TARGETS = [
   { city: "Chennai", slug: "chennai", href: "/cab-booking/chennai" },
   { city: "Madurai", slug: "madurai", href: "/cab-booking/madurai" },
   { city: "Bangalore", slug: "bengaluru", href: "/cab-booking/bengaluru" },
-  { city: "Tirupati", slug: "tirupati", href: "/search?q=tirupati" },
-  { city: "Rameswaram", slug: "rameswaram", href: "/search?q=rameswaram" }
+  { city: "Tirupati", slug: "tirupati", href: "/cab-booking/tirupati" },
+  { city: "Rameswaram", slug: "rameswaram", href: "/cab-booking/rameswaram" }
 ];
 
 export const DOMESTIC_OFFERS = [

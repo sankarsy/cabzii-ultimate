@@ -17,6 +17,7 @@ import {
   ProductMetaBlock
 } from "./productCardShared";
 import { cabTypeById, categoryLabel, resolveHolidayCabTypes } from "../lib/holidays";
+import { formatCabSeatText } from "../lib/cabSeats";
 import {
   MAX_TOUR_PERSONS,
   MIN_TOUR_PERSONS,
@@ -265,7 +266,7 @@ export default function TourBookingPage({ searchParams, initialPackage = null })
                               }`}
                             >
                               <span className="block font-semibold">{cab.label}</span>
-                              <span className="text-[10px] text-slate-500">{cab.seats} seats</span>
+                              <span className="text-[10px] text-slate-500">{formatCabSeatText(cab)}</span>
                               {cab.multiplier > 1 ? (
                                 <span className="text-[10px] text-amber-700">+{Math.round((cab.multiplier - 1) * 100)}% fare</span>
                               ) : null}

@@ -4,7 +4,7 @@ import {
   getServiceLandingBody,
   mergeLandingBody
 } from "./landingContent";
-import { routeBySlug as staticRouteBySlug } from "./routes";
+import { routeBySlug as staticRouteBySlug, synthesizeRouteFromSlug } from "./routes";
 import { serviceBySlug as staticServiceBySlug } from "./services";
 import { fetchSeoRouteBySlug, fetchSeoServiceBySlug } from "../serverCatalog";
 
@@ -105,7 +105,14 @@ export async function resolveRouteBySlug(slug) {
   if (staticRoute) {
     const generated = getRouteLandingBody(staticRoute);
     const body = mergeLandingBody(staticRoute.body, generated);
-    return { ...staticRoute, body, source: "static" };
+    return { ...staticRoute, body, source: staticRoute.source || "static" };
+  }
+
+  const synthesized = synthesizeRouteFromSlug(slug);
+  if (synthesized) {
+    const generated = getRouteLandingBody(synthesized);
+    const body = mergeLandingBody(synthesized.body, generated);
+    return { ...synthesized, body, source: synthesized.source || "synthesized" };
   }
   if (cms) {
     const page = cmsRouteToPage(cms);

@@ -16,7 +16,6 @@ export default function CatalogVehicleCard({
   subtitle,
   meta,
   features,
-  packageLine,
   priceBlockProps,
   ctaLabel = "Select",
   imageObjectPosition
@@ -53,8 +52,6 @@ export default function CatalogVehicleCard({
             <div className="flex flex-wrap gap-1.5">{features}</div>
           ) : null}
 
-          {packageLine ? <div className="text-xs text-slate-500">{packageLine}</div> : null}
-
           <div className="mt-auto flex items-end justify-between gap-3 border-t border-slate-100 pt-3">
             <MmtCardPriceBlock {...priceBlockProps} compact />
             <span className="cabzii-btn cabzii-btn-primary cabzii-btn-sm shrink-0 pointer-events-none sm:min-h-[var(--cabzii-touch-min)]">
@@ -69,8 +66,8 @@ export default function CatalogVehicleCard({
 
 export function FeatureChip({ icon: Icon, children }) {
   return (
-    <span className="inline-flex items-center gap-1 rounded-lg bg-slate-50 px-2 py-1 text-[11px] font-medium text-slate-600 ring-1 ring-slate-100">
-      {Icon ? <Icon className="h-3 w-3 shrink-0 text-slate-400" strokeWidth={2} /> : null}
+    <span className="inline-flex items-center gap-1 rounded-lg bg-slate-50/90 px-2 py-1 text-[11px] font-medium text-slate-500 ring-1 ring-slate-100">
+      {Icon ? <Icon className="h-3 w-3 shrink-0 text-slate-300" strokeWidth={1.75} /> : null}
       {children}
     </span>
   );

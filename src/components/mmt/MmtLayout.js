@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import MmtFooter from "./MmtFooter";
 import MmtHeader from "./MmtHeader";
 
@@ -7,7 +8,9 @@ import MmtHeader from "./MmtHeader";
 export default function MmtLayout({ children, className = "" }) {
   return (
     <div className={`cabzii-page-shell flex min-h-screen flex-col overflow-x-hidden bg-cabzii-page ${className}`}>
-      <MmtHeader />
+      <Suspense fallback={<div className="cabzii-home-header-spacer shrink-0" aria-hidden />}>
+        <MmtHeader />
+      </Suspense>
       <div className="cabzii-home-header-spacer shrink-0" aria-hidden />
       <div className="flex-1">{children}</div>
       <MmtFooter />

@@ -54,7 +54,9 @@ export function parseDriverTripSearchParams(searchParams) {
   const time = get("time") || "09:00";
   const roundTrip = get("roundTrip") === "true";
   const direction = get("direction") || "pickup";
-  const packageHours = Number(get("packageHours")) || 8;
+  const packageHoursRaw = Number(get("packageHours"));
+  const packageHours =
+    tripType === "hourly" ? packageHoursRaw || 8 : packageHoursRaw > 0 ? packageHoursRaw : undefined;
   const city = get("city") || from.split(",")[0] || "";
   const packageId =
     get("packageId") || get("package") || packageIdFromTrip({ tripType, roundTrip, packageHours });
@@ -97,7 +99,9 @@ export function driverTripToSearchQuery(trip) {
   if (trip.time) params.set("time", trip.time);
   if (trip.roundTrip) params.set("roundTrip", "true");
   if (trip.direction) params.set("direction", trip.direction);
-  if (trip.packageHours) params.set("packageHours", String(trip.packageHours));
+  if (trip.tripType === "hourly" && trip.packageHours) {
+    params.set("packageHours", String(trip.packageHours));
+  }
   if (trip.packageId) params.set("packageId", trip.packageId);
   if (trip.city) params.set("city", trip.city);
   appendTripCoords(params, trip);

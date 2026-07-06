@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { buildDomesticDestinations, INTERNATIONAL_DESTINATIONS } from "../../lib/holidayHome";
+import { buildDomesticDestinations } from "../../lib/holidayHome";
 import { resolveMediaUrl } from "../../lib/media";
 
 const CARD_CLASS =
@@ -109,26 +109,14 @@ function DestinationGrid({ title, items, loading, viewAllHref, viewAllLabel = "V
 export default function EmtPopularDestinations({ packages = [], loading = false }) {
   const domestic = buildDomesticDestinations(packages);
 
-  const international = INTERNATIONAL_DESTINATIONS.map((d) => ({
-    ...d,
-    fallbackImage: d.image
-  }));
-
   return (
     <section className="section-shell border-t border-slate-200 py-8 sm:py-10">
       <DestinationGrid
-        title="Domestic"
+        title="Holiday packages"
         items={domestic}
         loading={loading}
         viewAllHref="/holidays"
         viewAllLabel="View all packages →"
-      />
-      <DestinationGrid
-        title="International"
-        items={international}
-        loading={false}
-        viewAllHref="/holidays"
-        viewAllLabel="View all destinations →"
       />
     </section>
   );

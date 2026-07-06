@@ -1,5 +1,6 @@
 import { cityBySlug } from "./cities";
-import { buildExpandedRoutes } from "./routeCatalog";
+import { buildExpandedRoutes, lookupRouteTripData } from "./routeCatalog";
+import { FEATURED_ROUTE_SLUGS, ROUTE_CITY_SLUG_ALIASES } from "./featuredRoutes";
 
 /** Hand-tuned priority routes — fares verified; override generated estimates. */
 const MANUAL_ROUTES = [
@@ -335,19 +336,103 @@ const MANUAL_ROUTES = [
     duration: "12–13 hours",
     sedanFrom: 9800,
     suvFrom: 11800
+  },
+  {
+    slug: "chennai-to-rameswaram-cab",
+    from: "chennai",
+    to: "rameswaram",
+    distance: "560 km",
+    duration: "8–9 hours",
+    sedanFrom: 5200,
+    suvFrom: 6800
+  },
+  {
+    slug: "madurai-to-rameswaram-cab",
+    from: "madurai",
+    to: "rameswaram",
+    distance: "170 km",
+    duration: "3–4 hours",
+    sedanFrom: 2800,
+    suvFrom: 3800
+  },
+  {
+    slug: "coimbatore-to-ooty-cab",
+    from: "coimbatore",
+    to: "ooty",
+    distance: "85 km",
+    duration: "3 hours",
+    sedanFrom: 2200,
+    suvFrom: 3200
+  },
+  {
+    slug: "chennai-to-ooty-cab",
+    from: "chennai",
+    to: "ooty",
+    distance: "555 km",
+    duration: "9–10 hours",
+    sedanFrom: 6800,
+    suvFrom: 8800
   }
 ];
 
 /** 100+ one-way route pages at /routes/{slug} — manual overrides + programmatic mesh. */
 export const SEO_ROUTES = buildExpandedRoutes(MANUAL_ROUTES);
 
-export function routeBySlug(slug) {
-  const route = SEO_ROUTES.find((r) => r.slug === slug);
-  if (!route) return null;
-  const fromCity = cityBySlug(route.from);
-  const toCity = cityBySlug(route.to);
+export function normalizeRouteCitySlug(raw) {
+  const key = String(raw || "").toLowerCase();
+  return ROUTE_CITY_SLUG_ALIASES[key] || key;
+}
+
+/** Parse `/routes/{from}-to-{to}-cab` slugs. */
+export function parseRouteSlug(slug) {
+  const match = String(slug || "").match(/^([a-z0-9-]+)-to-([a-z0-9-]+)-cab$/i);
+  if (!match) return null;
+  const from = normalizeRouteCitySlug(match[1]);
+  const to = normalizeRouteCitySlug(match[2]);
+  if (!from || !to || from === to) return null;
+  return { from, to, slug: `${from}-to-${to}-cab` };
+}
+
+/** Build a route page object when slug is valid but not in the static mesh (SSR fallback). */
+export function synthesizeRouteFromSlug(slug) {
+  const parsed = parseRouteSlug(slug);
+  if (!parsed) return null;
+
+  const fromCity = cityBySlug(parsed.from);
+  const toCity = cityBySlug(parsed.to);
   if (!fromCity || !toCity) return null;
-  return { ...route, fromCity, toCity };
+
+  const existing = SEO_ROUTES.find((r) => r.slug === parsed.slug);
+  if (existing) {
+    return { ...existing, fromCity, toCity, source: "static" };
+  }
+
+  const trip = lookupRouteTripData(parsed.from, parsed.to);
+  return {
+    slug: parsed.slug,
+    from: parsed.from,
+    to: parsed.to,
+    fromCity,
+    toCity,
+    distance: `${trip.km} km`,
+    duration: trip.duration,
+    sedanFrom: trip.sedan,
+    suvFrom: trip.suv,
+    source: "synthesized"
+  };
+}
+
+export function routeBySlug(slug) {
+  const synthesized = synthesizeRouteFromSlug(slug);
+  if (!synthesized) return null;
+  return synthesized;
+}
+
+/** All slugs to pre-render (static mesh + homepage featured routes). */
+export function allRouteSlugsForBuild() {
+  const slugs = new Set(SEO_ROUTES.map((r) => r.slug).filter(Boolean));
+  for (const slug of FEATURED_ROUTE_SLUGS) slugs.add(slug);
+  return Array.from(slugs).sort();
 }
 
 export function routesForCity(citySlug) {

@@ -21,6 +21,7 @@ import {
 import { ArrowRightIcon, PersonIcon, SeatIcon, SnowflakeIcon, StarFilledIcon } from "./icons";
 
 import { resolveCabImage } from "../lib/vehicleImages";
+import { formatCabSeatPill } from "../lib/cabSeats";
 
 export default function CabCard({ cab, onBook, bookHref }) {
   const discount = num(cab.discountPercentage, 0);
@@ -242,7 +243,7 @@ export default function CabCard({ cab, onBook, bookHref }) {
         {cab.city || cab.location ? (
           <MetaPill label={`${cab.city || "City"}${cab.location ? ` · ${cab.location}` : ""}`} />
         ) : null}
-        <MetaPill icon={<SeatIcon className="h-2.5 w-2.5" />} label={`${cab.seats ?? "4"} Seats`} />
+        <MetaPill icon={<SeatIcon className="h-2.5 w-2.5" />} label={formatCabSeatPill(cab)} />
         <MetaPill icon={<SnowflakeIcon className="h-2.5 w-2.5" />} label={amenityLabel} />
         <MetaPill icon={<PersonIcon className="h-2.5 w-2.5" />} label="Driver" />
       </ProductMetaBlock>

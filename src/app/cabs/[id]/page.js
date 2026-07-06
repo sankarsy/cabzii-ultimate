@@ -1,9 +1,12 @@
 import CabDetailPage from "../../../components/CabDetailPage";
 import JsonLd from "../../../components/seo/JsonLd";
+import SerpRichBar from "../../../components/seo/SerpRichBar";
 import { fetchCabById } from "../../../lib/serverCatalog";
+import { fetchSiteReviewStats } from "../../../lib/serverReviewStats";
 import { catalogPublicPath } from "../../../lib/catalogProduct";
 import { cabDetailMetadata } from "../../../lib/metadataHelpers";
-import { breadcrumbJsonLd } from "../../../lib/seo";
+import { breadcrumbJsonLd, faqFromPairs, getCabFaqs } from "../../../lib/seo";
+import { formatSerpPrice, vehicleSerpBadges } from "../../../lib/seo/serpRichData";
 
 export async function generateMetadata({ params }) {
   const id = params?.id;
@@ -17,6 +20,7 @@ export async function generateMetadata({ params }) {
 export default async function CabDetailRoutePage({ params }) {
   const id = params?.id;
   const cab = id ? await fetchCabById(id) : null;
+  const reviewStats = await fetchSiteReviewStats();
   const { jsonLd } = cab ? cabDetailMetadata(cab, id) : { jsonLd: null };
   const schema = cab
     ? [
@@ -25,14 +29,25 @@ export default async function CabDetailRoutePage({ params }) {
           { name: "Cabs", path: "/cabs" },
           { name: cab.title || "Cab", path: catalogPublicPath(cab, "/cabs") }
         ]),
-        jsonLd
+        jsonLd,
+        faqFromPairs(getCabFaqs(cab))
       ]
     : null;
 
   return (
     <>
       {schema ? <JsonLd data={schema} /> : null}
-      <CabDetailPage cabId={id} initialCab={cab} />
+      {cab ? (
+        <div className="mx-auto max-w-5xl px-4 pt-6 md:px-6">
+          <SerpRichBar
+            ratingValue={cab.rating || reviewStats.ratingValue}
+            reviewCount={cab.reviewCount || reviewStats.reviewCount}
+            priceLabel={formatSerpPrice(cab.price)}
+            badges={vehicleSerpBadges(cab)}
+          />
+        </div>
+      ) : null}
+      <CabDetailPage cabId={id} initialCab={cab ? JSON.parse(JSON.stringify(cab)) : null} />
     </>
   );
 }

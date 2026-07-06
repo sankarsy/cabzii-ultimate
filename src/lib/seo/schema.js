@@ -1,4 +1,5 @@
 import { HOME_PAGE_FAQS } from "./content";
+import { badgesToSchemaProperties, SITE_SITELINKS } from "./serpRichData";
 import {
   SITE_URL,
   SITE_NAME,
@@ -119,11 +120,17 @@ export function servicePageJsonLd({
   urlPath,
   priceFrom,
   priceTo,
-  image
+  image,
+  includeSiteRating = true,
+  reviewStats,
+  additionalBadges = []
 }) {
   const url = `${SITE_URL}${urlPath}`;
   const low = priceFrom ?? CITY_CAB_PRICE_RANGE.low;
   const high = priceTo ?? Math.round((priceFrom ?? CITY_CAB_PRICE_RANGE.low) * 3.5);
+  const stats = reviewStats || SITE_REVIEW_STATS;
+  const extraProps = badgesToSchemaProperties(additionalBadges);
+
   return {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -131,8 +138,17 @@ export function servicePageJsonLd({
     description,
     url,
     image: image || DEFAULT_OG_IMAGE,
-    brand: { "@type": "Brand", name: "cabzii" },
+    brand: { "@type": "Brand", name: SITE_NAME },
     category: `${serviceName} · Taxi Booking`,
+    ...(includeSiteRating && Number(stats.reviewCount) > 0
+      ? {
+          aggregateRating: siteAggregateRating({
+            ratingValue: stats.ratingValue,
+            reviewCount: stats.reviewCount
+          })
+        }
+      : {}),
+    ...(extraProps.length ? { additionalProperty: extraProps } : {}),
     offers: buildOffers({
       url,
       price: priceFrom,
@@ -177,7 +193,8 @@ export function routeServiceJsonLd({
   description,
   priceFrom,
   priceTo,
-  image
+  image,
+  includeSiteRating = true
 }) {
   const url = `${SITE_URL}${urlPath}`;
   return {
@@ -187,8 +204,9 @@ export function routeServiceJsonLd({
     description,
     url,
     image: image || DEFAULT_OG_IMAGE,
-    brand: { "@type": "Brand", name: "cabzii" },
+    brand: { "@type": "Brand", name: SITE_NAME },
     category: "One Way Cab · Outstation",
+    ...(includeSiteRating ? { aggregateRating: siteAggregateRating() } : {}),
     offers: buildOffers({
       url,
       price: priceFrom,
@@ -198,9 +216,10 @@ export function routeServiceJsonLd({
   };
 }
 
-export function organizationJsonLd() {
+export function organizationJsonLd(reviewStats) {
   const sameAs = [...SOCIAL_PROFILES];
   if (WIKIDATA_URL) sameAs.push(WIKIDATA_URL);
+  const stats = reviewStats || SITE_REVIEW_STATS;
 
   return {
     "@context": "https://schema.org",
@@ -218,11 +237,19 @@ export function organizationJsonLd() {
     },
     image: SITE_LOGO,
     description:
-      "Online cab, taxi, airport transfer, outstation, acting driver and tour package booking platform across South India.",
+      "Book cabs, taxis, airport transfers, outstation trips, acting drivers and tour packages across India with instant confirmation on Cabzii.in.",
     email: ORG_EMAIL,
     telephone: ORG_PHONE,
     foundingDate: "2024",
     areaServed: { "@type": "Country", name: "India" },
+    ...(Number(stats.reviewCount) > 0
+      ? {
+          aggregateRating: siteAggregateRating({
+            ratingValue: stats.ratingValue,
+            reviewCount: stats.reviewCount
+          })
+        }
+      : {}),
     address: {
       "@type": "PostalAddress",
       ...ORG_ADDRESS
@@ -251,12 +278,17 @@ export function websiteJsonLd() {
     "@id": WEBSITE_ID,
     name: SITE_NAME,
     alternateName: [
-      "Cabzii: Cab Booking Chennai | Airport Taxi, Local & Outstation Cabs",
+      "Cab Booking Chennai | Airport Taxi, Local & Outstation Cabs | Cabzii",
       "cabzii.in"
     ],
     url: SITE_URL,
     publisher: { "@id": ORG_ID },
     inLanguage: "en-IN",
+    hasPart: SITE_SITELINKS.map((link) => ({
+      "@type": "WebPage",
+      name: link.name,
+      url: `${SITE_URL}${link.path}`
+    })),
     potentialAction: {
       "@type": "SearchAction",
       target: `${SITE_URL}/search?q={search_term_string}`,
@@ -294,33 +326,67 @@ export function faqJsonLd() {
   return faqFromPairs(HOME_PAGE_FAQS);
 }
 
-export function localBusinessJsonLd(cityName, cityRegion, urlPath) {
+export function localBusinessJsonLd(cityName, cityRegion, urlPath, reviewStats) {
   const url = urlPath ? `${SITE_URL}${urlPath}` : SITE_URL;
+  const sameAs = [...SOCIAL_PROFILES];
+  const stats = reviewStats || SITE_REVIEW_STATS;
+
   return {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
+    "@id": `${url}#localbusiness`,
     name: `${SITE_NAME} — ${cityName}`,
     url,
     image: DEFAULT_OG_IMAGE,
+    logo: SITE_LOGO,
     telephone: ORG_PHONE,
-    description: `Cab, taxi, airport transfer and acting driver booking in ${cityName} via ${SITE_NAME}.`,
+    email: ORG_EMAIL,
+    description: `Book cabs, airport taxi, outstation trips and acting drivers in ${cityName} with instant confirmation on Cabzii.in.`,
     areaServed: cityName,
     priceRange: "₹₹",
+    ...(sameAs.length ? { sameAs } : {}),
+    ...(Number(stats.reviewCount) > 0
+      ? {
+          aggregateRating: siteAggregateRating({
+            ratingValue: stats.ratingValue,
+            reviewCount: stats.reviewCount
+          })
+        }
+      : {}),
+    geo: {
+      "@type": "GeoCoordinates",
+      latitude: "13.0827",
+      longitude: "80.2707"
+    },
+    openingHoursSpecification: [
+      {
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+        opens: "00:00",
+        closes: "23:59"
+      }
+    ],
     offers: buildOffers({
       url,
       lowPrice: CITY_CAB_PRICE_RANGE.low,
       highPrice: CITY_CAB_PRICE_RANGE.high,
       offerCount: 20
     }),
-    ...(cityRegion ? { address: { "@type": "PostalAddress", addressRegion: cityRegion, addressCountry: "IN" } } : {})
+    address: {
+      "@type": "PostalAddress",
+      ...ORG_ADDRESS,
+      ...(cityRegion ? { addressRegion: cityRegion } : {})
+    }
   };
 }
 
 /** Rich Product schema for "cab in Chennai" / city cab searches (price range + rating in SERP). */
-export function cityCabSearchJsonLd(city, { productName, description, urlPath, priceLow, priceHigh, image }) {
+export function cityCabSearchJsonLd(city, { productName, description, urlPath, priceLow, priceHigh, image, reviewStats }) {
   const url = `${SITE_URL}${urlPath}`;
   const low = priceLow ?? CITY_CAB_PRICE_RANGE.low;
   const high = priceHigh ?? CITY_CAB_PRICE_RANGE.high;
+  const stats = reviewStats || SITE_REVIEW_STATS;
+
   return {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -330,8 +396,16 @@ export function cityCabSearchJsonLd(city, { productName, description, urlPath, p
       `Book Maruti Dzire, Ertiga, Innova & Tempo cabs in ${city.name}, ${city.state}. Outstation, airport & local packages.`,
     url,
     image: image || DEFAULT_OG_IMAGE,
-    brand: { "@type": "Brand", name: "cabzii" },
+    brand: { "@type": "Brand", name: SITE_NAME },
     category: "Taxi & Cab Booking",
+    ...(Number(stats.reviewCount) > 0
+      ? {
+          aggregateRating: siteAggregateRating({
+            ratingValue: stats.ratingValue,
+            reviewCount: stats.reviewCount
+          })
+        }
+      : {}),
     offers: buildOffers({ url, lowPrice: low, highPrice: high, offerCount: 24 })
   };
 }
@@ -350,7 +424,7 @@ export function cityDriverSearchJsonLd(city, { productName, description, urlPath
       `Hire verified acting drivers & chauffeurs in ${city.name}, ${city.state}. Hourly, daily & outstation packages on your car.`,
     url,
     image: image || DEFAULT_OG_IMAGE,
-    brand: { "@type": "Brand", name: "cabzii" },
+    brand: { "@type": "Brand", name: SITE_NAME },
     category: "Chauffeur & Driver Service",
     offers: buildOffers({ url, lowPrice: low, highPrice: high, offerCount: 16 })
   };
@@ -358,6 +432,8 @@ export function cityDriverSearchJsonLd(city, { productName, description, urlPath
 
 export function articleJsonLd({ title, description, urlPath, author, datePublished, image }) {
   const url = `${SITE_URL}${urlPath.startsWith("/") ? urlPath : `/${urlPath}`}`;
+  const authorName = author && !/^cabzii$/i.test(String(author).trim()) ? author : "Cabzii Team";
+
   return {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -365,10 +441,26 @@ export function articleJsonLd({ title, description, urlPath, author, datePublish
     description,
     url,
     mainEntityOfPage: url,
-    author: { "@type": "Person", name: author || SITE_NAME, worksFor: { "@id": ORG_ID } },
-    publisher: { "@id": ORG_ID },
-    ...(datePublished ? { datePublished } : {}),
-    ...(image ? { image } : {})
+    author: {
+      "@type": "Person",
+      name: authorName,
+      worksFor: { "@id": ORG_ID }
+    },
+    publisher: {
+      "@id": ORG_ID,
+      logo: { "@type": "ImageObject", url: SITE_LOGO }
+    },
+    ...(datePublished ? { datePublished, dateModified: datePublished } : {}),
+    ...(image
+      ? {
+          image: {
+            "@type": "ImageObject",
+            url: image,
+            width: 1200,
+            height: 630
+          }
+        }
+      : {})
   };
 }
 
@@ -423,12 +515,12 @@ export function productJsonLd({
   sku,
   ratingValue,
   reviewCount,
-  category = "Taxi & Cab Booking"
+  category = "Taxi & Cab Booking",
+  additionalBadges = []
 }) {
   const url = `${SITE_URL}${urlPath.startsWith("/") ? urlPath : `/${urlPath}`}`;
-  /* Only emit AggregateRating backed by real approved reviews — fabricated or
-     sitewide ratings on Product schema risk rich-result removal. */
   const hasRealRating = Number(ratingValue) > 0 && Number(reviewCount) > 0;
+  const extraProps = badgesToSchemaProperties(additionalBadges);
 
   return {
     "@context": "https://schema.org",
@@ -448,6 +540,7 @@ export function productJsonLd({
           })
         }
       : {}),
+    ...(extraProps.length ? { additionalProperty: extraProps } : {}),
     offers: buildOffers({
       url,
       price,
@@ -456,4 +549,128 @@ export function productJsonLd({
         : {})
     })
   };
+}
+
+/** Tour / holiday package — rich results with duration & inclusions. */
+export function tourPackageJsonLd({
+  name,
+  description,
+  urlPath,
+  image,
+  price,
+  lowPrice,
+  highPrice,
+  additionalBadges = [],
+  originCity
+}) {
+  const url = `${SITE_URL}${urlPath.startsWith("/") ? urlPath : `/${urlPath}`}`;
+  const extraProps = badgesToSchemaProperties(additionalBadges);
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name,
+    description,
+    url,
+    image: image || DEFAULT_OG_IMAGE,
+    brand: { "@type": "Brand", name: SITE_NAME },
+    category: "Holiday Tour Package",
+    ...(originCity
+      ? {
+          areaServed: { "@type": "City", name: originCity }
+        }
+      : {}),
+    ...(extraProps.length ? { additionalProperty: extraProps } : {}),
+    offers: buildOffers({
+      url,
+      price,
+      ...(lowPrice != null && highPrice != null ? { lowPrice, highPrice } : {})
+    })
+  };
+}
+
+/** Generic WebPage / AboutPage / legal pages. */
+export function webPageJsonLd({ name, description, urlPath, type = "WebPage" }) {
+  const path = urlPath.startsWith("/") ? urlPath : `/${urlPath}`;
+  return {
+    "@context": "https://schema.org",
+    "@type": type,
+    name,
+    description,
+    url: `${SITE_URL}${path}`,
+    isPartOf: { "@id": WEBSITE_ID },
+    publisher: { "@id": ORG_ID },
+    inLanguage: "en-IN"
+  };
+}
+
+export function aboutPageJsonLd() {
+  return webPageJsonLd({
+    type: "AboutPage",
+    name: "About Cabzii",
+    description:
+      "Cabzii is a cab and taxi booking platform for airport transfers, outstation trips, local rentals and acting drivers across South India.",
+    urlPath: "/about"
+  });
+}
+
+export function contactPageJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ContactPage",
+    name: "Contact Cabzii",
+    url: `${SITE_URL}/contact`,
+    description: "24×7 phone, WhatsApp and email support for cab booking on Cabzii.in.",
+    isPartOf: { "@id": WEBSITE_ID },
+    mainEntity: {
+      "@type": "Organization",
+      "@id": ORG_ID,
+      name: SITE_NAME,
+      telephone: ORG_PHONE,
+      email: ORG_EMAIL,
+      url: SITE_URL
+    }
+  };
+}
+
+/** Blog index — ItemList of posts for crawl & AI overview. */
+export function blogListingJsonLd(posts = []) {
+  const list = (posts || []).filter((p) => p?.slug).slice(0, 48);
+  return {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    name: "Cabzii Travel Blog",
+    url: `${SITE_URL}/blogs`,
+    publisher: { "@id": ORG_ID },
+    inLanguage: "en-IN",
+    blogPost: list.map((post) => ({
+      "@type": "BlogPosting",
+      headline: post.title,
+      url: `${SITE_URL}/blog/${post.slug}`,
+      ...(post.updatedAt ? { dateModified: post.updatedAt } : {}),
+      ...(post.publishedAt ? { datePublished: post.publishedAt } : {})
+    }))
+  };
+}
+
+/** Service cities hub — links to /cab-booking/{city}. */
+export function locationsIndexJsonLd(cities) {
+  const list = cities || [];
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Cabzii cab booking cities",
+    url: `${SITE_URL}/locations`,
+    numberOfItems: list.length,
+    itemListElement: list.map((city, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: `Cab booking ${city.name}`,
+      url: `${SITE_URL}/cab-booking/${city.slug}`
+    }))
+  };
+}
+
+export function legalWebPageJsonLd({ name, description, urlPath }) {
+  return webPageJsonLd({ name, description, urlPath, type: "WebPage" });
 }

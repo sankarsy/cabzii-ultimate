@@ -3,6 +3,15 @@
 import Link from "next/link";
 import { buildFareSlabs } from "../../lib/cabFare";
 import { resolveCabTripFare } from "../../lib/distanceFare";
+import { catalogPublicPath } from "../../lib/catalogProduct";
+import {
+  getCabCatalogSubtitle,
+  getCabDisplaySubtitle,
+  getCabDisplayTitle,
+  getCabVehicleName,
+  getCatalogPerKmFare
+} from "../../lib/catalogDisplay";
+import { formatCabSeatLabel, inferPassengerSeats } from "../../lib/cabSeats";
 import { resolveCabImage } from "../../lib/vehicleImages";
 import { cabSlabForTrip, tripToSearchQuery } from "../../lib/mmtTrip";
 import { FuelIcon, LuggageIcon, PersonIcon, SnowflakeIcon } from "../icons";
@@ -10,31 +19,33 @@ import CatalogCardImage from "./CatalogCardImage";
 import MmtCardPriceBlock from "./MmtCardPriceBlock";
 import CatalogVehicleCard, { FeatureChip } from "../ui/CatalogVehicleCard";
 
-export default function MmtCabResultCard({ cab, trip, layout = "row" }) {
+export default function MmtCabResultCard({ cab, trip, layout = "row", catalogMode = false, displayCity = "" }) {
   const id = String(cab._id ?? cab.id ?? "");
   const slabs = buildFareSlabs(cab);
-  const slab = cabSlabForTrip(slabs, trip);
-  const fare = resolveCabTripFare(cab, slab, trip);
-  const listPrice = fare.listPrice;
-  const discount = fare.discountPct;
-  const total = fare.total;
+  const catalogPerKm = catalogMode ? getCatalogPerKmFare(cab, slabs) : null;
+  const slab = catalogMode ? null : cabSlabForTrip(slabs, trip);
+  const fare = catalogMode ? null : resolveCabTripFare(cab, slab, trip);
+  const listPrice = catalogMode ? 0 : fare.listPrice;
+  const discount = catalogMode ? 0 : fare.discountPct;
+  const total = catalogMode ? 0 : fare.total;
 
-  const seats = cab.seats ?? (cab.type?.includes("SUV") ? 6 : cab.type?.includes("Innova") ? 7 : 4);
-  const bags = cab.bags ?? (seats >= 6 ? 3 : 2);
+  const passengerSeats = inferPassengerSeats(cab);
+  const seatLabel = formatCabSeatLabel(cab);
+  const bags = cab.bags ?? (passengerSeats >= 6 ? 3 : 2);
   const imageSrc = resolveCabImage(cab);
-  const imageAlt = cab.imageAlt || cab.title || "Cab";
+  const vehicleName = getCabVehicleName(cab);
+  const imageAlt = cab.imageAlt || vehicleName;
 
-  const detailParams = tripToSearchQuery(trip);
-  detailParams.set("cabId", id);
-  const href = `/cabs/passenger?${detailParams.toString()}`;
+  const href = catalogMode
+    ? catalogPublicPath(cab, "/cabs")
+    : `/cabs/passenger?${(() => {
+        const detailParams = tripToSearchQuery(trip);
+        detailParams.set("cabId", id);
+        return detailParams.toString();
+      })()}`;
 
-  const title = cab.title || "Cab";
-  const subtitle = `${cab.type} · ${cab.vendor}${cab.city ? ` · ${cab.city}` : ""}`;
-  const packageLine = fare.usesDistance
-    ? `₹${fare.perKmRate}/km · ${fare.fareNote}`
-    : slab?.label
-      ? `Package: ${slab.label}`
-      : null;
+  const title = catalogMode ? vehicleName : getCabDisplayTitle(cab, trip);
+  const subtitle = catalogMode ? getCabCatalogSubtitle(cab, displayCity) : getCabDisplaySubtitle(cab, trip);
 
   if (layout === "card") {
     return (
@@ -47,19 +58,19 @@ export default function MmtCabResultCard({ cab, trip, layout = "row" }) {
         subtitle={subtitle}
         features={
           <>
-            <FeatureChip icon={PersonIcon}>{seats} seats</FeatureChip>
+            <FeatureChip icon={PersonIcon}>{seatLabel} seats</FeatureChip>
             <FeatureChip icon={LuggageIcon}>{bags} bags</FeatureChip>
             <FeatureChip icon={SnowflakeIcon}>AC</FeatureChip>
             <FeatureChip icon={FuelIcon}>Fuel incl.</FeatureChip>
           </>
         }
-        packageLine={packageLine}
         priceBlockProps={{
           originalPrice: listPrice,
           finalPrice: total,
           discountPct: discount,
           compact: true,
-          fareNote: fare.usesDistance ? `₹${fare.perKmRate}/km` : undefined
+          perKmRate: catalogMode ? catalogPerKm.perKmRate : undefined,
+          fareNote: catalogMode ? catalogPerKm.fareNote : fare?.usesDistance ? `₹${fare.perKmRate}/km` : undefined
         }}
       />
     );
@@ -68,7 +79,7 @@ export default function MmtCabResultCard({ cab, trip, layout = "row" }) {
   const features = (
     <>
       <span className="inline-flex items-center gap-1">
-        <PersonIcon className="h-3.5 w-3.5" /> {seats} Seats
+        <PersonIcon className="h-3.5 w-3.5" /> {seatLabel} Seats
       </span>
       <span className="inline-flex items-center gap-1">
         <LuggageIcon className="h-3.5 w-3.5" /> {bags} Bags
@@ -91,17 +102,17 @@ export default function MmtCabResultCard({ cab, trip, layout = "row" }) {
         <h3 className="text-lg font-bold tracking-tight text-slate-900">{title}</h3>
         <p className="text-sm text-slate-500">{subtitle}</p>
         <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-500">{features}</div>
-        {packageLine ? <p className="mt-2 text-xs text-slate-500">{packageLine}</p> : null}
       </div>
       <div className="flex flex-row items-center justify-between gap-3 border-t border-slate-100 pt-3 sm:flex-col sm:items-end sm:border-l sm:border-t-0 sm:pl-4 sm:pt-0">
         <MmtCardPriceBlock
           originalPrice={listPrice}
           finalPrice={total}
           discountPct={discount}
-          fareNote={fare.usesDistance ? `₹${fare.perKmRate}/km` : undefined}
+          perKmRate={catalogMode ? catalogPerKm?.perKmRate : undefined}
+          fareNote={catalogMode ? catalogPerKm?.fareNote : fare?.usesDistance ? `₹${fare.perKmRate}/km` : undefined}
         />
         <Link href={href} className="cabzii-btn cabzii-btn-primary shrink-0">
-          Select
+          {catalogMode ? "View" : "Select"}
         </Link>
       </div>
     </article>

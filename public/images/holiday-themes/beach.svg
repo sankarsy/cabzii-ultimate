@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none" role="img" aria-label="Beach">
+  <rect width="80" height="80" rx="20" fill="#E0F2FE"/>
+  <path d="M12 58h56" stroke="#7DD3FC" stroke-width="3" stroke-linecap="round"/>
+  <path d="M40 18v28" stroke="#0EA5E9" stroke-width="3" stroke-linecap="round"/>
+  <path d="M40 24c-10 2-14 10-16 18 6-4 12-5 16-5s10 1 16 5c-2-8-6-16-16-18Z" fill="#38BDF8"/>
+  <path d="M40 30c-7 1-10 6-12 12 4-2 8-3 12-3s8 1 12 3c-2-6-5-11-12-12Z" fill="#0EA5E9"/>
+  <circle cx="58" cy="22" r="7" fill="#FDE68A"/>
+</svg>

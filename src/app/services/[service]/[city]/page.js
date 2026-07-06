@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import JsonLd from "../../../../components/seo/JsonLd";
 import ServiceLandingPage from "../../../../components/seo/ServiceLandingPage";
 import { resolveServiceForCity } from "../../../../lib/seo/cmsResolve";
+import { fetchSiteReviewStats } from "../../../../lib/serverReviewStats";
 import {
   SEO_CITIES,
   SEO_SERVICES,
@@ -16,6 +17,7 @@ import {
   tunedServiceKeywords,
   tunedServiceTitle
 } from "../../../../lib/seo";
+import { serviceSerpBadges } from "../../../../lib/seo/serpRichData";
 
 export const revalidate = 600;
 
@@ -55,6 +57,8 @@ export default async function ServiceCityPage({ params }) {
 
   const path = servicePath(service, city);
   const faqs = getServiceFaqs(service, city);
+  const reviewStats = await fetchSiteReviewStats();
+  const serpBadges = serviceSerpBadges(service, city);
   const jsonLd = [
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
@@ -68,7 +72,9 @@ export default async function ServiceCityPage({ params }) {
       description: service.seoDescription || tunedServiceDescription(service, city),
       urlPath: path,
       priceFrom: service.priceFrom,
-      priceTo: Math.round((service.priceFrom || 999) * 3.5)
+      priceTo: Math.round((service.priceFrom || 999) * 3.5),
+      reviewStats,
+      additionalBadges: serpBadges
     }),
     faqFromPairs(faqs)
   ];
@@ -76,7 +82,13 @@ export default async function ServiceCityPage({ params }) {
   return (
     <>
       <JsonLd data={jsonLd} />
-      <ServiceLandingPage city={city} service={service} faqs={faqs} extraBody={service.body} />
+      <ServiceLandingPage
+        city={city}
+        service={service}
+        faqs={faqs}
+        extraBody={service.body}
+        reviewStats={reviewStats}
+      />
     </>
   );
 }

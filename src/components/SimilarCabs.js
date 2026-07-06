@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { num } from "../lib/cabFare";
 import { catalogPublicPath } from "../lib/catalogProduct";
-import { resolveMediaUrl } from "../lib/media";
+import { formatInrCurrency } from "../lib/formatInr";
 
 import { resolveCabImage } from "../lib/vehicleImages";
 
@@ -82,7 +82,7 @@ export default function SimilarCabs({ currentCabId, cabType, vendor }) {
                   <h3 className="mt-0.5 line-clamp-1 text-sm font-bold text-slate-900">{cab.title}</h3>
                   <p className="text-[11px] text-slate-500">by {cab.vendor}</p>
                   <p className="mt-2 text-sm font-bold text-[#0056D2]">
-                    From ₹{youPay.toLocaleString("en-IN")}
+                    From {formatInrCurrency(youPay)}
                     {discount > 0 ? (
                       <span className="ml-1 text-[10px] font-normal text-slate-600">{discount}% OFF</span>
                     ) : null}

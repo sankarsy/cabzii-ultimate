@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { resolvePublicRouteRedirect } from "./lib/routes/publicRoutes";
 import { resolveSeoAliasPath } from "./lib/seo/urlAliases";
 
 const PROTECTED_PREFIXES = ["/payment", "/booking", "/my-bookings"];
@@ -35,6 +36,13 @@ export function middleware(request) {
     const rest = serviceParts.slice(2).join("/");
     const target = rest ? `/services/${canonical}/${rest}` : `/services/${canonical}`;
     return NextResponse.redirect(new URL(target, request.url), 301);
+  }
+
+  const publicRedirect = resolvePublicRouteRedirect(pathname);
+  if (publicRedirect) {
+    const url = new URL(publicRedirect, request.url);
+    url.search = request.nextUrl.search;
+    return NextResponse.redirect(url, 301);
   }
 
   const aliasTarget = resolveSeoAliasPath(pathname);

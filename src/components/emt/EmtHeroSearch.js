@@ -10,14 +10,15 @@ import EmtTrainSearchForm from "./EmtTrainSearchForm";
 import { useHeroSearch } from "./HeroSearchContext";
 import MmtCabSearchWidget from "../mmt/MmtCabSearchWidget";
 import MmtDriverSearchWidget from "../mmt/MmtDriverSearchWidget";
+import HeroHeadline from "../conversion/HeroHeadline";
 
 export default function EmtHeroSearch({
   defaultCity = "",
   defaultTab = "cabs",
   initialCabTrip = null,
   initialDriverTrip = null,
-  seoHeading = "Book Cabs, Taxis & Acting Drivers Online",
-  seoSubheading = "Airport taxi, local hire, outstation & one-way cabs across South India — instant OTP confirmation."
+  seoHeading = "Book Trusted Cabs & Drivers Across India",
+  seoSubheading = "Airport transfers, outstation trips, local rentals & driver services — transparent fares, verified partners."
 }) {
   const hero = useHeroSearch();
   const active = hero?.activeTab ?? defaultTab;
@@ -31,8 +32,7 @@ export default function EmtHeroSearch({
 
   return (
     <section className="emt-hero-section">
-      <h1 className="sr-only">{seoHeading}</h1>
-      <p className="sr-only">{seoSubheading}</p>
+      <HeroHeadline title={seoHeading} subtitle={seoSubheading} />
 
       <div className="emt-hero-shell w-full">
         <div className="emt-hero-shell-top bg-white">

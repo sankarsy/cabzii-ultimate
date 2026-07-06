@@ -22,6 +22,13 @@ const SECTION_LINKS = [
   { href: "#similar-cabs", label: "Alternatives" }
 ];
 
+function getInitialSelection(cab) {
+  if (!cab) return null;
+  const slabs = buildFareSlabs(cab);
+  const first = slabs.find((p) => p.id === "local_4hr") || slabs[0];
+  return first ? selectionFromPackage(first, first.group, cab.discountPercentage) : null;
+}
+
 function applyCabData(data, setCab, setSelection) {
   setCab(data);
   const slabs = buildFareSlabs(data);
@@ -34,7 +41,7 @@ export default function CabDetailPage({ cabId, initialCab = null }) {
   const [cab, setCab] = useState(initialCab);
   const [loading, setLoading] = useState(!initialCab);
   const [loadError, setLoadError] = useState("");
-  const [selection, setSelection] = useState(null);
+  const [selection, setSelection] = useState(() => getInitialSelection(initialCab));
 
   useEffect(() => {
     if (initialCab) {

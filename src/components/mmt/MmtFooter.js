@@ -3,12 +3,8 @@ import CabziiLogo from "../brand/CabziiLogo";
 import SocialLinks from "../ui/SocialLinks";
 import { getTrustIcon, TRUST_ICON_STYLES } from "../icons/heroIcons";
 import { BRAND } from "../../lib/brand";
-import { routeToCabSearchHref } from "../../lib/routeTrip";
-import { routeBySlug } from "../../lib/seo/routes";
-
 function footerRouteLink(slug, label) {
-  const route = routeBySlug(slug);
-  return { label, href: route ? routeToCabSearchHref(route) : `/routes/${slug}` };
+  return { label, href: `/routes/${slug}` };
 }
 
 const FOOTER_TRUST = [
@@ -34,12 +30,15 @@ const COLUMNS = [
       footerRouteLink("chennai-to-bangalore-cab", "Chennai → Bangalore"),
       footerRouteLink("chennai-to-trichy-cab", "Chennai → Trichy"),
       footerRouteLink("chennai-to-pondicherry-cab", "Chennai → Pondicherry"),
-      footerRouteLink("chennai-to-tirupati-cab", "Chennai → Tirupati")
+      footerRouteLink("chennai-to-tirupati-cab", "Chennai → Tirupati"),
+      footerRouteLink("chennai-to-rameswaram-cab", "Chennai → Rameswaram")
     ]
   },
   {
     title: "Company",
     links: [
+      { label: "About Cabzii", href: "/about" },
+      { label: "FAQ", href: "/faq" },
       { label: "Service locations", href: "/locations" },
       { label: "Travel blog", href: "/blogs" },
       { label: "Customer reviews", href: "/testimonials" }
@@ -48,7 +47,7 @@ const COLUMNS = [
   {
     title: "Help",
     links: [
-      { label: "Contact & support", href: "/locations" },
+      { label: "Contact & support", href: "/contact" },
       { label: "Cancellation policy", href: "/cancellation-policy" },
       { label: "Terms & conditions", href: "/terms-and-conditions" },
       { label: "Legal", href: "/legal-declaration" }

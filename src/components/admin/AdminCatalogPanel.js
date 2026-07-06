@@ -46,6 +46,7 @@ import { AdminSeoCityPageForm, AdminSeoRouteForm, AdminSeoServiceForm } from "./
 import { AdminProductSeoSection } from "./AdminProductSeoSection";
 import { AdminGalleryField, AdminProductImageField, parseGallery } from "./AdminProductImageField";
 import FarePackagesEditor from "./FarePackagesEditor";
+import AdminPackageExcelToolbar from "./AdminPackageExcelToolbar";
 
 function Field({ label, children, hint }) {
   return (
@@ -1023,7 +1024,7 @@ export default function AdminCatalogPanel({
                   ))}
                 </select>
               </Field>
-              <Field label="Seats (Packing size)">
+              <Field label="Passenger seats" hint="Shown on site as seats+1 (e.g. 4 → 4+1)">
                 <input type="number" min={1} className={inputCls()} value={cabForm.seats} onChange={(e) => setCabForm((p) => ({ ...p, seats: Number(e.target.value) }))} />
               </Field>
               <Field label="Bags">
@@ -1439,6 +1440,13 @@ export default function AdminCatalogPanel({
 
       {isListMode ? (
       <>
+      <AdminPackageExcelToolbar
+        tabKey={tabKey}
+        items={items}
+        token={token}
+        canEdit={canEdit}
+        onImported={loadData}
+      />
       {(tabKey === "seoServices" || tabKey === "seoRoutes") && items.length > 0 && !items.some((i) => !i.isStatic) ? (
         <div className="mb-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
           <span className="font-semibold">Built-in pages only.</span> Click <strong>Create</strong> to add new pages, or run{" "}

@@ -181,46 +181,46 @@ export const ICON_REGISTRY = {
 /** Home hero travel tabs — see heroIcons.js (Remix flat icons) */
 export { HERO_TAB_ICONS } from "./heroIcons";
 
-/** Per-tab icon colors — light pastel circles (EMT-style) */
+/** Per-tab icon colors — light pastel circles */
 export const HOME_CATEGORY_ICON_STYLES = {
   cabs: {
-    active: "bg-sky-50 text-sky-500 ring-1 ring-sky-100",
-    idle: "bg-slate-50 text-slate-400 ring-1 ring-slate-100"
+    active: "bg-sky-50 text-sky-400 ring-1 ring-sky-100",
+    idle: "bg-slate-50/80 text-slate-300 ring-1 ring-slate-100"
   },
   drivers: {
-    active: "bg-violet-50 text-violet-500 ring-1 ring-violet-100",
-    idle: "bg-slate-50 text-slate-400 ring-1 ring-slate-100"
+    active: "bg-violet-50 text-violet-400 ring-1 ring-violet-100",
+    idle: "bg-slate-50/80 text-slate-300 ring-1 ring-slate-100"
   },
   holidays: {
-    active: "bg-emerald-50 text-emerald-500 ring-1 ring-emerald-100",
-    idle: "bg-slate-50 text-slate-400 ring-1 ring-slate-100"
+    active: "bg-emerald-50 text-emerald-400 ring-1 ring-emerald-100",
+    idle: "bg-slate-50/80 text-slate-300 ring-1 ring-slate-100"
   },
   hotels: {
-    active: "bg-amber-50 text-amber-500 ring-1 ring-amber-100",
-    idle: "bg-slate-50 text-slate-400 ring-1 ring-slate-100"
+    active: "bg-amber-50 text-amber-400 ring-1 ring-amber-100",
+    idle: "bg-slate-50/80 text-slate-300 ring-1 ring-slate-100"
   },
   flights: {
-    active: "bg-blue-50 text-blue-500 ring-1 ring-blue-100",
-    idle: "bg-slate-50 text-slate-400 ring-1 ring-slate-100"
+    active: "bg-blue-50 text-blue-400 ring-1 ring-blue-100",
+    idle: "bg-slate-50/80 text-slate-300 ring-1 ring-slate-100"
   },
   buses: {
-    active: "bg-orange-50 text-orange-500 ring-1 ring-orange-100",
-    idle: "bg-slate-50 text-slate-400 ring-1 ring-slate-100"
+    active: "bg-orange-50 text-orange-400 ring-1 ring-orange-100",
+    idle: "bg-slate-50/80 text-slate-300 ring-1 ring-slate-100"
   },
   trains: {
-    active: "bg-indigo-50 text-indigo-500 ring-1 ring-indigo-100",
-    idle: "bg-slate-50 text-slate-400 ring-1 ring-slate-100"
+    active: "bg-indigo-50 text-indigo-400 ring-1 ring-indigo-100",
+    idle: "bg-slate-50/80 text-slate-300 ring-1 ring-slate-100"
   }
 };
 
 /** Bottom hero feature row — soft icon chips */
 export const HERO_FEATURE_ICON_STYLES = {
-  deals: "bg-orange-50 text-orange-500 ring-1 ring-orange-100",
-  locations: "bg-rose-50 text-rose-500 ring-1 ring-rose-100",
-  airport: "bg-sky-50 text-sky-500 ring-1 ring-sky-100",
-  packages: "bg-violet-50 text-violet-500 ring-1 ring-violet-100",
-  routes: "bg-emerald-50 text-emerald-500 ring-1 ring-emerald-100",
-  blog: "bg-blue-50 text-blue-500 ring-1 ring-blue-100"
+  deals: "bg-orange-50 text-orange-400 ring-1 ring-orange-100",
+  locations: "bg-rose-50 text-rose-400 ring-1 ring-rose-100",
+  airport: "bg-sky-50 text-sky-400 ring-1 ring-sky-100",
+  packages: "bg-violet-50 text-violet-400 ring-1 ring-violet-100",
+  routes: "bg-emerald-50 text-emerald-400 ring-1 ring-emerald-100",
+  blog: "bg-blue-50 text-blue-400 ring-1 ring-blue-100"
 };
 
 export function getIcon(iconKey) {
@@ -229,30 +229,30 @@ export function getIcon(iconKey) {
 
 /** Why Choose Us — pastel circle colors */
 export const WHY_ICON_STYLES = {
-  shield: { iconBg: "bg-blue-50", iconColor: "text-blue-600" },
-  tracking: { iconBg: "bg-emerald-50", iconColor: "text-emerald-600" },
-  tag: { iconBg: "bg-orange-50", iconColor: "text-orange-600" },
-  headset: { iconBg: "bg-violet-50", iconColor: "text-violet-600" },
-  pickup: { iconBg: "bg-rose-50", iconColor: "text-rose-600" },
-  lock: { iconBg: "bg-sky-50", iconColor: "text-sky-600" }
+  shield: { iconBg: "bg-blue-50", iconColor: "text-blue-400" },
+  tracking: { iconBg: "bg-emerald-50", iconColor: "text-emerald-400" },
+  tag: { iconBg: "bg-orange-50", iconColor: "text-orange-400" },
+  headset: { iconBg: "bg-violet-50", iconColor: "text-violet-400" },
+  pickup: { iconBg: "bg-rose-50", iconColor: "text-rose-400" },
+  lock: { iconBg: "bg-sky-50", iconColor: "text-sky-400" }
 };
 
 /** Hero stats — soft brand-tinted circles */
 export const STAT_ICON_STYLES = {
-  users: { iconBg: "bg-blue-50", iconColor: "text-blue-600" },
-  car: { iconBg: "bg-emerald-50", iconColor: "text-emerald-600" },
-  driver: { iconBg: "bg-violet-50", iconColor: "text-violet-600" },
-  pin: { iconBg: "bg-rose-50", iconColor: "text-rose-600" },
-  star: { iconBg: "bg-amber-50", iconColor: "text-amber-600" }
+  users: { iconBg: "bg-blue-50", iconColor: "text-blue-400" },
+  car: { iconBg: "bg-emerald-50", iconColor: "text-emerald-400" },
+  driver: { iconBg: "bg-violet-50", iconColor: "text-violet-400" },
+  pin: { iconBg: "bg-rose-50", iconColor: "text-rose-400" },
+  star: { iconBg: "bg-amber-50", iconColor: "text-amber-400" }
 };
 
 /** Trust badges in hero search */
 export const TRUST_ICON_STYLES = {
-  verified: { iconBg: "bg-blue-50", iconColor: "text-blue-600" },
-  price: { iconBg: "bg-orange-50", iconColor: "text-orange-600" },
-  support: { iconBg: "bg-violet-50", iconColor: "text-violet-600" },
-  secure: { iconBg: "bg-sky-50", iconColor: "text-sky-600" },
-  cancel: { iconBg: "bg-emerald-50", iconColor: "text-emerald-600" }
+  verified: { iconBg: "bg-blue-50", iconColor: "text-blue-400" },
+  price: { iconBg: "bg-orange-50", iconColor: "text-orange-400" },
+  support: { iconBg: "bg-violet-50", iconColor: "text-violet-400" },
+  secure: { iconBg: "bg-sky-50", iconColor: "text-sky-400" },
+  cancel: { iconBg: "bg-emerald-50", iconColor: "text-emerald-400" }
 };
 
 export const HERO_TAB_ICON_KEYS = {
@@ -265,9 +265,9 @@ export const HERO_TAB_ICON_KEYS = {
 
 /** Active / inactive colors for hero search tabs */
 export const HERO_TAB_ICON_STYLES = {
-  outstation: { active: "bg-violet-100 text-violet-700", idle: "bg-slate-100 text-slate-600" },
-  local: { active: "bg-emerald-100 text-emerald-700", idle: "bg-slate-100 text-slate-600" },
-  airport: { active: "bg-sky-100 text-sky-700", idle: "bg-slate-100 text-slate-600" },
-  rental: { active: "bg-amber-100 text-amber-700", idle: "bg-slate-100 text-slate-600" },
-  tour: { active: "bg-rose-100 text-rose-700", idle: "bg-slate-100 text-slate-600" }
+  outstation: { active: "bg-violet-50 text-violet-400", idle: "bg-slate-50 text-slate-300" },
+  local: { active: "bg-emerald-50 text-emerald-400", idle: "bg-slate-50 text-slate-300" },
+  airport: { active: "bg-sky-50 text-sky-400", idle: "bg-slate-50 text-slate-300" },
+  rental: { active: "bg-amber-50 text-amber-400", idle: "bg-slate-50 text-slate-300" },
+  tour: { active: "bg-rose-50 text-rose-400", idle: "bg-slate-50 text-slate-300" }
 };

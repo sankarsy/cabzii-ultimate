@@ -99,8 +99,48 @@ export function getBackendUrl() {
   return url.trim().replace(/\/+$/, "");
 }
 
-/** Homepage SERP title — brand first so Google shows full title on branded "cabzii" searches. */
-export const HOME_SEO_TITLE = "Cabzii: Cab Booking Chennai | Airport Taxi, Local & Outstation Cabs";
+/** Homepage SERP title — brand first for branded queries. */
+export const HOME_SEO_TITLE = "Cabzii | Cab Booking & Taxi Service Across India";
+
+function normalizePath(path) {
+  if (!path || path === "/") return "/";
+  const withSlash = path.startsWith("/") ? path : `/${path}`;
+  return withSlash.replace(/\/+$/, "") || "/";
+}
+
+function absoluteUrl(path) {
+  const normalized = normalizePath(path);
+  return normalized === "/" ? `${SITE_URL}/` : `${SITE_URL}${normalized}`;
+}
+
+function resolveOgImage(image) {
+  if (!image) return DEFAULT_OG_IMAGE;
+  if (/^https?:\/\//i.test(image)) return image;
+  if (image.startsWith("/")) return `${SITE_URL}${image}`;
+  return `${SITE_URL}/${image}`;
+}
+
+/** Use absolute titles — avoid layout template appending `| Cabzii` twice. */
+function titleMetadata(title) {
+  const isAbsoluteSerpTitle =
+    /\|\s*Cabzii\s*$/i.test(title) ||
+    title.startsWith("Cabzii |") ||
+    title.startsWith("Cabzii:") ||
+    title.startsWith("Cabzii —") ||
+    title.startsWith("Cabzii -");
+  return isAbsoluteSerpTitle ? { absolute: title } : title;
+}
+
+function buildVerification(verification) {
+  const google = verification?.google || process.env.GOOGLE_SITE_VERIFICATION;
+  const bing = verification?.bing || process.env.BING_SITE_VERIFICATION;
+  const yandex = verification?.yandex || process.env.YANDEX_SITE_VERIFICATION;
+  const out = {};
+  if (google) out.google = google;
+  if (bing) out.other = { "msvalidate.01": bing };
+  if (yandex) out.yandex = yandex;
+  return Object.keys(out).length ? out : undefined;
+}
 
 /** Shared Next.js metadata (title, description, canonical, OG, Twitter). */
 export function buildPageMetadata({
@@ -110,31 +150,35 @@ export function buildPageMetadata({
   keywords,
   image,
   imageAlt,
+  imageWidth = 1200,
+  imageHeight = 630,
+  url,
+  type = "website",
   noindex = false,
-  languages
+  languages,
+  verification
 }) {
-  const canonicalPath = path.startsWith("/") ? path : `/${path}`;
-  const ogImage = image?.startsWith("http")
-    ? image
-    : image
-      ? `${SITE_URL}${image.startsWith("/") ? image : `/${image}`}`
-      : DEFAULT_OG_IMAGE;
-
-  /** Use absolute titles — avoid layout template appending `| Cabzii` twice. */
-  const isAbsoluteSerpTitle =
-    /\|\s*cabzii\s*$/i.test(title) ||
-    title.includes("| Cabzii") ||
-    title.startsWith("Cabzii:") ||
-    title.startsWith("Cabzii —") ||
-    title.startsWith("Cabzii -");
-  const titleMeta = isAbsoluteSerpTitle ? { absolute: title } : title;
+  const canonicalPath = normalizePath(path);
+  const pageUrl = absoluteUrl(url || canonicalPath);
+  const ogImage = resolveOgImage(image);
+  const twitterImage = image ? ogImage : DEFAULT_TWITTER_IMAGE;
 
   return {
-    title: titleMeta,
+    title: titleMetadata(title),
     description,
+    applicationName: SITE_NAME,
+    authors: [{ name: SITE_NAME, url: SITE_URL }],
+    creator: SITE_NAME,
+    publisher: SITE_NAME,
+    referrer: "strict-origin-when-cross-origin",
+    formatDetection: {
+      telephone: true,
+      email: true,
+      address: false
+    },
     ...(keywords?.length ? { keywords } : {}),
     alternates: {
-      canonical: canonicalPath,
+      canonical: pageUrl,
       ...(languages ? { languages } : {})
     },
     robots: noindex
@@ -143,17 +187,24 @@ export function buildPageMetadata({
     openGraph: {
       title,
       description,
-      url: canonicalPath,
+      url: pageUrl,
       siteName: SITE_NAME,
       locale: "en_IN",
-      type: "website",
-      images: [{ url: ogImage, alt: imageAlt || title, width: 1200, height: 630 }]
+      type,
+      images: [{ url: ogImage, alt: imageAlt || title, width: imageWidth, height: imageHeight }]
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: [image ? ogImage : DEFAULT_TWITTER_IMAGE]
+      images: [twitterImage]
+    },
+    ...(buildVerification(verification) ? { verification: buildVerification(verification) } : {}),
+    other: {
+      "apple-mobile-web-app-capable": "yes",
+      "apple-mobile-web-app-title": SITE_NAME,
+      "apple-mobile-web-app-status-bar-style": "default",
+      "mobile-web-app-capable": "yes"
     }
   };
 }
@@ -177,10 +228,10 @@ export function actingDriverDescription(cityName, state) {
 export const homeMetadata = buildPageMetadata({
   title: HOME_SEO_TITLE,
   description:
-    "Book airport taxi, local taxi, outstation taxi and one-way cabs in Chennai. Instant confirmation, professional drivers and affordable fares. Book online with Cabzii.",
+    "Book cabs, taxis, airport transfers, outstation trips, acting drivers and tour packages across India. Instant confirmation, verified drivers and transparent fares on Cabzii.in.",
   path: "/",
   image: "/opengraph-image",
-  imageAlt: "Cabzii — Cab Booking Chennai, Airport Taxi & Outstation Cabs",
+  imageAlt: "Cabzii — Cab Booking & Taxi Service Across India",
   keywords: [
     "cab booking chennai",
     "taxi service chennai",

@@ -5,6 +5,7 @@ import Link from "next/link";
 import MmtCabResults from "../../components/mmt/MmtCabResults";
 import MmtCabSearchWidget from "../../components/mmt/MmtCabSearchWidget";
 import CabziiBrowseHeader from "../../components/mmt/CabziiBrowseHeader";
+import RelatedSeoLinks from "../../components/seo/RelatedSeoLinks";
 import { sortBySelectedCity } from "../../lib/locationPriority";
 import { todayStr } from "../../lib/mmtTrip";
 import { useSelectedCity } from "../../lib/useSelectedCity";
@@ -94,10 +95,13 @@ export default function CabsBrowsePage() {
         </>
       )}
 
-      <div className="mx-auto max-w-5xl px-4 pb-8 text-center">
-        <Link href="/" className="text-sm font-semibold text-[var(--cabzii-brand)]">
-          ← Back to home
-        </Link>
+      <div className="mx-auto max-w-5xl px-4 pb-8">
+        <RelatedSeoLinks page="cabs" />
+        <p className="mt-6 text-center">
+          <Link href="/" className="text-sm font-semibold text-[var(--cabzii-brand)]">
+            ← Back to home
+          </Link>
+        </p>
       </div>
     </>
   );

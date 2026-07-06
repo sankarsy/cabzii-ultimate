@@ -9,7 +9,12 @@ import { resolveCabTripFare } from "../../../lib/distanceFare";
 import { buildLoginHref, getUser, isLoggedIn } from "../../../lib/auth";
 import { loadCheckoutDraft, saveCheckoutDraft } from "../../../lib/checkoutStorage";
 import { appendTripCoords } from "../../../lib/tripCoords";
-import { resolveMediaUrl } from "../../../lib/media";
+import { resolveCabImage } from "../../../lib/vehicleImages";
+import {
+  getCabDisplaySubtitle,
+  getCabDisplayTitle,
+  getCabPackageLine
+} from "../../../lib/catalogDisplay";
 import { cabSlabForTrip, parseTripSearchParams, tripToSearchQuery } from "../../../lib/mmtTrip";
 
 function formatINR(n) {
@@ -109,7 +114,9 @@ function PassengerContent() {
       payParams.set("date", trip.date);
       payParams.set("time", trip.time);
       if (trip.roundTrip) payParams.set("roundTrip", "true");
-      if (trip.packageHours) payParams.set("packageHours", String(trip.packageHours));
+      if (trip.packageHours && trip.tripType === "hourly") {
+        payParams.set("packageHours", String(trip.packageHours));
+      }
       if (slab?.id) payParams.set("packageId", slab.id);
       if (slab?.label) payParams.set("package", slab.label);
       if (fare.perKmRate) payParams.set("extraKm", String(fare.perKmRate));
@@ -133,6 +140,10 @@ function PassengerContent() {
   if (!cab) {
     return <div className="py-16 text-center text-rose-600">{error || "Cab not found"}</div>;
   }
+
+  const displayTitle = getCabDisplayTitle(cab, trip);
+  const displaySubtitle = getCabDisplaySubtitle(cab, trip);
+  const packageLine = getCabPackageLine(cab, trip, { slab, fare });
 
   return (
     <>
@@ -185,11 +196,13 @@ function PassengerContent() {
         </div>
 
         <aside className="h-fit rounded-xl border border-slate-200 bg-white p-5 shadow-sm lg:sticky lg:top-20">
-          {resolveMediaUrl(cab.image) ? (
-            <img src={resolveMediaUrl(cab.image)} alt="" className="mb-3 h-24 w-full rounded-lg object-cover" />
-          ) : null}
-          <h3 className="font-bold text-slate-900">{cab.title}</h3>
-          <p className="text-sm text-slate-500">{cab.type} · {cab.vendor}</p>
+          <img
+            src={resolveCabImage(cab)}
+            alt={displayTitle}
+            className="mb-3 h-24 w-full rounded-lg object-cover"
+          />
+          <h3 className="font-bold text-slate-900">{displayTitle}</h3>
+          <p className="text-sm text-slate-500">{displaySubtitle}</p>
           <hr className="my-4 border-slate-100" />
           {fare.usesDistance ? (
             <div className="space-y-1 text-sm text-slate-600">
@@ -199,8 +212,8 @@ function PassengerContent() {
               </p>
               {fare.driverBatta > 0 ? <p>Driver bata: {formatINR(fare.driverBatta)}</p> : null}
             </div>
-          ) : slab?.label ? (
-            <p className="text-sm text-slate-600">Package: {slab.label}</p>
+          ) : packageLine ? (
+            <p className="text-sm text-slate-600">{packageLine}</p>
           ) : null}
           <div className="mt-4 flex justify-between border-t border-slate-100 pt-3 text-base font-bold text-slate-900">
             <span>Total payable</span>
