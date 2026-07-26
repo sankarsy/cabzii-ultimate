@@ -1,4 +1,6 @@
 import { normalizeGalleryPaths, normalizeStoredImagePath } from "./media";
+import { DEFAULT_HOLIDAY_CAB_TYPES } from "./holidays";
+import { parseStops, stopsToLines } from "./busBooking";
 import { SEO_ROUTES } from "./seo/routes";
 import { SEO_SERVICES } from "./seo/services";
 
@@ -265,6 +267,11 @@ export function emptyDriverForm() {
     pricingExtraHour: 0,
     seoTitle: "",
     seoDescription: "",
+    metaKeywords: "",
+    canonicalUrl: "",
+    schemaEnabled: true,
+    faq: [{ question: "", answer: "" }],
+    enterpriseSeo: {},
     status: "active",
     farePackages: emptyPackages(DRIVER_PACKAGE_FIELDS),
     farePackageLabels: emptyLabels(DRIVER_PACKAGE_FIELDS)
@@ -292,6 +299,11 @@ export function driverFormFromItem(item) {
     pricingExtraHour: numField(item?.pricing?.extraHour),
     seoTitle: item?.seoTitle || "",
     seoDescription: item?.seoDescription || "",
+    metaKeywords: item?.metaKeywords || item?.seo || "",
+    canonicalUrl: item?.canonicalUrl || "",
+    schemaEnabled: item?.schemaEnabled !== false,
+    faq: Array.isArray(item?.faq) && item.faq.length ? item.faq : [{ question: "", answer: "" }],
+    enterpriseSeo: item?.enterpriseSeo && typeof item.enterpriseSeo === "object" ? item.enterpriseSeo : {},
     status: item?.status === "inactive" ? "inactive" : "active",
     farePackages: packagesFromItem(item?.farePackages, DRIVER_PACKAGE_FIELDS),
     farePackageLabels: labelsFromItem(item?.farePackageLabels, DRIVER_PACKAGE_FIELDS)
@@ -342,7 +354,110 @@ export function driverFormToPayload(form) {
     farePackages,
     farePackageLabels,
     status: form.status === "inactive" ? "inactive" : "active",
+    metaKeywords: form.metaKeywords || form.seo || "",
+    canonicalUrl: form.canonicalUrl || "",
+    schemaEnabled: form.schemaEnabled !== false,
+    faq: Array.isArray(form.faq) ? form.faq.filter((f) => f?.question?.trim() || f?.answer?.trim()) : [],
+    enterpriseSeo: form.enterpriseSeo && typeof form.enterpriseSeo === "object" ? form.enterpriseSeo : {},
     ...productFieldsToPayload(form)
+  };
+}
+
+const DEFAULT_CAB_TYPES_JSON = JSON.stringify(DEFAULT_HOLIDAY_CAB_TYPES, null, 2);
+
+export function emptyBusTripForm() {
+  return {
+    operator: "",
+    operatorCode: "",
+    operatorLogo: "",
+    vendor: "Cabzii Partner",
+    fromCity: "",
+    toCity: "",
+    departureTime: "06:00",
+    arrivalTime: "14:00",
+    duration: "8h",
+    durationMin: 480,
+    busType: "AC Seater",
+    seaterPrice: 599,
+    sleeperPrice: 899,
+    lowerBerthPrice: 999,
+    upperBerthPrice: 799,
+    boardingPointsText: "",
+    droppingPointsText: "",
+    bookedSeats: "",
+    amenities: "Water bottle, Charging point",
+    rating: 4.2,
+    reviewCount: 100,
+    status: "active",
+    seoTitle: "",
+    seoDescription: "",
+    seo: ""
+  };
+}
+
+export function busTripFormFromItem(item) {
+  return {
+    operator: item?.operator?.name || item?.operator || "",
+    operatorCode: item?.operator?.code || item?.operatorCode || "",
+    operatorLogo: item?.operator?.logo || item?.operatorLogo || "",
+    vendor: item?.vendor || "Cabzii Partner",
+    fromCity: item?.fromCity || "",
+    toCity: item?.toCity || "",
+    departureTime: item?.departureTime || item?.departure?.time || "06:00",
+    arrivalTime: item?.arrivalTime || item?.arrival?.time || "14:00",
+    duration: item?.duration || "8h",
+    durationMin: numField(item?.durationMin) || 480,
+    busType: item?.busType || "AC Seater",
+    seaterPrice: numField(item?.seaterPrice ?? item?.fares?.seater),
+    sleeperPrice: numField(item?.sleeperPrice ?? item?.fares?.sleeper),
+    lowerBerthPrice: numField(item?.lowerBerthPrice ?? item?.fares?.lowerBerth),
+    upperBerthPrice: numField(item?.upperBerthPrice ?? item?.fares?.upperBerth),
+    boardingPointsText: stopsToLines(item?.boardingPoints),
+    droppingPointsText: stopsToLines(item?.droppingPoints),
+    bookedSeats: Array.isArray(item?.bookedSeats) ? item.bookedSeats.join(", ") : "",
+    amenities: Array.isArray(item?.amenities) ? item.amenities.join(", ") : item?.amenities || "",
+    rating: numField(item?.rating) || 4.2,
+    reviewCount: numField(item?.reviewCount) || 100,
+    status: item?.status || "active",
+    seoTitle: item?.seoTitle || "",
+    seoDescription: item?.seoDescription || "",
+    seo: item?.seo || ""
+  };
+}
+
+export function busTripFormToPayload(form) {
+  return {
+    operator: form.operator?.trim(),
+    operatorCode: form.operatorCode?.trim(),
+    operatorLogo: form.operatorLogo?.trim(),
+    vendor: form.vendor?.trim() || "Cabzii Partner",
+    fromCity: form.fromCity?.trim(),
+    toCity: form.toCity?.trim(),
+    departureTime: form.departureTime?.trim(),
+    arrivalTime: form.arrivalTime?.trim(),
+    duration: form.duration?.trim(),
+    durationMin: Number(form.durationMin) || 480,
+    busType: form.busType?.trim(),
+    seaterPrice: Number(form.seaterPrice) || 0,
+    sleeperPrice: Number(form.sleeperPrice) || 0,
+    lowerBerthPrice: Number(form.lowerBerthPrice) || 0,
+    upperBerthPrice: Number(form.upperBerthPrice) || 0,
+    boardingPoints: parseStops(form.boardingPointsText),
+    droppingPoints: parseStops(form.droppingPointsText),
+    bookedSeats: String(form.bookedSeats || "")
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean),
+    amenities: String(form.amenities || "")
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean),
+    rating: Number(form.rating) || 4.2,
+    reviewCount: Number(form.reviewCount) || 100,
+    status: form.status || "active",
+    seoTitle: form.seoTitle?.trim(),
+    seoDescription: form.seoDescription?.trim(),
+    seo: form.seo?.trim()
   };
 }
 
@@ -356,16 +471,20 @@ export function emptyTourPackageForm() {
     price: 0,
     originalPrice: 0,
     discountPercentage: 0,
-    hourlyRate: 0,
-    dayRate: 0,
-    extraHourRate: 0,
     image: "",
     gallery: "",
     city: "",
+    pricingOriginCity: "Chennai",
     location: "",
     tags: "",
+    cabTypes: DEFAULT_CAB_TYPES_JSON,
     seoTitle: "",
     seoDescription: "",
+    metaKeywords: "",
+    canonicalUrl: "",
+    schemaEnabled: true,
+    faq: [{ question: "", answer: "" }],
+    enterpriseSeo: {},
     status: "active",
     packageType: "tour-package",
     state: "",
@@ -411,6 +530,10 @@ function linesToList(text) {
 }
 
 export function tourPackageFormFromItem(item) {
+  const cabTypes =
+    Array.isArray(item?.cabTypes) && item.cabTypes.length
+      ? JSON.stringify(item.cabTypes, null, 2)
+      : DEFAULT_CAB_TYPES_JSON;
   return {
     ...productFieldsFromItem(item),
     name: item?.name || "",
@@ -420,16 +543,20 @@ export function tourPackageFormFromItem(item) {
     price: numField(item?.price),
     originalPrice: numField(item?.originalPrice),
     discountPercentage: numField(item?.discountPercentage),
-    hourlyRate: numField(item?.hourlyRate),
-    dayRate: numField(item?.dayRate),
-    extraHourRate: numField(item?.extraHourRate),
     image: item?.image || "",
     gallery: Array.isArray(item?.gallery) ? item.gallery.join(", ") : "",
     city: item?.city || "",
+    pricingOriginCity: item?.pricingOriginCity || "Chennai",
     location: item?.location || "",
     tags: Array.isArray(item?.tags) ? item.tags.join(", ") : "",
+    cabTypes,
     seoTitle: item?.seoTitle || "",
     seoDescription: item?.seoDescription || "",
+    metaKeywords: item?.metaKeywords || item?.seo || "",
+    canonicalUrl: item?.canonicalUrl || "",
+    schemaEnabled: item?.schemaEnabled !== false,
+    faq: Array.isArray(item?.faq) && item.faq.length ? item.faq : Array.isArray(item?.faqs) && item.faqs.length ? item.faqs : [{ question: "", answer: "" }],
+    enterpriseSeo: item?.enterpriseSeo && typeof item.enterpriseSeo === "object" ? item.enterpriseSeo : {},
     status: item?.status === "inactive" ? "inactive" : "active",
     packageType: item?.packageType || "tour-package",
     state: item?.state || "",
@@ -467,12 +594,10 @@ export function tourPackageFormToPayload(form) {
     price: numField(form.price),
     originalPrice: numField(form.originalPrice),
     discountPercentage: numField(form.discountPercentage),
-    hourlyRate: numField(form.hourlyRate),
-    dayRate: numField(form.dayRate),
-    extraHourRate: numField(form.extraHourRate),
     image: normalizeStoredImagePath(form.image) || "",
     gallery: normalizeGalleryPaths(form.gallery).slice(0, 3),
     city: form.city || "",
+    pricingOriginCity: String(form.pricingOriginCity || "Chennai").trim() || "Chennai",
     location: form.location || "",
     tags: String(form.tags || "")
       .split(",")
@@ -491,6 +616,11 @@ export function tourPackageFormToPayload(form) {
     termsAndConditions: form.termsAndConditions || "",
     cancellationPolicy: form.cancellationPolicy || "",
     itinerary: linesToItinerary(form.itinerary),
+    metaKeywords: form.metaKeywords || form.seo || "",
+    canonicalUrl: form.canonicalUrl || "",
+    schemaEnabled: form.schemaEnabled !== false,
+    faq: Array.isArray(form.faq) ? form.faq.filter((f) => f?.question?.trim() || f?.answer?.trim()) : [],
+    enterpriseSeo: form.enterpriseSeo && typeof form.enterpriseSeo === "object" ? form.enterpriseSeo : {},
     ...productFieldsToPayload(form)
   };
 }
@@ -602,12 +732,10 @@ export const CATALOG_TABS = {
       price: 4999,
       originalPrice: 6499,
       discountPercentage: 23,
-      hourlyRate: 0,
-      dayRate: 4999,
-      extraHourRate: 300,
       image: "/uploads/package.jpg",
       gallery: ["/uploads/package.jpg"],
       city: "Tirupati",
+      pricingOriginCity: "Chennai",
       location: "Tirumala",
       category: "pilgrimage",
       cabTypes: [
@@ -619,6 +747,39 @@ export const CATALOG_TABS = {
       tags: ["Pilgrimage", "Tirupati"]
     },
     required: ["name", "vendor", "price"]
+  },
+  buses: {
+    label: "Buses",
+    base: "/api/buses",
+    form: "busTrip",
+    superAdminOnly: false,
+    sample: {
+      operator: "Orange Travels",
+      operatorCode: "OT",
+      vendor: "Cabzii Partner",
+      fromCity: "Chennai",
+      toCity: "Bengaluru",
+      departureTime: "22:00",
+      arrivalTime: "06:00",
+      duration: "8h",
+      durationMin: 480,
+      busType: "Volvo AC Sleeper",
+      seaterPrice: 699,
+      sleeperPrice: 899,
+      lowerBerthPrice: 999,
+      upperBerthPrice: 799,
+      boardingPoints: [
+        { name: "Chennai CMBT", time: "21:30", landmark: "Koyambedu" },
+        { name: "Chennai Central", time: "21:45", landmark: "Near station" }
+      ],
+      droppingPoints: [
+        { name: "Bengaluru Majestic", time: "05:45", landmark: "Bus stand" },
+        { name: "Silk Board", time: "06:15", landmark: "Outer ring" }
+      ],
+      amenities: ["Water bottle", "Blanket", "Charging point"],
+      status: "active"
+    },
+    required: ["operator", "fromCity", "toCity", "seaterPrice"]
   },
   bookings: {
     label: "Bookings",
@@ -817,6 +978,7 @@ export function buildCatalogListUrl(tabKey) {
     tabKey === "drivers" ||
     tabKey === "packages" ||
     tabKey === "bookings" ||
+    tabKey === "buses" ||
     tabKey === "seoServices" ||
     tabKey === "seoRoutes" ||
     tabKey === "seoCityPages"

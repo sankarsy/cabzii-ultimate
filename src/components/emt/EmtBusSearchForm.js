@@ -21,7 +21,7 @@ export default function EmtBusSearchForm({ emtHero = false }) {
     if (from.trim()) q.set("from", from.trim());
     if (to.trim()) q.set("to", to.trim());
     if (date) q.set("date", date);
-    router.push(`/buses?${q.toString()}`);
+    router.push(`/buses/results?${q.toString()}`);
   }
 
   function swap() {

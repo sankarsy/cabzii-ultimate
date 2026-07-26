@@ -1,14 +1,17 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import MmtTripSummaryBar from "../../../components/mmt/MmtTripSummaryBar";
+import MmtCardPriceBlock from "../../../components/mmt/MmtCardPriceBlock";
 import TripRoutePanel from "../../../components/maps/TripRoutePanel";
 import { buildFareSlabs } from "../../../lib/cabFare";
 import { resolveCabTripFare } from "../../../lib/distanceFare";
 import { buildLoginHref, getUser, isLoggedIn } from "../../../lib/auth";
 import { loadCheckoutDraft, saveCheckoutDraft } from "../../../lib/checkoutStorage";
+import { mergeTripDistance } from "../../../lib/mergeTripDistance";
 import { appendTripCoords } from "../../../lib/tripCoords";
+import { useTripRoute } from "../../../lib/useTripRoute";
 import { resolveCabImage } from "../../../lib/vehicleImages";
 import {
   getCabDisplaySubtitle,
@@ -26,7 +29,9 @@ function formatINR(n) {
 function PassengerContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const trip = parseTripSearchParams(searchParams);
+  const tripParsed = parseTripSearchParams(searchParams);
+  const { route } = useTripRoute(tripParsed);
+  const trip = useMemo(() => mergeTripDistance(tripParsed, route), [tripParsed, route]);
   const cabId = searchParams.get("cabId") || searchParams.get("id");
 
   const [cab, setCab] = useState(null);
@@ -120,6 +125,8 @@ function PassengerContent() {
       if (slab?.id) payParams.set("packageId", slab.id);
       if (slab?.label) payParams.set("package", slab.label);
       if (fare.perKmRate) payParams.set("extraKm", String(fare.perKmRate));
+      if (fare.usesDistance) payParams.set("usesDistance", "true");
+      if (fare.distanceKm) payParams.set("distanceKm", String(fare.distanceKm));
       payParams.set("listPrice", String(listPrice));
       payParams.set("discountPct", String(discount));
       payParams.set("discountAmount", String(Math.max(0, listPrice - total)));
@@ -148,10 +155,10 @@ function PassengerContent() {
   return (
     <>
       <MmtTripSummaryBar trip={trip} />
-      <div className="mx-auto max-w-5xl px-4">
+      <div className="section-shell">
         <TripRoutePanel trip={trip} compact />
       </div>
-      <div className="mx-auto grid w-full max-w-5xl grid-cols-1 gap-6 px-4 py-6 lg:grid-cols-[1fr_320px]">
+      <div className="section-shell grid w-full grid-cols-1 gap-6 px-4 py-6 lg:grid-cols-[1fr_320px]">
         <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
           <h2 className="text-lg font-bold text-slate-900">Traveller details</h2>
           <p className="mt-1 text-sm text-slate-600">Enter details for the primary passenger</p>
@@ -204,21 +211,19 @@ function PassengerContent() {
           <h3 className="font-bold text-slate-900">{displayTitle}</h3>
           <p className="text-sm text-slate-500">{displaySubtitle}</p>
           <hr className="my-4 border-slate-100" />
-          {fare.usesDistance ? (
-            <div className="space-y-1 text-sm text-slate-600">
-              <p>
-                ₹{fare.perKmRate}/km × {fare.distanceKm} km
-                {trip.roundTrip ? " × 2" : ""}
-              </p>
-              {fare.driverBatta > 0 ? <p>Driver bata: {formatINR(fare.driverBatta)}</p> : null}
-            </div>
-          ) : packageLine ? (
-            <p className="text-sm text-slate-600">{packageLine}</p>
-          ) : null}
-          <div className="mt-4 flex justify-between border-t border-slate-100 pt-3 text-base font-bold text-slate-900">
-            <span>Total payable</span>
-            <span>{formatINR(total)}</span>
+          <div className="flex justify-end">
+            <MmtCardPriceBlock
+              originalPrice={listPrice}
+              finalPrice={total}
+              discountPct={discount}
+              perKmRate={fare.usesDistance ? fare.perKmRate : undefined}
+              distanceKm={fare.usesDistance ? fare.distanceKm : undefined}
+              roundTrip={Boolean(trip.roundTrip)}
+            />
           </div>
+          {!fare.usesDistance && packageLine ? (
+            <p className="mt-2 text-right text-sm text-slate-600">{packageLine}</p>
+          ) : null}
         </aside>
       </div>
     </>

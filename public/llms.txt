@@ -3,22 +3,22 @@
 > Online cab, taxi, airport transfer, outstation, acting driver and holiday booking across South India.
 
 ## Primary pages
-- https://cabzii.in/
-- https://cabzii.in/cab-booking/chennai
-- https://cabzii.in/acting-driver/chennai
-- https://cabzii.in/acting-driver/tirupati
-- https://cabzii.in/routes/chennai-to-tirupati-cab
-- https://cabzii.in/routes/chennai-to-bangalore-cab
-- https://cabzii.in/services/airport-taxi/chennai
-- https://cabzii.in/services/outstation-cab/chennai
-- https://cabzii.in/services/car-rental/chennai
-- https://cabzii.in/cabs
-- https://cabzii.in/drivers
-- https://cabzii.in/holidays
-- https://cabzii.in/locations
-- https://cabzii.in/blogs
-- https://cabzii.in/blog/cab-booking-in-chennai-complete-guide-2026
-- https://cabzii.in/testimonials
+- https://www.cabzii.in/
+- https://www.cabzii.in/cab-booking/chennai
+- https://www.cabzii.in/acting-driver/chennai
+- https://www.cabzii.in/acting-driver/tirupati
+- https://www.cabzii.in/routes/chennai-to-tirupati-cab
+- https://www.cabzii.in/routes/chennai-to-bangalore-cab
+- https://www.cabzii.in/services/airport-taxi/chennai
+- https://www.cabzii.in/services/outstation-cab/chennai
+- https://www.cabzii.in/services/car-rental/chennai
+- https://www.cabzii.in/cabs
+- https://www.cabzii.in/drivers
+- https://www.cabzii.in/holidays
+- https://www.cabzii.in/locations
+- https://www.cabzii.in/blogs
+- https://www.cabzii.in/blog/cab-booking-in-chennai-complete-guide-2026
+- https://www.cabzii.in/testimonials
 
 ## Services
 Cab booking, taxi booking near me, airport taxi, outstation cab, one way cab, acting driver, call driver, driver on hire, chauffeur service, tempo traveller, car rental, cab rental, local taxi, hourly rental, holiday packages, Tirupati taxi from Chennai.
@@ -29,5 +29,5 @@ Customers book via cabzii.in with mobile OTP login. Fares shown before payment.
 ## Contact
 Phone: +91 9944197416
 Email: support@cabzii.com
-Website: https://cabzii.in
-Sitemap: https://cabzii.in/sitemap.xml
+Website: https://www.cabzii.in
+Sitemap: https://www.cabzii.in/sitemap.xml

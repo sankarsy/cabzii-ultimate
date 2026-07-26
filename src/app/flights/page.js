@@ -28,7 +28,7 @@ function FlightsContent() {
   const queryStr = searchParams.toString();
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-6">
+    <div className="section-shell py-6">
       <header className="mb-6">
         <h1 className="text-2xl font-bold text-slate-900">
           {origin?.city || from} → {dest?.city || to}

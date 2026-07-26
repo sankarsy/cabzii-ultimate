@@ -1,18 +1,22 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import MmtCabResults from "../../../components/mmt/MmtCabResults";
 import MmtTripSummaryBar from "../../../components/mmt/MmtTripSummaryBar";
 import TripRoutePanel from "../../../components/maps/TripRoutePanel";
+import { mergeTripDistance } from "../../../lib/mergeTripDistance";
 import { parseTripSearchParams, isValidTripSearch } from "../../../lib/mmtTrip";
 import { useSelectedCity } from "../../../lib/useSelectedCity";
+import { useTripRoute } from "../../../lib/useTripRoute";
 import { extractCabList } from "../../../lib/apiClient";
 
 function ResultsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const trip = parseTripSearchParams(searchParams);
+  const { route } = useTripRoute(trip);
+  const tripWithDistance = useMemo(() => mergeTripDistance(trip, route), [trip, route]);
   const { city: selectedCity } = useSelectedCity();
   const [cabs, setCabs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -60,16 +64,16 @@ function ResultsContent() {
 
   return (
     <>
-      <MmtTripSummaryBar trip={trip} />
-      <div className="mx-auto max-w-5xl px-4">
-        <TripRoutePanel trip={trip} />
+      <MmtTripSummaryBar trip={tripWithDistance} />
+      <div className="section-shell">
+        <TripRoutePanel trip={tripWithDistance} />
       </div>
       {loading ? (
         <div className="py-16 text-center text-slate-500">Finding best cabs for you…</div>
       ) : error ? (
         <div className="py-16 text-center text-rose-600">{error}</div>
       ) : (
-        <MmtCabResults cabs={cabs} trip={trip} />
+        <MmtCabResults cabs={cabs} trip={tripWithDistance} />
       )}
     </>
   );

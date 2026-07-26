@@ -45,7 +45,7 @@ export default function OffersSheet({ open, onClose, onApplyCoupon, appliedCode 
           <p className="text-sm font-bold text-slate-900">Use Cabzii Rewards</p>
           <p className="text-xs text-slate-500">You don&apos;t have any rewards currently</p>
           <div className="mt-2 flex items-center justify-end gap-1 text-sm font-bold text-amber-600">
-            0 <Star className="h-4 w-4 fill-amber-500 text-amber-500" strokeWidth={0} aria-hidden />
+            0 <Star className="h-4 w-4 fill-amber-400 text-amber-400" strokeWidth={0} aria-hidden />
           </div>
         </div>
 

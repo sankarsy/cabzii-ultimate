@@ -7,18 +7,14 @@ const BACKEND_URL = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_U
 export async function POST(request) {
   try {
     const ip = getClientIp(request);
-    const limit = checkRateLimit(`lead:${ip}`, { limit: 5, windowMs: 60 * 60 * 1000 });
+    const limit = checkRateLimit(`lead:${ip}`, { limit: 10, windowMs: 60 * 60 * 1000 });
     if (!limit.ok) {
       return NextResponse.json({ error: "Too many attempts. Try again later." }, { status: 429 });
     }
 
     const body = await request.json();
-    const name = String(body.name || "").trim().slice(0, 80);
+    const name = String(body.name || "Guest").trim().slice(0, 80) || "Guest";
     const mobile = normalizeIndianMobile(body.mobile);
-
-    if (!name || name.length < 2) {
-      return NextResponse.json({ error: "Please enter your name." }, { status: 400 });
-    }
 
     if (!isValidIndianMobile(mobile)) {
       return NextResponse.json({ error: "Enter a valid 10-digit mobile number." }, { status: 400 });

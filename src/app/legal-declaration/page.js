@@ -22,7 +22,7 @@ export default function LegalDeclarationPage() {
       />
       <Navbar />
       <section className="py-10 md:py-14">
-        <div className="mx-auto max-w-5xl px-4 md:px-6 lg:px-8">
+        <div className="section-shell lg:px-8">
           <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-md md:p-8">
             <h1 className="text-3xl font-bold text-slate-900">Travels Legal Declaration</h1>
             <p className="mt-2 text-sm text-slate-600">

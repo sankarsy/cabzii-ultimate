@@ -50,12 +50,12 @@ export default async function sitemap() {
     { url: `${base}/cabs`, lastModified: now, changeFrequency: "daily", priority: 0.95, images: [HERO_IMAGE] },
     { url: `${base}/drivers`, lastModified: now, changeFrequency: "daily", priority: 0.95, images: [HERO_IMAGE] },
     { url: `${base}/holidays`, lastModified: now, changeFrequency: "daily", priority: 0.92, images: [HERO_IMAGE] },
+    { url: `${base}/buses`, lastModified: now, changeFrequency: "daily", priority: 0.9, images: [HERO_IMAGE] },
     { url: `${base}/blogs`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
     { url: `${base}/about`, lastModified: now, changeFrequency: "monthly", priority: 0.75 },
     { url: `${base}/contact`, lastModified: now, changeFrequency: "monthly", priority: 0.75 },
     { url: `${base}/faq`, lastModified: now, changeFrequency: "monthly", priority: 0.78 },
     { url: `${base}/track-booking`, lastModified: now, changeFrequency: "monthly", priority: 0.65 },
-    { url: `${base}/blog/cab-booking-in-chennai-complete-guide-2026`, lastModified: now, changeFrequency: "weekly", priority: 0.88 },
     { url: `${base}/locations`, lastModified: now, changeFrequency: "weekly", priority: 0.85 },
     { url: `${base}/testimonials`, lastModified: now, changeFrequency: "weekly", priority: 0.75 },
     { url: `${base}/terms-and-conditions`, lastModified: now, changeFrequency: "yearly", priority: 0.4 },
@@ -202,12 +202,16 @@ export default async function sitemap() {
 
   const blogRoutes = blogPosts
     .filter(isPublishedBlogPost)
-    .map((item) => ({
-      url: `${base}/blog/${item.slug}`,
-      lastModified: item.updatedAt ? new Date(item.updatedAt) : now,
-      changeFrequency: "monthly",
-      priority: item.slug?.includes("chennai") ? 0.82 : 0.6
-    }));
+    .map((item) => {
+      const image = absoluteImage(item.image);
+      return {
+        url: `${base}/blog/${item.slug}`,
+        lastModified: item.updatedAt ? new Date(item.updatedAt) : now,
+        changeFrequency: "monthly",
+        priority: item.slug?.includes("chennai") ? 0.82 : 0.6,
+        ...(image ? { images: [image] } : {})
+      };
+    });
 
   return dedupeSitemapEntries([
     ...staticRoutes,

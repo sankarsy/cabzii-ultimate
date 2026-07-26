@@ -30,7 +30,7 @@ export default function PaymentCheckoutFooter({
         </div>
       ) : null}
 
-      <div className={inline ? "" : "mx-auto max-w-5xl px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 sm:px-4"}>
+      <div className={inline ? "" : "section-shell pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3"}>
         <div className="flex overflow-hidden rounded-xl border border-slate-200 bg-white">
           <button
             type="button"

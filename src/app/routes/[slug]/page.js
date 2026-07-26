@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import JsonLd from "../../../components/seo/JsonLd";
 import RouteLandingPage from "../../../components/seo/RouteLandingPage";
 import { resolveRouteBySlug } from "../../../lib/seo/cmsResolve";
+import { fetchCatalogForCity } from "../../../lib/serverCatalog";
 import {
   allRouteSlugsForBuild,
   breadcrumbJsonLd,
@@ -49,6 +50,7 @@ export default async function RoutePage({ params }) {
 
   const path = `/routes/${route.slug}`;
   const faqs = getRouteFaqs(route);
+  const cabs = await fetchCatalogForCity("cabs", route.fromCity?.name, 12);
   const jsonLd = [
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
@@ -70,7 +72,12 @@ export default async function RoutePage({ params }) {
   return (
     <>
       <JsonLd data={jsonLd} />
-      <RouteLandingPage route={route} faqs={faqs} extraBody={route.body} />
+      <RouteLandingPage
+        route={route}
+        faqs={faqs}
+        extraBody={route.body}
+        cabs={JSON.parse(JSON.stringify(cabs))}
+      />
     </>
   );
 }

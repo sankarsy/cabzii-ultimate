@@ -18,11 +18,11 @@ export default function MmtDriverTripSummaryBar({ trip }) {
 
   return (
     <div className="border-b border-slate-200 bg-slate-50">
-      <div className="mx-auto flex w-full max-w-5xl flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="section-shell flex w-full flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="text-[11px] font-bold uppercase tracking-wide text-sky-700">{label}</p>
           <h1 className="flex items-start gap-2 text-base font-bold text-slate-900 sm:text-lg">
-            <UserCheckIcon className="mt-0.5 h-5 w-5 shrink-0 text-sky-600" aria-hidden="true" />
+            <UserCheckIcon className="mt-0.5 h-5 w-5 shrink-0 text-sky-400" aria-hidden="true" />
             {driverTripSummaryLabel(trip)}
           </h1>
           <p className="mt-0.5 text-xs text-slate-600">Package: {pkg}</p>

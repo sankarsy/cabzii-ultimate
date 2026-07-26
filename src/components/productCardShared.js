@@ -1,33 +1,42 @@
+"use client";
+
+import { optimizeImageUrl } from "../lib/imageOptimize";
+
 /** Shared layout tokens matching CabCard (image + meta below). */
 
 import { typo } from "../lib/typography";
 import { CheckIcon } from "./icons";
 
 export const CARD_ARTICLE_CLASS =
-  "group relative flex h-full flex-col overflow-hidden rounded-[18px] border border-slate-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg";
+  "cabzii-card cabzii-card-interactive group relative flex h-full flex-col overflow-hidden";
 
 export const CARD_BOOK_BTN_CLASS =
-  "inline-flex h-11 w-full items-center justify-center gap-1.5 rounded-lg bg-[#0056D2] px-3 text-xs font-semibold uppercase tracking-wide text-white shadow-sm transition-all duration-200 hover:bg-[#0046b0] active:scale-[0.98] sm:text-sm sm:normal-case sm:tracking-normal";
+  "cabzii-btn cabzii-btn-primary cabzii-tap w-full text-sm sm:w-auto";
 
 export function MetaPill({ icon, label }) {
   return (
     <span className={`inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 ${typo.caption}`}>
-      {icon ? <span className="text-[#0056D2]">{icon}</span> : null}
+      {icon ? <span className="text-sky-400">{icon}</span> : null}
       {label}
     </span>
   );
 }
 
 const FALLBACK_PRODUCT_IMAGE =
-  "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=900&q=80";
+  "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=640&q=75";
 
-export function ProductImageFrame({ src, alt, badges, imageClassName = "h-[185px] w-full object-contain p-1.5" }) {
+export function ProductImageFrame({ src, alt, badges, imageClassName = "h-[185px] w-full object-cover" }) {
+  const imageSrc = optimizeImageUrl(src || FALLBACK_PRODUCT_IMAGE, 640);
   return (
     <div className="relative p-1.5">
       <div className="relative overflow-hidden rounded-[16px] bg-slate-100">
         <img
-          src={src || FALLBACK_PRODUCT_IMAGE}
-          alt={alt}
+          src={imageSrc}
+          alt={alt || "Vehicle"}
+          width={640}
+          height={400}
+          loading="lazy"
+          decoding="async"
           className={`${imageClassName} transition-transform duration-300 group-hover:scale-[1.02]`}
           onError={(e) => {
             if (e.currentTarget.src !== FALLBACK_PRODUCT_IMAGE) {
@@ -48,7 +57,7 @@ export function ProductMetaBlock({ title, vendor, vendorFallback = "Cabzii", chi
       <div className="mt-0.5 flex items-center justify-between gap-2">
         <p className={`line-clamp-1 ${typo.caption}`}>by {vendor || vendorFallback}</p>
         <span className={`shrink-0 flex items-center gap-0.5 ${typo.caption}`}>
-          <CheckIcon className="h-2.5 w-2.5" />
+          <CheckIcon className="h-2.5 w-2.5 text-emerald-400" />
           Verified
         </span>
       </div>
@@ -128,8 +137,8 @@ export function PackagePill({ pkg, selected, onSelect, showPrice = true }) {
     <button
       type="button"
       onClick={onSelect}
-      className={`flex min-h-[3.75rem] w-full min-w-0 flex-1 basis-0 flex-col items-center justify-center rounded-xl border px-1.5 py-2 text-center transition-all duration-200 ${
-        selected ? "border-blue-600 bg-blue-50 shadow-sm" : "border-slate-200 bg-white hover:border-blue-300"
+      className={`cabzii-segmented-option flex min-h-[3.75rem] w-full min-w-0 flex-1 basis-0 flex-col items-center justify-center px-2 py-2 text-center ${
+        selected ? "cabzii-segmented-option-active" : ""
       }`}
     >
       <span className="line-clamp-2 w-full text-[11px] font-bold leading-tight text-slate-900 sm:text-xs">

@@ -1,18 +1,22 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import MmtDriverResults from "../../../components/mmt/MmtDriverResults";
 import MmtDriverTripSummaryBar from "../../../components/mmt/MmtDriverTripSummaryBar";
 import TripRoutePanel from "../../../components/maps/TripRoutePanel";
+import { mergeTripDistance } from "../../../lib/mergeTripDistance";
 import { parseDriverTripSearchParams, isValidDriverTripSearch } from "../../../lib/driverTrip";
 import { useSelectedCity } from "../../../lib/useSelectedCity";
+import { useTripRoute } from "../../../lib/useTripRoute";
 import { extractDriverList } from "../../../lib/apiClient";
 
 function DriverResultsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const trip = parseDriverTripSearchParams(searchParams);
+  const tripParsed = parseDriverTripSearchParams(searchParams);
+  const { route } = useTripRoute(tripParsed);
+  const trip = useMemo(() => mergeTripDistance(tripParsed, route), [tripParsed, route]);
   const { city: selectedCity } = useSelectedCity();
   const [drivers, setDrivers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -62,7 +66,7 @@ function DriverResultsContent() {
   return (
     <>
       <MmtDriverTripSummaryBar trip={trip} />
-      <div className="mx-auto max-w-5xl px-4">
+      <div className="section-shell">
         <TripRoutePanel trip={trip} />
       </div>
       {loading ? (

@@ -33,7 +33,7 @@ export default function CitySeoPage({
   const topServices = isCab ? servicesForCityHub(city.slug, 8) : servicesForCityHub(city.slug, 4);
 
   return (
-    <article className="mx-auto max-w-4xl px-4 py-10 md:py-14">
+    <article className="section-shell py-10 md:py-14">
         <Breadcrumbs
           items={[
             { name: "Home", path: "/" },

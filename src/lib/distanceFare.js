@@ -19,9 +19,9 @@ export function resolvePerKmRate(slab, catalogItem = {}) {
   if (pkgRate > 0) return pkgRate;
 
   const base = num(catalogItem?.price);
-  if (base > 0 && base <= 200) return base;
+  if (base > 0 && base <= 30) return base;
 
-  return Math.max(12, Math.floor(base / 10) || 12);
+  return Math.max(12, Math.floor(num(catalogItem?.price) / 100) || 14);
 }
 
 /**

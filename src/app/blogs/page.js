@@ -14,7 +14,7 @@ export default async function BlogsPage() {
   return (
     <>
       <JsonLd data={blogListingJsonLd(posts)} />
-      <div className="mx-auto max-w-5xl px-4 py-10">
+      <div className="section-shell py-10">
         <h1 className="text-2xl font-bold text-slate-900">Travel blog</h1>
         <p className="mt-2 text-sm text-slate-600">
           Tips on cabs, acting drivers, airport transfers and outstation planning from cabzii.in.

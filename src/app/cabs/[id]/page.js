@@ -22,23 +22,27 @@ export default async function CabDetailRoutePage({ params }) {
   const cab = id ? await fetchCabById(id) : null;
   const reviewStats = await fetchSiteReviewStats();
   const { jsonLd } = cab ? cabDetailMetadata(cab, id) : { jsonLd: null };
+  // Enterprise JSON-LD already includes FAQ/breadcrumb; avoid duplicating when present
+  const hasGraph = Boolean(jsonLd?.["@graph"]);
   const schema = cab
-    ? [
-        breadcrumbJsonLd([
-          { name: "Home", path: "/" },
-          { name: "Cabs", path: "/cabs" },
-          { name: cab.title || "Cab", path: catalogPublicPath(cab, "/cabs") }
-        ]),
-        jsonLd,
-        faqFromPairs(getCabFaqs(cab))
-      ]
+    ? hasGraph
+      ? [jsonLd]
+      : [
+          breadcrumbJsonLd([
+            { name: "Home", path: "/" },
+            { name: "Cabs", path: "/cabs" },
+            { name: cab.title || "Cab", path: catalogPublicPath(cab, "/cabs") }
+          ]),
+          jsonLd,
+          faqFromPairs(getCabFaqs(cab))
+        ]
     : null;
 
   return (
     <>
       {schema ? <JsonLd data={schema} /> : null}
       {cab ? (
-        <div className="mx-auto max-w-5xl px-4 pt-6 md:px-6">
+        <div className="section-shell pt-6">
           <SerpRichBar
             ratingValue={cab.rating || reviewStats.ratingValue}
             reviewCount={cab.reviewCount || reviewStats.reviewCount}

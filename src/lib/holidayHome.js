@@ -1,5 +1,4 @@
 import { num, packageYouPay } from "./cabFare";
-import { catalogPublicPath } from "./catalogProduct";
 
 /** Match homepage destination tiles to catalog packages */
 export const DOMESTIC_DESTINATION_MATCHERS = [
@@ -58,9 +57,26 @@ export function findPackage(packages, matcher = {}) {
   );
 }
 
+/** SEO content page (slug). */
+export function packageSeoHref(pkg) {
+  if (!pkg) return "/holidays";
+  if (pkg.slug) return `/tour-packages/${pkg.slug}`;
+  const id = pkg._id || pkg.id;
+  return id ? `/holidays/${id}` : "/holidays";
+}
+
+/** Actual booking page — must use Mongo id (slug /holidays/{slug} redirects to SEO). */
+export function packageBookingHref(pkg) {
+  if (!pkg) return "/holidays";
+  const id = pkg._id || pkg.id;
+  return id ? `/holidays/${id}` : packageSeoHref(pkg);
+}
+
+/** Catalog card link — SEO landing when slug exists, else booking. */
 export function packageDetailHref(pkg) {
   if (!pkg) return "/holidays";
-  return catalogPublicPath(pkg, "/holidays");
+  if (pkg.slug) return packageSeoHref(pkg);
+  return packageBookingHref(pkg);
 }
 
 export function packageDisplayPrice(pkg) {

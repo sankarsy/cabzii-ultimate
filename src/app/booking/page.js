@@ -51,14 +51,14 @@ function CabTourBooking({ searchParams }) {
 
   if ((itemType === "cab" || itemType === "driver") && itemId && !searchParams?.step) {
     return (
-      <div className="mx-auto max-w-5xl px-4 py-16 text-center text-sm text-slate-600">
+      <div className="section-shell py-16 text-center text-sm text-slate-600">
         Redirecting to {itemType === "driver" ? "driver" : "cab"} details…
       </div>
     );
   }
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8">
+    <div className="section-shell py-8">
       <BookingForm selectedItem={selectedItem} itemType={itemType} proceedHref={proceedHref} />
     </div>
   );

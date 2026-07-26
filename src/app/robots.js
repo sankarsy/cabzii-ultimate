@@ -14,7 +14,9 @@ const DISALLOW = [
   "/signin",
   "/search",
   "/tour-booking",
-  "/buses",
+  "/buses/results",
+  "/buses/seats",
+  "/buses/passenger",
   "/trains",
   "/flights",
   "/hotels",
@@ -38,12 +40,12 @@ export default function robots() {
       },
       {
         userAgent: "Googlebot",
-        allow: ["/", "/_next/static/", "/_next/image", "/images/"],
+        allow: ["/", "/_next/static/", "/_next/image", "/images/", "/uploads/"],
         disallow: DISALLOW
       },
       {
         userAgent: "Googlebot-Image",
-        allow: ["/images/", "/_next/image"]
+        allow: ["/", "/uploads/", "/images/", "/_next/image", "/opengraph-image"]
       }
     ],
     sitemap: `${SITE_URL}/sitemap.xml`,

@@ -38,7 +38,7 @@ export default function EmtHotelSearchForm({ emtHero = false }) {
         <div className="emt-hero-search-card">
           <div className="emt-search-wrap emt-search-wrap-hotels">
             <div className="emt-search-bar emt-search-bar-hotels">
-              <div className="cabzii-search-cell sm:col-span-2">
+              <div className="cabzii-search-cell sm:col-span-2 lg:col-span-1">
                 <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                   Enter City Name, Location, or Specific hotel
                 </span>

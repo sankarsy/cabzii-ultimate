@@ -164,7 +164,7 @@ export default function OtpLogin({ nextUrl: nextUrlProp, onBack }) {
           </button>
         ) : null}
         <div className="mb-6 text-center">
-          <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-[#0056D2]/10 text-[#0056D2]">
+          <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-sky-50 text-sky-400">
             <PhoneIcon className="h-6 w-6" />
           </span>
           <h1 className="mt-3 text-xl font-bold text-slate-900">Customer Login</h1>

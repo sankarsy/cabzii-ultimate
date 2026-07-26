@@ -132,7 +132,7 @@ export default function AdminReviews({ token }) {
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="text-sm font-bold text-slate-900">{review.customerName}</span>
                   <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700">
-                    <BadgeCheck className="h-3 w-3" strokeWidth={2.5} aria-hidden />
+                    <BadgeCheck className="h-3 w-3 text-emerald-400" strokeWidth={2.5} aria-hidden />
                     Verified booking
                   </span>
                   <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${STATUS_BADGE[review.status] || ""}`}>

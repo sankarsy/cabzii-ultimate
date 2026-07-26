@@ -1,5 +1,6 @@
 import { HOME_PAGE_FAQS } from "./content";
 import { badgesToSchemaProperties, SITE_SITELINKS } from "./serpRichData";
+import { absoluteImageUrl } from "../imageOptimize";
 import {
   SITE_URL,
   SITE_NAME,
@@ -137,7 +138,7 @@ export function servicePageJsonLd({
     name: productName || `${serviceName} in ${cityName}`,
     description,
     url,
-    image: image || DEFAULT_OG_IMAGE,
+    image: absoluteImageUrl(image) || DEFAULT_OG_IMAGE,
     brand: { "@type": "Brand", name: SITE_NAME },
     category: `${serviceName} · Taxi Booking`,
     ...(includeSiteRating && Number(stats.reviewCount) > 0
@@ -203,7 +204,7 @@ export function routeServiceJsonLd({
     name: productName || `One Way Cab ${fromCity.name} to ${toCity.name}`,
     description,
     url,
-    image: image || DEFAULT_OG_IMAGE,
+    image: absoluteImageUrl(image) || DEFAULT_OG_IMAGE,
     brand: { "@type": "Brand", name: SITE_NAME },
     category: "One Way Cab · Outstation",
     ...(includeSiteRating ? { aggregateRating: siteAggregateRating() } : {}),
@@ -326,10 +327,9 @@ export function faqJsonLd() {
   return faqFromPairs(HOME_PAGE_FAQS);
 }
 
-export function localBusinessJsonLd(cityName, cityRegion, urlPath, reviewStats) {
+export function localBusinessJsonLd(cityName, cityRegion, urlPath, geo) {
   const url = urlPath ? `${SITE_URL}${urlPath}` : SITE_URL;
   const sameAs = [...SOCIAL_PROFILES];
-  const stats = reviewStats || SITE_REVIEW_STATS;
 
   return {
     "@context": "https://schema.org",
@@ -345,19 +345,15 @@ export function localBusinessJsonLd(cityName, cityRegion, urlPath, reviewStats) 
     areaServed: cityName,
     priceRange: "₹₹",
     ...(sameAs.length ? { sameAs } : {}),
-    ...(Number(stats.reviewCount) > 0
+    ...(geo?.lat && geo?.lng
       ? {
-          aggregateRating: siteAggregateRating({
-            ratingValue: stats.ratingValue,
-            reviewCount: stats.reviewCount
-          })
+          geo: {
+            "@type": "GeoCoordinates",
+            latitude: String(geo.lat),
+            longitude: String(geo.lng)
+          }
         }
       : {}),
-    geo: {
-      "@type": "GeoCoordinates",
-      latitude: "13.0827",
-      longitude: "80.2707"
-    },
     openingHoursSpecification: [
       {
         "@type": "OpeningHoursSpecification",
@@ -395,7 +391,7 @@ export function cityCabSearchJsonLd(city, { productName, description, urlPath, p
       description ||
       `Book Maruti Dzire, Ertiga, Innova & Tempo cabs in ${city.name}, ${city.state}. Outstation, airport & local packages.`,
     url,
-    image: image || DEFAULT_OG_IMAGE,
+    image: absoluteImageUrl(image) || DEFAULT_OG_IMAGE,
     brand: { "@type": "Brand", name: SITE_NAME },
     category: "Taxi & Cab Booking",
     ...(Number(stats.reviewCount) > 0
@@ -423,7 +419,7 @@ export function cityDriverSearchJsonLd(city, { productName, description, urlPath
       description ||
       `Hire verified acting drivers & chauffeurs in ${city.name}, ${city.state}. Hourly, daily & outstation packages on your car.`,
     url,
-    image: image || DEFAULT_OG_IMAGE,
+    image: absoluteImageUrl(image) || DEFAULT_OG_IMAGE,
     brand: { "@type": "Brand", name: SITE_NAME },
     category: "Chauffeur & Driver Service",
     offers: buildOffers({ url, lowPrice: low, highPrice: high, offerCount: 16 })
@@ -455,7 +451,7 @@ export function articleJsonLd({ title, description, urlPath, author, datePublish
       ? {
           image: {
             "@type": "ImageObject",
-            url: image,
+            url: absoluteImageUrl(image),
             width: 1200,
             height: 630
           }
@@ -531,7 +527,7 @@ export function productJsonLd({
     sku: sku || urlPath.replace(/\//g, "-").replace(/^-/, ""),
     category,
     brand: { "@type": "Brand", name: SITE_NAME },
-    image: image || DEFAULT_OG_IMAGE,
+    image: absoluteImageUrl(image) || DEFAULT_OG_IMAGE,
     ...(hasRealRating
       ? {
           aggregateRating: siteAggregateRating({
@@ -572,7 +568,7 @@ export function tourPackageJsonLd({
     name,
     description,
     url,
-    image: image || DEFAULT_OG_IMAGE,
+    image: absoluteImageUrl(image) || DEFAULT_OG_IMAGE,
     brand: { "@type": "Brand", name: SITE_NAME },
     category: "Holiday Tour Package",
     ...(originCity

@@ -1,5 +1,5 @@
 # ai.txt — AI crawler & training usage policy for cabzii.in
-# https://cabzii.in/.well-known/ai.txt
+# https://www.cabzii.in/.well-known/ai.txt
 
 User-Agent: *
 Allow: /
@@ -20,8 +20,8 @@ Contact: support@cabzii.com
 # pages (services, routes, city pages, blog) with attribution to cabzii.in.
 Training: allowed
 Attribution: required
-Canonical: https://cabzii.in
+Canonical: https://www.cabzii.in
 
 # Machine-readable site summary
-Sitemap: https://cabzii.in/sitemap.xml
-LLM-Index: https://cabzii.in/llms.txt
+Sitemap: https://www.cabzii.in/sitemap.xml
+LLM-Index: https://www.cabzii.in/llms.txt

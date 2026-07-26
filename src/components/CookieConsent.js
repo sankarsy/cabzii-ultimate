@@ -35,7 +35,7 @@ export default function CookieConsent() {
       aria-label="Cookie consent"
       className="fixed inset-x-0 bottom-[4.25rem] z-[80] px-3 pb-3 sm:bottom-4 sm:px-4 sm:pb-4"
     >
-      <div className="mx-auto flex max-w-4xl flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_10px_40px_rgba(0,0,0,0.12)] sm:flex-row sm:items-center sm:justify-between">
+      <div className="section-shell flex max-w-full flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_10px_40px_rgba(0,0,0,0.12)] sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm leading-relaxed text-slate-600">
           We use cookies to keep you signed in, remember your bookings and improve cabzii.in. See our{" "}
           <a href="/terms-and-conditions" className="font-semibold text-[#0056D2] underline">

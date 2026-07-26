@@ -36,3 +36,38 @@ export function cityBySlug(slug) {
 export function cityNameLower(city) {
   return city.name.toLowerCase();
 }
+
+/** Approximate city centers for LocalBusiness geo in JSON-LD (omit when unknown). */
+export const CITY_GEO = {
+  chennai: { lat: "13.0827", lng: "80.2707" },
+  bengaluru: { lat: "12.9716", lng: "77.5946" },
+  hyderabad: { lat: "17.385", lng: "78.4867" },
+  coimbatore: { lat: "11.0168", lng: "76.9558" },
+  mysore: { lat: "12.2958", lng: "76.6394" },
+  pondicherry: { lat: "11.9416", lng: "79.8083" },
+  tirupati: { lat: "13.6288", lng: "79.4192" },
+  vellore: { lat: "12.9165", lng: "79.1325" },
+  salem: { lat: "11.6643", lng: "78.146" },
+  madurai: { lat: "9.9252", lng: "78.1198" },
+  trichy: { lat: "10.7905", lng: "78.7047" },
+  kodaikanal: { lat: "10.2381", lng: "77.4892" },
+  erode: { lat: "11.341", lng: "77.7172" },
+  hosur: { lat: "12.7409", lng: "77.8253" },
+  tirunelveli: { lat: "8.7139", lng: "77.7567" },
+  rameswaram: { lat: "9.2876", lng: "79.3129" },
+  ooty: { lat: "11.4064", lng: "76.6932" },
+  mumbai: { lat: "19.076", lng: "72.8777" },
+  delhi: { lat: "28.7041", lng: "77.1025" },
+  pune: { lat: "18.5204", lng: "73.8567" },
+  kolkata: { lat: "22.5726", lng: "88.3639" },
+  kochi: { lat: "9.9312", lng: "76.2673" },
+  visakhapatnam: { lat: "17.6868", lng: "83.2185" },
+  goa: { lat: "15.2993", lng: "74.124" },
+  jaipur: { lat: "26.9124", lng: "75.7873" },
+  ahmedabad: { lat: "23.0225", lng: "72.5714" },
+  chandigarh: { lat: "30.7333", lng: "76.7794" }
+};
+
+export function cityGeo(slug) {
+  return CITY_GEO[slug] ?? null;
+}

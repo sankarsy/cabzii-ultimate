@@ -65,9 +65,9 @@ export default function LocationsPage() {
   const cityLabel = selectedCity ? extractCityFromLabel(selectedCity) : "";
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8">
+    <div className="section-shell py-8">
       <section className="py-10 md:py-14">
-        <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-8">
+        <div className="section-shell">
           <h1 className="text-3xl font-bold text-slate-900">Service locations</h1>
           <p className="mt-2 text-sm text-slate-600">
             Search any city in India via Google, then browse pickup and drop points we serve in that area.

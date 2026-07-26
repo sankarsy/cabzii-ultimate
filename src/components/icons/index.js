@@ -50,10 +50,16 @@ import {
   Percent,
   Package,
   Newspaper,
-  CircleUser
+  CircleUser,
+  Nfc
 } from "lucide-react";
 
 const STROKE = 1.75;
+
+/** Default soft icon color — use on inline icons beside body text (never dark slate). */
+export const ICON_SOFT_CLASS = "text-slate-400";
+export const ICON_ACCENT_CLASS = "text-sky-400";
+export const ICON_SUCCESS_CLASS = "text-emerald-400";
 
 function wrapLucide(Icon, { fill } = {}) {
   return function LucideWrapped({ className = "h-5 w-5", strokeWidth = STROKE, ...props }) {
@@ -121,6 +127,8 @@ export const PalmtreeIcon = wrapLucide(Palmtree);
 export const FuelIcon = wrapLucide(Fuel);
 export const LangIcon = wrapLucide(Languages);
 export const TwoWayIcon = wrapLucide(ArrowLeftRight);
+export const GpsIcon = wrapLucide(Navigation);
+export const FastTagIcon = wrapLucide(Nfc);
 
 /** Registry for CMS iconKey strings */
 export const ICON_REGISTRY = {
@@ -175,7 +183,10 @@ export const ICON_REGISTRY = {
   backpack: BackpackIcon,
   luggage: LuggageIcon,
   fuel: FuelIcon,
-  ac: SnowflakeIcon
+  ac: SnowflakeIcon,
+  gps: GpsIcon,
+  fastTag: FastTagIcon,
+  nfc: FastTagIcon
 };
 
 /** Home hero travel tabs — see heroIcons.js (Remix flat icons) */
@@ -184,32 +195,32 @@ export { HERO_TAB_ICONS } from "./heroIcons";
 /** Per-tab icon colors — light pastel circles */
 export const HOME_CATEGORY_ICON_STYLES = {
   cabs: {
-    active: "bg-sky-50 text-sky-400 ring-1 ring-sky-100",
-    idle: "bg-slate-50/80 text-slate-300 ring-1 ring-slate-100"
+    active: "bg-sky-50 text-sky-500 ring-1 ring-sky-100",
+    idle: "bg-slate-50/80 text-slate-500 ring-1 ring-slate-200"
   },
   drivers: {
-    active: "bg-violet-50 text-violet-400 ring-1 ring-violet-100",
-    idle: "bg-slate-50/80 text-slate-300 ring-1 ring-slate-100"
+    active: "bg-violet-50 text-violet-500 ring-1 ring-violet-100",
+    idle: "bg-slate-50/80 text-slate-500 ring-1 ring-slate-200"
   },
   holidays: {
-    active: "bg-emerald-50 text-emerald-400 ring-1 ring-emerald-100",
-    idle: "bg-slate-50/80 text-slate-300 ring-1 ring-slate-100"
+    active: "bg-emerald-50 text-emerald-500 ring-1 ring-emerald-100",
+    idle: "bg-slate-50/80 text-slate-500 ring-1 ring-slate-200"
   },
   hotels: {
-    active: "bg-amber-50 text-amber-400 ring-1 ring-amber-100",
-    idle: "bg-slate-50/80 text-slate-300 ring-1 ring-slate-100"
+    active: "bg-amber-50 text-amber-500 ring-1 ring-amber-100",
+    idle: "bg-slate-50/80 text-slate-500 ring-1 ring-slate-200"
   },
   flights: {
-    active: "bg-blue-50 text-blue-400 ring-1 ring-blue-100",
-    idle: "bg-slate-50/80 text-slate-300 ring-1 ring-slate-100"
+    active: "bg-blue-50 text-blue-500 ring-1 ring-blue-100",
+    idle: "bg-slate-50/80 text-slate-500 ring-1 ring-slate-200"
   },
   buses: {
-    active: "bg-orange-50 text-orange-400 ring-1 ring-orange-100",
-    idle: "bg-slate-50/80 text-slate-300 ring-1 ring-slate-100"
+    active: "bg-orange-50 text-orange-500 ring-1 ring-orange-100",
+    idle: "bg-slate-50/80 text-slate-500 ring-1 ring-slate-200"
   },
   trains: {
-    active: "bg-indigo-50 text-indigo-400 ring-1 ring-indigo-100",
-    idle: "bg-slate-50/80 text-slate-300 ring-1 ring-slate-100"
+    active: "bg-indigo-50 text-indigo-500 ring-1 ring-indigo-100",
+    idle: "bg-slate-50/80 text-slate-500 ring-1 ring-slate-200"
   }
 };
 

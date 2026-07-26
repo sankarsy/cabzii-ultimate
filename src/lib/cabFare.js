@@ -69,7 +69,90 @@ const SLAB_META = [
   }
 ];
 
+const TYPE_TO_LEGACY = {
+  local_4hr: "local4hr",
+  local_8hr: "local8hr",
+  one_way: "outstationOneWay",
+  round_trip: "outstationRoundTrip"
+};
+
+function slabsFromDynamicPackages(cab) {
+  const rows = Array.isArray(cab?.packages) ? cab.packages.filter((p) => p && p.active !== false && num(p.price) > 0) : [];
+  if (!rows.length) return null;
+
+  const legacy = buildLegacySlabs(cab);
+  const keyUsed = new Set();
+
+  const dynamic = rows
+    .sort((a, b) => num(a.sortOrder) - num(b.sortOrder))
+    .map((row, index) => {
+      const legacyKey = TYPE_TO_LEGACY[row.packageType];
+      const meta = SLAB_META.find((m) => m.key === legacyKey);
+      const fare = resolvePackageFare(
+        {
+          originalPrice: row.originalPrice,
+          price: row.price,
+          discountPercentage: row.discountPercentage,
+          extraKmRate: row.extraKmRate,
+          extraHourRate: row.extraHourRate
+        },
+        cab,
+        legacy[meta?.legacy] || 0
+      );
+      if (legacyKey) keyUsed.add(legacyKey);
+      const label =
+        row.packageName ||
+        (row.includedHours && row.includedKm
+          ? `${row.includedHours} Hr / ${row.includedKm} Km`
+          : meta?.defaultLabel || row.packageType);
+
+      return {
+        id: row._id || row.id || `pkg_${index}`,
+        group: meta?.group || (String(row.packageType).includes("local") ? "local" : "outstation"),
+        label,
+        shortLabel: label,
+        list: fare.originalPrice,
+        originalPrice: fare.originalPrice,
+        price: fare.price,
+        discountPercentage: fare.discountPercentage,
+        popular: row.packageType === "local_4hr",
+        note: row.packageType === "one_way" || row.packageType === "round_trip" ? "Per Trip Quote" : undefined,
+        extraKm: fare.extraKm,
+        extraHr: fare.extraHr,
+        packageType: row.packageType
+      };
+    });
+
+  const packages = cab?.farePackages || {};
+  for (const meta of SLAB_META) {
+    if (keyUsed.has(meta.key)) continue;
+    const stored = packages[meta.key];
+    if (!stored || num(stored.price) <= 0) continue;
+    const fare = resolvePackageFare(stored, cab, legacy[meta.legacy]);
+    dynamic.push({
+      id: meta.id,
+      group: meta.group,
+      label: meta.defaultLabel,
+      shortLabel: meta.defaultLabel,
+      list: fare.originalPrice,
+      originalPrice: fare.originalPrice,
+      price: fare.price,
+      discountPercentage: fare.discountPercentage,
+      popular: meta.popular,
+      note: meta.note,
+      extraKm: fare.extraKm,
+      extraHr: fare.extraHr,
+      packageType: meta.id
+    });
+  }
+
+  return dynamic.length ? dynamic : null;
+}
+
 export function buildFareSlabs(cab) {
+  const fromDynamic = slabsFromDynamicPackages(cab);
+  if (fromDynamic) return fromDynamic;
+
   const packages = cab?.farePackages || {};
   const legacy = buildLegacySlabs(cab);
 

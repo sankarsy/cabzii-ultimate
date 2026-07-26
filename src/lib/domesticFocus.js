@@ -86,58 +86,79 @@ export const DOMESTIC_OFFERS = [
   {
     tag: "OUTSTATION",
     title: "20% OFF outstation cabs",
-    desc: "Sedan, SUV, Innova & Tempo Traveller.",
+    desc: "Book Sedan, SUV, Innova & Tempo Traveller cabs and save on every outstation trip.",
     iconKey: "car",
     color: "from-[var(--cabzii-brand)] to-blue-500",
-    href: "/cabs"
+    image: "/images/offers/offer-outstation.png",
+    href: "/cabs",
+    code: "CABOUT20",
+    validTill: "31st Jul, 2026"
   },
   {
     tag: "TEMPLE TOURS",
     title: "Tirupati package from ₹4,999",
-    desc: "Darshan trips with verified drivers.",
+    desc: "Darshan trips with verified drivers, pickup from home & flexible timings.",
     iconKey: "holiday",
     color: "from-rose-500 to-pink-400",
-    href: "/holidays?category=pilgrimage&q=tirupati"
+    image: "/images/offers/offer-tirupati.png",
+    href: "/holidays?category=pilgrimage&q=tirupati",
+    code: "TIRUPATI",
+    validTill: "31st Jul, 2026"
   },
   {
     tag: "ONE WAY",
     title: "Chennai → Bangalore one-way",
-    desc: "Transparent upfront fares.",
+    desc: "Pay only for one side — transparent upfront fares with no hidden charges.",
     iconKey: "route",
     color: "from-emerald-500 to-teal-400",
-    href: "/routes/chennai-to-bangalore-cab"
+    image: "/images/offers/offer-oneway.png",
+    href: "/routes/chennai-to-bangalore-cab",
+    code: "ONEWAY",
+    validTill: "31st Jul, 2026"
   },
   {
     tag: "AIRPORT",
     title: "Bangalore airport · 12 hr cab",
-    desc: "Kempegowda pickup · 120 km package.",
+    desc: "Kempegowda pickup with a 12 hour / 120 km package for the full day.",
     iconKey: "airport",
     color: "from-indigo-500 to-violet-400",
-    href: "/cabs/results?serviceTripType=hourly&from=Kempegowda+International+Airport%2C+Bengaluru&to=Bengaluru&city=Bengaluru&packageHours=12"
+    image: "/images/offers/offer-airport.png",
+    href: "/cabs/results?serviceTripType=hourly&from=Kempegowda+International+Airport%2C+Bengaluru&to=Bengaluru&city=Bengaluru&packageHours=12",
+    code: "BLRAIR12",
+    validTill: "31st Jul, 2026"
   },
   {
     tag: "AIRPORT",
     title: "Chennai airport taxi",
-    desc: "24×7 pickup · fixed local fares.",
+    desc: "24×7 airport pickup & drop at fixed local fares with instant confirmation.",
     iconKey: "airport",
     color: "from-indigo-500 to-violet-400",
-    href: "/services/airport-taxi/chennai"
+    image: "/images/offers/offer-airport-chennai.png",
+    href: "/services/airport-taxi/chennai",
+    code: "CHNAIR",
+    validTill: "31st Jul, 2026"
   },
   {
     tag: "DRIVERS",
     title: "Acting driver from ₹900",
-    desc: "Local, outstation & corporate hire.",
+    desc: "Hire verified acting drivers for local, outstation & corporate trips.",
     iconKey: "driver",
     color: "from-slate-700 to-slate-500",
-    href: "/drivers"
+    image: "/images/offers/offer-driver.png",
+    href: "/drivers",
+    code: "DRIVER900",
+    validTill: "31st Jul, 2026"
   },
   {
     tag: "PILGRIMAGE",
     title: "Rameswaram & Madurai tours",
-    desc: "South India temple packages.",
+    desc: "South India temple tour packages with comfortable cabs & planned halts.",
     iconKey: "holiday",
     color: "from-amber-500 to-orange-400",
-    href: "/holidays?category=pilgrimage"
+    image: "/images/offers/offer-rameswaram.png",
+    href: "/holidays?category=pilgrimage",
+    code: "TEMPLE",
+    validTill: "31st Jul, 2026"
   }
 ];
 

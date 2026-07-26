@@ -95,7 +95,7 @@ export default function MmtFooter() {
                   <li key={link.label}>
                     <Link
                       href={link.href}
-                      className="text-sm text-slate-600 transition hover:text-[var(--cabzii-brand)]"
+                      className="inline-block text-sm text-slate-600 transition-all duration-200 hover:pl-1 hover:text-[var(--cabzii-cta)]"
                     >
                       {link.label}
                     </Link>

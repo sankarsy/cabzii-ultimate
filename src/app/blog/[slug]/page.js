@@ -89,7 +89,7 @@ export default async function BlogPostPage({ params }) {
   const faqs = isChennaiGuide ? CHENNAI_GUIDE_FAQS : [];
   const authorLabel = formatBlogAuthor(post.author);
   const dateLabel = formatBlogDate(post.date || post.publishedAt);
-  const heroImage = resolveMediaUrl(post.image) || "https://cabzii.in/images/hero-banner.png";
+  const heroImage = resolveMediaUrl(post.image) || "https://www.cabzii.in/images/hero-banner.png";
 
   const jsonLd = [
     breadcrumbJsonLd([
@@ -112,7 +112,7 @@ export default async function BlogPostPage({ params }) {
     <main className="min-h-screen bg-linear-to-b from-slate-50 via-sky-50/60 to-white">
       <JsonLd data={jsonLd} />
       <Navbar />
-      <article className="mx-auto max-w-3xl px-4 py-10 md:py-14">
+      <article className="section-shell py-10 md:py-14">
         <nav className="mb-4 text-xs text-slate-500">
           <Link href="/" className="hover:text-[#0056D2]">
             Home

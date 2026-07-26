@@ -34,6 +34,23 @@ export async function fetchCatalogList(resource, limit = 6) {
   return Array.isArray(data) ? data : [];
 }
 
+/** City-prioritized cabs/drivers for SEO service & route landings. */
+export async function fetchCatalogForCity(resource, cityName, limit = 8) {
+  if (!cityName) return fetchCatalogList(resource, limit);
+  const q = new URLSearchParams({
+    limit: String(limit),
+    page: "1",
+    priorityCity: cityName,
+    city: cityName
+  });
+  const data = await fetchJson(`/${resource}?${q.toString()}`, 600);
+  const list = Array.isArray(data) ? data : [];
+  if (list.length >= Math.min(4, limit)) return list;
+  // Fallback: city-agnostic featured list so landings never look empty
+  const fallback = await fetchCatalogList(resource, limit);
+  return fallback;
+}
+
 export async function fetchBlogBySlug(slug) {
   if (!slug) return null;
   return fetchJson(`/blogs/${encodeURIComponent(slug)}`, 600);

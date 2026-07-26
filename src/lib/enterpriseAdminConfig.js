@@ -8,7 +8,7 @@ export const ENTERPRISE_SECTIONS = [
   { key: "seo-templates", label: "SEO Templates", icon: "📝" },
   { key: "content-health", label: "Content Health", icon: "💡" },
   { key: "gsc", label: "Search Console", icon: "📈" },
-  { key: "chat-leads", label: "Chat Leads", icon: "💬" },
+  { key: "chat-leads", label: "Customer queries", icon: "💬" },
   { key: "audit-logs", label: "Audit Logs", icon: "📋" },
   { key: "bulk-ops", label: "Bulk Operations", icon: "⚡" }
 ];

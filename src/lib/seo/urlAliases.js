@@ -1,4 +1,5 @@
 import { CITY_SEO_KEYWORD_ALIASES } from "./citySeoAliases";
+import { SEO_ROUTES } from "./routes";
 
 /** Short URL prefixes → canonical /services/{service}/{city} */
 export const SERVICE_URL_PREFIXES = new Set([
@@ -55,28 +56,9 @@ export function resolveSeoAliasPath(pathname) {
   }
 
   if (parts.length === 1) {
-    const slug = parts[0];
+    const slug = parts[0].toLowerCase();
     const cabBookingGuide = slug.match(/^cab-booking-in-chennai-complete-guide-2026$/i);
     if (cabBookingGuide) return "/blog/cab-booking-in-chennai-complete-guide-2026";
-
-    const cabBookingIn = slug.match(/^cab-booking-in-(.+)$/i);
-    if (cabBookingIn) return `/cab-booking/${cabBookingIn[1].toLowerCase()}`;
-
-    const actingDriverIn = slug.match(/^acting-driver-in-(.+)$/i);
-    if (actingDriverIn) return `/acting-driver/${actingDriverIn[1].toLowerCase()}`;
-
-    const travelsIn = slug.match(/^travels-in-(.+)$/i);
-    if (travelsIn) return `/cab-booking/${travelsIn[1].toLowerCase()}`;
-
-    if (/^car-rental-maduravoyal$/i.test(slug)) {
-      return "/services/car-rental/chennai";
-    }
-
-    const carRentalIn = slug.match(/^car-rental-in-(.+)$/i);
-    if (carRentalIn) return `/services/car-rental/${resolveCitySlug(carRentalIn[1])}`;
-
-    const cabRentalIn = slug.match(/^cab-rental-in-(.+)$/i);
-    if (cabRentalIn) return `/services/cab-rental/${resolveCitySlug(cabRentalIn[1])}`;
 
     const manualKeywordAliases = {
       "cab-booking-chennai": "/cab-booking/chennai",
@@ -114,17 +96,42 @@ export function resolveSeoAliasPath(pathname) {
       "bangalore-airport-taxi": "/services/airport-taxi/bengaluru",
       "bangalore-airport-pickup": "/services/airport-taxi/bengaluru",
       "bengaluru-airport-taxi": "/services/airport-taxi/bengaluru",
-      "bangalore-airport-pickup-12-hour-package": "/cabs/results?serviceTripType=hourly&from=Kempegowda+International+Airport%2C+Bengaluru&to=Bengaluru&city=Bengaluru&packageHours=12",
-      "bangalore-12-hour-cab-package": "/cabs/results?serviceTripType=hourly&from=Kempegowda+International+Airport%2C+Bengaluru&to=Bengaluru&city=Bengaluru&packageHours=12"
+      "bangalore-airport-pickup-12-hour-package": "/services/hourly-rental/bengaluru",
+      "bangalore-12-hour-cab-package": "/services/hourly-rental/bengaluru"
     };
     const keywordAliases = { ...CITY_SEO_KEYWORD_ALIASES, ...manualKeywordAliases };
-    if (keywordAliases[slug.toLowerCase()]) return keywordAliases[slug.toLowerCase()];
+    if (keywordAliases[slug]) return keywordAliases[slug];
+
+    const cabBookingIn = slug.match(/^cab-booking-in-(.+)$/i);
+    if (cabBookingIn) return `/cab-booking/${resolveCitySlug(cabBookingIn[1])}`;
+
+    const actingDriverIn = slug.match(/^acting-driver-in-(.+)$/i);
+    if (actingDriverIn) return `/acting-driver/${resolveCitySlug(actingDriverIn[1])}`;
+
+    const travelsIn = slug.match(/^travels-in-(.+)$/i);
+    if (travelsIn) return `/cab-booking/${resolveCitySlug(travelsIn[1])}`;
+
+    if (/^car-rental-maduravoyal$/i.test(slug)) {
+      return "/services/car-rental/chennai";
+    }
+
+    const carRentalIn = slug.match(/^car-rental-in-(.+)$/i);
+    if (carRentalIn) return `/services/car-rental/${resolveCitySlug(carRentalIn[1])}`;
+
+    const cabRentalIn = slug.match(/^cab-rental-in-(.+)$/i);
+    if (cabRentalIn) return `/services/cab-rental/${resolveCitySlug(cabRentalIn[1])}`;
 
     const routeCab = slug.match(/^([a-z]+)-to-([a-z]+)-cab$/i);
-    if (routeCab) return `/routes/${routeCab[1]}-to-${routeCab[2]}-cab`;
+    if (routeCab) {
+      const routeSlug = `${resolveCitySlug(routeCab[1])}-to-${resolveCitySlug(routeCab[2])}-cab`;
+      if (SEO_ROUTES.some((r) => r.slug === routeSlug)) return `/routes/${routeSlug}`;
+    }
 
     const routeTaxi = slug.match(/^([a-z]+)-to-([a-z]+)-taxi$/i);
-    if (routeTaxi) return `/routes/${routeTaxi[1]}-to-${routeTaxi[2]}-cab`;
+    if (routeTaxi) {
+      const routeSlug = `${resolveCitySlug(routeTaxi[1])}-to-${resolveCitySlug(routeTaxi[2])}-cab`;
+      if (SEO_ROUTES.some((r) => r.slug === routeSlug)) return `/routes/${routeSlug}`;
+    }
   }
 
   return null;

@@ -69,7 +69,7 @@ export default function BookingReviewForm({ booking }) {
         <div className="flex flex-wrap items-center gap-2">
           <StarRating value={existing.rating} size="h-3.5 w-3.5" />
           <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700">
-            <BadgeCheck className="h-3 w-3" strokeWidth={2.5} aria-hidden />
+            <BadgeCheck className="h-3 w-3 text-emerald-400" strokeWidth={2.5} aria-hidden />
             Verified booking
           </span>
           <span className="text-[11px] font-medium text-slate-500">

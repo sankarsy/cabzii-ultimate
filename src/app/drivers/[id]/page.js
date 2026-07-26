@@ -35,7 +35,7 @@ export default async function DriverDetailRoutePage({ params }) {
       {schema ? <JsonLd data={schema} /> : null}
       <Suspense
         fallback={
-          <div className="mx-auto max-w-5xl px-4 py-16 text-center text-sm text-slate-600">Loading driver…</div>
+          <div className="section-shell py-16 text-center text-sm text-slate-600">Loading driver…</div>
         }
       >
         <DriverDetailPage driverId={id} initialDriver={driver} />

@@ -75,7 +75,7 @@ export default function LoginHub() {
                 onClick={() => setSelectedRole(role.id)}
                 className="flex w-full items-start gap-4 rounded-xl border border-slate-200 p-4 text-left transition hover:border-[#0056D2]/50 hover:bg-blue-50/40 focus:outline-none focus:ring-2 focus:ring-blue-100"
               >
-                <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#0056D2]/10 text-[#0056D2]">
+                <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-sky-50 text-sky-400">
                   <Icon className="h-5 w-5" />
                 </span>
                 <span className="min-w-0 flex-1">
@@ -154,7 +154,7 @@ function PasswordLoginForm({ mode, onBack }) {
         <div className="mb-6 text-center">
           <span
             className={`inline-flex h-12 w-12 items-center justify-center rounded-full ${
-              isAdmin ? "bg-slate-800/10 text-slate-800" : "bg-[#0056D2]/10 text-[#0056D2]"
+              isAdmin ? "bg-violet-50 text-violet-400" : "bg-sky-50 text-sky-400"
             }`}
           >
             {isAdmin ? <ShieldIcon className="h-6 w-6" /> : <BriefcaseIcon className="h-6 w-6" />}

@@ -49,15 +49,6 @@ export function cmsRouteToPage(route) {
   };
 }
 
-export async function resolveServiceBySlug(slug) {
-  const cms = await fetchSeoServiceBySlug(slug);
-  if (cms && cms.published !== false) return cmsServiceToPage(cms, { slug: "placeholder" }) || mapCmsServiceOnly(cms);
-  const staticService = staticServiceBySlug(slug);
-  if (staticService) return { ...staticService, source: "static" };
-  if (cms) return mapCmsServiceOnly(cms);
-  return null;
-}
-
 function mapCmsServiceOnly(cms) {
   return {
     slug: cms.slug,
@@ -74,12 +65,24 @@ function mapCmsServiceOnly(cms) {
   };
 }
 
+export async function resolveServiceBySlug(slug) {
+  const cms = await fetchSeoServiceBySlug(slug);
+  if (cms) {
+    if (cms.published === false) return null;
+    return mapCmsServiceOnly(cms);
+  }
+  const staticService = staticServiceBySlug(slug);
+  if (staticService) return { ...staticService, source: "static" };
+  return null;
+}
+
 export async function resolveServiceForCity(serviceSlug, citySlug) {
   const city = cityBySlug(citySlug);
   if (!city) return { service: null, city: null };
 
   const cms = await fetchSeoServiceBySlug(serviceSlug);
-  if (cms && cms.published !== false) {
+  if (cms) {
+    if (cms.published === false) return { service: null, city };
     if (!cms.allCities && Array.isArray(cms.citySlugs) && cms.citySlugs.length) {
       if (!cms.citySlugs.includes(citySlug)) return { service: null, city };
     }
@@ -97,26 +100,28 @@ export async function resolveServiceForCity(serviceSlug, citySlug) {
 
 export async function resolveRouteBySlug(slug) {
   const cms = await fetchSeoRouteBySlug(slug);
-  if (cms && cms.published !== false) {
+  if (cms) {
+    if (cms.published === false) return null;
     const page = cmsRouteToPage(cms);
     if (page) return page;
-  }
-  const staticRoute = staticRouteBySlug(slug);
-  if (staticRoute) {
-    const generated = getRouteLandingBody(staticRoute);
-    const body = mergeLandingBody(staticRoute.body, generated);
-    return { ...staticRoute, body, source: staticRoute.source || "static" };
   }
 
-  const synthesized = synthesizeRouteFromSlug(slug);
-  if (synthesized) {
-    const generated = getRouteLandingBody(synthesized);
-    const body = mergeLandingBody(synthesized.body, generated);
-    return { ...synthesized, body, source: synthesized.source || "synthesized" };
+  // Only use static/synthesized when no CMS row exists.
+  if (!cms) {
+    const staticRoute = staticRouteBySlug(slug);
+    if (staticRoute) {
+      const generated = getRouteLandingBody(staticRoute);
+      const body = mergeLandingBody(staticRoute.body, generated);
+      return { ...staticRoute, body, source: staticRoute.source || "static" };
+    }
+
+    const synthesized = synthesizeRouteFromSlug(slug);
+    if (synthesized) {
+      const generated = getRouteLandingBody(synthesized);
+      const body = mergeLandingBody(synthesized.body, generated);
+      return { ...synthesized, body, source: synthesized.source || "synthesized" };
+    }
   }
-  if (cms) {
-    const page = cmsRouteToPage(cms);
-    if (page) return page;
-  }
+
   return null;
 }

@@ -107,7 +107,7 @@ export default function DriverBookingDetail({ driver, onSelectionChange, initial
       </div>
       {ratingText && (
         <div className="absolute right-1.5 top-1.5 flex items-center gap-0.5 rounded-full bg-white px-1.5 py-0.5 text-[8px] font-semibold text-slate-700 shadow-sm">
-          <Star className="h-2 w-2 fill-amber-500 text-amber-500" strokeWidth={0} aria-hidden /> {ratingText}
+          <Star className="h-2 w-2 fill-amber-400 text-amber-400" strokeWidth={0} aria-hidden /> {ratingText}
           {reviewCount != null ? <span className="text-slate-400"> ({reviewCount})</span> : null}
         </div>
       )}
@@ -151,7 +151,7 @@ export default function DriverBookingDetail({ driver, onSelectionChange, initial
           <VendorBox vendor={driver.vendor || driver.name} />
           <TrustGrid />
           <p className="mt-auto flex items-center justify-center gap-1 pt-3 text-[10px] text-slate-500">
-            <LockIcon className="h-3.5 w-3.5" />
+            <LockIcon className="h-3.5 w-3.5 text-slate-400" />
             100% Safe & Secure Payments
           </p>
         </aside>
@@ -172,7 +172,7 @@ function ServiceToggle({ serviceTab, setServiceTab }) {
             : "text-slate-600 hover:text-slate-900"
         }`}
       >
-        <PinIcon className="h-3.5 w-3.5" />
+        <PinIcon className="h-3.5 w-3.5 text-current" />
         Local
       </button>
       <button
@@ -184,7 +184,7 @@ function ServiceToggle({ serviceTab, setServiceTab }) {
             : "text-slate-600 hover:text-slate-900"
         }`}
       >
-        <RoadIcon className="h-3.5 w-3.5" />
+        <RoadIcon className="h-3.5 w-3.5 text-current" />
         Outstation
       </button>
     </div>
@@ -219,13 +219,13 @@ function VendorBox({ vendor }) {
   return (
     <div className="mt-3 rounded-xl border border-slate-100 bg-white p-3 shadow-sm">
       <div className="flex items-center gap-2.5">
-        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-sm font-bold text-[#0056D2]">
+        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-sm font-bold text-sky-400">
           {driverInitials(vendor)}
         </span>
         <div>
           <p className="text-sm font-bold text-slate-900">{vendor || "Cabzii Partner"}</p>
           <p className="mt-0.5 flex items-center gap-1 text-xs font-medium text-slate-600">
-            <CheckIcon className="h-3.5 w-3.5" />
+            <CheckIcon className="h-3.5 w-3.5 text-emerald-400" />
             Verified Vendor
           </p>
         </div>
@@ -254,7 +254,7 @@ function TrustGrid() {
         const Icon = item.icon;
         return (
           <div key={item.label} className="rounded-lg bg-white px-2 py-2 text-center shadow-sm">
-            <Icon className="mx-auto h-4 w-4 text-[#0056D2]" />
+            <Icon className="mx-auto h-4 w-4 text-sky-400" />
             <p className="mt-1 text-[10px] font-bold text-slate-800">{item.label}</p>
             <p className="text-[9px] text-slate-500">{item.sub}</p>
           </div>

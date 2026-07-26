@@ -1,7 +1,6 @@
 import { buildPageMetadata } from "../../lib/seo";
+import AdminToastProvider from "../../components/admin/AdminToastProvider";
 
-/* Admin is a client-side dashboard (useSearchParams, auth token) —
-   never prerender it; render at request time instead. */
 export const dynamic = "force-dynamic";
 
 export const metadata = buildPageMetadata({
@@ -12,5 +11,10 @@ export const metadata = buildPageMetadata({
 });
 
 export default function AdminLayout({ children }) {
-  return children;
+  return (
+    <>
+      {children}
+      <AdminToastProvider />
+    </>
+  );
 }

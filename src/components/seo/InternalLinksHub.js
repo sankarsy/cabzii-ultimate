@@ -64,7 +64,7 @@ export default function InternalLinksHub({ title = "Explore Cabzii across South 
 
   return (
     <section id="explore" className="py-8 md:py-12">
-      <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-8">
+      <div className="section-shell">
         <SectionIntro
           eyebrow="Plan your trip"
           title={title}

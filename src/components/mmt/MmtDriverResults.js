@@ -5,6 +5,7 @@ import { buildDriverFareSlabs, num } from "../../lib/driverFare";
 import { packageYouPay } from "../../lib/cabFare";
 import { driverSlabForTrip, DRIVER_HERO_PACKAGES } from "../../lib/driverTrip";
 import MmtDriverResultCard from "./MmtDriverResultCard";
+import { CheckboxOption, RadioOption } from "../ui/RadioOption";
 
 const SORTS = [
   { id: "price-asc", label: "Price: Low to High" },
@@ -53,8 +54,8 @@ export default function MmtDriverResults({ drivers, trip }) {
   const pkgLabel = DRIVER_HERO_PACKAGES.find((p) => p.id === trip.packageId)?.label;
 
   return (
-    <div className="mx-auto grid w-full max-w-5xl grid-cols-1 gap-6 px-4 py-6 lg:grid-cols-[260px_1fr]">
-      <aside className="h-fit rounded-xl border border-slate-200 bg-white p-5 lg:sticky lg:top-20">
+    <div className="section-shell cabzii-section grid w-full grid-cols-1 gap-5 lg:grid-cols-[260px_1fr] lg:gap-6">
+      <aside className="cabzii-filter-panel h-fit lg:sticky lg:top-20">
         <h2 className="mb-4 text-base font-bold text-slate-900">Filters</h2>
         {pkgLabel ? (
           <p className="mb-4 rounded-lg bg-blue-50 px-3 py-2 text-xs font-semibold text-[var(--emt-primary)]">
@@ -63,35 +64,30 @@ export default function MmtDriverResults({ drivers, trip }) {
         ) : null}
         <div className="mb-6">
           <h3 className="mb-2 text-sm font-semibold text-slate-800">Sort by</h3>
-          <div className="flex flex-col gap-2">
+          <div className="cabzii-radio-group" role="radiogroup" aria-label="Sort drivers">
             {SORTS.map((s) => (
-              <label key={s.id} className="flex cursor-pointer items-center gap-2 text-sm text-slate-600">
-                <input
-                  type="radio"
-                  name="driver-sort"
-                  checked={sort === s.id}
-                  onChange={() => setSort(s.id)}
-                  className="accent-[var(--emt-primary)]"
-                />
-                {s.label}
-              </label>
+              <RadioOption
+                key={s.id}
+                name="driver-sort"
+                value={s.id}
+                checked={sort === s.id}
+                onChange={() => setSort(s.id)}
+                label={s.label}
+              />
             ))}
           </div>
         </div>
         {types.length > 0 ? (
           <div>
             <h3 className="mb-2 text-sm font-semibold text-slate-800">Driver type</h3>
-            <div className="flex flex-col gap-2">
+            <div className="cabzii-checkbox-group">
               {types.map((type) => (
-                <label key={type} className="flex cursor-pointer items-center gap-2 text-sm text-slate-600">
-                  <input
-                    type="checkbox"
-                    checked={typeFilters.includes(type)}
-                    onChange={(e) => toggleType(type, e.target.checked)}
-                    className="accent-[var(--emt-primary)]"
-                  />
-                  {type}
-                </label>
+                <CheckboxOption
+                  key={type}
+                  checked={typeFilters.includes(type)}
+                  onChange={(e) => toggleType(type, e.target.checked)}
+                  label={type}
+                />
               ))}
             </div>
           </div>
@@ -100,16 +96,12 @@ export default function MmtDriverResults({ drivers, trip }) {
       <div>
         <p className="mb-3 text-sm text-slate-600">
           {filtered.length} {filtered.length === 1 ? "driver" : "drivers"} available
+          {pkgLabel ? ` · ${pkgLabel}` : ""}
         </p>
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-3 sm:gap-4">
           {filtered.map((driver) => (
             <MmtDriverResultCard key={String(driver._id ?? driver.id)} driver={driver} trip={trip} />
           ))}
-          {filtered.length === 0 ? (
-            <div className="rounded-xl border border-dashed border-slate-200 bg-white p-10 text-center text-slate-500">
-              No drivers match your search. Try another city or browse all drivers.
-            </div>
-          ) : null}
         </div>
       </div>
     </div>

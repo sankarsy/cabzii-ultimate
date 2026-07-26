@@ -16,7 +16,7 @@ export default function Footer() {
 
   return (
     <footer className="mt-14 border-t border-slate-800 bg-slate-950 py-12 text-slate-300">
-      <div className="mx-auto max-w-7xl px-4 md:px-6 lg:px-8">
+      <div className="section-shell">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
           <div>
             <h3 className="text-base font-bold text-white sm:text-lg">{siteName || "cabzii.in"}</h3>

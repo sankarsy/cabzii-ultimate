@@ -34,7 +34,7 @@ export default async function HolidayDetailPage({ params }) {
   return (
     <>
       {schema.length ? <JsonLd data={schema} /> : null}
-      <div className="mx-auto max-w-5xl px-4 pt-6 md:px-6">
+      <div className="section-shell pt-6">
         <SerpRichBar
           ratingValue={reviewStats.ratingValue}
           reviewCount={reviewStats.reviewCount}

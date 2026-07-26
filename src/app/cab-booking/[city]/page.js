@@ -6,6 +6,7 @@ import {
   breadcrumbJsonLd,
   buildPageMetadata,
   cityBySlug,
+  cityGeo,
   cityCabSearchJsonLd,
   faqFromPairs,
   getCityFaqs,
@@ -73,7 +74,7 @@ export default async function CabBookingCityPage({ params }) {
       priceHigh: CITY_CAB_PRICE_RANGE.high,
       reviewStats
     }),
-    localBusinessJsonLd(city.name, city.state, path),
+    localBusinessJsonLd(city.name, city.state, path, cityGeo(city.slug)),
     faqFromPairs(faqs)
   ];
 

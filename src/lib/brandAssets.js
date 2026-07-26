@@ -3,8 +3,8 @@ export const BRAND_ICON = "/android-chrome-512x512.png";
 export const BRAND_ICON_SM = "/android-chrome-192x192.png";
 export const BRAND_APPLE_TOUCH = "/apple-touch-icon.png";
 export const BRAND_FAVICON = "/favicon.ico";
-export const BRAND_OG_IMAGE = "/og-image.jpg";
-export const BRAND_TWITTER_IMAGE = "/twitter-card.jpg";
+export const BRAND_OG_IMAGE = "/opengraph-image";
+export const BRAND_TWITTER_IMAGE = "/opengraph-image";
 
 export const SITE_ICONS = {
   icon: [
@@ -19,7 +19,7 @@ export const SITE_ICONS = {
   other: [{ rel: "mask-icon", url: "/icon.svg", color: "#0056D2" }]
 };
 
-export function absoluteBrandUrl(path, siteUrl = "https://cabzii.in") {
+export function absoluteBrandUrl(path, siteUrl = "https://www.cabzii.in") {
   if (!path) return siteUrl;
   if (path.startsWith("http")) return path;
   return `${siteUrl}${path.startsWith("/") ? path : `/${path}`}`;

@@ -28,7 +28,7 @@ function wrapLucide(Icon, defaultStroke = 1.5) {
   };
 }
 
-/** Category tabs: Flights, Hotels, Trains, Bus, Holidays, Cabs, Drivers */
+/** Category tabs: Cabs, Drivers, Buses, Hotels, Trains, Flights, Holidays */
 export const HERO_TAB_ICONS = {
   flights: wrapLucide(Plane),
   hotels: wrapLucide(Building2),
@@ -99,11 +99,11 @@ export const HOLIDAY_THEME_ICONS = {
 };
 
 export const HOLIDAY_THEME_CHIP_STYLES = {
-  beach: "bg-sky-50 text-sky-500 ring-1 ring-sky-100",
-  pilgrimage: "bg-amber-50 text-amber-600 ring-1 ring-amber-100",
-  safari: "bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100",
-  family: "bg-violet-50 text-violet-500 ring-1 ring-violet-100",
-  luxury: "bg-rose-50 text-rose-500 ring-1 ring-rose-100"
+  beach: "bg-sky-50 text-sky-400 ring-1 ring-sky-100",
+  pilgrimage: "bg-amber-50 text-amber-400 ring-1 ring-amber-100",
+  safari: "bg-emerald-50 text-emerald-400 ring-1 ring-emerald-100",
+  family: "bg-violet-50 text-violet-400 ring-1 ring-violet-100",
+  luxury: "bg-rose-50 text-rose-400 ring-1 ring-rose-100"
 };
 
 export const HOLIDAY_THEME_CHIP_STYLES_ON_DARK = {
@@ -115,11 +115,11 @@ export const HOLIDAY_THEME_CHIP_STYLES_ON_DARK = {
 };
 
 export const HOLIDAY_THEME_ICON_COLORS = {
-  beach: "text-sky-500",
-  pilgrimage: "text-amber-600",
-  safari: "text-emerald-600",
-  family: "text-violet-500",
-  luxury: "text-rose-500"
+  beach: "text-sky-400",
+  pilgrimage: "text-amber-400",
+  safari: "text-emerald-400",
+  family: "text-violet-400",
+  luxury: "text-rose-400"
 };
 
 export const HOLIDAY_THEME_ICON_COLORS_ON_DARK = {

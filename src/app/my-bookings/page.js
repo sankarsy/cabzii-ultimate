@@ -90,9 +90,9 @@ export default function MyBookingsPage() {
   }, [bookings]);
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8">
+    <div className="section-shell py-8">
       <section className="py-8 md:py-12">
-        <div className="mx-auto max-w-4xl px-4 md:px-6 lg:px-8">
+        <div className="section-shell md:px-6 lg:px-8">
           <h1 className="text-2xl font-bold text-slate-900">My Bookings</h1>
           <p className="mt-1 text-sm text-slate-600">
             {user?.mobileNumber ? formatMobileDisplay(user.mobileNumber) : "Your account"} · upcoming and past trips

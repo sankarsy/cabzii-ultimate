@@ -3,7 +3,6 @@
 import dynamic from "next/dynamic";
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import EmtAppDownloadBanner from "../emt/EmtAppDownloadBanner";
 import EmtHeroSearch from "../emt/EmtHeroSearch";
 import EmtWhyChooseUs from "../emt/EmtWhyChooseUs";
 import MmtLayout from "./MmtLayout";
@@ -13,6 +12,7 @@ import MmtCabResultCard from "./MmtCabResultCard";
 import MmtDriverResultCard from "./MmtDriverResultCard";
 import MmtHomeCatalogSection, { MmtHomeCatalogScroll, MmtHomeCatalogScrollItem } from "./MmtHomeCatalogSection";
 import FaqSection from "../seo/FaqSection";
+import SocialProofTicker from "../conversion/SocialProofTicker";
 import { HeroSearchProvider } from "../emt/HeroSearchContext";
 import HeroTabUrlSync from "../emt/HeroTabUrlSync";
 import { HOME_PAGE_FAQS } from "../../lib/seo/content";
@@ -27,9 +27,10 @@ const EmtOffersCarousel = dynamic(() => import("../emt/EmtOffersCarousel"), { ss
 const PopularRoutesStrip = dynamic(() => import("../home/PopularRoutesStrip"), { ssr: false });
 const PilgrimagePackagesSection = dynamic(() => import("../home/PilgrimagePackagesSection"), { ssr: false });
 const MmtPopularServices = dynamic(() => import("./MmtPopularServices"), { ssr: false });
-const TrustCounters = dynamic(() => import("../home/TrustCounters"), { ssr: false });
-const PopularDestinations = dynamic(() => import("../home/PopularDestinations"), { ssr: false });
 const HomeBlogTeasers = dynamic(() => import("../home/HomeBlogTeasers"), { ssr: false });
+
+const HOME_CABS_LIMIT = 8;
+const HOME_DRIVERS_LIMIT = 8;
 
 function resolveHeroTab(tabParam) {
   if (tabParam === "drivers") return "drivers";
@@ -39,6 +40,16 @@ function resolveHeroTab(tabParam) {
   if (tabParam === "buses") return "buses";
   if (tabParam === "trains") return "trains";
   return "cabs";
+}
+
+function sortCabsForHome(list) {
+  return [...list].sort((a, b) => {
+    const featuredDiff = (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
+    if (featuredDiff !== 0) return featuredDiff;
+    const recommendedDiff = (b.recommended ? 1 : 0) - (a.recommended ? 1 : 0);
+    if (recommendedDiff !== 0) return recommendedDiff;
+    return 0;
+  });
 }
 
 function HomePageBody({
@@ -65,20 +76,24 @@ function HomePageBody({
           initialCabTrip={initialCabTrip}
           initialDriverTrip={initialDriverTrip}
         />
-        <EmtOffersCarousel />
-        <PilgrimagePackagesSection />
-        <PopularRoutesStrip />
-        <EmtHolidayExplore />
-        <MmtPopularServices />
+        {/* 1. Trust signals right under the search — reassure before anything else */}
+        <SocialProofTicker />
         <TrustStrip />
-        <EmtWhyChooseUs />
-        <TrustCounters />
 
+        {/* 2. Deals — hook visitors with offers while intent is highest */}
+        <EmtOffersCarousel />
+
+        {/* 3. Core product — what we do and where, then the routes people book most */}
+        <MmtPopularServices />
+        <PopularRoutesStrip />
+
+        {/* 4. Live inventory — actual cabs & drivers to pick from */}
         {cabsError ? (
-          <p className="mx-auto max-w-6xl px-4 text-sm text-rose-700">{cabsError}</p>
+          <p className="section-shell text-sm text-rose-700">{cabsError}</p>
         ) : null}
 
         <MmtHomeCatalogSection
+          eyebrow="Our fleet"
           title="Top cabs for you"
           subtitle={`Dzire, Ertiga, Innova & Tempo taxi cars · ${displayCity}`}
           viewAllHref="/cabs"
@@ -98,10 +113,11 @@ function HomePageBody({
         </MmtHomeCatalogSection>
 
         {driversError ? (
-          <p className="mx-auto max-w-6xl px-4 text-sm text-rose-700">{driversError}</p>
+          <p className="section-shell text-sm text-rose-700">{driversError}</p>
         ) : null}
 
         <MmtHomeCatalogSection
+          eyebrow="Verified chauffeurs"
           title="Top acting drivers for you"
           subtitle={`Chauffeur for Dzire, Ertiga, Innova & Tempo · same packages as cabs · ${displayCity}`}
           viewAllHref="/drivers"
@@ -121,7 +137,14 @@ function HomePageBody({
           </MmtHomeCatalogScroll>
         </MmtHomeCatalogSection>
 
-        <PopularDestinations />
+        {/* 5. Cross-sell — temple tours & holiday packages */}
+        <PilgrimagePackagesSection />
+        <EmtHolidayExplore />
+
+        {/* 6. Why us — proof & credibility before the final push */}
+        <EmtWhyChooseUs />
+
+        {/* 7. Content & SEO — blog, internal links, FAQ */}
         <HomeBlogTeasers />
 
         <InternalLinksHub title="Explore cab booking, routes & services across South India" />
@@ -138,8 +161,6 @@ function HomePageBody({
             />
           </div>
         </section>
-
-        <EmtAppDownloadBanner />
       </MmtLayout>
     </HeroSearchProvider>
   );
@@ -187,11 +208,17 @@ export default function MmtHomePage() {
     let cancelled = false;
     setLoadingCabs(true);
     setCabsError("");
-    const q = new URLSearchParams({ limit: "4", page: "1" });
+    const q = new URLSearchParams({
+      limit: String(HOME_CABS_LIMIT),
+      page: "1"
+    });
     if (displayCity) q.set("priorityCity", displayCity);
+
     fetchJson(`/api/cabs?${q}`)
       .then((json) => {
-        if (!cancelled) setCabs(sortBySelectedCity(extractCabList(json), displayCity));
+        if (cancelled) return;
+        const list = sortCabsForHome(sortBySelectedCity(extractCabList(json), displayCity));
+        setCabs(list.slice(0, HOME_CABS_LIMIT));
       })
       .catch((err) => {
         if (!cancelled) {
@@ -210,11 +237,11 @@ export default function MmtHomePage() {
   useEffect(() => {
     let cancelled = false;
     setLoadingDrivers(true);
-    const q = new URLSearchParams({ limit: "4", page: "1" });
+    const q = new URLSearchParams({ limit: String(HOME_DRIVERS_LIMIT), page: "1" });
     if (displayCity) q.set("priorityCity", displayCity);
     fetchJson(`/api/drivers?${q}`)
       .then((json) => {
-        if (!cancelled) setDrivers(sortBySelectedCity(extractDriverList(json), displayCity));
+        if (!cancelled) setDrivers(sortBySelectedCity(extractDriverList(json), displayCity).slice(0, HOME_DRIVERS_LIMIT));
       })
       .catch((err) => {
         if (!cancelled) {

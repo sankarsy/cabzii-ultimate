@@ -21,7 +21,7 @@ export const TRUST_COUNTERS = [
     value: MARKETING_STATS.happyCustomers,
     suffix: "+",
     iconKey: "rated",
-    color: "text-amber-500",
+    color: "text-amber-400",
     bg: "bg-amber-50"
   },
   {
@@ -29,7 +29,7 @@ export const TRUST_COUNTERS = [
     value: MARKETING_STATS.tripsCompleted,
     suffix: "+",
     iconKey: "trips",
-    color: "text-[var(--cabzii-brand)]",
+    color: "text-sky-400",
     bg: "bg-blue-50"
   },
   {
@@ -37,7 +37,7 @@ export const TRUST_COUNTERS = [
     value: MARKETING_STATS.verifiedDrivers,
     suffix: "+",
     iconKey: "verified",
-    color: "text-emerald-600",
+    color: "text-emerald-400",
     bg: "bg-emerald-50"
   },
   {
@@ -45,7 +45,7 @@ export const TRUST_COUNTERS = [
     value: MARKETING_STATS.citiesCovered,
     suffix: "+",
     iconKey: "locations",
-    color: "text-violet-600",
+    color: "text-violet-400",
     bg: "bg-violet-50"
   }
 ];

@@ -25,14 +25,14 @@ function BlogTile({ post }) {
         <span className="inline-flex items-center gap-2.5">
           {post.date ? (
             <span className="inline-flex items-center gap-1">
-              <CalendarDays className="h-3 w-3" strokeWidth={2} aria-hidden /> {post.date}
+              <CalendarDays className="h-3 w-3 text-slate-400" strokeWidth={2} aria-hidden /> {post.date}
             </span>
           ) : null}
           <span className="inline-flex items-center gap-1">
-            <Clock className="h-3 w-3" strokeWidth={2} aria-hidden /> {estimateReadMinutes(post)} min read
+            <Clock className="h-3 w-3 text-slate-400" strokeWidth={2} aria-hidden /> {estimateReadMinutes(post)} min read
           </span>
         </span>
-        <span className="inline-flex items-center gap-0.5 font-bold text-[var(--cabzii-brand)]">
+        <span className="inline-flex items-center gap-0.5 font-bold text-sky-400">
           Read
           <ArrowRight className="h-3 w-3 transition group-hover:translate-x-0.5" strokeWidth={2.5} aria-hidden />
         </span>
@@ -79,7 +79,7 @@ export default function HomeBlogTeasers() {
             All articles →
           </Link>
         </div>
-        <div className="scroll-x-touch -mx-4 mt-5 flex gap-3 overflow-x-auto px-4 pb-2 sm:mx-0 sm:grid sm:grid-cols-3 sm:gap-4 sm:overflow-visible sm:px-0">
+        <div className="scroll-x-touch cabzii-scroll-bleed mt-5 flex gap-3 overflow-x-auto pb-2 sm:mx-0 sm:grid sm:grid-cols-3 sm:gap-4 sm:overflow-visible sm:px-0">
           {visible.map((post) => (
             <BlogTile key={String(post._id ?? post.slug ?? post.title)} post={post} />
           ))}

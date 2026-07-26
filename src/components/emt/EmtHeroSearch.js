@@ -10,7 +10,6 @@ import EmtTrainSearchForm from "./EmtTrainSearchForm";
 import { useHeroSearch } from "./HeroSearchContext";
 import MmtCabSearchWidget from "../mmt/MmtCabSearchWidget";
 import MmtDriverSearchWidget from "../mmt/MmtDriverSearchWidget";
-import HeroHeadline from "../conversion/HeroHeadline";
 
 export default function EmtHeroSearch({
   defaultCity = "",
@@ -32,7 +31,9 @@ export default function EmtHeroSearch({
 
   return (
     <section className="emt-hero-section">
-      <HeroHeadline title={seoHeading} subtitle={seoSubheading} />
+      {/* Visually hidden — keeps the SEO h1 + intro copy without the headline block UI */}
+      <h1 className="sr-only">{seoHeading}</h1>
+      <p className="sr-only">{seoSubheading}</p>
 
       <div className="emt-hero-shell w-full">
         <div className="emt-hero-shell-top bg-white">

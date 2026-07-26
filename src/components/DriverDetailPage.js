@@ -115,7 +115,7 @@ export default function DriverDetailPage({ driverId, initialDriver = null }) {
 
   return (
     <section className="bg-cabzii-page py-8 md:py-10">
-      <div className="mx-auto max-w-5xl px-4 md:px-6">
+      <div className="section-shell">
           <nav className="mb-4 text-xs text-slate-500" aria-label="Breadcrumb">
             <Link href="/" className="hover:text-[var(--cabzii-brand)]">
               Home
@@ -202,7 +202,7 @@ export default function DriverDetailPage({ driverId, initialDriver = null }) {
                         "Driver allowance included"
                       ].map((point) => (
                         <li key={point} className="flex items-center gap-1.5">
-                          <Check className="h-3.5 w-3.5 shrink-0 text-emerald-600" strokeWidth={2.5} aria-hidden />
+                          <Check className="h-3.5 w-3.5 shrink-0 text-emerald-400" strokeWidth={2.5} aria-hidden />
                           {point}
                         </li>
                       ))}

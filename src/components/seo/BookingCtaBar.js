@@ -23,37 +23,44 @@ export default function BookingCtaBar({
       : whatsappBookingUrl();
 
   const isCompact = variant === "compact";
+  const btn = isCompact
+    ? "cabzii-btn cabzii-btn-sm cabzii-tap justify-center max-sm:w-full"
+    : "cabzii-btn cabzii-tap justify-center max-sm:w-full";
+  const iconClass = isCompact ? "h-3.5 w-3.5 shrink-0 text-white" : "h-4 w-4 shrink-0 text-white";
 
   return (
     <nav
-      className={`flex flex-col gap-3 sm:flex-row sm:flex-wrap ${isCompact ? "" : "mt-6"}`}
+      className={`cabzii-btn-stack ${isCompact ? "mt-4 gap-1.5 sm:gap-2" : "mt-6"}`}
       aria-label="Book cab online"
     >
-      <Link href={bookHref} className="cabzii-btn cabzii-btn-primary cabzii-tap w-full justify-center sm:w-auto">
-        {bookLabel}
+      <Link href={bookHref} className={`${btn} cabzii-btn-primary min-w-0`}>
+        <span className="truncate">{bookLabel}</span>
       </Link>
       <a
         href={whatsappHref}
         target="_blank"
         rel="noopener noreferrer"
-        className="cabzii-btn cabzii-btn-whatsapp cabzii-tap w-full justify-center sm:w-auto"
+        className={`${btn} cabzii-btn-whatsapp`}
       >
-        <WhatsAppIcon className="h-4 w-4 shrink-0 text-white" />
-        <span className="min-w-0 text-center">WhatsApp Booking</span>
+        <WhatsAppIcon className={iconClass} />
+        <span className="min-w-0 text-center">{isCompact ? "WhatsApp" : "WhatsApp Booking"}</span>
       </a>
-      <a href={telUrl()} className="cabzii-btn cabzii-btn-secondary cabzii-tap w-full justify-center sm:w-auto">
-        {callLabel}
+      <a href={telUrl()} className={`${btn} cabzii-btn-secondary`}>
+        {isCompact ? "Call" : callLabel}
       </a>
       <a
         href={whatsappHref}
         target="_blank"
         rel="noopener noreferrer"
-        className="cabzii-btn cabzii-btn-secondary cabzii-tap w-full justify-center sm:w-auto"
+        className={`${btn} cabzii-btn-secondary ${isCompact ? "max-sm:hidden" : ""}`}
       >
-        {quoteLabel}
+        {isCompact ? "Get quote" : quoteLabel}
       </a>
-      <Link href={bookHref} className="cabzii-btn cabzii-btn-secondary cabzii-tap w-full justify-center sm:w-auto">
-        {availabilityLabel}
+      <Link
+        href={bookHref}
+        className={`${btn} cabzii-btn-secondary ${isCompact ? "max-sm:hidden" : ""}`}
+      >
+        {isCompact ? "Availability" : availabilityLabel}
       </Link>
     </nav>
   );

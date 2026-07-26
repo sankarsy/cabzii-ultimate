@@ -3,6 +3,7 @@ import JsonLd from "../../../../components/seo/JsonLd";
 import ServiceLandingPage from "../../../../components/seo/ServiceLandingPage";
 import { resolveServiceForCity } from "../../../../lib/seo/cmsResolve";
 import { fetchSiteReviewStats } from "../../../../lib/serverReviewStats";
+import { fetchCatalogForCity } from "../../../../lib/serverCatalog";
 import {
   SEO_CITIES,
   SEO_SERVICES,
@@ -58,6 +59,12 @@ export default async function ServiceCityPage({ params }) {
   const path = servicePath(service, city);
   const faqs = getServiceFaqs(service, city);
   const reviewStats = await fetchSiteReviewStats();
+  const isTourPackages = service.slug === "tour-packages" || service.slug === "holiday-packages";
+  const [cabs, drivers, packages] = await Promise.all([
+    isTourPackages ? Promise.resolve([]) : fetchCatalogForCity("cabs", city.name, 12),
+    isTourPackages ? Promise.resolve([]) : fetchCatalogForCity("drivers", city.name, 6),
+    isTourPackages ? fetchCatalogForCity("packages", city.name, 8) : Promise.resolve([])
+  ]);
   const serpBadges = serviceSerpBadges(service, city);
   const jsonLd = [
     breadcrumbJsonLd([
@@ -88,6 +95,9 @@ export default async function ServiceCityPage({ params }) {
         faqs={faqs}
         extraBody={service.body}
         reviewStats={reviewStats}
+        cabs={JSON.parse(JSON.stringify(cabs))}
+        drivers={JSON.parse(JSON.stringify(drivers))}
+        packages={JSON.parse(JSON.stringify(packages))}
       />
     </>
   );

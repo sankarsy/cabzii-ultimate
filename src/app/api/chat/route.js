@@ -5,6 +5,26 @@ import { isValidIndianMobile, normalizeIndianMobile } from "../../../lib/chatbot
 
 const MAX_MESSAGE_LEN = 500;
 const MAX_HISTORY = 12;
+const BACKEND_URL = process.env.BACKEND_URL || process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
+
+async function persistChatTurn({ name, mobile, userMessage, botReply }) {
+  try {
+    await fetch(`${BACKEND_URL.replace(/\/$/, "")}/api/v1/chat-leads/messages`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: name || "Guest",
+        mobile,
+        messages: [
+          { role: "user", content: userMessage },
+          { role: "assistant", content: botReply }
+        ]
+      })
+    });
+  } catch (err) {
+    console.error("[chat] persist failed", err?.message || err);
+  }
+}
 
 export async function POST(request) {
   try {
@@ -16,15 +36,18 @@ export async function POST(request) {
 
     const body = await request.json();
     const message = String(body.message || "").trim().slice(0, MAX_MESSAGE_LEN);
-    const name = String(body.name || "Guest").trim().slice(0, 80);
+    const name = String(body.name || "Guest").trim().slice(0, 80) || "Guest";
     const mobile = normalizeIndianMobile(body.mobile);
 
     if (!message) {
       return NextResponse.json({ error: "Message is required." }, { status: 400 });
     }
 
-    if (mobile && !isValidIndianMobile(mobile)) {
-      return NextResponse.json({ error: "Invalid mobile number." }, { status: 400 });
+    if (!isValidIndianMobile(mobile)) {
+      return NextResponse.json(
+        { error: "Please share your 10-digit mobile number before chatting." },
+        { status: 400 }
+      );
     }
 
     const history = Array.isArray(body.history)
@@ -35,9 +58,13 @@ export async function POST(request) {
       : [];
 
     const result = generateChatReply(message, { name, history });
+    const reply = result.reply;
+
+    // Fire-and-forget save so chat stays fast
+    void persistChatTurn({ name, mobile, userMessage: message, botReply: reply });
 
     return NextResponse.json({
-      reply: result.reply,
+      reply,
       suggestions: result.suggestions || []
     });
   } catch (err) {

@@ -315,7 +315,7 @@ export default function AdminEnterprise({ token, initialSection = "dashboard" })
             <StatCard label="CMS Pages" value={dashboard.counts?.cmsPages} />
             <StatCard label="FAQs" value={dashboard.counts?.faqs} />
             <StatCard label="Destinations" value={dashboard.counts?.destinations} />
-            <StatCard label="Chat Leads" value={dashboard.counts?.chatLeads} />
+            <StatCard label="Customer queries" value={dashboard.counts?.chatLeads} />
             <StatCard label="SEO Routes" value={dashboard.counts?.seoRoutes} />
             <StatCard label="SEO Services" value={dashboard.counts?.seoServices} />
             <StatCard label="City Pages" value={dashboard.counts?.seoCityPages} />
@@ -546,12 +546,55 @@ export default function AdminEnterprise({ token, initialSection = "dashboard" })
 
       {section === "chat-leads" ? (
         <div className="rounded-xl border border-slate-200 bg-white p-4">
-          <h3 className="font-bold">Zii chatbot leads ({chatLeads.length})</h3>
-          <ul className="mt-3 space-y-2 text-sm">
+          <h3 className="font-bold">Customer queries ({chatLeads.length})</h3>
+          <p className="mt-1 text-xs text-slate-500">
+            Zii chatbot leads — mobile is required before chat. Every customer message is saved here.
+          </p>
+          <ul className="mt-3 space-y-3 text-sm">
+            {chatLeads.length === 0 ? (
+              <li className="rounded-lg border border-dashed border-slate-200 px-3 py-6 text-center text-slate-500">
+                No customer queries yet.
+              </li>
+            ) : null}
             {chatLeads.map((l) => (
-              <li key={l._id} className="flex justify-between rounded-lg border border-slate-100 px-3 py-2">
-                <span><strong>{l.name}</strong> · {l.mobile}</span>
-                <span className="text-xs text-slate-500">{new Date(l.createdAt).toLocaleString("en-IN")}</span>
+              <li key={l._id} className="rounded-lg border border-slate-100 px-3 py-3">
+                <div className="flex flex-wrap items-start justify-between gap-2">
+                  <div>
+                    <p className="font-semibold text-slate-900">
+                      {l.name || "Guest"} · <a href={`tel:+91${l.mobile}`} className="text-[var(--cabzii-brand)] hover:underline">{l.mobile}</a>
+                    </p>
+                    {l.lastUserMessage ? (
+                      <p className="mt-1 text-slate-700">
+                        <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">Latest query · </span>
+                        {l.lastUserMessage}
+                      </p>
+                    ) : (
+                      <p className="mt-1 text-xs text-slate-400">Mobile collected — no chat message yet</p>
+                    )}
+                  </div>
+                  <div className="text-right text-xs text-slate-500">
+                    <p>{l.messageCount ? `${l.messageCount} msgs` : "0 msgs"}</p>
+                    <p>{new Date(l.lastMessageAt || l.createdAt).toLocaleString("en-IN")}</p>
+                  </div>
+                </div>
+                {Array.isArray(l.messages) && l.messages.length ? (
+                  <details className="mt-2">
+                    <summary className="cursor-pointer text-xs font-semibold text-[var(--cabzii-brand)]">View conversation</summary>
+                    <div className="mt-2 max-h-56 space-y-1.5 overflow-y-auto rounded-lg bg-slate-50 p-2">
+                      {l.messages.map((m, idx) => (
+                        <p
+                          key={`${l._id}-${idx}`}
+                          className={`rounded-md px-2 py-1.5 text-xs ${
+                            m.role === "user" ? "bg-white text-slate-800 ring-1 ring-slate-200" : "bg-sky-50 text-slate-700"
+                          }`}
+                        >
+                          <span className="font-bold">{m.role === "user" ? "Customer" : "Zii"}: </span>
+                          {m.content}
+                        </p>
+                      ))}
+                    </div>
+                  </details>
+                ) : null}
               </li>
             ))}
           </ul>

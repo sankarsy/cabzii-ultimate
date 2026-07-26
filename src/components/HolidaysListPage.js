@@ -1,17 +1,19 @@
 "use client";
 
 import Link from "next/link";
+import { Palmtree } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import CabziiBrowseHeader from "./mmt/CabziiBrowseHeader";
 import PackageCard from "./PackageCard";
 import RelatedSeoLinks from "./seo/RelatedSeoLinks";
-import { packageDetailHref } from "../lib/holidayHome";
+import { packageBookingHref } from "../lib/holidayHome";
 import { HOLIDAY_CATEGORIES, categoryLabel } from "../lib/holidays";
 import { catalogPriorityParams, sortBySelectedCity } from "../lib/locationPriority";
 import { useSelectedCity } from "../lib/useSelectedCity";
 
 export default function HolidaysListPage() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const initialCategory = searchParams.get("category") || "all";
   const [packages, setPackages] = useState([]);
@@ -83,32 +85,33 @@ export default function HolidaysListPage() {
       <CabziiBrowseHeader
         title="Holiday packages"
         subtitle="Pilgrimage, beach, hill & heritage trips — flat package fare, toll & permit extra"
+        icon={Palmtree}
         breadcrumbs={[
           { name: "Home", path: "/" },
           { name: "Holidays", path: "/holidays" }
         ]}
       >
-        <div className="flex flex-wrap gap-2 pb-1">
+        <div className="flex flex-wrap gap-1.5 pb-0.5">
           {HOLIDAY_CATEGORIES.map((cat) => (
             <Link
               key={cat.id}
               href={cat.id === "all" ? "/holidays" : `/holidays?category=${cat.id}`}
-              className={`inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold transition ${
+              className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold transition ${
                 category === cat.id
-                  ? "bg-[var(--cabzii-brand)] text-white shadow"
+                  ? "bg-[var(--cabzii-brand)] text-white shadow-sm"
                   : "border border-slate-200 bg-white text-slate-700 hover:border-[var(--cabzii-brand)]"
               }`}
             >
-              <span aria-hidden>{cat.icon}</span>
+              <span aria-hidden className="text-[10px]">{cat.icon}</span>
               {cat.label}
             </Link>
           ))}
         </div>
-        <div className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:flex-row sm:items-end">
-          <div className="flex-1 sm:max-w-xs">
-            <label className="cabzii-search-label">Vendor</label>
+        <div className="flex flex-wrap items-end gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5">
+          <div className="min-w-[10rem] flex-1 sm:max-w-[14rem]">
+            <label className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">Vendor</label>
             <select
-              className="cabzii-input mt-1 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm font-medium"
+              className="cabzii-input mt-0.5 w-full rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-medium"
               value={vendor}
               onChange={(e) => setVendor(e.target.value)}
               disabled={facetsLoading}
@@ -125,8 +128,9 @@ export default function HolidaysListPage() {
             onClick={() => {
               setVendor("All");
               setCategory("all");
+              router.push("/holidays");
             }}
-            className="rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-white"
+            className="cabzii-btn cabzii-btn-secondary cabzii-btn-sm cabzii-tap"
           >
             Reset
           </button>
@@ -138,47 +142,47 @@ export default function HolidaysListPage() {
         ) : null}
       </CabziiBrowseHeader>
 
-      <div className="mx-auto max-w-5xl px-4 py-8">
+      <div className="section-shell py-5 md:py-6">
         {loading ? (
-          <div className="rounded-xl border border-dashed border-slate-200 bg-white p-12 text-center text-slate-500">
+          <div className="rounded-xl border border-dashed border-slate-200 bg-white p-8 text-center text-sm text-slate-500">
             Loading holiday packages…
           </div>
         ) : (
           <>
-            {paginationLabel ? <p className="mb-4 text-xs text-slate-500">{paginationLabel}</p> : null}
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {paginationLabel ? <p className="mb-3 text-[11px] text-slate-500">{paginationLabel}</p> : null}
+            <div className="grid grid-cols-2 gap-2.5 sm:gap-3 md:grid-cols-3 lg:grid-cols-4">
               {packages.map((pkg) => (
                 <PackageCard
                   key={String(pkg._id ?? pkg.id)}
                   pkg={pkg}
-                  actionText="View package"
-                  actionHref={packageDetailHref(pkg)}
+                  actionText="Book"
+                  actionHref={packageBookingHref(pkg)}
                 />
               ))}
             </div>
             {!packages.length ? (
-              <div className="rounded-xl border border-dashed border-slate-200 p-12 text-center text-slate-500">
+              <div className="rounded-xl border border-dashed border-slate-200 p-6 text-center text-sm text-slate-500 sm:p-8">
                 No packages in {categoryLabel(category)}. Try another category or reset filters.
               </div>
             ) : null}
             {meta.totalPages > 1 ? (
-              <div className="mt-8 flex justify-center gap-3">
+              <div className="mt-6 flex justify-center gap-2">
                 <button
                   type="button"
                   disabled={page <= 1}
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold disabled:opacity-40"
+                  className="cabzii-btn cabzii-btn-secondary cabzii-btn-sm cabzii-tap disabled:opacity-40"
                 >
                   Previous
                 </button>
-                <span className="py-2 text-sm text-slate-600">
+                <span className="flex items-center px-2 text-xs text-slate-600">
                   Page {meta.page} of {meta.totalPages}
                 </span>
                 <button
                   type="button"
                   disabled={page >= meta.totalPages}
                   onClick={() => setPage((p) => p + 1)}
-                  className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold disabled:opacity-40"
+                  className="cabzii-btn cabzii-btn-secondary cabzii-btn-sm cabzii-tap disabled:opacity-40"
                 >
                   Next
                 </button>

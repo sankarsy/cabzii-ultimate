@@ -4,7 +4,7 @@ import CabCard from "../../components/CabCard";
 import SearchPageSearchBar from "../../components/search/SearchPageSearchBar";
 import PackageCard from "../../components/PackageCard";
 import { catalogPublicPath } from "../../lib/catalogProduct";
-import { packageDetailHref } from "../../lib/holidayHome";
+import { packageBookingHref } from "../../lib/holidayHome";
 import { getBackendUrl } from "../../lib/seo";
 
 const BACKEND_URL = getBackendUrl();
@@ -104,7 +104,7 @@ export default async function SearchPage({ searchParams }) {
     shortcuts.length;
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8">
+    <div className="section-shell py-8">
       <section className="py-6 md:py-10">
         <h1 className="text-center text-2xl font-bold text-slate-900 sm:text-3xl">Search Cabzii</h1>
         <p className="mt-2 text-center text-sm text-slate-600">Cabs · Drivers · Holidays · Flights · Hotels · Blogs</p>
@@ -192,7 +192,7 @@ export default async function SearchPage({ searchParams }) {
                     View all
                   </Link>
                 </div>
-                <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="mt-4 grid grid-cols-2 gap-2.5 sm:gap-3 md:grid-cols-3 lg:grid-cols-4">
                   {matchingCabs.map((cab) => (
                     <CabCard key={String(cab._id ?? cab.id)} cab={cab} bookHref={catalogPublicPath(cab, "/cabs")} />
                   ))}
@@ -247,7 +247,7 @@ export default async function SearchPage({ searchParams }) {
                       key={String(pkg._id ?? pkg.id)}
                       pkg={pkg}
                       actionText="Book Now"
-                      actionHref={packageDetailHref(pkg)}
+                      actionHref={packageBookingHref(pkg)}
                     />
                   ))}
                 </div>

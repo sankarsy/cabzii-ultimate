@@ -35,10 +35,10 @@ const HERO_ICON_TO_TRUST = {
 };
 
 const COUNTER_STYLES = {
-  rated: { color: "text-amber-500", bg: "bg-amber-50" },
-  trips: { color: "text-[var(--cabzii-brand)]", bg: "bg-blue-50" },
-  verified: { color: "text-emerald-600", bg: "bg-emerald-50" },
-  locations: { color: "text-violet-600", bg: "bg-violet-50" }
+  rated: { color: "text-amber-400", bg: "bg-amber-50" },
+  trips: { color: "text-sky-400", bg: "bg-blue-50" },
+  verified: { color: "text-emerald-400", bg: "bg-emerald-50" },
+  locations: { color: "text-violet-400", bg: "bg-violet-50" }
 };
 
 /** Parse admin stat strings like "50K+", "150+", "4.9/5" for display or count-up. */

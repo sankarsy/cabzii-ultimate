@@ -16,11 +16,11 @@ export default function MmtTripSummaryBar({ trip }) {
 
   return (
     <div className="border-b border-slate-200 bg-slate-50">
-      <div className="mx-auto flex w-full max-w-5xl flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="section-shell flex w-full flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="text-[11px] font-bold uppercase tracking-wide text-sky-700">{label}</p>
           <h1 className="flex items-start gap-2 text-base font-bold text-slate-900 sm:text-lg">
-            <MapPinIcon className="mt-0.5 h-5 w-5 shrink-0 text-sky-600" aria-hidden="true" />
+            <MapPinIcon className="mt-0.5 h-5 w-5 shrink-0 text-sky-400" aria-hidden="true" />
             {tripSummaryLabel(trip)}
           </h1>
           {showDistance ? (

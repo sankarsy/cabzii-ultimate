@@ -232,7 +232,13 @@ export function getRouteFaqs(route) {
 
 /** Vehicle / cab detail page FAQs — dynamic from catalog data. */
 export function getCabFaqs(cab) {
-  const title = cab?.title || "this cab";
+  if (Array.isArray(cab?.faq) && cab.faq.length) {
+    return cab.faq
+      .filter((f) => f?.question?.trim() && f?.answer?.trim())
+      .map((f) => [f.question.trim(), f.answer.trim()]);
+  }
+
+  const title = cab?.vehicleName || cab?.title || "this cab";
   const city = cab?.city || "your city";
   const type = cab?.type || "AC cab";
   const priceFrom =

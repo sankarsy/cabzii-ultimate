@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import AdminCatalogPanel from "../../components/admin/AdminCatalogPanel";
+import VehicleAdminPanel from "../../components/admin/vehicles/VehicleAdminPanel";
 import AdminSeoPagesIndex from "../../components/admin/AdminSeoPagesIndex";
 import AdminCrm from "../../components/admin/AdminCrm";
 import AdminCustomers from "../../components/admin/AdminCustomers";
@@ -211,6 +212,13 @@ export default function AdminPage() {
               <AdminSeoPagesIndex token={token} />
             ) : activeTab === "settings" ? (
               <AdminSiteSettings token={token} isSuperAdmin={isSuperAdmin} />
+            ) : activeTab === "cabs" ? (
+              <VehicleAdminPanel
+                token={token}
+                isSuperAdmin={isSuperAdmin}
+                initialEditId={initialEditId}
+                pageMode={panelMode}
+              />
             ) : CATALOG_TAB_KEYS.includes(activeTab) ? (
               <AdminCatalogPanel
                 tabKey={activeTab}

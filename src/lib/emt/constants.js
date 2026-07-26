@@ -1,14 +1,14 @@
 import { BRAND } from "../brand";
 
-/** Home hero tabs — EMT-style order (scroll on mobile) */
+/** Home hero tabs — cab-first order (scroll on mobile) */
 export const HERO_TABS = [
-  { id: "flights", label: "Flights", iconKey: "plane" },
+  { id: "cabs", label: "Cabs", iconKey: "car" },
+  { id: "drivers", label: "Drivers", iconKey: "driver" },
+  { id: "buses", label: "Buses", iconKey: "bus" },
   { id: "hotels", label: "Hotels", iconKey: "hotel" },
   { id: "trains", label: "Trains", iconKey: "train" },
-  { id: "buses", label: "Buses", iconKey: "bus" },
-  { id: "holidays", label: "Holidays", iconKey: "holiday" },
-  { id: "cabs", label: "Cabs", iconKey: "car" },
-  { id: "drivers", label: "Drivers", iconKey: "driver" }
+  { id: "flights", label: "Flights", iconKey: "plane" },
+  { id: "holidays", label: "Holidays", iconKey: "holiday" }
 ];
 
 export const TRENDING_SEARCHES = [

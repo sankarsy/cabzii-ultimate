@@ -3,27 +3,27 @@ import { resolveMediaUrl } from "./media";
 /** Distinct placeholder images per vehicle — never one shared Fiat for all cabs. */
 export const VEHICLE_STOCK_IMAGES = {
   dzire:
-    "https://images.unsplash.com/photo-1621007947382-b6263ac8e237?auto=format&fit=crop&w=900&q=80",
+    "https://images.unsplash.com/photo-1621007947382-b6263ac8e237?auto=format&fit=crop&w=640&q=75",
   etios:
-    "https://images.unsplash.com/photo-1552519507-da3b42c508e2?auto=format&fit=crop&w=900&q=80",
+    "https://images.unsplash.com/photo-1552519507-da3b42c508e2?auto=format&fit=crop&w=640&q=75",
   wagon:
-    "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?auto=format&fit=crop&w=900&q=80",
+    "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?auto=format&fit=crop&w=640&q=75",
   hatchback:
-    "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?auto=format&fit=crop&w=900&q=80",
+    "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?auto=format&fit=crop&w=640&q=75",
   innova:
-    "https://images.unsplash.com/photo-1563729784474-d77dcd085025?auto=format&fit=crop&w=900&q=80",
+    "https://images.unsplash.com/photo-1563729784474-d77dcd085025?auto=format&fit=crop&w=640&q=75",
   ertiga:
-    "https://images.unsplash.com/photo-1533473359331-0135ef1b58dd?auto=format&fit=crop&w=900&q=80",
+    "https://images.unsplash.com/photo-1533473359331-0135ef1b58dd?auto=format&fit=crop&w=640&q=75",
   suv:
-    "https://images.unsplash.com/photo-1533473359331-0135ef1b58dd?auto=format&fit=crop&w=900&q=80",
+    "https://images.unsplash.com/photo-1533473359331-0135ef1b58dd?auto=format&fit=crop&w=640&q=75",
   tempo:
-    "https://images.unsplash.com/photo-1570125909232-e097327a4962?auto=format&fit=crop&w=900&q=80",
+    "https://images.unsplash.com/photo-1570125909232-e097327a4962?auto=format&fit=crop&w=640&q=75",
   van:
-    "https://images.unsplash.com/photo-1570125909232-e097327a4962?auto=format&fit=crop&w=900&q=80",
+    "https://images.unsplash.com/photo-1570125909232-e097327a4962?auto=format&fit=crop&w=640&q=75",
   bus:
-    "https://images.unsplash.com/photo-1570125909232-e097327a4962?auto=format&fit=crop&w=900&q=80",
+    "https://images.unsplash.com/photo-1570125909232-e097327a4962?auto=format&fit=crop&w=640&q=75",
   sedan:
-    "https://images.unsplash.com/photo-1621007947382-b6263ac8e237?auto=format&fit=crop&w=900&q=80"
+    "https://images.unsplash.com/photo-1621007947382-b6263ac8e237?auto=format&fit=crop&w=640&q=75"
 };
 
 function haystack(product = {}) {

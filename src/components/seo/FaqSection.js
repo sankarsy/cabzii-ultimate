@@ -46,7 +46,7 @@ function FaqItem({ question, answer }) {
       <summary>
         <span className="min-w-0 flex-1">{question}</span>
         <span className="faq-chevron" aria-hidden>
-          <ChevronDown className="h-4 w-4" strokeWidth={2.25} />
+          <ChevronDown className="h-4 w-4 text-slate-400" strokeWidth={2.25} />
         </span>
       </summary>
       <p className="faq-answer">{answer}</p>

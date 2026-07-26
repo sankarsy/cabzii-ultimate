@@ -7,7 +7,7 @@ import { driverSlabForTrip, driverTripToSearchQuery } from "../../lib/driverTrip
 import { getCatalogHourlyFare, getDriverCatalogSubtitle, getDriverDisplaySubtitle, getDriverDisplayTitle } from "../../lib/catalogDisplay";
 import { catalogPublicPath } from "../../lib/catalogProduct";
 import { resolveMediaUrl } from "../../lib/media";
-import { BriefcaseIcon, CarIcon, CheckIcon, LangIcon, RouteIcon } from "../icons";
+import { BriefcaseIcon, CarIcon, CheckIcon, ICON_SOFT_CLASS, LangIcon, RouteIcon } from "../icons";
 import CatalogCardImage from "./CatalogCardImage";
 import MmtCardPriceBlock from "./MmtCardPriceBlock";
 import CatalogVehicleCard, { FeatureChip } from "../ui/CatalogVehicleCard";
@@ -71,13 +71,9 @@ export default function MmtDriverResultCard({ driver, trip, layout = "row", cata
           compact: true,
           perHourRate: catalogMode ? catalogHourly.perHourRate : undefined,
           perKmRate: !catalogMode && fare?.usesDistance ? fare.perKmRate : undefined,
-          fareNote: catalogMode
-            ? catalogHourly.fareNote
-            : fare?.usesDistance
-              ? `₹${fare.perKmRate}/km`
-              : slab?.extraHr
-                ? `₹${slab.extraHr}/hr`
-                : undefined
+          distanceKm: !catalogMode && fare?.usesDistance ? fare.distanceKm : undefined,
+          roundTrip: Boolean(trip?.roundTrip),
+          fareNote: catalogMode ? catalogHourly.fareNote : undefined
         }}
       />
     );
@@ -85,20 +81,20 @@ export default function MmtDriverResultCard({ driver, trip, layout = "row", cata
 
   const features = (
     <>
-      <span className="inline-flex items-center gap-1">
+      <span className={`inline-flex items-center gap-1 ${ICON_SOFT_CLASS}`}>
         <BriefcaseIcon className="h-3.5 w-3.5" /> {driver.experience || "Experienced"}
       </span>
-      <span className="inline-flex items-center gap-1">
+      <span className={`inline-flex items-center gap-1 ${ICON_SOFT_CLASS}`}>
         <RouteIcon className="h-3.5 w-3.5" /> {driver.trips ?? 0} trips
       </span>
-      <span className="inline-flex items-center gap-1">
+      <span className={`inline-flex items-center gap-1 ${ICON_SOFT_CLASS}`}>
         <CarIcon className="h-3.5 w-3.5" /> {vehicle}
       </span>
-      <span className="inline-flex items-center gap-1">
+      <span className={`inline-flex items-center gap-1 ${ICON_SOFT_CLASS}`}>
         <CheckIcon className="h-3.5 w-3.5" /> Allowance included
       </span>
       {languages ? (
-        <span className="inline-flex items-center gap-1">
+        <span className={`inline-flex items-center gap-1 ${ICON_SOFT_CLASS}`}>
           <LangIcon className="h-3.5 w-3.5" /> {languages}
         </span>
       ) : null}
@@ -106,42 +102,43 @@ export default function MmtDriverResultCard({ driver, trip, layout = "row", cata
   );
 
   return (
-    <article className="cabzii-card cabzii-card-interactive flex flex-col gap-4 p-4 sm:flex-row sm:items-center">
-      <div className="relative aspect-[4/5] w-full shrink-0 overflow-hidden rounded-lg bg-slate-100 sm:aspect-auto sm:h-28 sm:w-32">
+    <article className="cabzii-card cabzii-card-interactive cabzii-result-card-row flex flex-row items-stretch gap-3 cabzii-card-pad sm:gap-4">
+      <div className="cabzii-result-card-media relative h-20 w-28 shrink-0 overflow-hidden rounded-lg bg-slate-100 sm:h-24 sm:w-32">
         <CatalogCardImage
           src={imageSrc}
           alt={displayName}
-          sizes="128px"
+          product={driver}
+          sizes="112px"
           className="object-cover object-top"
           objectPosition="top"
         />
       </div>
-      <div className="min-w-0 flex-1">
+      <div className="min-w-0 flex flex-1 flex-col justify-center">
         <div className="flex flex-wrap items-center gap-2">
-          <h3 className="text-lg font-bold tracking-tight text-slate-900">{displayName}</h3>
+        <h3 className="text-base font-bold tracking-tight text-slate-900 sm:text-lg">{displayName}</h3>
           {rating ? <RatingBadge rating={rating} reviewCount={reviewCount} /> : null}
         </div>
         <p className="text-sm text-slate-500">{subtitle}</p>
         <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-500">{features}</div>
       </div>
-      <div className="flex flex-row items-center justify-between gap-3 border-t border-slate-100 pt-3 sm:flex-col sm:items-end sm:border-l sm:border-t-0 sm:pl-4 sm:pt-0">
+      <div className="cabzii-result-card-actions flex flex-row items-center justify-between gap-3 border-t border-slate-100 pt-3 sm:flex-col sm:items-end sm:border-l sm:border-t-0 sm:pl-4 sm:pt-0 sm:justify-end">
         <MmtCardPriceBlock
           originalPrice={listPrice}
           finalPrice={total}
           discountPct={discount}
           perHourRate={catalogMode ? catalogHourly?.perHourRate : undefined}
           perKmRate={!catalogMode && fare?.usesDistance ? fare.perKmRate : undefined}
+          distanceKm={!catalogMode && fare?.usesDistance ? fare.distanceKm : undefined}
+          roundTrip={Boolean(trip?.roundTrip)}
           fareNote={
             catalogMode
               ? catalogHourly?.fareNote
-              : fare?.usesDistance
-                ? `₹${fare.perKmRate}/km`
-                : slab?.extraHr
-                  ? `₹${slab.extraHr}/hr`
-                  : undefined
+              : !fare?.usesDistance && slab?.extraHr
+                ? `₹${slab.extraHr}/hr`
+                : undefined
           }
         />
-        <Link href={href} className="cabzii-btn cabzii-btn-primary shrink-0">
+        <Link href={href} className="cabzii-btn cabzii-btn-primary cabzii-tap shrink-0 px-5">
           {catalogMode ? "View" : "Select"}
         </Link>
       </div>

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import PlaceAutocomplete from "../../components/PlaceAutocomplete";
 import TripRoutePanel from "../../components/maps/TripRoutePanel";
 import PaymentBreakdown from "../../components/PaymentBreakdown";
+import TourPriceBreakdown from "../../components/TourPriceBreakdown";
 import PaymentCheckoutFooter from "../../components/payment/PaymentCheckoutFooter";
 import PaymentMethodSheet from "../../components/payment/PaymentMethodSheet";
 import OffersSheet from "../../components/payment/OffersSheet";
@@ -107,6 +108,13 @@ export default function PaymentPage({ searchParams }) {
 
   const bookingSelection = useMemo(() => {
     if (type !== "cab" && type !== "driver") return null;
+    const perKmRate = Number(searchParams?.extraKm) || 0;
+    const distanceKm = Number(tripCoords.distanceKm || searchParams?.distanceKm) || 0;
+    const usesDistance = firstParam(searchParams?.usesDistance) === "true" || (distanceKm > 0 && perKmRate > 0);
+    const roundTrip = firstParam(searchParams?.roundTrip) === "true";
+    const multiplier = roundTrip ? 2 : 1;
+    const distanceCharge = usesDistance ? Math.round(Math.ceil(distanceKm) * perKmRate * multiplier) : 0;
+
     return {
       packageLabel: packageLabel || "Selected package",
       serviceTab: serviceTab || "local",
@@ -116,13 +124,21 @@ export default function PaymentPage({ searchParams }) {
       baseFare,
       taxes,
       total,
-      extraKm: Number(searchParams?.extraKm) || undefined,
-      extraHr: Number(searchParams?.extraHr) || undefined
+      extraKm: perKmRate || undefined,
+      extraHr: Number(searchParams?.extraHr) || undefined,
+      distanceKm: distanceKm || undefined,
+      perKmRate: perKmRate || undefined,
+      distanceCharge: distanceCharge || undefined,
+      roundTrip,
+      usesDistance,
+      note: usesDistance ? `₹${perKmRate}/km × ${Math.ceil(distanceKm)} km${roundTrip ? " (round trip)" : ""}` : undefined
     };
-  }, [type, packageLabel, serviceTab, listPrice, discountPct, discountAmount, baseFare, taxes, total, searchParams?.extraKm, searchParams?.extraHr]);
+  }, [type, packageLabel, serviceTab, listPrice, discountPct, discountAmount, baseFare, taxes, total, searchParams, tripCoords.distanceKm]);
 
   const backHref =
-    type === "cab" && itemId
+    type === "bus"
+      ? `/buses/passenger?id=${encodeURIComponent(itemId)}&seats=${encodeURIComponent(busSeats)}&boarding=${encodeURIComponent(pickup)}&dropping=${encodeURIComponent(drop)}&total=${total}&date=${encodeURIComponent(date)}`
+      : type === "cab" && itemId
       ? `/cabs/${itemId}`
       : type === "driver" && itemId
         ? `/drivers/${itemId}`
@@ -132,13 +148,19 @@ export default function PaymentPage({ searchParams }) {
             ? "/holidays"
             : "/drivers";
 
-  const bookingType = type === "tour" ? "tour" : type === "driver" ? "driver" : "cab";
+  const bookingType = type === "tour" ? "tour" : type === "driver" ? "driver" : type === "bus" ? "bus" : "cab";
   const bookLabel =
-    type === "driver" ? "Book Driver" : type === "tour" ? "Book Package" : "Book Cab";
+    type === "bus" ? "Book Bus" : type === "driver" ? "Book Driver" : type === "tour" ? "Book Package" : "Book Cab";
+  const busSeats = firstParam(searchParams?.seats);
+  const busOperator = firstParam(searchParams?.operator);
 
   const confirmBooking = async () => {
-    if (!itemId) {
+    if (type !== "bus" && !itemId) {
       setSubmitError("Missing booking item. Go back and select again.");
+      return;
+    }
+    if (type === "bus" && !busSeats) {
+      setSubmitError("Missing seat selection. Go back and select seats.");
       return;
     }
     const mobileNumber = normalizeMobileInput(phone) || getUser()?.mobileNumber;
@@ -158,17 +180,32 @@ export default function PaymentPage({ searchParams }) {
           phone: mobileNumber,
           email: email.trim(),
           type: bookingType,
-          itemId,
+          itemId: type === "bus" && !/^[a-f0-9]{24}$/i.test(itemId) ? "" : itemId,
           pickup: pickup.trim(),
           drop: type === "tour" ? "" : drop,
           date,
           routeType:
-            type === "tour"
-              ? `${tourPersons} persons`
-              : serviceTab || firstParam(searchParams?.routeType),
-          tripType: firstParam(searchParams?.tripType),
+            type === "bus"
+              ? busSeats
+              : type === "tour"
+                ? `${tourPersons} persons`
+                : serviceTab || firstParam(searchParams?.routeType),
+          tripType: type === "bus" ? firstParam(searchParams?.busType) || "AC Bus" : firstParam(searchParams?.tripType),
           pickupTime: firstParam(searchParams?.time),
-          serviceTripType: firstParam(searchParams?.serviceTripType),
+          serviceTripType: type === "bus" ? busOperator : firstParam(searchParams?.serviceTripType),
+          busMeta:
+            type === "bus"
+              ? {
+                  tripId: itemId,
+                  operator: busOperator,
+                  seats: busSeats.split(",").filter(Boolean),
+                  boardingPoint: pickup.trim(),
+                  droppingPoint: drop.trim(),
+                  busType: firstParam(searchParams?.busType),
+                  fromCity: firstParam(searchParams?.from),
+                  toCity: firstParam(searchParams?.to)
+                }
+              : undefined,
           roundTrip: firstParam(searchParams?.roundTrip) === "true",
           packageHours: Number(firstParam(searchParams?.packageHours)) || undefined,
           amount: total,
@@ -197,10 +234,10 @@ export default function PaymentPage({ searchParams }) {
   const showCheckout = !bookingId;
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-6 pb-8">
+    <div className="section-shell py-6 pb-8">
       <nav className="mb-4 text-xs text-slate-500">
         <Link href={backHref} className="font-medium text-[#0056D2] hover:underline">
-          ← Back to {type === "driver" ? "driver" : type === "tour" ? "package" : "cab"} details
+          ← Back to {type === "bus" ? "passenger" : type === "driver" ? "driver" : type === "tour" ? "package" : "cab"} details
         </Link>
       </nav>
 
@@ -230,15 +267,22 @@ export default function PaymentPage({ searchParams }) {
               onChange={(e) => setEmail(e.target.value)}
             />
             <div className="sm:col-span-2">
-              <PlaceAutocomplete
-                label="Pickup"
-                placeholder="Search pickup address"
-                value={pickup}
-                onChange={setPickup}
-                className="w-full"
-              />
+              {type === "bus" ? (
+                <div className="rounded-xl bg-slate-50 px-3 py-2 text-sm">
+                  <p className="text-xs font-semibold uppercase text-slate-500">Boarding point</p>
+                  <p className="font-medium text-slate-900">{pickup || "—"}</p>
+                </div>
+              ) : (
+                <PlaceAutocomplete
+                  label="Pickup"
+                  placeholder="Search pickup address"
+                  value={pickup}
+                  onChange={setPickup}
+                  className="w-full"
+                />
+              )}
             </div>
-            {type !== "tour" ? (
+            {type !== "tour" && type !== "bus" ? (
               <div className="sm:col-span-2">
                 <PlaceAutocomplete
                   label="Drop"
@@ -248,6 +292,15 @@ export default function PaymentPage({ searchParams }) {
                   className="w-full"
                 />
               </div>
+            ) : null}
+            {type === "bus" ? (
+              <>
+                <div className="sm:col-span-2 rounded-xl bg-slate-50 px-3 py-2 text-sm text-slate-700">
+                  <p><strong>Boarding:</strong> {pickup || "—"}</p>
+                  <p className="mt-1"><strong>Dropping:</strong> {drop || "—"}</p>
+                  <p className="mt-1"><strong>Seats:</strong> {busSeats || "—"}</p>
+                </div>
+              </>
             ) : null}
             <input
               type="date"
@@ -271,7 +324,7 @@ export default function PaymentPage({ searchParams }) {
             </div>
           ) : (
             <>
-            {type !== "tour" && pickup && drop ? <TripRoutePanel trip={paymentTrip} compact /> : null}
+            {type !== "tour" && type !== "bus" && pickup && drop ? <TripRoutePanel trip={paymentTrip} compact /> : null}
             <PaymentCheckoutFooter
               inline
               bookLabel={bookLabel}
@@ -307,16 +360,20 @@ export default function PaymentPage({ searchParams }) {
             showExtrasNote
           />
         ) : type === "tour" && selectedItem ? (
-          <PaymentBreakdown
+          <TourPriceBreakdown
             item={{
               title: selectedItem.name,
-              type: "Holiday",
+              type: "Holiday package",
               vendor: selectedItem.vendor
             }}
             selection={{
+              breakdownType: "tour",
               packageLabel: selectedItem.name,
               serviceTab: "tour",
-              listPrice: Number(searchParams?.listPrice) || baseFare,
+              packageListPrice: Number(searchParams?.packageListPrice) || listPrice,
+              transportListPrice: Number(searchParams?.transportListPrice) || 0,
+              listSubtotal: listPrice,
+              listPrice,
               discountPct,
               discountAmount,
               baseFare,
@@ -325,16 +382,10 @@ export default function PaymentPage({ searchParams }) {
               pickup: firstParam(searchParams?.pickup),
               date: firstParam(searchParams?.date),
               cabLabel: firstParam(searchParams?.cabLabel),
-              note: (() => {
-                const cab = firstParam(searchParams?.cabLabel);
-                const cabPart = cab ? `${cab} · ` : "";
-                return tourPersons > 1
-                  ? `${cabPart}${tourPersons} travellers — holiday package`
-                  : `${cabPart}Holiday package total`;
-              })()
+              transportFrom: firstParam(searchParams?.transportFrom),
+              transportTo: firstParam(searchParams?.transportTo),
+              transportDistanceKm: Number(searchParams?.transportKm) || 0
             }}
-            showExtrasNote={false}
-            footerNote="Package fare payable now. Toll, permit & driver bata billed separately as per trip."
           />
         ) : (
           <aside className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">

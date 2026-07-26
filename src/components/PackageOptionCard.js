@@ -3,7 +3,7 @@
 import { Sparkles } from "lucide-react";
 import { packageYouPay } from "../lib/cabFare";
 import { formatInrCurrency } from "../lib/formatInr";
-import { ClockIcon, RoadIcon, TwoWayIcon } from "./icons";
+import { ClockIcon, ICON_SOFT_CLASS, RoadIcon, TwoWayIcon } from "./icons";
 
 const COMPACT_MIN_H = "min-h-[8.75rem]";
 const FULL_MIN_H = "min-h-[11rem]";
@@ -44,7 +44,7 @@ export default function PackageOptionCard({ pkg, selected, discount, onSelect, c
           compact ? "text-[10px]" : "text-sm"
         }`}
       >
-        <PackageIcon className={compact ? "h-3 w-3 shrink-0 text-slate-500" : "h-4 w-4 shrink-0 text-slate-500"} />
+        <PackageIcon className={compact ? `h-3 w-3 shrink-0 ${ICON_SOFT_CLASS}` : `h-4 w-4 shrink-0 ${ICON_SOFT_CLASS}`} />
         <span className="line-clamp-2 min-w-0 flex-1 leading-tight">{title}</span>
       </span>
 

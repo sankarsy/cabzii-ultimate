@@ -27,7 +27,7 @@ export default function HotelDetailPage() {
 
   return (
     <MmtLayout>
-      <div className="mx-auto max-w-4xl px-4 py-8">
+      <div className="section-shell py-8">
         <div className="relative mb-6 h-64 overflow-hidden rounded-2xl">
           <Image src={hotel.images[0]} alt={hotel.name} fill className="object-cover" />
         </div>

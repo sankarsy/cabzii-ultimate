@@ -1,12 +1,6 @@
-import HomePage from "../components/HomePage";
+import MmtHomePage from "../components/mmt/MmtHomePage";
 import JsonLd from "../components/seo/JsonLd";
-import {
-  ORG_ADDRESS,
-  breadcrumbJsonLd,
-  faqJsonLd,
-  localBusinessJsonLd
-} from "../lib/seo";
-import { fetchSiteReviewStats } from "../lib/serverReviewStats";
+import { breadcrumbJsonLd } from "../lib/seo";
 import { buildMetadataForPath } from "../lib/seo/resolvePageSeo";
 import { fetchSiteSettings } from "../lib/serverSiteSettings";
 
@@ -16,17 +10,10 @@ export async function generateMetadata() {
 }
 
 export default async function Page() {
-  const reviewStats = await fetchSiteReviewStats();
-  const homeStructuredData = [
-    breadcrumbJsonLd([{ name: "Home", path: "/" }]),
-    localBusinessJsonLd("Chennai", ORG_ADDRESS.addressRegion, "/", reviewStats),
-    faqJsonLd()
-  ];
-
   return (
     <>
-      <JsonLd data={homeStructuredData} />
-      <HomePage />
+      <JsonLd data={[breadcrumbJsonLd([{ name: "Home", path: "/" }])]} />
+      <MmtHomePage />
     </>
   );
 }

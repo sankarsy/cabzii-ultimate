@@ -45,7 +45,7 @@ export default function HeaderSearchBar({
       }}
     >
       <div className="relative flex items-center">
-        <SearchIcon className="pointer-events-none absolute left-3.5 h-[1.125rem] w-[1.125rem] text-slate-400" strokeWidth={2} />
+        <SearchIcon className="pointer-events-none absolute left-3 h-4 w-4 text-slate-400" strokeWidth={2} />
         <input
           type="search"
           value={query}
@@ -56,12 +56,12 @@ export default function HeaderSearchBar({
             isLight
               ? "border border-slate-200 bg-slate-50 text-slate-900 placeholder:text-slate-400 focus:border-[var(--cabzii-brand)] focus:ring-2 focus:ring-blue-100"
               : "border border-white/20 bg-white/95 text-slate-800 placeholder:text-slate-400 focus:border-white focus:ring-2 focus:ring-white/30"
-          } ${compact ? "py-2 pl-9 pr-3 text-sm" : "py-2.5 pl-10 pr-[4.75rem] text-sm"} ${inputClassName}`}
+          } ${compact ? "py-2 pl-9 pr-3 text-sm" : "py-2 pl-9 pr-[4.25rem] text-[13px]"} ${inputClassName}`}
         />
         {!compact ? (
           <button
             type="submit"
-            className="absolute right-1 top-1/2 -translate-y-1/2 rounded-full bg-[var(--cabzii-brand)] px-3.5 py-1.5 text-xs font-bold text-white hover:bg-[var(--cabzii-brand-hover)]"
+            className="absolute right-1 top-1/2 -translate-y-1/2 rounded-full bg-[var(--cabzii-brand)] px-3 py-1 text-xs font-bold text-white hover:bg-[var(--cabzii-brand-hover)]"
           >
             Search
           </button>

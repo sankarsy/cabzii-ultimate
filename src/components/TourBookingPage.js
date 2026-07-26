@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Check } from "lucide-react";
-import PaymentBreakdown from "./PaymentBreakdown";
+import TourPriceBreakdown from "./TourPriceBreakdown";
 import PickupPlaceInput from "./PickupPlaceInput";
 import SimilarPackages from "./SimilarPackages";
 import AdditionalChargesGrid from "./AdditionalChargesGrid";
@@ -18,12 +18,16 @@ import {
 } from "./productCardShared";
 import { cabTypeById, categoryLabel, resolveHolidayCabTypes } from "../lib/holidays";
 import { formatCabSeatText } from "../lib/cabSeats";
+import { extractCityFromLabel } from "../lib/locationPriority";
+import { useSelectedCity } from "../lib/useSelectedCity";
+import { cityLabel } from "../lib/tamilNaduCities";
 import {
   MAX_TOUR_PERSONS,
   MIN_TOUR_PERSONS,
   buildTourPaymentParams,
   calculateTourTotals,
   clampTourPersons,
+  resolveTourTransportAdjustment,
   tourSelectionFromTotals
 } from "../lib/tourFare";
 
@@ -43,6 +47,7 @@ function firstParam(value) {
 
 export default function TourBookingPage({ searchParams, initialPackage = null }) {
   const rawId = firstParam(searchParams?.id);
+  const { city: selectedCity } = useSelectedCity();
   const [pkg, setPkg] = useState(initialPackage);
   const [loadError, setLoadError] = useState("");
   const [loading, setLoading] = useState(!initialPackage);
@@ -58,8 +63,21 @@ export default function TourBookingPage({ searchParams, initialPackage = null })
     if (cabTypes.length) setCabTypeId(cabTypes[0].id);
   }, [pkg?._id, cabTypes]);
 
+  useEffect(() => {
+    if (!selectedCity) return;
+    setPickup(cityLabel(selectedCity));
+  }, [selectedCity]);
+
   const selectedCab = useMemo(() => cabTypeById(cabTypes, cabTypeId), [cabTypes, cabTypeId]);
   const cabMultiplier = selectedCab?.multiplier ?? 1;
+  const pickupCity = useMemo(
+    () => extractCityFromLabel(pickup) || selectedCity || "",
+    [pickup, selectedCity]
+  );
+  const transport = useMemo(
+    () => (pkg && pickupCity ? resolveTourTransportAdjustment(pickupCity, pkg, cabMultiplier) : null),
+    [pkg, pickupCity, cabMultiplier]
+  );
 
   useEffect(() => {
     if (initialPackage) {
@@ -106,8 +124,11 @@ export default function TourBookingPage({ searchParams, initialPackage = null })
   const discountPct = Number(pkg?.discountPercentage) || 0;
   const listBase = Number(pkg?.originalPrice) > 0 ? Number(pkg.originalPrice) : Number(pkg?.price) || 0;
   const totals = useMemo(
-    () => (pkg ? calculateTourTotals(listBase, persons, discountPct, cabMultiplier) : null),
-    [pkg, persons, discountPct, cabMultiplier, listBase]
+    () =>
+      pkg
+        ? calculateTourTotals(listBase, persons, discountPct, cabMultiplier, transport?.adjustment ?? 0)
+        : null,
+    [pkg, persons, discountPct, cabMultiplier, listBase, transport?.adjustment]
   );
 
   const selection = useMemo(
@@ -117,10 +138,12 @@ export default function TourBookingPage({ searchParams, initialPackage = null })
             pickup,
             date: travelDate,
             cabType: selectedCab?.id,
-            cabLabel: selectedCab?.label
+            cabLabel: selectedCab?.label,
+            cabMultiplier,
+            transport
           })
         : null,
-    [pkg, totals, pickup, travelDate, selectedCab]
+    [pkg, totals, pickup, travelDate, selectedCab, transport]
   );
 
   const payHref = useMemo(() => {
@@ -131,10 +154,11 @@ export default function TourBookingPage({ searchParams, initialPackage = null })
       pickup,
       date: travelDate,
       cabType: selectedCab?.id,
-      cabLabel: selectedCab?.label
+      cabLabel: selectedCab?.label,
+      transport
     });
     return `/payment?${q.toString()}`;
-  }, [pkgId, totals, pickup, travelDate, selectedCab]);
+  }, [pkgId, totals, pickup, travelDate, selectedCab, transport]);
 
   const tagLabel = pkg?.category
     ? categoryLabel(pkg.category)
@@ -177,7 +201,7 @@ export default function TourBookingPage({ searchParams, initialPackage = null })
 
   return (
     <section className="bg-cabzii-page py-8 md:py-10">
-      <div className="mx-auto max-w-5xl px-4 md:px-6">
+      <div className="section-shell">
           <nav className="mb-4 text-xs text-slate-500" aria-label="Breadcrumb">
             <Link href="/" className="hover:text-[var(--cabzii-brand)]">
               Home
@@ -245,7 +269,8 @@ export default function TourBookingPage({ searchParams, initialPackage = null })
                   >
                     <h2 className="text-base font-bold text-slate-900">Booking details</h2>
                     <p className="mt-1 text-xs text-slate-600">
-                      Enter pickup, cab type and group size. Package fare is flat — toll, permit & driver bata are extra.
+                      Enter pickup, cab type and group size. Package fare updates by pickup city and vehicle — toll,
+                      permit & driver bata are extra.
                     </p>
 
                     <div className="mt-4 grid gap-4 sm:grid-cols-2">
@@ -312,7 +337,8 @@ export default function TourBookingPage({ searchParams, initialPackage = null })
                           </button>
                         </div>
                         <p className="mt-1 text-[10px] text-slate-500">
-                          Package fare: ₹{totals?.total.toLocaleString("en-IN")} (excl. toll, permit & driver bata)
+                          Total payable: ₹{totals?.total.toLocaleString("en-IN")} (incl. discount · excl. toll, permit & driver
+                          bata)
                         </p>
                       </div>
 
@@ -363,7 +389,7 @@ export default function TourBookingPage({ searchParams, initialPackage = null })
                         "Verified tour partner"
                       ].map((point) => (
                         <li key={point} className="flex items-center gap-1.5">
-                          <Check className="h-3.5 w-3.5 shrink-0 text-emerald-600" strokeWidth={2.5} aria-hidden />
+                          <Check className="h-3.5 w-3.5 shrink-0 text-emerald-400" strokeWidth={2.5} aria-hidden />
                           {point}
                         </li>
                       ))}
@@ -381,16 +407,14 @@ export default function TourBookingPage({ searchParams, initialPackage = null })
 
                 <aside className="lg:col-span-1">
                   <div className="sticky top-24 space-y-4">
-                    <PaymentBreakdown
+                    <TourPriceBreakdown
                       item={{
                         title: pkg.name,
-                        type: "Tour",
+                        type: "Holiday package",
                         vendor: pkg.vendor
                       }}
                       selection={selection}
-                      showExtrasNote={false}
                       compact
-                      footerNote="Package fare payable now. Toll, permit & driver bata billed separately as per trip."
                     />
                     <button type="button" onClick={handleProceed} className={CARD_BOOK_BTN_CLASS}>
                       Continue to payment

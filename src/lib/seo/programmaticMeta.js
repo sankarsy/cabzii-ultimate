@@ -553,6 +553,11 @@ export function getCabBookingH1(city) {
 
 /** Search results deep-link for service landing CTAs */
 export function serviceSearchHref(service, city) {
+  if (service.slug === "tour-packages" || service.slug === "holiday-packages") {
+    const q = new URLSearchParams({ city: city.name });
+    return `/holidays?${q.toString()}`;
+  }
+
   const base = new URLSearchParams({
     from: city.name,
     date: new Date().toISOString().split("T")[0],

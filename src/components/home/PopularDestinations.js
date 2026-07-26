@@ -75,7 +75,7 @@ export default function PopularDestinations() {
           title="Popular destinations by cab"
           subtitle="Hill stations, temple towns and beach drives across South India — fixed fares, verified drivers."
         />
-        <div className="scroll-x-touch -mx-4 mt-5 flex gap-3 overflow-x-auto px-4 pb-2 sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-4 sm:overflow-visible sm:px-0 lg:grid-cols-4">
+        <div className="scroll-x-touch cabzii-scroll-bleed mt-5 flex gap-3 overflow-x-auto pb-2 sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-4 sm:overflow-visible sm:px-0 lg:grid-cols-4">
           {DESTINATIONS.map((d) => (
             <Link
               key={d.name}
@@ -102,7 +102,7 @@ export default function PopularDestinations() {
                     <span className="text-[11px] font-semibold text-slate-400">from </span>
                     {inr(d.priceFrom)}
                   </p>
-                  <span className="inline-flex items-center gap-1 text-xs font-bold text-[var(--cabzii-brand)]">
+                  <span className="inline-flex items-center gap-1 text-xs font-bold text-sky-400">
                     Book cab
                     <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" strokeWidth={2.5} aria-hidden />
                   </span>

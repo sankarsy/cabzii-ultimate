@@ -1,6 +1,23 @@
 import { cityBySlug } from "./seo/cities";
+import { lookupRouteTripData } from "./seo/routeCatalog";
 import { driverTripToSearchQuery } from "./driverTrip";
 import { todayStr, tripToSearchQuery } from "./mmtTrip";
+
+/** Parse km from route row or lookup hub matrix (e.g. Chennai → Tirupati ≈ 135 km). */
+export function parseRouteDistanceKm(route) {
+  if (route?.distanceKm > 0) return Number(route.distanceKm);
+  const fromText = String(route?.distance || "");
+  const match = fromText.match(/(\d+)/);
+  if (match) return Number(match[1]);
+
+  const fromSlug = route?.from || route?.fromCitySlug || route?.fromCity?.slug;
+  const toSlug = route?.to || route?.toCitySlug || route?.toCity?.slug;
+  if (fromSlug && toSlug) {
+    const data = lookupRouteTripData(fromSlug, toSlug);
+    if (data?.km > 0) return data.km;
+  }
+  return 0;
+}
 
 /**
  * Build a cab/driver search URL from a route row ({ from, to } slugs or fromCity/toCity objects).
@@ -13,6 +30,7 @@ export function routeToTrip(route, { roundTrip = false } = {}) {
   const toCity = route.toCity || cityBySlug(toSlug);
   const fromName = fromCity?.name || fromSlug || "";
   const toName = toCity?.name || toSlug || "";
+  const distanceKm = parseRouteDistanceKm(route);
 
   return {
     tripType: "outstation",
@@ -24,7 +42,8 @@ export function routeToTrip(route, { roundTrip = false } = {}) {
     direction: "pickup",
     packageHours: 8,
     packageId: roundTrip ? "outstation_twoway" : "outstation_oneway",
-    city: fromName
+    city: fromName,
+    ...(distanceKm > 0 ? { distanceKm } : {})
   };
 }
 

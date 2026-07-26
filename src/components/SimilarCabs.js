@@ -2,18 +2,15 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { num } from "../lib/cabFare";
-import { catalogPublicPath } from "../lib/catalogProduct";
-import { formatInrCurrency } from "../lib/formatInr";
+import MmtCabResultCard from "./mmt/MmtCabResultCard";
 
-import { resolveCabImage } from "../lib/vehicleImages";
-
-export default function SimilarCabs({ currentCabId, cabType, vendor }) {
+export default function SimilarCabs({ currentCabId, cabSlug, cabType, vendor }) {
   const [similar, setSimilar] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!cabType) {
+    const key = cabSlug || currentCabId;
+    if (!key) {
       setLoading(false);
       return;
     }
@@ -21,10 +18,14 @@ export default function SimilarCabs({ currentCabId, cabType, vendor }) {
     (async () => {
       setLoading(true);
       try {
-        const params = new URLSearchParams({ type: cabType, limit: "8" });
-        const res = await fetch(`/api/cabs?${params}`, { cache: "no-store" });
+        const res = await fetch(`/api/cabs/related/${encodeURIComponent(key)}?limit=6`, { cache: "no-store" });
         const json = await res.json();
-        const list = Array.isArray(json?.data) ? json.data : [];
+        let list = Array.isArray(json?.data) ? json.data : [];
+        if (!list.length && cabType) {
+          const fallback = await fetch(`/api/cabs?type=${encodeURIComponent(cabType)}&limit=8`, { cache: "no-store" });
+          const fbJson = await fallback.json();
+          list = Array.isArray(fbJson?.data) ? fbJson.data : [];
+        }
         const filtered = list
           .filter((c) => String(c._id ?? c.id) !== String(currentCabId))
           .slice(0, 4);
@@ -38,59 +39,29 @@ export default function SimilarCabs({ currentCabId, cabType, vendor }) {
     return () => {
       cancelled = true;
     };
-  }, [cabType, currentCabId]);
+  }, [cabSlug, currentCabId, cabType]);
 
   if (!loading && similar.length === 0) return null;
 
   return (
-    <section id="similar-cabs" className="scroll-mt-24 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:p-5">
+    <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:p-5">
       <div className="flex flex-wrap items-end justify-between gap-2">
         <div>
-          <h2 className="text-base font-bold text-slate-900">Similar cabs</h2>
+          <h2 className="text-base font-bold text-slate-900">Related vehicles</h2>
           <p className="mt-0.5 text-xs text-slate-600">
-            Alternative {cabType} options{cabType && vendor ? ` from other vendors` : ""}.
+            More {cabType || "cab"} options{cabType && vendor ? " from other vendors" : ""}.
           </p>
         </div>
-        <Link href="/cabs" className="text-xs font-semibold text-[#0056D2] hover:underline">
-          View all cabs →
-        </Link>
+        <Link href="/cabs" className="text-xs font-semibold text-[#0056D2] hover:underline">View all cabs →</Link>
       </div>
 
       {loading ? (
-        <p className="mt-4 text-xs text-slate-500">Loading alternatives…</p>
+        <p className="mt-4 text-xs text-slate-500">Loading related vehicles…</p>
       ) : (
-        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {similar.map((cab) => {
-            const id = String(cab._id ?? cab.id);
-            const price = num(cab.price);
-            const discount = num(cab.discountPercentage);
-            const youPay = discount > 0 ? Math.round(price * (1 - discount / 100)) : price;
-            const img = resolveCabImage(cab);
-            return (
-              <Link
-                key={id}
-                href={catalogPublicPath(cab, "/cabs")}
-                className="group overflow-hidden rounded-xl border border-slate-200 bg-white transition hover:border-[#0056D2]/40 hover:shadow-md"
-              >
-                <img
-                  src={img}
-                  alt={cab.title}
-                  className="h-24 w-full object-cover transition group-hover:scale-[1.02]"
-                />
-                <div className="p-3">
-                  <p className="text-xs font-semibold text-[#0056D2]">{cab.type}</p>
-                  <h3 className="mt-0.5 line-clamp-1 text-sm font-bold text-slate-900">{cab.title}</h3>
-                  <p className="text-[11px] text-slate-500">by {cab.vendor}</p>
-                  <p className="mt-2 text-sm font-bold text-[#0056D2]">
-                    From {formatInrCurrency(youPay)}
-                    {discount > 0 ? (
-                      <span className="ml-1 text-[10px] font-normal text-slate-600">{discount}% OFF</span>
-                    ) : null}
-                  </p>
-                </div>
-              </Link>
-            );
-          })}
+        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {similar.map((cab) => (
+            <MmtCabResultCard key={String(cab._id ?? cab.id)} cab={cab} layout="card" catalogMode displayCity={cab.city} />
+          ))}
         </div>
       )}
     </section>

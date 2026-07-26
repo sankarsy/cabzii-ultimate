@@ -93,7 +93,7 @@ export default function AccountPage() {
 
   return (
     <MmtLayout>
-      <div className="mx-auto max-w-4xl px-4 py-8 sm:py-10">
+      <div className="section-shell py-8 sm:py-10">
         <p className="text-xs font-bold uppercase tracking-[0.2em] text-sky-600">Account</p>
         <h1 className="mt-2 text-2xl font-extrabold text-slate-900 sm:text-3xl">My account</h1>
         <p className="mt-2 text-sm text-slate-600">

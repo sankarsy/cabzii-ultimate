@@ -19,7 +19,7 @@ import {
   loadChatSession,
   saveChatSession
 } from "../../lib/chatbot/session";
-import { shouldHideFloatingUi } from "../../lib/floatingUi";
+import { isCatalogDetailPage, shouldHideFloatingUi } from "../../lib/floatingUi";
 
 function TypingDots() {
   return (
@@ -41,6 +41,8 @@ function userMessage(content) {
 
 export default function CabziiChatbot() {
   const pathname = usePathname();
+  const detailPage = isCatalogDetailPage(pathname);
+  const mobileBottomClass = detailPage ? "bottom-[5.25rem]" : "bottom-[4.75rem]";
   const settings = useSiteSettings();
   const phone = settings.contact?.phone || "+91-9944197416";
   const whatsappNumber = String(settings.contact?.whatsapp || settings.whatsappFab?.number || "9944197416").replace(/\D/g, "");
@@ -58,7 +60,7 @@ export default function CabziiChatbot() {
 
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState("welcome");
-  /** null | "name" | "phone" | "done" */
+  /** null | "phone" | "name" | "done" — mobile is required first */
   const [onboardingPhase, setOnboardingPhase] = useState(null);
   const [name, setName] = useState("");
   const [mobile, setMobile] = useState("");
@@ -105,8 +107,8 @@ export default function CabziiChatbot() {
 
   const persist = useCallback(
     (nextMessages, userName = name, userMobile = mobile) => {
-      if (userName && userMobile) {
-        saveChatSession({ name: userName, mobile: userMobile, messages: nextMessages });
+      if (userMobile) {
+        saveChatSession({ name: userName || "Guest", mobile: userMobile, messages: nextMessages });
       }
     },
     [name, mobile]
@@ -124,12 +126,14 @@ export default function CabziiChatbot() {
 
   const startConversationalOnboarding = useCallback(() => {
     setStep("chat");
-    setOnboardingPhase("name");
+    setOnboardingPhase("phone");
+    setName("");
+    setMobile("");
     setMessages([]);
     setSuggestions([]);
     setInput("");
     showTypingThen(() => {
-      const greeting = botMessage(ONBOARDING.askName);
+      const greeting = botMessage(ONBOARDING.askPhone);
       setMessages([greeting]);
     }, 500);
   }, [showTypingThen]);
@@ -190,22 +194,6 @@ export default function CabziiChatbot() {
 
   const handleOnboardingReply = useCallback(
     async (trimmed, currentMessages) => {
-      if (onboardingPhase === "name") {
-        const parsedName = parseNameInput(trimmed);
-        if (!parsedName) {
-          await showTypingThen(() => {
-            setMessages((prev) => [...prev, botMessage(ONBOARDING.invalidName)]);
-          });
-          return;
-        }
-        setName(parsedName);
-        setOnboardingPhase("phone");
-        await showTypingThen(() => {
-          setMessages((prev) => [...prev, botMessage(ONBOARDING.thankName(parsedName))]);
-        });
-        return;
-      }
-
       if (onboardingPhase === "phone") {
         const parsedMobile = parsePhoneInput(trimmed);
         if (!parsedMobile) {
@@ -214,18 +202,69 @@ export default function CabziiChatbot() {
           });
           return;
         }
+        setMobile(parsedMobile);
+        setSubmittingLead(true);
+        try {
+          const res = await fetch("/api/chat/lead", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name: "Guest", mobile: parsedMobile })
+          });
+          if (!res.ok) {
+            const data = await res.json().catch(() => ({}));
+            await showTypingThen(() => {
+              setMessages((prev) => [
+                ...prev,
+                botMessage(data.error || "Sorry, I couldn't save your mobile. Please try again.")
+              ]);
+            });
+            setSubmittingLead(false);
+            return;
+          }
+        } catch {
+          await showTypingThen(() => {
+            setMessages((prev) => [
+              ...prev,
+              botMessage("Network error — please check your connection and share your mobile again.")
+            ]);
+          });
+          setSubmittingLead(false);
+          return;
+        }
+        setSubmittingLead(false);
+        setOnboardingPhase("name");
+        persist(currentMessages, "Guest", parsedMobile);
+        await showTypingThen(() => {
+          setMessages((prev) => [...prev, botMessage(ONBOARDING.thankPhone)]);
+        });
+        return;
+      }
+
+      if (onboardingPhase === "name") {
+        const parsedName = parseNameInput(trimmed);
+        if (!parsedName) {
+          await showTypingThen(() => {
+            setMessages((prev) => [...prev, botMessage(ONBOARDING.invalidName)]);
+          });
+          return;
+        }
         const savingMsg = botMessage(ONBOARDING.saving);
         const msgsWithSaving = [...currentMessages, savingMsg];
         setMessages(msgsWithSaving);
-        await completeOnboarding(name, parsedMobile, msgsWithSaving);
+        await completeOnboarding(parsedName, mobile, msgsWithSaving);
       }
     },
-    [completeOnboarding, name, onboardingPhase, showTypingThen]
+    [completeOnboarding, mobile, onboardingPhase, persist, showTypingThen]
   );
 
   const sendChatMessage = async (text, userName = name, userMobile = mobile, baseMessages = messages) => {
     const trimmed = String(text || "").trim();
     if (!trimmed || typing || submittingLead) return;
+
+    if (!userMobile) {
+      startConversationalOnboarding();
+      return;
+    }
 
     const userMsg = userMessage(trimmed);
     const nextMessages = [...baseMessages, userMsg];
@@ -241,7 +280,7 @@ export default function CabziiChatbot() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           message: trimmed,
-          name: userName,
+          name: userName || "Guest",
           mobile: userMobile,
           history: nextMessages.map((m) => ({ role: m.role, content: m.content }))
         })
@@ -341,10 +380,10 @@ export default function CabziiChatbot() {
   };
 
   const inputPlaceholder =
-    onboardingPhase === "name"
-      ? "Type your name…"
-      : onboardingPhase === "phone"
-        ? "Enter 10-digit mobile…"
+    onboardingPhase === "phone"
+      ? "Enter 10-digit mobile…"
+      : onboardingPhase === "name"
+        ? "Your name or Skip…"
         : "Ask about cabs, fares, routes…";
 
   const QuickActionsBar = ({ compact = false }) => (
@@ -357,7 +396,7 @@ export default function CabziiChatbot() {
           className="cabzii-tap inline-flex shrink-0 items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-[var(--cabzii-brand)]/30 hover:text-[var(--cabzii-brand)]"
         >
           {action.icon === "whatsapp" ? <WhatsAppIcon className="h-3.5 w-3.5 text-[#25D366]" /> : null}
-          {action.icon === "phone" ? <Phone className="h-3.5 w-3.5 text-[var(--cabzii-brand)]" strokeWidth={2} /> : null}
+          {action.icon === "phone" ? <Phone className="h-3.5 w-3.5 text-sky-400" strokeWidth={2} /> : null}
           {action.label}
         </button>
       ))}
@@ -373,7 +412,7 @@ export default function CabziiChatbot() {
           ref={launcherRef}
           type="button"
           onClick={handleOpen}
-          className="cabzii-chat-launcher cabzii-tap fixed z-[60] bottom-[4.75rem] right-4 flex h-14 w-14 items-center justify-center rounded-full border-0 bg-transparent p-0 shadow-[0_8px_28px_rgba(0,86,210,0.35)] transition hover:scale-[1.05] sm:bottom-6 sm:right-5 sm:h-auto sm:w-auto sm:gap-2 sm:px-4 sm:py-3 sm:text-white sm:shadow-[0_8px_32px_rgba(0,86,210,0.4)] sm:[background:var(--cabzii-gradient-brand)]"
+          className={`cabzii-chat-launcher cabzii-tap fixed z-[60] ${mobileBottomClass} right-4 flex h-14 w-14 items-center justify-center rounded-full border-0 bg-transparent p-0 shadow-[0_8px_28px_rgba(0,86,210,0.35)] transition hover:scale-[1.05] sm:bottom-6 sm:right-5 sm:h-auto sm:w-auto sm:gap-2 sm:px-4 sm:py-3 sm:text-white sm:shadow-[0_8px_32px_rgba(0,86,210,0.4)] sm:[background:var(--cabzii-gradient-brand)]`}
           aria-label="Chat with Zii, Cabzii AI assistant"
         >
           <ZiiAvatar className="h-14 w-14 sm:hidden" />
@@ -387,7 +426,7 @@ export default function CabziiChatbot() {
       {open && (
         <div
           ref={panelRef}
-          className="cabzii-chat-panel fixed z-[70] flex max-h-[min(640px,calc(100dvh-6rem))] w-[min(100%,24rem)] flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-[0_20px_60px_rgba(15,23,42,0.18)] sm:bottom-6 sm:right-5 bottom-[4.75rem] right-4 left-4 sm:left-auto"
+          className={`cabzii-chat-panel fixed z-[70] flex max-h-[min(640px,calc(100dvh-6rem))] w-[min(100%,24rem)] flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-[0_20px_60px_rgba(15,23,42,0.18)] sm:bottom-6 sm:right-5 ${mobileBottomClass} right-4 left-4 sm:left-auto`}
           role="dialog"
           aria-modal="true"
           aria-label="Cabzii AI chat with Zii"

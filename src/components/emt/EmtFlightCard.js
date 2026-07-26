@@ -16,7 +16,7 @@ export default function EmtFlightCard({ flight, searchQuery }) {
   const bookHref = `/booking?type=flight&id=${flight.id}&${searchQuery}&step=1`;
 
   return (
-    <article className="rounded-xl border border-slate-200 bg-white shadow-sm transition hover:shadow-[var(--emt-shadow-hover)]">
+    <article className="rounded-xl border border-slate-200 bg-white cabzii-card cabzii-card-interactive overflow-hidden shadow-sm transition hover:shadow-[var(--emt-shadow-hover)]">
       <div className="flex flex-col gap-4 p-4 lg:flex-row lg:items-center">
         <div className="flex items-center gap-3 lg:w-36">
           <div className="relative h-10 w-10 overflow-hidden rounded bg-slate-50">

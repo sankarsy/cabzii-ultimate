@@ -2,7 +2,7 @@ import { absoluteBrandUrl, BRAND_ICON, BRAND_OG_IMAGE, BRAND_TWITTER_IMAGE } fro
 import { formatSerpTitle } from "./programmaticMeta";
 import { SOCIAL_LINK_LIST } from "../socialLinks";
 
-export const SITE_URL = "https://cabzii.in";
+export const SITE_URL = "https://www.cabzii.in";
 export const SITE_NAME = "Cabzii";
 export const BRAND = "cabzii";
 

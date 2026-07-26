@@ -21,7 +21,7 @@ function SloganTagline({ onDark, compact }) {
 
 /**
  * Cabzii.in wordmark — EaseMyTrip-style layout (no icon).
- * Blue brand name · italic .in · optional “Book. Ride. Explore.” tagline with tricolor accents.
+ * Blue brand name · plain .in · optional “Book. Ride. Explore.” tagline with tricolor accents.
  */
 export default function CabziiLogo({
   className = "",
@@ -37,7 +37,6 @@ export default function CabziiLogo({
   const sizeClass = compact ? "text-lg" : "text-xl sm:text-2xl lg:text-[1.65rem]";
   /* Navy header: bright blue wordmark; light footer: brand blue */
   const nameColor = onDark ? "text-[#7ec4ff]" : "text-[var(--cabzii-brand)]";
-  const domainColor = onDark ? "text-white/70" : "text-slate-800";
 
   return (
     <span
@@ -46,14 +45,7 @@ export default function CabziiLogo({
     >
       <span className={`inline-flex items-baseline whitespace-nowrap font-bold tracking-tight ${sizeClass}`}>
         <span className={nameColor}>Cabzii</span>
-        {showDomain ? (
-          <span
-            className={`ml-px font-serif text-[0.42em] font-normal italic leading-none ${domainColor}`}
-            aria-hidden
-          >
-            .in
-          </span>
-        ) : null}
+        {showDomain ? <span className={nameColor}>.in</span> : null}
       </span>
 
       {showTagline ? <SloganTagline onDark={onDark} compact={compact} /> : null}

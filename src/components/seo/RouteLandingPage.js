@@ -1,22 +1,26 @@
 import Link from "next/link";
-import { routeToCabSearchHref, routeToDriverSearchHref } from "../../lib/routeTrip";
+import { routeToCabSearchHref, routeToDriverSearchHref, routeToTrip } from "../../lib/routeTrip";
 import Breadcrumbs from "./Breadcrumbs";
 import BookingCtaBar from "./BookingCtaBar";
 import FaqSection from "./FaqSection";
+import SeoTripBookingSection from "./SeoTripBookingSection";
 import { tunedRouteDescription, tunedRouteH1 } from "../../lib/seo/metadataTuning";
 import { servicePath, SEO_SERVICES } from "../../lib/seo/services";
+import { formatSerpPrice } from "../../lib/seo/serpRichData";
 
-export default function RouteLandingPage({ route, faqs, extraBody = "" }) {
+export default function RouteLandingPage({ route, faqs, extraBody = "", cabs = [] }) {
   const { fromCity, toCity, distance, duration, sedanFrom, suvFrom, slug } = route;
   const path = `/routes/${slug}`;
   const searchHref = routeToCabSearchHref(route);
+  const driverHref = routeToDriverSearchHref(route);
+  const trip = routeToTrip(route);
   const reverseSlug = `${toCity.slug}-to-${fromCity.slug}-cab`;
   const reversePath = `/routes/${reverseSlug}`;
   const airportSvc = SEO_SERVICES.find((s) => s.slug === "airport-taxi");
   const outstationSvc = SEO_SERVICES.find((s) => s.slug === "outstation-cab");
 
   return (
-    <article className="mx-auto max-w-4xl px-4 py-10 md:py-14">
+    <article className="section-shell py-6 sm:py-10 md:py-14">
       <Breadcrumbs
         items={[
           { name: "Home", path: "/" },
@@ -25,13 +29,31 @@ export default function RouteLandingPage({ route, faqs, extraBody = "" }) {
         ]}
       />
 
-      <p className="text-xs font-bold uppercase tracking-[0.2em] text-sky-600">One way cab · Cabzii</p>
-      <h1 className="mt-3 text-3xl font-extrabold text-slate-900 md:text-4xl">
+      <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-sky-600 sm:text-xs">One way cab · Cabzii</p>
+      <h1 className="mt-2 text-2xl font-extrabold text-slate-900 sm:mt-3 sm:text-3xl md:text-4xl">
         {tunedRouteH1(route)}
       </h1>
-      <p className="mt-4 text-base leading-relaxed text-slate-700 md:text-lg">
+      <p className="mt-3 text-sm leading-relaxed text-slate-700 sm:mt-4 sm:text-base md:text-lg">
         {tunedRouteDescription(route)} ({distance}, {duration})
       </p>
+
+      <SeoTripBookingSection
+        title={`${fromCity.name} → ${toCity.name}`}
+        pickup={fromCity.name}
+        drop={toCity.name}
+        priceFrom={sedanFrom}
+        priceLabel={formatSerpPrice(sedanFrom)}
+        distance={distance}
+        duration={duration}
+        cabSearchHref={searchHref}
+        cabs={cabs}
+        trip={trip}
+        showCabWidget
+        showDriverCta={false}
+        widgetDefaultCity={fromCity.name}
+        widgetInitialTrip={trip}
+        allowedTripTypes={["outstation"]}
+      />
 
       <BookingCtaBar
         bookHref={searchHref}
@@ -41,6 +63,7 @@ export default function RouteLandingPage({ route, faqs, extraBody = "" }) {
         availabilityLabel="Check Availability"
         routeFrom={fromCity.name}
         routeTo={toCity.name}
+        variant="compact"
       />
 
       <section className="mt-10">
@@ -53,6 +76,14 @@ export default function RouteLandingPage({ route, faqs, extraBody = "" }) {
                 <td className="px-4 py-3 text-slate-600">
                   {fromCity.name} → {toCity.name}
                 </td>
+              </tr>
+              <tr className="border-b border-slate-100">
+                <th className="px-4 py-3 font-semibold text-slate-700">Pickup location</th>
+                <td className="px-4 py-3 text-slate-600">{fromCity.name}</td>
+              </tr>
+              <tr className="border-b border-slate-100">
+                <th className="px-4 py-3 font-semibold text-slate-700">Drop location</th>
+                <td className="px-4 py-3 text-slate-600">{toCity.name}</td>
               </tr>
               <tr className="border-b border-slate-100">
                 <th className="px-4 py-3 font-semibold text-slate-700">Distance</th>
@@ -144,7 +175,7 @@ export default function RouteLandingPage({ route, faqs, extraBody = "" }) {
             </Link>
           </li>
           <li>
-            <Link href={routeToDriverSearchHref(route)} className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:text-[var(--cabzii-brand)]">
+            <Link href={driverHref} className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:text-[var(--cabzii-brand)]">
               Acting driver · same route
             </Link>
           </li>
@@ -153,25 +184,25 @@ export default function RouteLandingPage({ route, faqs, extraBody = "" }) {
 
       <FaqSection title={`${fromCity.name} to ${toCity.name} cab — FAQ`} faqs={faqs} />
 
-      <section className="mt-10 rounded-2xl bg-[var(--cabzii-brand)] p-6 text-white md:p-8">
-        <h2 className="text-xl font-bold md:text-2xl">Book {fromCity.name} to {toCity.name} cab now</h2>
-        <p className="mt-2 text-sm text-blue-100">
+      <section className="mt-10 rounded-2xl bg-[var(--cabzii-brand)] p-5 text-white md:p-6">
+        <h2 className="text-lg font-bold md:text-xl">Book {fromCity.name} to {toCity.name} cab now</h2>
+        <p className="mt-1.5 text-xs text-blue-100 md:text-sm">
           Instant online quote · Professional drivers · 24/7 WhatsApp &amp; phone support
         </p>
-        <div className="mt-4 flex flex-wrap gap-3">
+        <div className="mt-3 flex flex-wrap gap-2">
           <Link
             href={searchHref}
-            className="rounded-full bg-white px-5 py-2.5 text-sm font-bold text-[var(--cabzii-brand)] hover:bg-slate-100"
+            className="cabzii-btn cabzii-btn-sm cabzii-tap rounded-full bg-white font-bold text-[var(--cabzii-brand)] hover:bg-slate-100"
           >
-            Get instant quote &amp; book
+            Get quote &amp; book
           </Link>
           <a
             href={`https://wa.me/9944197416?text=${encodeURIComponent(`Hi Cabzii, I need a cab from ${fromCity.name} to ${toCity.name}. Please share fare.`)}`}
             target="_blank"
             rel="noreferrer"
-            className="rounded-full border border-white/40 px-5 py-2.5 text-sm font-semibold hover:bg-white/10"
+            className="cabzii-btn cabzii-btn-sm cabzii-tap rounded-full border border-white/40 bg-transparent font-semibold text-white hover:bg-white/10"
           >
-            WhatsApp booking
+            WhatsApp
           </a>
         </div>
       </section>

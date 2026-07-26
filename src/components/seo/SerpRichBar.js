@@ -26,7 +26,7 @@ export default function SerpRichBar({
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
         {showRating ? (
           <div className="inline-flex items-center gap-1.5 font-semibold text-slate-900">
-            <span className="inline-flex text-amber-500" aria-hidden>
+            <span className="inline-flex text-amber-400" aria-hidden>
               {Array.from({ length: 5 }).map((_, i) => (
                 <Star
                   key={i}

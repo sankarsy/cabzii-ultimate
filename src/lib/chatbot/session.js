@@ -7,9 +7,9 @@ export function loadChatSession() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
     const data = JSON.parse(raw);
-    if (!data?.name || !data?.mobile) return null;
+    if (!data?.mobile) return null;
     return {
-      name: String(data.name),
+      name: String(data.name || "Guest"),
       mobile: String(data.mobile),
       messages: Array.isArray(data.messages) ? data.messages : [],
       onboarded: true

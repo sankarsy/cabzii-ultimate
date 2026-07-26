@@ -89,7 +89,7 @@ export default function ReviewsSection({ itemType, itemId, className = "" }) {
             <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
               <span className="text-sm font-bold text-slate-900">{review.customerName}</span>
               <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700">
-                <BadgeCheck className="h-3 w-3" strokeWidth={2.5} aria-hidden />
+                <BadgeCheck className="h-3 w-3 text-emerald-400" strokeWidth={2.5} aria-hidden />
                 Verified booking
               </span>
             </div>

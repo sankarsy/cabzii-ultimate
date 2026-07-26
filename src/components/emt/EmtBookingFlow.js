@@ -73,7 +73,7 @@ export default function EmtBookingFlow() {
   }
 
   return (
-    <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 px-4 py-8 lg:grid-cols-[1fr_300px]">
+    <div className="section-shell grid grid-cols-1 gap-6 px-4 py-8 lg:grid-cols-[1fr_300px]">
       <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="mb-6 flex gap-2 text-sm font-semibold">
           <span className={step === 1 ? "text-[var(--emt-primary)]" : "text-slate-400"}>1. Traveller</span>

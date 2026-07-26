@@ -6,6 +6,7 @@ import {
   breadcrumbJsonLd,
   buildPageMetadata,
   cityBySlug,
+  cityGeo,
   cityDriverSearchJsonLd,
   faqFromPairs,
   getCityFaqs,
@@ -66,7 +67,7 @@ export default async function ActingDriverCityPage({ params }) {
       description,
       urlPath: path
     }),
-    localBusinessJsonLd(city.name, city.state, path),
+    localBusinessJsonLd(city.name, city.state, path, cityGeo(city.slug)),
     faqFromPairs(faqs)
   ];
 

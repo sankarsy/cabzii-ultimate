@@ -6,6 +6,7 @@ import WhatsAppIcon from "../WhatsAppIcon";
 import { resolveMediaUrl } from "../../lib/media";
 import { whatsappBookingUrl, telUrl } from "../../lib/conversion";
 import { formatCabSeatLabel } from "../../lib/cabSeats";
+import { packageBookingHref, packageSeoHref } from "../../lib/holidayHome";
 
 function inr(n) {
   return `₹${Number(n || 0).toLocaleString("en-IN")}`;
@@ -13,7 +14,7 @@ function inr(n) {
 
 /** SEO landing page for a tour package — hero, overview, itinerary, pricing, gallery, FAQs, CTA. */
 export default function TourPackageLanding({ pkg, related = [] }) {
-  const bookingHref = `/holidays/${pkg.slug || pkg._id}`;
+  const bookingHref = packageBookingHref(pkg);
   const cover = resolveMediaUrl(pkg.image);
   const gallery = (pkg.gallery || []).map(resolveMediaUrl).filter(Boolean);
   const durationLabel =
@@ -36,15 +37,15 @@ export default function TourPackageLanding({ pkg, related = [] }) {
         {cover ? (
           <Image src={cover} alt={pkg.imageAlt || pkg.name} fill sizes="100vw" className="object-cover opacity-30" />
         ) : null}
-        <div className="relative mx-auto max-w-5xl px-4 py-10 md:px-6 md:py-14">
-          <nav className="text-xs text-white/70" aria-label="Breadcrumb">
+        <div className="relative section-shell py-7 sm:py-10 md:px-6 md:py-14">
+          <nav className="flex flex-wrap items-center gap-x-1.5 text-xs text-white/70" aria-label="Breadcrumb">
             <Link href="/" className="hover:text-white">Home</Link>
-            <span className="mx-1.5">/</span>
+            <span>/</span>
             <Link href="/holidays" className="hover:text-white">Tour Packages</Link>
-            <span className="mx-1.5">/</span>
-            <span className="text-white/90">{pkg.name}</span>
+            <span>/</span>
+            <span className="min-w-0 truncate text-white/90">{pkg.name}</span>
           </nav>
-          <h1 className="mt-3 text-2xl font-extrabold tracking-tight text-white md:text-3xl">
+          <h1 className="mt-3 text-xl font-extrabold tracking-tight text-white sm:text-2xl md:text-3xl">
             {pkg.seoTitle || `${pkg.name} — Book Online`}
           </h1>
           <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-white/85">
@@ -68,10 +69,10 @@ export default function TourPackageLanding({ pkg, related = [] }) {
               <span className="text-xs text-white/70">per package</span>
             </div>
           </div>
-          <div className="mt-5 flex flex-wrap gap-2.5">
+          <div className="mt-4 flex flex-wrap gap-2">
             <Link
               href={bookingHref}
-              className="cabzii-tap rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-[var(--cabzii-brand)] shadow-lg transition hover:bg-blue-50"
+              className="cabzii-btn cabzii-btn-sm cabzii-tap rounded-full bg-white font-bold text-[var(--cabzii-brand)] shadow-md hover:bg-blue-50"
             >
               Book this package
             </Link>
@@ -79,21 +80,21 @@ export default function TourPackageLanding({ pkg, related = [] }) {
               href={waUrl}
               target="_blank"
               rel="noreferrer"
-              className="cabzii-tap inline-flex items-center gap-1.5 rounded-xl bg-[#25D366] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-[#20BA5A]"
+              className="cabzii-btn cabzii-btn-sm cabzii-tap inline-flex items-center gap-1.5 rounded-full bg-[#25D366] font-bold text-white hover:bg-[#20BA5A]"
             >
-              <WhatsAppIcon className="h-4 w-4" /> WhatsApp quote
+              <WhatsAppIcon className="h-3.5 w-3.5" /> WhatsApp
             </a>
             <a
               href={telUrl()}
-              className="cabzii-tap inline-flex items-center gap-1.5 rounded-xl border border-white/30 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-white/10"
+              className="cabzii-btn cabzii-btn-sm cabzii-tap inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-transparent font-bold text-white hover:bg-white/10"
             >
-              <Phone className="h-4 w-4" strokeWidth={2} aria-hidden /> Call now
+              <Phone className="h-3.5 w-3.5" strokeWidth={2} aria-hidden /> Call
             </a>
           </div>
         </div>
       </div>
 
-      <div className="mx-auto max-w-5xl px-4 md:px-6">
+      <div className="section-shell">
         {/* Overview */}
         {pkg.description || pkg.seoDescription ? (
           <article className="cabzii-card mt-6 p-5 md:p-6">
@@ -105,7 +106,7 @@ export default function TourPackageLanding({ pkg, related = [] }) {
               <ul className="mt-4 grid gap-2 sm:grid-cols-2">
                 {pkg.highlights.map((h) => (
                   <li key={h} className="flex items-start gap-2 text-sm text-slate-700">
-                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" strokeWidth={2.5} aria-hidden />
+                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" strokeWidth={2.5} aria-hidden />
                     {h}
                   </li>
                 ))}
@@ -143,7 +144,7 @@ export default function TourPackageLanding({ pkg, related = [] }) {
                 <ul className="mt-3 space-y-1.5">
                   {pkg.inclusions.map((item) => (
                     <li key={item} className="flex items-start gap-2 text-sm text-slate-700">
-                      <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" strokeWidth={2.5} aria-hidden />
+                      <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" strokeWidth={2.5} aria-hidden />
                       {item}
                     </li>
                   ))}
@@ -253,7 +254,7 @@ export default function TourPackageLanding({ pkg, related = [] }) {
                 return (
                   <Link
                     key={String(rp._id)}
-                    href={`/tour-packages/${rp.slug || rp._id}`}
+                    href={packageSeoHref(rp)}
                     className="cabzii-card cabzii-card-interactive group overflow-hidden"
                   >
                     <div className="relative aspect-[16/10] bg-slate-100">
@@ -277,12 +278,12 @@ export default function TourPackageLanding({ pkg, related = [] }) {
         <section className="mt-8 rounded-2xl bg-[var(--cabzii-brand)] p-6 text-center text-white md:p-8">
           <h2 className="text-xl font-bold">Ready to book {pkg.name}?</h2>
           <p className="mt-1.5 text-sm text-blue-100">Instant confirmation · Verified drivers · Transparent pricing</p>
-          <div className="mt-4 flex flex-wrap justify-center gap-2.5">
-            <Link href={bookingHref} className="cabzii-tap rounded-xl bg-white px-6 py-2.5 text-sm font-bold text-[var(--cabzii-brand)] hover:bg-blue-50">
+          <div className="mt-3 flex flex-wrap justify-center gap-2">
+            <Link href={bookingHref} className="cabzii-btn cabzii-btn-sm cabzii-tap rounded-full bg-white font-bold text-[var(--cabzii-brand)] hover:bg-blue-50">
               Book now — {inr(pkg.price)}
             </Link>
-            <a href={waUrl} target="_blank" rel="noreferrer" className="cabzii-tap inline-flex items-center gap-1.5 rounded-xl bg-[#25D366] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#20BA5A]">
-              <WhatsAppIcon className="h-4 w-4" /> WhatsApp
+            <a href={waUrl} target="_blank" rel="noreferrer" className="cabzii-btn cabzii-btn-sm cabzii-tap inline-flex items-center gap-1.5 rounded-full bg-[#25D366] font-bold text-white hover:bg-[#20BA5A]">
+              <WhatsAppIcon className="h-3.5 w-3.5" /> WhatsApp
             </a>
           </div>
         </section>

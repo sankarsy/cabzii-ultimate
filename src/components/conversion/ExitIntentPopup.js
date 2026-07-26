@@ -107,8 +107,8 @@ export default function ExitIntentPopup() {
         </div>
         <Link
           href="/cabs"
-          className="cabzii-tap mt-3 block w-full rounded-xl py-3 text-center text-sm font-bold text-white"
-          style={{ background: "var(--cabzii-gradient-brand)" }}
+          className="cabzii-tap mt-3 block w-full rounded-xl py-3 text-center text-sm font-bold text-white shadow-[var(--emt-shadow-cta)] transition hover:brightness-105"
+          style={{ background: "var(--cabzii-gradient-cta)" }}
           onClick={dismiss}
         >
           Search & book online

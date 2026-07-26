@@ -1,16 +1,18 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { X } from "lucide-react";
 import PlaceAutocomplete from "../PlaceAutocomplete";
 import { CalendarIcon, ClockIcon, SearchIcon, TwoWayIcon } from "../icons";
 import { SEARCH_FIELD_ICON_CHIPS, SEARCH_FIELD_ICONS } from "../icons/heroIcons";
-import EmtHeroPills, { EmtHeroPriceHint } from "../emt/EmtHeroPills";
+import { EmtHeroPriceHint } from "../emt/EmtHeroPills";
 import { formatEmtDate, formatTime12 } from "../../lib/emt/heroDates";
 import { applyDistanceToTrip, fetchTripDistance } from "../../lib/fetchTripDistance";
 import { coordsForPlaceLabel } from "../../lib/indiaCityCoords";
 import { HOURLY_PACKAGES, todayStr, tripNeedsDrop, tripToSearchQuery } from "../../lib/mmtTrip";
 import { writeSelectedCity } from "../../lib/locationPriority";
+import { SegmentedOption } from "../ui/RadioOption";
 
 const TRIP_TABS = [
   { id: "outstation", label: "Outstation" },
@@ -19,15 +21,36 @@ const TRIP_TABS = [
   { id: "local", label: "Local" }
 ];
 
-const HERO_TRIP_TABS = [
-  { id: "airport", label: "Airport Transfer" },
-  { id: "outstation", label: "Outstation" },
-  { id: "hourly", label: "Hourly" }
+/* EMT-style hero toggle — maps onto the same tripType + roundTrip state */
+const CAB_MODE_TABS = [
+  { id: "oneway", label: "Outstation One Way" },
+  { id: "roundtrip", label: "Outstation Round Trip" },
+  { id: "hourly", label: "Hourly" },
+  { id: "airport", label: "Airport Transfer" }
 ];
 
-export default function MmtCabSearchWidget({ defaultCity = "", initialTrip = null, emtLayout = false, heroMode = false }) {
+function nextDayStr(dateStr) {
+  const d = new Date(dateStr || todayStr());
+  d.setDate(d.getDate() + 1);
+  return d.toISOString().split("T")[0];
+}
+
+export default function MmtCabSearchWidget({
+  defaultCity = "",
+  initialTrip = null,
+  emtLayout = false,
+  heroMode = false,
+  /** When set (e.g. SEO outstation page), only these trip tabs show — usually a single type. */
+  allowedTripTypes = null,
+  /** Smaller fields + search button for SEO embeds. */
+  compact = false
+}) {
   const router = useRouter();
-  const [tripType, setTripType] = useState("outstation");
+  const lockedKey =
+    Array.isArray(allowedTripTypes) && allowedTripTypes.length ? allowedTripTypes.join(",") : "";
+  const lockedTypes = lockedKey ? lockedKey.split(",") : null;
+  const defaultType = lockedTypes?.[0] || initialTrip?.tripType || "outstation";
+  const [tripType, setTripType] = useState(defaultType);
   const [roundTrip, setRoundTrip] = useState(false);
   const [pickup, setPickup] = useState(defaultCity);
   const [drop, setDrop] = useState("");
@@ -37,12 +60,34 @@ export default function MmtCabSearchWidget({ defaultCity = "", initialTrip = nul
   const [packageHours, setPackageHours] = useState(8);
   const [date, setDate] = useState(todayStr());
   const [time, setTime] = useState("09:00");
+  /* UI-only return date for the round-trip cell — search params stay unchanged */
+  const [returnDate, setReturnDate] = useState("");
   const [error, setError] = useState(null);
   const [searching, setSearching] = useState(false);
 
+  const cabMode = tripType === "outstation" ? (roundTrip ? "roundtrip" : "oneway") : tripType;
+
+  function setCabMode(id) {
+    if (id === "oneway") {
+      setTripType("outstation");
+      setRoundTrip(false);
+    } else if (id === "roundtrip") {
+      setTripType("outstation");
+      setRoundTrip(true);
+      setReturnDate((prev) => prev || nextDayStr(date));
+    } else {
+      setTripType(id);
+    }
+  }
+
+  useEffect(() => {
+    if (lockedTypes?.length) setTripType(lockedTypes[0]);
+  }, [lockedKey]); // eslint-disable-line react-hooks/exhaustive-deps
+
   useEffect(() => {
     if (!initialTrip?.from?.trim()) return;
-    setTripType(initialTrip.tripType || "outstation");
+    const nextType = lockedTypes?.[0] || initialTrip.tripType || "outstation";
+    setTripType(nextType);
     setRoundTrip(Boolean(initialTrip.roundTrip));
     setPickup(initialTrip.from);
     setDrop(initialTrip.to || "");
@@ -54,7 +99,12 @@ export default function MmtCabSearchWidget({ defaultCity = "", initialTrip = nul
       initialTrip.fromLat != null ? { lat: initialTrip.fromLat, lng: initialTrip.fromLng } : null
     );
     setToCoords(initialTrip.toLat != null ? { lat: initialTrip.toLat, lng: initialTrip.toLng } : null);
-  }, [initialTrip]);
+  }, [initialTrip]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const visibleTripTabs = lockedTypes
+    ? TRIP_TABS.filter((t) => lockedTypes.includes(t.id))
+    : TRIP_TABS;
+  const showTripTabs = !heroMode && visibleTripTabs.length > 1;
 
   function fillCityCoords(trip) {
     if (!trip.fromLat && trip.from) {
@@ -137,7 +187,7 @@ export default function MmtCabSearchWidget({ defaultCity = "", initialTrip = nul
       try {
         trip = applyDistanceToTrip(trip, await fetchTripDistance(trip));
       } catch {
-        /* navigate without distance â€” results page will retry */
+        /* navigate without distance — results page will retry */
       } finally {
         setSearching(false);
       }
@@ -199,14 +249,91 @@ export default function MmtCabSearchWidget({ defaultCity = "", initialTrip = nul
     </>
   );
 
+  const packageCell = (
+    <div className="cabzii-search-cell">
+      <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+        {heroMode ? "Rent For" : "Package"}
+      </span>
+      <select
+        value={packageHours}
+        onChange={(e) => setPackageHours(Number(e.target.value))}
+        className="cabzii-field -mx-1 w-full rounded-lg border-0 bg-transparent text-base font-bold text-slate-900 focus:outline-none sm:text-lg"
+      >
+        {HOURLY_PACKAGES.map((p) => (
+          <option key={p.hours} value={p.hours}>
+            {p.label}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+
+  const airportDirectionCell =
+    heroMode && tripType === "airport" ? (
+      <div className="cabzii-search-cell">
+        <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Airport Transfer</span>
+        <select
+          value={airportDirection}
+          onChange={(e) => setAirportDirection(e.target.value)}
+          className="cabzii-field -mx-1 w-full rounded-lg border-0 bg-transparent text-base font-bold text-slate-900 focus:outline-none sm:text-lg"
+          aria-label="Airport transfer type"
+        >
+          <option value="pickup">Pickup from Airport</option>
+          <option value="drop">Drop to Airport</option>
+        </select>
+      </div>
+    ) : null;
+
+  const returnCell =
+    heroMode && tripType === "outstation" ? (
+      <div className="cabzii-search-cell relative">
+        <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Return Date &amp; Time</span>
+        {roundTrip ? (
+          <div className="relative">
+            <p className="truncate text-base font-bold text-slate-900 sm:text-xl">
+              {formatEmtDate(returnDate || nextDayStr(date))}
+            </p>
+            <p className="text-sm font-medium text-slate-500">Select Time</p>
+            <input
+              type="date"
+              min={date}
+              value={returnDate || nextDayStr(date)}
+              onChange={(e) => setReturnDate(e.target.value)}
+              className="emt-date-input absolute inset-0 cursor-pointer opacity-0"
+              aria-label="Return date"
+            />
+            <button
+              type="button"
+              onClick={() => setCabMode("oneway")}
+              className="absolute -right-1 -top-6 flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition hover:bg-slate-200 hover:text-slate-700 sm:-top-7"
+              aria-label="Remove return trip"
+            >
+              <X className="h-3.5 w-3.5" strokeWidth={2.5} />
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setCabMode("roundtrip")}
+            className="text-left text-sm font-semibold leading-snug text-[var(--cabzii-brand)] hover:underline"
+          >
+            Book a round trip
+            <br />
+            to save more
+          </button>
+        )}
+      </div>
+    ) : null;
+
   const searchFields = (
     <>
+      {airportDirectionCell}
       {tripType === "hourly" ? (
         <>
           <div className="cabzii-search-cell">
             <PlaceAutocomplete
-              label="City"
-              placeholder="Pickup city or area"
+              label={heroMode ? "From (Pick-up)" : "City"}
+              placeholder={heroMode ? "Select Pick-up Location, landmark, or hotel" : "Pickup city or area"}
               value={pickup}
               onChange={setPickup}
               onResolved={(area) => {
@@ -217,20 +344,7 @@ export default function MmtCabSearchWidget({ defaultCity = "", initialTrip = nul
               leadingIconClassName={SEARCH_FIELD_ICON_CHIPS.pickup}
             />
           </div>
-          <div className="cabzii-search-cell">
-            <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Package</span>
-            <select
-              value={packageHours}
-              onChange={(e) => setPackageHours(Number(e.target.value))}
-              className="cabzii-field -mx-1 w-full rounded-lg border-0 bg-transparent text-base font-bold text-slate-900 focus:outline-none sm:text-lg"
-            >
-              {HOURLY_PACKAGES.map((p) => (
-                <option key={p.hours} value={p.hours}>
-                  {p.label}
-                </option>
-              ))}
-            </select>
-          </div>
+          {!heroMode ? packageCell : null}
         </>
       ) : tripType === "airport" ? (
         <>
@@ -251,7 +365,7 @@ export default function MmtCabSearchWidget({ defaultCity = "", initialTrip = nul
           {heroMode ? (
             <div className="emt-search-swap-cell hidden lg:flex">
               <button type="button" onClick={swapLocations} className="emt-search-swap-btn" aria-label="Swap locations">
-                <TwoWayIcon className="h-4 w-4" />
+                <TwoWayIcon className="h-4 w-4 text-slate-400" />
               </button>
             </div>
           ) : null}
@@ -275,8 +389,8 @@ export default function MmtCabSearchWidget({ defaultCity = "", initialTrip = nul
         <>
           <div className="cabzii-search-cell">
             <PlaceAutocomplete
-              label="From"
-              placeholder="Pickup location"
+              label={heroMode ? "From (Pick-up)" : "From"}
+              placeholder={heroMode ? "Select Pick-up Location, landmark, or hotel" : "Pickup location"}
               value={pickup}
               onChange={setPickup}
               onResolved={(area) => {
@@ -286,20 +400,21 @@ export default function MmtCabSearchWidget({ defaultCity = "", initialTrip = nul
               leadingIcon={SEARCH_FIELD_ICONS.pickup}
               leadingIconClassName={SEARCH_FIELD_ICON_CHIPS.pickup}
             />
+            {heroMode ? <span className="text-xs text-slate-400">e.g. Chennai Airport, T Nagar</span> : null}
           </div>
           {tripType === "outstation" ? (
             <>
               {heroMode ? (
                 <div className="emt-search-swap-cell hidden lg:flex">
                   <button type="button" onClick={swapLocations} className="emt-search-swap-btn" aria-label="Swap locations">
-                    <TwoWayIcon className="h-4 w-4" />
+                    <TwoWayIcon className="h-4 w-4 text-slate-400" />
                   </button>
                 </div>
               ) : null}
               <div className="cabzii-search-cell">
                 <PlaceAutocomplete
-                  label="To"
-                  placeholder="Drop location"
+                  label={heroMode ? "To (Drop-off)" : "To"}
+                  placeholder={heroMode ? "Drop Location, landmark, or hotel" : "Drop location"}
                   value={drop}
                   onChange={setDrop}
                   onResolved={(area) => {
@@ -308,6 +423,7 @@ export default function MmtCabSearchWidget({ defaultCity = "", initialTrip = nul
                   leadingIcon={SEARCH_FIELD_ICONS.drop}
                   leadingIconClassName={SEARCH_FIELD_ICON_CHIPS.drop}
                 />
+                {heroMode ? <span className="text-xs text-slate-400">e.g. hotel, office, home address</span> : null}
               </div>
             </>
           ) : null}
@@ -315,6 +431,8 @@ export default function MmtCabSearchWidget({ defaultCity = "", initialTrip = nul
       )}
 
       {dateTimeCell}
+      {returnCell}
+      {heroMode && tripType === "hourly" ? packageCell : null}
     </>
   );
 
@@ -326,124 +444,151 @@ export default function MmtCabSearchWidget({ defaultCity = "", initialTrip = nul
       className={
         emtLayout
           ? "emt-search-submit cabzii-tap"
-          : "cabzii-btn cabzii-btn-primary cabzii-btn-lg w-full sm:w-auto sm:min-w-[220px]"
+          : compact
+            ? "cabzii-btn cabzii-btn-primary cabzii-btn-sm cabzii-tap w-full sm:w-auto sm:min-w-[140px]"
+            : "cabzii-btn cabzii-btn-primary cabzii-btn-lg w-full sm:w-auto sm:min-w-[220px]"
       }
     >
-      <SearchIcon className="h-5 w-5" />
-      {searching ? (emtLayout ? "Searchingâ€¦" : "Calculating distanceâ€¦") : emtLayout ? "SEARCH" : "Search Cabs"}
+      <SearchIcon className={compact ? "h-4 w-4 text-slate-400" : "h-5 w-5 text-slate-400"} />
+      {searching
+        ? emtLayout
+          ? "Searching…"
+          : compact
+            ? "Searching…"
+            : "Calculating distance…"
+        : emtLayout
+          ? "SEARCH"
+          : compact
+            ? "Search"
+            : "Search Cabs"}
     </button>
   );
 
-  const tripPills = (
-    <div className={heroMode ? "" : emtLayout ? "flex flex-wrap gap-2 pb-4" : "hero-tabs-scroll -mx-0.5 flex gap-2 overflow-x-auto pb-4"}>
-      {(heroMode ? (
-        <EmtHeroPills options={HERO_TRIP_TABS} value={tripType} onChange={setTripType} />
-      ) : emtLayout ? (
-        TRIP_TABS.map((tab) => (
-          <button
-            key={tab.id}
-            type="button"
-            onClick={() => setTripType(tab.id)}
-            className={
-              emtLayout
-                ? `cabzii-tap rounded-full px-4 py-1.5 text-sm font-semibold transition ${
-                    tripType === tab.id
-                      ? "bg-[var(--cabzii-brand)] text-white shadow-sm"
-                      : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                  }`
-                : `cabzii-chip cabzii-tap ${tripType === tab.id ? "cabzii-chip-active" : ""}`
-            }
-          >
-            {tab.label}
-          </button>
-        ))
-      ) : (
-        TRIP_TABS.map((tab) => (
-          <button
-            key={tab.id}
-            type="button"
-            onClick={() => setTripType(tab.id)}
-            className={`cabzii-chip cabzii-tap ${tripType === tab.id ? "cabzii-chip-active" : ""}`}
-          >
-            {tab.label}
-          </button>
-        ))
+  /* EMT-style capsule toggle above the search card */
+  const modeToggle = (
+    <div className="emt-cab-mode-capsule" role="tablist" aria-label="Cab trip type">
+      {CAB_MODE_TABS.map((tab) => (
+        <button
+          key={tab.id}
+          type="button"
+          role="tab"
+          aria-selected={cabMode === tab.id}
+          onClick={() => setCabMode(tab.id)}
+          className={`emt-cab-mode-pill cabzii-tap ${cabMode === tab.id ? "emt-cab-mode-pill-active" : ""}`}
+        >
+          {tab.label}
+        </button>
       ))}
     </div>
   );
 
-  const subOptions =
-    tripType === "outstation" ? (
-      <div className={`flex flex-wrap gap-3 ${heroMode ? "emt-hero-radios mb-4" : emtLayout ? "mb-4" : "mt-4"}`}>
+  const tripPills = heroMode ? (
+    <div className="">{modeToggle}</div>
+  ) : showTripTabs ? (
+    <div
+      className={
+        emtLayout
+          ? "flex flex-wrap gap-2 pb-4"
+          : compact
+            ? "hero-tabs-scroll -mx-0.5 flex gap-1.5 overflow-x-auto pb-2"
+            : "hero-tabs-scroll -mx-0.5 flex gap-2 overflow-x-auto pb-4"
+      }
+    >
+      {visibleTripTabs.map((tab) => (
+        <button
+          key={tab.id}
+          type="button"
+          onClick={() => setTripType(tab.id)}
+          className={
+            emtLayout
+              ? `cabzii-tap rounded-full px-4 py-1.5 text-sm font-semibold transition ${
+                  tripType === tab.id
+                    ? "bg-[var(--cabzii-brand)] text-white shadow-sm"
+                    : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                }`
+              : compact
+                ? `cabzii-tap rounded-full border px-2.5 py-1 text-[11px] font-semibold transition ${
+                    tripType === tab.id
+                      ? "border-[var(--cabzii-brand)] bg-[var(--cabzii-brand)] text-white"
+                      : "border-slate-200 bg-white text-slate-600"
+                  }`
+                : `cabzii-chip cabzii-tap ${tripType === tab.id ? "cabzii-chip-active" : ""}`
+          }
+        >
+          {tab.label}
+        </button>
+      ))}
+    </div>
+  ) : null;
+
+  const subOptions = heroMode ? null : tripType === "outstation" ? (
+      <div
+        className={`cabzii-segmented ${compact ? "cabzii-segmented-compact mb-2.5 mt-2" : "mb-4 mt-4"}`}
+        role="radiogroup"
+        aria-label="Trip direction"
+      >
         {[
           { id: false, label: "One Way" },
           { id: true, label: "Round Trip" }
         ].map((opt) => (
-          <label
+          <SegmentedOption
             key={String(opt.id)}
-            className={`flex cursor-pointer items-center gap-2 text-sm font-medium ${heroMode ? "" : "text-slate-700"}`}
-          >
-            <input
-              type="radio"
-              name="roundtrip"
-              checked={roundTrip === opt.id}
-              onChange={() => setRoundTrip(opt.id)}
-              className="size-4 accent-white"
-            />
-            {opt.label}
-          </label>
+            name="roundtrip"
+            checked={roundTrip === opt.id}
+            onChange={() => setRoundTrip(opt.id)}
+            label={opt.label}
+          />
         ))}
       </div>
     ) : tripType === "airport" ? (
-      <div className={`flex flex-wrap gap-4 ${heroMode ? "emt-hero-radios mb-4" : emtLayout ? "mb-4" : "mt-4"}`}>
+      <div
+        className={`cabzii-segmented ${compact ? "cabzii-segmented-compact mb-2.5 mt-2" : "mb-4 mt-4"}`}
+        role="radiogroup"
+        aria-label="Airport transfer type"
+      >
         {[
           { id: "pickup", label: "Pickup from Airport" },
           { id: "drop", label: "Drop to Airport" }
         ].map((opt) => (
-          <label
+          <SegmentedOption
             key={opt.id}
-            className={`flex cursor-pointer items-center gap-2 text-sm font-medium ${heroMode ? "" : "text-slate-700"}`}
-          >
-            <input
-              type="radio"
-              name="airportdir"
-              checked={airportDirection === opt.id}
-              onChange={() => setAirportDirection(opt.id)}
-              className="size-4 accent-white"
-            />
-            {opt.label}
-          </label>
+            name="airportdir"
+            checked={airportDirection === opt.id}
+            onChange={() => setAirportDirection(opt.id)}
+            label={opt.label}
+          />
         ))}
       </div>
     ) : null;
 
   const searchCard = emtLayout ? (
     <div className={heroMode ? "emt-hero-search-card emt-cab-search-card" : ""}>
-      {heroMode ? (
-        <div className="emt-cab-type-bar">
-          <EmtHeroPills options={HERO_TRIP_TABS} value={tripType} onChange={setTripType} />
-        </div>
-      ) : null}
       <div className="emt-search-wrap">
-        <div className={`emt-search-bar ${heroMode ? "emt-search-bar-cabs" : ""}`}>{searchFields}</div>
+        <div className={`emt-search-bar ${heroMode ? `emt-search-bar-cabs emt-search-bar-cabs-${cabMode}` : ""}`}>
+          {searchFields}
+        </div>
         {searchButton}
       </div>
     </div>
   ) : (
     <>
-      <div className="cabzii-search-grid">{searchFields}</div>
-      <div className="mt-5 flex justify-stretch sm:mt-6 sm:justify-center">{searchButton}</div>
+      <div className={`cabzii-search-grid ${compact ? "cabzii-search-grid-compact" : ""}`}>{searchFields}</div>
+      <div className={`flex justify-stretch sm:justify-center ${compact ? "mt-3" : "mt-5 sm:mt-6"}`}>
+        {searchButton}
+      </div>
     </>
   );
 
   return (
-    <div className="w-full">
+    <div className={`w-full ${compact ? "cabzii-search-compact" : ""}`}>
       {heroMode ? (
         <>
-          <div className="mb-4 flex items-center justify-end">
-            <EmtHeroPriceHint>Book Online Cab</EmtHeroPriceHint>
+          <div className="mb-4 flex items-center justify-between gap-3">
+            {modeToggle}
+            <span className="hidden sm:block">
+              <EmtHeroPriceHint>Book Online Cab</EmtHeroPriceHint>
+            </span>
           </div>
-          {subOptions}
           {searchCard}
           <div className="mt-4 flex justify-end">
             <p className="rounded-md border border-white/40 bg-white/10 px-3 py-1.5 text-xs font-bold text-white backdrop-blur-sm">

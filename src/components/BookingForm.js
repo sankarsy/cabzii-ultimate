@@ -21,7 +21,7 @@ export default function BookingForm({ selectedItem, itemType = "cab", onProceed,
 
   return (
     <section id="booking" className="py-10 md:py-14">
-      <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
+      <div className="section-shell">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-md md:p-6">
             <h2 className="text-2xl font-bold text-slate-900">Complete Your Booking</h2>

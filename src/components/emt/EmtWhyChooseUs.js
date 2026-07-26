@@ -35,7 +35,7 @@ export default function EmtWhyChooseUs() {
             const Icon = getTrustIcon(f.iconKey);
             const style = TRUST_ICON_STYLES[f.iconKey] || TRUST_ICON_STYLES.verified;
             return (
-              <div key={f.title} className="cabzii-card flex gap-3.5 p-4 sm:block sm:p-5 sm:text-center">
+              <div key={f.title} className="cabzii-card cabzii-card-interactive flex gap-3.5 p-4 sm:block sm:p-5 sm:text-center">
                 <div
                   className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ring-1 ring-slate-100/90 sm:mx-auto sm:mb-3 sm:h-12 sm:w-12 ${style.iconBg} ${style.iconColor}`}
                 >

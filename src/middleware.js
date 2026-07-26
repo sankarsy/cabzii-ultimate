@@ -52,6 +52,21 @@ export function middleware(request) {
     return NextResponse.redirect(url, 301);
   }
 
+  if (pathname === "/signin" || pathname.startsWith("/signin/")) {
+    const url = new URL("/login", request.url);
+    url.search = request.nextUrl.search;
+    return NextResponse.redirect(url, 301);
+  }
+
+  if (pathname.startsWith("/holidays/")) {
+    const segment = pathname.slice("/holidays/".length).split("/")[0];
+    const isMongoId = /^[a-f0-9]{24}$/i.test(segment);
+    const isSlug = /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(segment);
+    if (segment && !isMongoId && isSlug) {
+      return NextResponse.redirect(new URL(`/tour-packages/${segment}${pathname.slice("/holidays/".length + segment.length)}`, request.url), 301);
+    }
+  }
+
   if (pathname === "/tour-booking") {
     const id = request.nextUrl.searchParams.get("id");
     if (id) {
