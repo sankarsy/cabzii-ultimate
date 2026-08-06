@@ -1,8 +1,15 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { FEATURE_PRESETS } from "../../../lib/vehicleAdminConfig";
+import {
+  BRAND_OPTIONS,
+  FEATURE_PRESETS,
+  FUEL_TYPE_OPTIONS,
+  TRANSMISSION_OPTIONS,
+  VEHICLE_CATEGORY_OPTIONS
+} from "../../../lib/vehicleAdminConfig";
 import { useFormContext } from "react-hook-form";
+import AdminSearchSelect from "../AdminSearchSelect";
 import VehiclePackageEditor from "./VehiclePackageEditor";
 import VehicleGalleryEditor from "./VehicleGalleryEditor";
 import VehicleSeoPreview from "./VehicleSeoPreview";
@@ -17,6 +24,11 @@ const VehicleSeoPanel = dynamic(() => import("./VehicleSeoPanel"), {
       <div className="h-28 rounded bg-slate-100" />
     </div>
   )
+});
+
+const SeoRichTextEditor = dynamic(() => import("./SeoRichTextEditor"), {
+  ssr: false,
+  loading: () => <div className="h-40 animate-pulse rounded-lg border border-slate-200 bg-slate-50" />
 });
 
 function Field({ label, children, hint }) {
@@ -42,7 +54,16 @@ function Checkbox({ label, checked, onChange, disabled }) {
   );
 }
 
-export default function VehicleForm({ activeTab, disabled, onRequestSave, authToken }) {
+export default function VehicleForm({
+  activeTab,
+  disabled,
+  onRequestSave,
+  authToken,
+  cityOptions = [],
+  vendorOptions = [],
+  categoryOptions = VEHICLE_CATEGORY_OPTIONS,
+  brandOptions = BRAND_OPTIONS
+}) {
   const { register, watch, setValue } = useFormContext();
   const form = watch();
 
@@ -71,13 +92,45 @@ export default function VehicleForm({ activeTab, disabled, onRequestSave, authTo
         <div className="grid gap-3 sm:grid-cols-2">
           <Field label="Title *"><input className={inputCls()} disabled={disabled} {...register("title", { required: true })} /></Field>
           <Field label="Vehicle name *"><input className={inputCls()} disabled={disabled} {...register("vehicleName", { required: true })} /></Field>
-          <Field label="Brand *"><input className={inputCls()} disabled={disabled} {...register("brand", { required: true })} /></Field>
+          <Field label="Brand *" hint="Search list or type a new brand">
+            <AdminSearchSelect
+              disabled={disabled}
+              value={form.brand || ""}
+              options={brandOptions}
+              placeholder="Search brand…"
+              onChange={(brand) => patch({ brand })}
+            />
+          </Field>
           <Field label="Model"><input className={inputCls()} disabled={disabled} {...register("model")} /></Field>
           <Field label="Variant"><input className={inputCls()} disabled={disabled} {...register("variant")} /></Field>
           <Field label="Year"><input type="number" className={inputCls()} disabled={disabled} {...register("year")} /></Field>
-          <Field label="Category *"><input className={inputCls()} disabled={disabled} {...register("category", { required: true })} /></Field>
-          <Field label="Vendor *"><input className={inputCls()} disabled={disabled} {...register("vendor", { required: true })} /></Field>
-          <Field label="City *"><input className={inputCls()} disabled={disabled} {...register("city", { required: true })} /></Field>
+          <Field label="Vehicle type / category *" hint="Sedan, SUV, Tempo… — search or type custom">
+            <AdminSearchSelect
+              disabled={disabled}
+              value={form.category || form.type || ""}
+              options={categoryOptions}
+              placeholder="Search vehicle type…"
+              onChange={(category) => patch({ category, type: category })}
+            />
+          </Field>
+          <Field label="Vendor *" hint="Pick from master vendors or type">
+            <AdminSearchSelect
+              disabled={disabled}
+              value={form.vendor || ""}
+              options={vendorOptions}
+              placeholder="Search vendor…"
+              onChange={(vendor) => patch({ vendor })}
+            />
+          </Field>
+          <Field label="City *" hint="HQ default is Chennai — pick from cities or type">
+            <AdminSearchSelect
+              disabled={disabled}
+              value={form.city || ""}
+              options={cityOptions}
+              placeholder="Search city…"
+              onChange={(city) => patch({ city })}
+            />
+          </Field>
           <Field label="Location"><input className={inputCls()} disabled={disabled} {...register("location")} /></Field>
           <Field label="Slug"><input className={inputCls()} disabled={disabled} {...register("slug")} hint="Auto-generated if empty" /></Field>
           <Field label="Product code"><input className={inputCls()} disabled={disabled} {...register("productCode")} hint="Auto-generated (CAB000001)" /></Field>
@@ -92,6 +145,44 @@ export default function VehicleForm({ activeTab, disabled, onRequestSave, authTo
             <Checkbox label="Recommended" checked={form.recommended} onChange={(v) => patch({ recommended: v })} disabled={disabled} />
             <Checkbox label="Best seller" checked={form.bestseller} onChange={(v) => patch({ bestseller: v })} disabled={disabled} />
           </div>
+
+          <div className="sm:col-span-2 space-y-3 rounded-xl border border-sky-100 bg-sky-50/40 p-3 sm:p-4">
+            <div>
+              <p className="text-sm font-bold text-slate-900">Page content</p>
+              <p className="mt-0.5 text-[11px] text-slate-600">
+                Shown on the public cab package page under Available packages. Also editable in the SEO tab.
+              </p>
+            </div>
+            <Field label="Short description" hint="1–2 lines under the heading">
+              <textarea
+                className={`${inputCls()} min-h-[64px]`}
+                disabled={disabled}
+                value={form.shortDescription || ""}
+                onChange={(e) => patch({ shortDescription: e.target.value })}
+                placeholder="Book Honda Amaze in Chennai for airport, local and outstation trips…"
+              />
+            </Field>
+            <Field label="Page heading (H1)" hint="Optional — defaults to vehicle name">
+              <input
+                className={inputCls()}
+                disabled={disabled}
+                value={form.h1 || ""}
+                onChange={(e) => patch({ h1: e.target.value })}
+                placeholder="Honda Amaze Cab Rental in Chennai"
+              />
+            </Field>
+            <div>
+              <p className="mb-1 text-xs font-semibold text-slate-600">Full page content</p>
+              <SeoRichTextEditor
+                value={form.longSeoContent || ""}
+                disabled={disabled}
+                onChange={(html) => patch({ longSeoContent: html })}
+              />
+              <p className="mt-1 text-[11px] text-slate-500">
+                Write package details, inclusions, tips — this appears on the live cab page after you Save.
+              </p>
+            </div>
+          </div>
         </div>
       )}
 
@@ -100,8 +191,24 @@ export default function VehicleForm({ activeTab, disabled, onRequestSave, authTo
           <Field label="Seats *"><input type="number" min={1} className={inputCls()} disabled={disabled} value={form.seats} onChange={(e) => patch({ seats: Number(e.target.value) })} /></Field>
           <Field label="Bags"><input type="number" min={0} className={inputCls()} disabled={disabled} value={form.bags} onChange={(e) => patch({ bags: Number(e.target.value) })} /></Field>
           <Field label="Doors"><input type="number" min={2} className={inputCls()} disabled={disabled} value={form.doors} onChange={(e) => patch({ doors: Number(e.target.value) })} /></Field>
-          <Field label="Fuel type"><input className={inputCls()} disabled={disabled} value={form.fuelType} onChange={(e) => patch({ fuelType: e.target.value })} /></Field>
-          <Field label="Transmission"><input className={inputCls()} disabled={disabled} value={form.transmission} onChange={(e) => patch({ transmission: e.target.value })} /></Field>
+          <Field label="Fuel type">
+            <AdminSearchSelect
+              disabled={disabled}
+              value={form.fuelType || ""}
+              options={FUEL_TYPE_OPTIONS}
+              placeholder="Petrol / Diesel…"
+              onChange={(fuelType) => patch({ fuelType })}
+            />
+          </Field>
+          <Field label="Transmission">
+            <AdminSearchSelect
+              disabled={disabled}
+              value={form.transmission || ""}
+              options={TRANSMISSION_OPTIONS}
+              placeholder="Manual / Automatic"
+              onChange={(transmission) => patch({ transmission })}
+            />
+          </Field>
           <Field label="Mileage"><input className={inputCls()} disabled={disabled} value={form.mileage} onChange={(e) => patch({ mileage: e.target.value })} /></Field>
           <Field label="Engine"><input className={inputCls()} disabled={disabled} value={form.engine} onChange={(e) => patch({ engine: e.target.value })} /></Field>
           <div className="sm:col-span-2 lg:col-span-3 flex flex-wrap gap-4">

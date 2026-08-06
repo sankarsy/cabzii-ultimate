@@ -61,13 +61,13 @@ export default function CabsBrowsePage() {
           { name: "Cabs", path: "/cabs" }
         ]}
       >
-        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-          <MmtCabSearchWidget defaultCity={displayCity} />
+        <div className="rounded-xl border border-slate-200 bg-slate-50 p-2.5 sm:rounded-2xl sm:p-3.5">
+          <MmtCabSearchWidget defaultCity={displayCity} compact />
         </div>
       </CabziiBrowseHeader>
 
       {loading ? (
-        <div className="py-16 text-center text-slate-500">Loading all cabs…</div>
+        <div className="py-8 text-center text-sm text-slate-500 sm:py-10">Loading all cabs…</div>
       ) : (
         <>
           <MmtCabResults cabs={cabs} trip={defaultTrip} />

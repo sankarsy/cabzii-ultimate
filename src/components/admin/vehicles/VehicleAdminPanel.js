@@ -7,12 +7,17 @@ import { toast } from "react-toastify";
 import { resolveMediaUrl } from "../../../lib/media";
 import {
   buildVehicleListUrl,
+  DEFAULT_HQ_CITY,
   emptyVehicleForm,
   SORT_OPTIONS,
+  VEHICLE_CATEGORY_OPTIONS,
   vehicleFromApi,
   vehicleToPayload,
   VEHICLE_TABS
 } from "../../../lib/vehicleAdminConfig";
+import { TAMIL_NADU_CITIES } from "../../../lib/tamilNaduCities";
+import { SEO_CITIES } from "../../../lib/seo/cities";
+import AdminSearchSelect from "../AdminSearchSelect";
 import VehicleForm from "./VehicleForm";
 import AdminPackageExcelToolbar from "../AdminPackageExcelToolbar";
 
@@ -58,6 +63,14 @@ export default function VehicleAdminPanel({
   const [bestseller, setBestseller] = useState(false);
   const [sort, setSort] = useState("newest");
   const [page, setPage] = useState(1);
+  const [cityOptions, setCityOptions] = useState(() => [
+    DEFAULT_HQ_CITY,
+    ...TAMIL_NADU_CITIES.map((c) => c.name),
+    ...SEO_CITIES.map((c) => c.name)
+  ]);
+  const [vendorOptions, setVendorOptions] = useState(["Cabzii"]);
+  const [categoryOptions, setCategoryOptions] = useState(VEHICLE_CATEGORY_OPTIONS);
+  const [bulkBusy, setBulkBusy] = useState(false);
 
   const loadList = useCallback(async () => {
     if (!token) return;
@@ -79,8 +92,31 @@ export default function VehicleAdminPanel({
       const res = await fetch(url, { headers: authHeaders });
       const json = await res.json();
       if (!res.ok) throw new Error(json?.message || "Failed to load vehicles");
-      setItems(json.data || []);
-      setMeta(json.meta || { page: 1, totalPages: 1, total: 0 });
+      const rows = Array.isArray(json.data) ? json.data : [];
+      setItems(rows);
+      setMeta(json.meta || { page: 1, totalPages: 1, total: rows.length });
+      setCityOptions((prev) => {
+        const next = new Set(prev);
+        rows.forEach((row) => {
+          if (row.city) next.add(row.city);
+        });
+        return [...next];
+      });
+      setVendorOptions((prev) => {
+        const next = new Set(prev);
+        rows.forEach((row) => {
+          if (row.vendor) next.add(row.vendor);
+        });
+        return [...next];
+      });
+      setCategoryOptions((prev) => {
+        const next = new Set(prev);
+        rows.forEach((row) => {
+          if (row.category) next.add(row.category);
+          if (row.type) next.add(row.type);
+        });
+        return [...next];
+      });
     } catch (err) {
       toast.error(err.message || "Could not load vehicles");
     } finally {
@@ -92,6 +128,30 @@ export default function VehicleAdminPanel({
     loadList();
   }, [loadList]);
 
+  useEffect(() => {
+    if (!token) return undefined;
+    let cancelled = false;
+    (async () => {
+      try {
+        const [citiesRes, vendorsRes] = await Promise.all([
+          fetch("/api/cities?limit=200", { headers: { authorization: authHeaders.authorization }, cache: "no-store" }),
+          fetch("/api/vendors", { headers: { authorization: authHeaders.authorization }, cache: "no-store" })
+        ]);
+        const citiesJson = await citiesRes.json().catch(() => ({}));
+        const vendorsJson = await vendorsRes.json().catch(() => ({}));
+        if (cancelled) return;
+        const apiCities = Array.isArray(citiesJson?.data) ? citiesJson.data.map((c) => c.name).filter(Boolean) : [];
+        const apiVendors = Array.isArray(vendorsJson?.data) ? vendorsJson.data.map((v) => v.name).filter(Boolean) : [];
+        setCityOptions((prev) => [...new Set([DEFAULT_HQ_CITY, ...apiCities, ...prev])]);
+        setVendorOptions((prev) => [...new Set(["Cabzii", ...apiVendors, ...prev])]);
+      } catch {
+        /* presets already loaded */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [token, authHeaders.authorization]);
   useEffect(() => {
     if (pageMode === "create") {
       reset(emptyVehicleForm());
@@ -159,7 +219,7 @@ export default function VehicleAdminPanel({
       if (!form.seoDescription?.trim()) return "Meta Description is required — open the SEO tab";
       if (!form.slug?.trim()) return "Slug is required — open the SEO tab";
       if (!form.canonicalUrl?.trim()) return "Canonical URL is required — open the SEO tab";
-      if (!form.h1?.trim()) return "H1 is required — open the SEO tab";
+      if (!form.h1?.trim()) return "H1 is required — fill Page content on Basic Info or SEO tab";
       if ((form.seoTitle || "").length > 70) return "SEO Title is too long (keep under 70 characters)";
       if ((form.seoDescription || "").length > 180) return "Meta Description is too long (keep under 180 characters)";
     }
@@ -239,12 +299,48 @@ export default function VehicleAdminPanel({
     window.open(`/cabs/${slug}`, "_blank");
   };
 
+  const setPageCitiesToChennai = async () => {
+    const targets = items.filter((item) => String(item.city || "").trim().toLowerCase() !== DEFAULT_HQ_CITY.toLowerCase());
+    if (!targets.length) {
+      toast.info(`All vehicles on this page already use ${DEFAULT_HQ_CITY}`);
+      return;
+    }
+    if (
+      !window.confirm(
+        `Set city to ${DEFAULT_HQ_CITY} for ${targets.length} vehicle(s) on this page? (HQ focus — does not delete packages)`
+      )
+    ) {
+      return;
+    }
+    setBulkBusy(true);
+    let ok = 0;
+    try {
+      for (const item of targets) {
+        const payload = vehicleToPayload({ ...vehicleFromApi(item), city: DEFAULT_HQ_CITY });
+        const res = await fetch(`/api/cabs/${item._id || item.id}`, {
+          method: "PUT",
+          headers: authHeaders,
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) ok += 1;
+      }
+      toast.success(`Updated ${ok} vehicle(s) to ${DEFAULT_HQ_CITY}`);
+      await loadList();
+    } catch (e) {
+      toast.error(e.message || "Bulk city update failed");
+    } finally {
+      setBulkBusy(false);
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-xl font-bold text-slate-900">Vehicle management</h1>
-          <p className="text-sm text-slate-600">Dynamic packages · SEO · scalable fleet catalog</p>
+          <p className="text-sm text-slate-600">
+            Edit fleet city under <strong>Basic Info</strong>. HQ default: {DEFAULT_HQ_CITY}. Path: Admin → Cabs.
+          </p>
         </div>
         {isSuperAdmin !== false && (
           <button type="button" onClick={openCreate} className="rounded-lg bg-[var(--cabzii-brand)] px-4 py-2.5 text-sm font-semibold text-white hover:opacity-90">
@@ -266,10 +362,28 @@ export default function VehicleAdminPanel({
       <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
         <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
           <input className="rounded-lg border border-slate-300 px-3 py-2 text-sm" placeholder="Search name, brand, slug, code…" value={q} onChange={(e) => { setQ(e.target.value); setPage(1); }} />
-          <input className="rounded-lg border border-slate-300 px-3 py-2 text-sm" placeholder="City" value={city} onChange={(e) => { setCity(e.target.value); setPage(1); }} />
-          <input className="rounded-lg border border-slate-300 px-3 py-2 text-sm" placeholder="Vendor" value={vendor} onChange={(e) => { setVendor(e.target.value); setPage(1); }} />
+          <AdminSearchSelect
+            value={city}
+            options={cityOptions}
+            placeholder="Filter city…"
+            allowCustom
+            onChange={(v) => { setCity(v); setPage(1); }}
+          />
+          <AdminSearchSelect
+            value={vendor}
+            options={vendorOptions}
+            placeholder="Filter vendor…"
+            allowCustom
+            onChange={(v) => { setVendor(v); setPage(1); }}
+          />
           <input className="rounded-lg border border-slate-300 px-3 py-2 text-sm" placeholder="Brand" value={brand} onChange={(e) => { setBrand(e.target.value); setPage(1); }} />
-          <input className="rounded-lg border border-slate-300 px-3 py-2 text-sm" placeholder="Category" value={category} onChange={(e) => { setCategory(e.target.value); setPage(1); }} />
+          <AdminSearchSelect
+            value={category}
+            options={categoryOptions}
+            placeholder="Filter vehicle type…"
+            allowCustom
+            onChange={(v) => { setCategory(v); setPage(1); }}
+          />
           <select className="rounded-lg border border-slate-300 px-3 py-2 text-sm" value={status} onChange={(e) => { setStatus(e.target.value); setPage(1); }}>
             <option value="">All status</option>
             <option value="active">Active</option>
@@ -284,6 +398,27 @@ export default function VehicleAdminPanel({
             <label className="flex items-center gap-1"><input type="checkbox" checked={bestseller} onChange={(e) => { setBestseller(e.target.checked); setPage(1); }} /> Bestseller</label>
           </div>
         </div>
+        {isSuperAdmin !== false && !formOpen ? (
+          <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-slate-100 pt-3">
+            <button
+              type="button"
+              disabled={bulkBusy || loading || !items.length}
+              onClick={() => { setCity("Salem"); setPage(1); }}
+              className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+            >
+              Find Salem vehicles
+            </button>
+            <button
+              type="button"
+              disabled={bulkBusy || loading || !items.length}
+              onClick={setPageCitiesToChennai}
+              className="rounded-lg border border-sky-300 bg-sky-50 px-3 py-1.5 text-xs font-semibold text-sky-800 hover:bg-sky-100 disabled:opacity-50"
+            >
+              {bulkBusy ? "Updating…" : `Set this page → ${DEFAULT_HQ_CITY}`}
+            </button>
+            <p className="text-[11px] text-slate-500">Tip: filter City = Salem, then click Set this page → Chennai.</p>
+          </div>
+        ) : null}
       </div>
 
       <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
@@ -384,7 +519,15 @@ export default function VehicleAdminPanel({
                 ))}
               </div>
               <FormProvider {...formMethods}>
-                <VehicleForm activeTab={activeTab} disabled={saving} onRequestSave={requestSilentSave} authToken={token} />
+                <VehicleForm
+                  activeTab={activeTab}
+                  disabled={saving}
+                  onRequestSave={requestSilentSave}
+                  authToken={token}
+                  cityOptions={cityOptions}
+                  vendorOptions={vendorOptions}
+                  categoryOptions={categoryOptions}
+                />
               </FormProvider>
             </div>
             <div className="flex shrink-0 justify-end gap-2 border-t border-slate-200 px-4 py-3 sm:px-5">

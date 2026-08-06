@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { normalizeTrustBadges, EMOJI_BY_KEY } from "../TrustBadges";
 
+import ImageUploadField from "./ImageUploadField";
+
 const SECTIONS = [
   { id: "general", label: "General & contact" },
   { id: "navbar", label: "Navbar" },
@@ -11,6 +13,7 @@ const SECTIONS = [
   { id: "heroStats", label: "Hero stats (counters)" },
   { id: "whyChooseUs", label: "Why Cabzii section" },
   { id: "homeSections", label: "Homepage sections" },
+  { id: "holidayCategories", label: "Explore by category photos" },
   { id: "whatsapp", label: "WhatsApp button" }
 ];
 
@@ -104,6 +107,7 @@ export default function AdminSiteSettings({ token, isSuperAdmin }) {
   const [whyStats, setWhyStats] = useState([]);
   const [whyChooseUs, setWhyChooseUs] = useState([]);
   const [homeSections, setHomeSections] = useState([]);
+  const [holidayCategories, setHolidayCategories] = useState([]);
   const [whatsappFab, setWhatsappFab] = useState({ enabled: true, number: "" });
 
   const authHeaders = token ? { authorization: `Bearer ${token}` } : {};
@@ -148,6 +152,7 @@ export default function AdminSiteSettings({ token, isSuperAdmin }) {
     setWhyStats(Array.isArray(s.whyStats) ? s.whyStats.map((x) => ({ ...x })) : []);
     setWhyChooseUs(Array.isArray(s.whyChooseUs) ? s.whyChooseUs.map((x) => ({ ...x })) : []);
     setHomeSections(Array.isArray(s.homeSections) ? s.homeSections.map((x) => ({ ...x })) : []);
+    setHolidayCategories(Array.isArray(s.holidayCategories) ? s.holidayCategories.map((x) => ({ ...x })) : []);
     setWhatsappFab({
       enabled: s.whatsappFab?.enabled !== false,
       number: s.whatsappFab?.number || ""
@@ -192,6 +197,8 @@ export default function AdminSiteSettings({ token, isSuperAdmin }) {
         return { whySection, whyStats, whyChooseUs };
       case "homeSections":
         return { homeSections };
+      case "holidayCategories":
+        return { holidayCategories };
       case "whatsapp":
         return { whatsappFab };
       default:
@@ -648,6 +655,71 @@ export default function AdminSiteSettings({ token, isSuperAdmin }) {
             ))}
             <button type="button" onClick={() => setHomeSections((p) => [...p, emptyHomeSection()])} className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50">
               + Add homepage section
+            </button>
+          </div>
+        )}
+
+        {activeSection === "holidayCategories" && (
+          <div className="space-y-3">
+            <p className="text-xs text-slate-600">
+              Photos for homepage <strong>Explore by category</strong>. Upload per card — leave empty to use gradient fallback.
+            </p>
+            {holidayCategories.map((cat, index) => (
+              <div key={cat.id || index} className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <Field label="Category id" hint="pilgrimage, beach, hill…">
+                    <input
+                      className={inputCls()}
+                      value={cat.id || ""}
+                      onChange={(e) => updateListItem(setHolidayCategories, index, "id", e.target.value)}
+                    />
+                  </Field>
+                  <Field label="Label">
+                    <input
+                      className={inputCls()}
+                      value={cat.label || ""}
+                      onChange={(e) => updateListItem(setHolidayCategories, index, "label", e.target.value)}
+                    />
+                  </Field>
+                  <div className="sm:col-span-2">
+                    <Field label="Short description">
+                      <textarea
+                        className={inputCls()}
+                        rows={2}
+                        value={cat.desc || ""}
+                        onChange={(e) => updateListItem(setHolidayCategories, index, "desc", e.target.value)}
+                      />
+                    </Field>
+                  </div>
+                  <div className="sm:col-span-2">
+                    <ImageUploadField
+                      label="Category photo"
+                      hint="Recommended 800×500 JPG/WebP"
+                      value={cat.image || ""}
+                      onChange={(v) => updateListItem(setHolidayCategories, index, "image", v)}
+                      authToken={token}
+                      alt={cat.label || "Category"}
+                      disabled={!isSuperAdmin}
+                    />
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => removeListItem(setHolidayCategories, index)}
+                  className="mt-2 text-xs font-semibold text-rose-700 hover:underline"
+                >
+                  Remove category
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() =>
+                setHolidayCategories((p) => [...p, { id: "", label: "", image: "", desc: "" }])
+              }
+              className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+            >
+              + Add category
             </button>
           </div>
         )}

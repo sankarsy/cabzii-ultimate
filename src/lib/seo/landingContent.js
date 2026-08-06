@@ -22,13 +22,19 @@ function benefitsList(items) {
 
 const LOCAL_CITIES = new Set([
   "chennai",
-  "bengaluru",
   "coimbatore",
   "madurai",
   "trichy",
   "salem",
   "vellore",
-  "pondicherry"
+  "erode",
+  "hosur",
+  "tirunelveli",
+  "rameswaram",
+  "ooty",
+  "kodaikanal",
+  "pondicherry",
+  "bengaluru"
 ]);
 
 /** Chennai-origin and top reverse routes get long-form content. */
@@ -53,10 +59,17 @@ function cityServiceLinks(city) {
 }
 
 function cityRouteLinks(citySlug, limit = 6) {
-  return routesForCity(citySlug)
-    .slice(0, limit)
-    .map((r) => link(`/routes/${r.slug}`, `${r.fromCity.name} to ${r.toCity.name} cab`))
-    .join(", ");
+  const seen = new Set();
+  const unique = [];
+  for (const r of routesForCity(citySlug)) {
+    if (!r?.fromCity || !r?.toCity) continue;
+    const key = `${r.from}|${r.to}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    unique.push(r);
+    if (unique.length >= limit) break;
+  }
+  return unique.map((r) => link(`/routes/${r.slug}`, `${r.fromCity.name} to ${r.toCity.name} cab`)).join(", ");
 }
 
 function buildCityCabBody(city) {
@@ -120,8 +133,8 @@ ${benefitsList([
   "Transparent inclusions — tolls, parking and state taxes listed where applicable"
 ])}
 
-<h2>Local SEO — ${name} cab service coverage</h2>
-<p>Cabzii operates as an online cab aggregator for ${name}, ${city.state}. Our ${name} landing pages, service pages and route guides are updated regularly with fare guidance, travel tips and booking instructions. For businesses, hospitals, hotels and wedding planners in ${name}, Cabzii offers repeatable booking with consistent pricing — ideal for guest transfers and staff commute packages.</p>
+<h2>Cab service coverage in ${name}</h2>
+<p>Cabzii is based in Chennai and connects riders across ${name}, ${city.state} with verified taxi partners. Our ${name} landing pages, service pages and route guides are updated with fare guidance, travel tips and booking instructions. For businesses, hospitals, hotels and wedding planners in ${name}, Cabzii offers repeatable booking with clear package pricing — ideal for guest transfers and staff commute packages.</p>
 
 <h2>Acting driver and chauffeur options in ${name}</h2>
 <p>Need a driver for your own car? Visit ${link(`/acting-driver/${city.slug}`, `acting driver ${name}`)} for hourly, daily and outstation chauffeur packages. This is popular for owners who prefer their vehicle but want a professional driver for long highway stretches or city congestion.</p>

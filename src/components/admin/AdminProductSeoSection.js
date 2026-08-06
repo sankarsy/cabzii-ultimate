@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { previewCatalogSlug } from "../../lib/catalogProduct";
 import { resolveMediaUrl } from "../../lib/media";
+import { suggestImageAlt, isWeakAlt, syncSocialImagesFromCover } from "../../lib/dynamicImageSeo";
 import { stockImageForProduct } from "../../lib/vehicleImages";
 import { emptyEnterpriseSeoFields, flattenEnterpriseSeo } from "../../lib/vehicleEnterpriseSeo";
 
@@ -47,11 +48,28 @@ export function AdminProductSeoSection({
   enterprise = true,
   authToken
 }) {
-  const set = (patch) => onChange((prev) => ({ ...prev, ...patch }));
+  const set = (patch) =>
+    onChange((prev) => {
+      let next = { ...prev, ...patch };
+      if ("image" in patch || "images" in patch || "imageAlt" in patch) {
+        next = syncSocialImagesFromCover(next);
+      }
+      return next;
+    });
   const previewSlug = previewCatalogSlug(form, titleField, cityField);
   const publicPath = previewSlug ? `${pathPrefix}/${previewSlug}` : pathPrefix;
   const productName = form[titleField] || form.name || "";
   const previewImage = resolveMediaUrl(form.image) || stockImageForProduct(form);
+  const kindHint = pathPrefix.includes("driver")
+    ? "driver"
+    : pathPrefix.includes("tour") || pathPrefix.includes("holiday")
+      ? "holiday"
+      : "cab";
+
+  const applySuggestedAlt = () => {
+    const alt = suggestImageAlt(form, { kind: kindHint });
+    set({ imageAlt: alt, imageTitle: form.imageTitle || productName || alt });
+  };
 
   const flatEnterprise = flattenEnterpriseSeo(form);
   const panelForm = {
@@ -105,8 +123,22 @@ export function AdminProductSeoSection({
           <Field label="Brand name" hint="Vendor or fleet brand">
             <input className={inputCls()} value={form.brandName || ""} onChange={(e) => set({ brandName: e.target.value })} placeholder={form.vendor || ""} />
           </Field>
-          <Field label="Image alt text" hint="Google Images & accessibility">
-            <input className={inputCls()} value={form.imageAlt || ""} onChange={(e) => set({ imageAlt: e.target.value })} placeholder={`${productName || "Cab"} rental photo`} />
+          <Field label="Image alt text" hint="Google Images & accessibility — never use the file name">
+            <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center">
+              <input
+                className={inputCls()}
+                value={form.imageAlt || ""}
+                onChange={(e) => set({ imageAlt: e.target.value })}
+                placeholder={suggestImageAlt(form, { kind: kindHint })}
+              />
+              <button
+                type="button"
+                onClick={applySuggestedAlt}
+                className="shrink-0 rounded-lg border border-sky-300 bg-sky-50 px-3 py-2 text-xs font-semibold text-sky-800 hover:bg-sky-100"
+              >
+                {isWeakAlt(form.imageAlt) ? "Generate SEO alt" : "Refresh alt"}
+              </button>
+            </div>
           </Field>
           <Field label="Image title">
             <input className={inputCls()} value={form.imageTitle || ""} onChange={(e) => set({ imageTitle: e.target.value })} placeholder={productName || ""} />

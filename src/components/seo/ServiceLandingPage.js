@@ -71,7 +71,7 @@ export default function ServiceLandingPage({
         : `${city.name} local drop`;
 
   return (
-    <article className="section-shell py-6 sm:py-10 md:py-14">
+    <article className="section-shell cabzii-seo-landing">
       <Breadcrumbs
         items={[
           { name: "Home", path: "/" },
@@ -80,11 +80,11 @@ export default function ServiceLandingPage({
         ]}
       />
 
-      <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-sky-600 sm:text-xs">
+      <p className="cabzii-seo-kicker">
         {city.state} · {service.name}
       </p>
-      <h1 className="mt-2 text-2xl font-extrabold text-slate-900 sm:mt-3 sm:text-3xl md:text-4xl">{h1}</h1>
-      <p className="mt-3 text-sm leading-relaxed text-slate-700 sm:mt-4 sm:text-base md:text-lg">{lead}</p>
+      <h1>{h1}</h1>
+      <p className="cabzii-seo-lead">{lead}</p>
 
       <SerpRichBar
         ratingValue={reviewStats?.ratingValue}
@@ -123,17 +123,17 @@ export default function ServiceLandingPage({
       )}
 
       {cityRoutes.length ? (
-        <section className="mt-8">
-          <h2 className="text-xl font-bold text-slate-900 md:text-2xl">Popular one-way routes</h2>
-          <p className="mt-2 text-sm text-slate-600">
+        <section className="cabzii-seo-block">
+          <h2>Popular one-way routes</h2>
+          <p className="mt-1 text-[11px] text-slate-600 sm:text-xs">
             Fixed-fare one-way cabs to and from {city.name} — tap a route to see live fares.
           </p>
-          <ul className="mt-4 flex flex-wrap gap-2">
+          <ul className="mt-2.5 flex flex-wrap gap-1.5">
             {cityRoutes.map((route) => (
               <li key={route.slug}>
                 <Link
                   href={`/routes/${route.slug}`}
-                  className="inline-block rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-[var(--emt-orange)] hover:bg-[#fff4ee] hover:text-[var(--emt-orange)]"
+                  className="inline-block rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700 transition hover:border-[var(--emt-orange)] hover:bg-[#fff4ee] hover:text-[var(--emt-orange)]"
                 >
                   {route.fromCity.name} → {route.toCity.name}
                 </Link>
@@ -145,7 +145,7 @@ export default function ServiceLandingPage({
 
       {extraBody ? (
         <div
-          className="prose prose-slate mt-4 max-w-none text-sm text-slate-700"
+          className="prose prose-slate cabzii-seo-block max-w-none text-xs text-slate-700 sm:text-sm"
           dangerouslySetInnerHTML={{ __html: extraBody }}
         />
       ) : null}
@@ -157,26 +157,26 @@ export default function ServiceLandingPage({
         airportDirection={service.slug === "airport-taxi" ? "pickup" : undefined}
         variant="compact"
       />
-      <div className="mt-3">
+      <div className="mt-2">
         <Link
           href={isTourPackages ? "/holidays" : `/cab-booking/${city.slug}`}
-          className="text-xs font-semibold text-[var(--cabzii-brand)] hover:underline"
+          className="text-[11px] font-semibold text-[var(--cabzii-brand)] hover:underline sm:text-xs"
         >
           {isTourPackages ? "All holiday packages →" : `All cabs in ${city.name} →`}
         </Link>
       </div>
 
       {["car-rental", "cab-rental", "hourly-rental", "local-taxi"].includes(service.slug) ? (
-        <section className="mt-10 rounded-xl border border-slate-200 bg-slate-50 p-5">
-          <h2 className="text-xl font-bold text-slate-900 md:text-2xl">
+        <section className="cabzii-seo-block rounded-xl border border-slate-200 bg-slate-50 p-3 sm:p-4">
+          <h2>
             {city.name} cabs — hourly packages &amp; fares
           </h2>
-          <p className="mt-3 text-sm leading-relaxed text-slate-700">
+          <p className="mt-1.5 text-[11px] leading-relaxed text-slate-700 sm:text-xs">
             Choose a cab package that fits your trip — popular slabs include{" "}
             <strong>4 hours</strong> / 40 km and <strong>8 hours</strong> / 80 km for local {city.name} errands, weddings
             and sightseeing. Extra hours and km rates are shown on each package before you pay on Cabzii.
           </p>
-          <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-slate-700">
+          <ul className="mt-2 list-disc space-y-0.5 pl-4 text-[11px] text-slate-700 sm:text-xs">
             <li>4 hours local package — meetings, shopping, hospital visits</li>
             <li>8 hours full-day package — weddings, multi-stop city tours</li>
             <li>12 hours package — long wedding days and corporate events</li>
@@ -184,13 +184,13 @@ export default function ServiceLandingPage({
         </section>
       ) : null}
 
-      <section className="mt-10">
-        <h2 className="text-xl font-bold text-slate-900 md:text-2xl">Why book on Cabzii?</h2>
-        <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+      <section className="cabzii-seo-block">
+        <h2>Why book on Cabzii?</h2>
+        <ul className="cabzii-seo-card-list mt-2.5 grid gap-2 sm:grid-cols-2">
           {service.highlights.map((item) => (
             <li
               key={item}
-              className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm"
+              className="rounded-xl border border-slate-200 bg-white text-slate-700 shadow-sm"
             >
               {item}
             </li>
@@ -199,9 +199,9 @@ export default function ServiceLandingPage({
       </section>
 
       {areas.length ? (
-        <section className="mt-10">
-          <h2 className="text-xl font-bold text-slate-900 md:text-2xl">Areas we serve in {city.name}</h2>
-          <p className="mt-2 text-sm text-slate-600">
+        <section className="cabzii-seo-block">
+          <h2>Areas we serve in {city.name}</h2>
+          <p className="mt-1 text-[11px] text-slate-600 sm:text-xs">
             Pickup available across popular neighbourhoods including {areas.join(", ")} and nearby localities.
           </p>
         </section>
@@ -209,14 +209,14 @@ export default function ServiceLandingPage({
 
       <FaqSection title={`${service.name} in ${city.name} — FAQ`} faqs={faqs} />
 
-      <section className="mt-10 rounded-2xl bg-[var(--cabzii-brand)] p-5 text-white md:p-6">
-        <h2 className="text-lg font-bold md:text-xl">Ready to book {service.name.toLowerCase()}?</h2>
-        <p className="mt-1.5 text-xs text-blue-100 md:text-sm">
+      <section className="cabzii-seo-block rounded-xl bg-[var(--cabzii-brand)] p-3.5 text-white sm:p-4">
+        <h2 className="!text-white text-sm font-bold sm:text-base">Ready to book {service.name.toLowerCase()}?</h2>
+        <p className="mt-1 text-[11px] text-blue-100 sm:text-xs">
           Compare vendors, see fare upfront and confirm in minutes — no app download required.
         </p>
         <Link
           href={searchHref}
-          className="cabzii-btn cabzii-btn-sm cabzii-tap mt-3 inline-flex rounded-full bg-white font-bold text-[var(--cabzii-brand)] hover:bg-slate-100"
+          className="cabzii-btn cabzii-btn-sm cabzii-tap mt-2.5 inline-flex rounded-full bg-white font-bold text-[var(--cabzii-brand)] hover:bg-slate-100"
         >
           {isTourPackages ? "Browse packages" : "Search & book now"}
         </Link>

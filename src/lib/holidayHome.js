@@ -1,4 +1,7 @@
-import { num, packageYouPay } from "./cabFare";
+import { serviceFallbackPath } from "./dynamicImageSeo";
+import { packageDisplayPrice } from "./tourPackagePricing";
+
+export { packageDisplayPrice } from "./tourPackagePricing";
 
 /** Match homepage destination tiles to catalog packages */
 export const DOMESTIC_DESTINATION_MATCHERS = [
@@ -10,19 +13,18 @@ export const DOMESTIC_DESTINATION_MATCHERS = [
   { slug: "manali", label: "Manali", nameIncludes: "Manali", cityMatch: "Manali" }
 ];
 
-/** Reliable cover photos when package image is missing or broken */
+/**
+ * Local theme covers — replace files under /public/images/holiday-themes/ or package.image from admin.
+ * No hardcoded CDN product photos.
+ */
 export const DOMESTIC_DESTINATION_IMAGES = {
-  tirupati:
-    "https://images.unsplash.com/photo-1582510003294-1b66a9c2a2b0?auto=format&fit=crop&w=600&h=400&q=80",
-  goa: "https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&w=600&h=400&q=80",
-  kerala:
-    "https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&w=600&h=400&q=80",
-  rajasthan:
-    "https://images.unsplash.com/photo-1599661046289-e31897846e41?auto=format&fit=crop&w=600&h=400&q=80",
-  rameswaram:
-    "https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=600&h=400&q=80",
-  manali:
-    "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=600&h=400&q=80"
+  tirupati: "/images/holiday-themes/pilgrimage.svg",
+  goa: "/images/holiday-themes/beach.svg",
+  kerala: "/images/holiday-themes/beach.svg",
+  rajasthan: "/images/holiday-themes/safari.svg",
+  rameswaram: "/images/holiday-themes/pilgrimage.svg",
+  manali: "/images/holiday-themes/family.svg",
+  default: serviceFallbackPath("holiday")
 };
 
 export const HOLIDAY_THEMES = [
@@ -65,9 +67,11 @@ export function packageSeoHref(pkg) {
   return id ? `/holidays/${id}` : "/holidays";
 }
 
-/** Actual booking page — must use Mongo id (slug /holidays/{slug} redirects to SEO). */
+/** Booking page — prefers SEO slug (`/holidays/tirupati-…`); falls back to Mongo id. */
 export function packageBookingHref(pkg) {
   if (!pkg) return "/holidays";
+  const slug = pkg.slug ? String(pkg.slug).trim() : "";
+  if (slug) return `/holidays/${slug}`;
   const id = pkg._id || pkg.id;
   return id ? `/holidays/${id}` : packageSeoHref(pkg);
 }
@@ -77,13 +81,6 @@ export function packageDetailHref(pkg) {
   if (!pkg) return "/holidays";
   if (pkg.slug) return packageSeoHref(pkg);
   return packageBookingHref(pkg);
-}
-
-export function packageDisplayPrice(pkg) {
-  if (!pkg) return 0;
-  const base = num(pkg.price);
-  const discount = num(pkg.discountPercentage);
-  return packageYouPay(base, discount);
 }
 
 export function buildDomesticDestinations(packages) {

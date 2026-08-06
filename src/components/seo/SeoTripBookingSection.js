@@ -51,30 +51,30 @@ export default function SeoTripBookingSection({
         : null;
 
   return (
-    <section className="mt-6 space-y-4" aria-label={title || "Book online"}>
+    <section className="mt-3 space-y-3 sm:mt-4" aria-label={title || "Book online"}>
       <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-slate-100 px-3 py-2.5 text-xs sm:px-4">
+        <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 border-b border-slate-100 px-2.5 py-2 text-[11px] sm:px-3 sm:text-xs">
           <p className="inline-flex min-w-0 items-center gap-1 font-semibold text-slate-800">
-            <MapPin className="h-3.5 w-3.5 shrink-0 text-emerald-500" strokeWidth={2} />
+            <MapPin className="h-3 w-3 shrink-0 text-emerald-500" strokeWidth={2} />
             <span className="truncate">{pickup || "Pickup"}</span>
           </p>
           <span className="text-slate-300" aria-hidden>
             →
           </span>
           <p className="inline-flex min-w-0 items-center gap-1 font-semibold text-slate-800">
-            <MapPin className="h-3.5 w-3.5 shrink-0 text-rose-400" strokeWidth={2} />
+            <MapPin className="h-3 w-3 shrink-0 text-rose-400" strokeWidth={2} />
             <span className="truncate">{hasDrop ? drop : "Drop"}</span>
           </p>
           {priceText ? (
-            <p className="ml-auto text-sm font-bold text-slate-900">
+            <p className="ml-auto text-xs font-bold text-slate-900 sm:text-sm">
               {priceText}
-              {meta ? <span className="ml-1.5 text-[11px] font-normal text-slate-500">{meta}</span> : null}
+              {meta ? <span className="ml-1 text-[10px] font-normal text-slate-500">{meta}</span> : null}
             </p>
           ) : null}
         </div>
 
         {showCabWidget ? (
-          <div className="bg-slate-50/70 p-3 sm:p-3.5">
+          <div className="bg-slate-50/70 p-2 sm:p-2.5">
             <MmtCabSearchWidget
               defaultCity={widgetDefaultCity || pickup}
               initialTrip={widgetInitialTrip || trip}
@@ -85,16 +85,16 @@ export default function SeoTripBookingSection({
         ) : null}
 
         {showDriverWidget ? (
-          <div className="border-t border-slate-100 bg-slate-50/70 p-3 sm:p-3.5">
-            <MmtDriverSearchWidget defaultCity={widgetDefaultCity || pickup} initialTrip={widgetInitialTrip || trip} />
+          <div className="border-t border-slate-100 bg-slate-50/70 p-2 sm:p-2.5">
+            <MmtDriverSearchWidget defaultCity={widgetDefaultCity || pickup} initialTrip={widgetInitialTrip || trip} compact />
           </div>
         ) : null}
       </div>
 
       {cabs?.length ? (
         <div>
-          <div className="mb-3 flex items-center justify-between gap-2">
-            <h3 className="text-sm font-bold text-slate-900">Available cabs</h3>
+          <div className="mb-1.5 flex items-center justify-between gap-2">
+            <h3 className="text-xs font-bold text-slate-900 sm:text-sm">Available cabs</h3>
             {cabSearchHref ? (
               <Link href={cabSearchHref} className="text-[11px] font-semibold text-[var(--cabzii-brand)] hover:underline">
                 View all →

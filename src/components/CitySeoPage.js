@@ -2,7 +2,9 @@ import Link from "next/link";
 import Breadcrumbs from "./seo/Breadcrumbs";
 import FaqSection from "./seo/FaqSection";
 import SerpRichBar from "./seo/SerpRichBar";
-import { SEO_CITIES } from "../lib/seo";
+import BookingCtaBar from "./seo/BookingCtaBar";
+import RelatedSeoLinks from "./seo/RelatedSeoLinks";
+import { peerCitiesForHub, isTamilNaduCity } from "../lib/seo";
 import { getCityFaqs } from "../lib/seo/content";
 import { formatSerpPrice } from "../lib/seo/serpRichData";
 import {
@@ -31,9 +33,12 @@ export default function CitySeoPage({
   const faqs = getCityFaqs(city, isCab ? "cab" : "driver");
   const cityRoutes = routesForCity(city.slug).slice(0, 8);
   const topServices = isCab ? servicesForCityHub(city.slug, 8) : servicesForCityHub(city.slug, 4);
+  const bookHref = isCab
+    ? `/cabs?city=${encodeURIComponent(city.slug)}`
+    : `/drivers?city=${encodeURIComponent(city.slug)}`;
 
   return (
-    <article className="section-shell py-10 md:py-14">
+    <article className="section-shell cabzii-seo-landing">
         <Breadcrumbs
           items={[
             { name: "Home", path: "/" },
@@ -42,11 +47,17 @@ export default function CitySeoPage({
           ]}
         />
 
-        <p className="text-xs font-bold uppercase tracking-[0.2em] text-sky-600">
+        <p className="cabzii-seo-kicker">
           {city.state} · Cabzii
         </p>
-        <h1 className="mt-3 text-3xl font-extrabold text-slate-900 md:text-4xl">{title}</h1>
-        <p className="mt-4 text-base leading-relaxed text-slate-700 md:text-lg">{lead}</p>
+        <h1>{title}</h1>
+        <p className="cabzii-seo-lead">{lead}</p>
+
+        <BookingCtaBar
+          variant="compact"
+          bookHref={bookHref}
+          bookLabel={isCab ? `Book cab in ${city.name}` : `Hire driver in ${city.name}`}
+        />
 
         {isCab ? (
           <SerpRichBar
@@ -68,25 +79,25 @@ export default function CitySeoPage({
           />
         ) : null}
 
-        <div className="mt-6 flex flex-wrap gap-3">
+        <div className="mt-3 flex flex-wrap gap-1.5">
           <Link
             href={isCab ? "/cabs" : "/drivers"}
-            className="rounded-full bg-[var(--cabzii-brand)] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#0046b0]"
+            className="cabzii-btn cabzii-btn-primary cabzii-btn-sm"
           >
             {isCab ? `Book cab in ${city.name}` : `Hire driver in ${city.name}`}
           </Link>
-          <Link href="/cabs" className="rounded-full border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-800">
+          <Link href="/cabs" className="cabzii-btn cabzii-btn-secondary cabzii-btn-sm">
             Browse all cabs
           </Link>
-          <Link href="/drivers" className="rounded-full border border-slate-300 px-5 py-2.5 text-sm font-semibold text-slate-700">
+          <Link href="/drivers" className="cabzii-btn cabzii-btn-secondary cabzii-btn-sm">
             Browse drivers
           </Link>
         </div>
 
         {isCab && city.slug === "chennai" ? (
-          <section className="mt-10 rounded-xl border border-slate-200 bg-slate-50 p-5">
-            <h2 className="text-lg font-bold text-slate-900">Chennai cabs — hourly packages (4 hours &amp; 8 hours)</h2>
-            <p className="mt-2 text-sm text-slate-700">
+          <section className="cabzii-seo-block rounded-xl border border-slate-200 bg-slate-50 p-3 sm:p-4">
+            <h2>Chennai cabs — hourly packages (4 hours &amp; 8 hours)</h2>
+            <p className="mt-1.5 text-[11px] text-slate-700 sm:text-xs">
               Compare local cab packages on Cabzii — 4 hours / 40 km and 8 hours / 80 km slabs plus outstation and airport
               cabs across Chennai.
             </p>
@@ -94,9 +105,9 @@ export default function CitySeoPage({
         ) : null}
 
         {isCab ? (
-          <section className="mt-10 rounded-xl border border-slate-200 bg-slate-50 p-5">
-            <h2 className="text-lg font-bold text-slate-900">How to book a cab in {city.name}</h2>
-            <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm text-slate-700">
+          <section className="cabzii-seo-block rounded-xl border border-slate-200 bg-slate-50 p-3 sm:p-4">
+            <h2>How to book a cab in {city.name}</h2>
+            <ol className="mt-1.5 list-decimal space-y-1 pl-4 text-[11px] sm:text-xs text-slate-700">
               <li>Enter pickup and drop location (or choose airport / outstation)</li>
               <li>Login with your 10-digit mobile number &amp; OTP</li>
               <li>Compare Dzire, Ertiga, Innova &amp; Tempo — see fares upfront</li>
@@ -106,33 +117,33 @@ export default function CitySeoPage({
         ) : null}
 
         {city.slug === "chennai" ? (
-          <section className="mt-10 rounded-xl border border-sky-200 bg-sky-50/80 p-5">
-            <h2 className="text-lg font-bold text-slate-900">Chennai travel guide</h2>
-            <p className="mt-2 text-sm text-slate-700">
+          <section className="cabzii-seo-block rounded-xl border border-sky-200 bg-sky-50/80 p-3 sm:p-4">
+            <h2>Chennai travel guide</h2>
+            <p className="mt-1.5 text-[11px] text-slate-700 sm:text-xs">
               {isCab
                 ? "New on our blog: cab booking in Chennai, acting driver hire, taxi near me and Tirupati routes — from fares to vehicle tips."
                 : "Need context on acting driver packages, call driver options and how they compare to full cab booking in Chennai?"}
             </p>
             <Link
               href="/blog/cab-booking-in-chennai-complete-guide-2026"
-              className="mt-3 inline-block text-sm font-semibold text-[var(--cabzii-brand)] hover:underline"
+              className="mt-2 inline-block text-[11px] font-semibold sm:text-xs text-[var(--cabzii-brand)] hover:underline"
             >
               Cab Booking in Chennai — Complete Guide 2026 →
             </Link>
           </section>
         ) : null}
 
-        <section className="mt-10">
-          <h2 className="text-xl font-bold text-slate-900 md:text-2xl">
+        <section className="cabzii-seo-block">
+          <h2>
             {isCab ? "Popular cab services" : "Driver services"} in {city.name}
           </h2>
-          <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+          <ul className="mt-2.5 grid gap-1.5 sm:grid-cols-2">
             {topServices.map((svc) => (
               <li key={svc.slug}>
                 <Link
                   href={servicePath(svc, city)}
                   title={`${svc.name} in ${city.name} — book on Cabzii.in`}
-                  className="block rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-800 shadow-sm hover:border-[var(--cabzii-brand)]/30 hover:text-[var(--cabzii-brand)]"
+                  className="block rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800 shadow-sm hover:border-[var(--cabzii-brand)]/30 hover:text-[var(--cabzii-brand)]"
                 >
                   <span className="block">{svc.name} in {city.name}</span>
                   <span className="mt-0.5 block text-xs font-normal text-slate-500">
@@ -145,7 +156,7 @@ export default function CitySeoPage({
               <li>
                 <Link
                   href={`/acting-driver/${city.slug}`}
-                  className="block rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-800 shadow-sm hover:border-[var(--cabzii-brand)]/30"
+                  className="block rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800 shadow-sm hover:border-[var(--cabzii-brand)]/30"
                 >
                   Acting driver packages
                 </Link>
@@ -155,14 +166,14 @@ export default function CitySeoPage({
         </section>
 
         {cityRoutes.length ? (
-          <section className="mt-10">
-            <h2 className="text-xl font-bold text-slate-900 md:text-2xl">Popular routes from {city.name}</h2>
-            <ul className="mt-4 flex flex-wrap gap-2">
+          <section className="cabzii-seo-block">
+            <h2>Popular routes from {city.name}</h2>
+            <ul className="mt-2.5 flex flex-wrap gap-1.5">
               {cityRoutes.map((route) => (
                 <li key={route.slug}>
                   <Link
                     href={routeToCabSearchHref(route)}
-                    className="inline-block rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:text-[var(--cabzii-brand)]"
+                    className="inline-block rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:text-[var(--cabzii-brand)]"
                   >
                     {route.fromCity.name} → {route.toCity.name}
                   </Link>
@@ -172,11 +183,11 @@ export default function CitySeoPage({
           </section>
         ) : null}
 
-        <section className="mt-10">
-          <h2 className="text-xl font-bold text-slate-900 md:text-2xl">
+        <section className="cabzii-seo-block">
+          <h2>
             {isCab ? "Why book cabs on Cabzii?" : "Why hire acting drivers on Cabzii?"}
           </h2>
-          <ul className="mt-4 list-disc space-y-2 pl-5 text-slate-700">
+          <ul className="mt-1.5 list-disc space-y-1 pl-4 text-[11px] text-slate-700 sm:text-xs">
             <li>Instant online booking with clear fare breakdown</li>
             <li>Verified vendors and professional drivers in {city.name}</li>
             <li>Outstation, airport, local and tour options in one place</li>
@@ -186,23 +197,28 @@ export default function CitySeoPage({
 
         <FaqSection title={`${city.name} — FAQ`} faqs={faqs} />
 
-        <section className="mt-10">
-          <h2 className="text-xl font-bold text-slate-900 md:text-2xl">Other cities</h2>
-          <ul className="mt-4 flex flex-wrap gap-2">
-            {SEO_CITIES.filter((c) => c.slug !== city.slug)
-              .slice(0, 12)
-              .map((c) => (
-                <li key={c.slug}>
-                  <Link
-                    href={`/cab-booking/${c.slug}`}
-                    className="inline-block rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-[var(--cabzii-brand)]"
-                  >
-                    {c.name}
-                  </Link>
-                </li>
-              ))}
+        <RelatedSeoLinks
+          page={isCab ? "cabs" : "drivers"}
+          title={isCab ? `Related cab services near ${city.name}` : `Related driver services near ${city.name}`}
+        />
+
+        <section className="cabzii-seo-block">
+          <h2>
+            {isTamilNaduCity(city) ? "Other Tamil Nadu cities" : "Other service cities"}
+          </h2>
+          <ul className="mt-2.5 flex flex-wrap gap-1.5">
+            {peerCitiesForHub(city, 12).map((c) => (
+              <li key={c.slug}>
+                <Link
+                  href={isCab ? `/cab-booking/${c.slug}` : `/acting-driver/${c.slug}`}
+                  className="inline-block rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-600 hover:text-[var(--cabzii-brand)]"
+                >
+                  {c.name}
+                </Link>
+              </li>
+            ))}
           </ul>
-          <Link href="/locations" className="mt-3 inline-block text-sm font-semibold text-[var(--cabzii-brand)] hover:underline">
+          <Link href="/locations" className="mt-2 inline-block text-[11px] font-semibold sm:text-xs text-[var(--cabzii-brand)] hover:underline">
             View all service locations →
           </Link>
         </section>

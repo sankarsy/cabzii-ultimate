@@ -138,11 +138,17 @@ export default function MmtCardPriceBlock({
         </div>
       ) : null}
       <p
-        className={`font-extrabold leading-tight text-slate-900 ${showDiscount ? "text-base sm:text-lg" : "text-lg sm:text-2xl"}`}
+        className={`font-extrabold leading-tight text-slate-900 ${
+          compact
+            ? "text-sm sm:text-base"
+            : showDiscount
+              ? "text-base sm:text-lg"
+              : "text-lg sm:text-xl"
+        }`}
       >
         {formatINR(finalAmt)}
       </p>
-      <p className={`leading-tight text-slate-500 ${compact ? "hidden text-[10px] sm:block" : "text-[10px]"}`}>
+      <p className={`leading-tight text-slate-500 ${compact ? "text-[10px]" : "text-[10px]"}`}>
         {fareNote || "package fare"}
       </p>
     </div>

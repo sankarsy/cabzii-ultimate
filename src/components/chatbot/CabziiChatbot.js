@@ -42,7 +42,7 @@ function userMessage(content) {
 export default function CabziiChatbot() {
   const pathname = usePathname();
   const detailPage = isCatalogDetailPage(pathname);
-  const mobileBottomClass = detailPage ? "bottom-[5.25rem]" : "bottom-[4.75rem]";
+  const mobileBottomClass = detailPage ? "bottom-[5.75rem]" : "bottom-[4.75rem]";
   const settings = useSiteSettings();
   const phone = settings.contact?.phone || "+91-9944197416";
   const whatsappNumber = String(settings.contact?.whatsapp || settings.whatsappFab?.number || "9944197416").replace(/\D/g, "");

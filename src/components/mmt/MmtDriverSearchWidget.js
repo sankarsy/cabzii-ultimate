@@ -39,7 +39,8 @@ export default function MmtDriverSearchWidget({
   defaultCity = "",
   initialTrip = null,
   emtLayout = false,
-  heroMode = false
+  heroMode = false,
+  compact = false
 }) {
   const router = useRouter();
   const [tripType, setTripType] = useState("outstation");
@@ -498,42 +499,54 @@ export default function MmtDriverSearchWidget({
   }
 
   return (
-    <div className="w-full">
-      <div className="hero-tabs-scroll -mx-1 flex gap-2 overflow-x-auto border-b border-slate-200 px-1 pb-3">
+    <div className={`w-full ${compact ? "cabzii-search-compact" : ""}`}>
+      <div
+        className={`hero-tabs-scroll -mx-1 flex gap-1.5 overflow-x-auto border-b border-slate-200 px-1 ${
+          compact ? "pb-1.5" : "gap-2 pb-2.5 sm:pb-3"
+        }`}
+      >
         {DRIVER_TRIP_TABS.map((tab) => (
           <button
             key={tab.id}
             type="button"
             onClick={() => setTripType(tab.id)}
-            className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-semibold transition-colors sm:px-4 sm:text-sm ${
+            className={`shrink-0 rounded-full font-semibold transition-colors ${
+              compact
+                ? "px-2.5 py-1 text-[11px]"
+                : "px-3 py-1.5 text-xs sm:px-4 sm:text-sm"
+            } ${
               tripType === tab.id
                 ? "bg-[var(--emt-primary)] text-white"
                 : "bg-slate-100 text-slate-700 hover:bg-slate-200"
             }`}
           >
-            {tab.label}
+            {tab.id === "hourly" ? "Hourly" : tab.label}
           </button>
         ))}
       </div>
 
       {subOptions}
 
-      <div className="mt-4 grid grid-cols-1 gap-px overflow-visible rounded-lg border border-slate-200 bg-slate-200 sm:grid-cols-2 lg:grid-cols-4">
+      <div
+        className={`grid grid-cols-1 gap-px overflow-visible rounded-lg border border-slate-200 bg-slate-200 sm:grid-cols-2 lg:grid-cols-4 ${
+          compact ? "mt-2.5" : "mt-3 sm:mt-4"
+        }`}
+      >
         {locationFields}
         {!heroMode ? dateTimeCell : null}
       </div>
 
-      {error ? <p className="mt-3 text-sm text-rose-600">{error}</p> : null}
+      {error ? <p className="mt-2 text-xs text-rose-600 sm:text-sm">{error}</p> : null}
 
-      <div className="mt-5 flex justify-stretch sm:mt-6 sm:justify-center">
+      <div className={`flex justify-center ${compact ? "mt-2.5" : "mt-3 sm:mt-4"}`}>
         <button
           type="button"
           onClick={handleSearch}
           disabled={searching}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[var(--emt-primary)] px-8 py-3 text-base font-bold text-white shadow-md transition hover:bg-[var(--emt-primary-dark)] disabled:opacity-70 sm:w-auto sm:px-12"
+          className="cabzii-btn cabzii-btn-primary cabzii-btn-sm cabzii-tap mx-auto inline-flex w-auto min-w-[8.5rem] max-w-[10.5rem] items-center justify-center px-4"
         >
-          <SearchIcon className="h-6 w-6 text-slate-400" />
-          {searching ? "Calculating distance…" : "Search Drivers"}
+          <SearchIcon className="h-3.5 w-3.5 text-white/90" />
+          {searching ? "Searching…" : "Search drivers"}
         </button>
       </div>
     </div>

@@ -132,7 +132,7 @@ export function generateChatReply(message, { name = "there", history = [] } = {}
 
   if (pick(text, ["review", "rating", "trust", "verified"])) {
     return {
-      reply: `Cabzii works with verified drivers and transparent upfront fares — rated 4.9 by customers.\n\n👉 Read reviews: ${QUICK_LINKS.testimonials}`
+      reply: `Cabzii works with verified drivers and transparent upfront fares.\n\n👉 Read customer reviews: ${QUICK_LINKS.testimonials}`
     };
   }
 

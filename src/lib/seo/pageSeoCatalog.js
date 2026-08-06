@@ -11,9 +11,9 @@ export const STATIC_PAGE_SEO_LIST = [
     productName: "Cabzii Home",
     seoTitle: HOME_SEO_TITLE,
     seoDescription:
-      "Book cabs, taxis, airport transfers, outstation trips, acting drivers and tour packages across India. Instant confirmation on Cabzii.in.",
+      "Book cabs from Chennai and across Tamil Nadu with Cabzii — airport taxi, local packages, outstation and one-way trips. Transparent fares and OTP booking.",
     seoKeywords:
-      "cab booking chennai, taxi service chennai, airport taxi chennai, outstation cab chennai, cabzii, cabzii.in"
+      "cab booking chennai, taxi service chennai, airport taxi chennai, outstation cab chennai, cab booking tamil nadu, cabzii, cabzii.in"
   },
   {
     id: "site:cabs",

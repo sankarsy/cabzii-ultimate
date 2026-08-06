@@ -22,28 +22,28 @@ function BusesLandingContent() {
   }, [from, to, router, searchParams]);
 
   return (
-    <div className="section-shell py-8">
-      <div className="mb-8 text-center">
-        <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-sky-100 text-sky-600">
-          <BusIcon className="h-7 w-7" aria-hidden />
+    <div className="section-shell cabzii-seo-landing">
+      <div className="mb-3 text-center sm:mb-4">
+        <div className="mx-auto mb-2 flex h-9 w-9 items-center justify-center rounded-xl bg-sky-100 text-sky-600 sm:h-10 sm:w-10">
+          <BusIcon className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden />
         </div>
-        <h1 className="text-3xl font-bold text-slate-900">Book bus tickets online</h1>
-        <p className="mx-auto mt-2 max-w-xl text-slate-600">
+        <h1 className="text-base font-bold text-slate-900 sm:text-lg md:text-xl">Book bus tickets online</h1>
+        <p className="mx-auto mt-1 max-w-xl text-[11px] text-slate-600 sm:text-xs">
           Compare AC seater & sleeper buses across South India. Choose boarding point, seat or berth, and pay securely on Cabzii.
         </p>
       </div>
 
       <EmtBusSearchForm emtHero />
 
-      <div className="mt-10 grid gap-4 sm:grid-cols-3">
+      <div className="mt-4 grid gap-2 sm:mt-5 sm:grid-cols-3 sm:gap-3">
         {[
           { title: "Live seat map", desc: "Pick seater, lower or upper berth like top OTAs" },
           { title: "Boarding & drop", desc: "Select your nearest boarding and dropping points" },
           { title: "Instant confirm", desc: "SMS & email ticket after booking" }
         ].map((f) => (
-          <div key={f.title} className="cabzii-card p-4 text-center">
-            <p className="font-bold text-slate-900">{f.title}</p>
-            <p className="mt-1 text-sm text-slate-600">{f.desc}</p>
+          <div key={f.title} className="cabzii-card p-2.5 text-center sm:p-3">
+            <p className="text-xs font-bold text-slate-900 sm:text-sm">{f.title}</p>
+            <p className="mt-0.5 text-[11px] text-slate-600">{f.desc}</p>
           </div>
         ))}
       </div>

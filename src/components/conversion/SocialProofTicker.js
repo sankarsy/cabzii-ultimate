@@ -1,11 +1,11 @@
 "use client";
 
 const TICKER_ITEMS = [
-  "🔥 12,480+ trips booked this month",
-  "✅ Best price guaranteed on every route",
+  "✅ Transparent fares before you confirm",
   "⚡ Instant booking confirmation",
-  "⭐ 4.9 rated by 50K+ travellers",
-  "🛡️ Verified drivers & OTP-secure rides"
+  "🛡️ Verified drivers & OTP-secure rides",
+  "💬 WhatsApp support for trip changes",
+  "🚗 Airport, local & outstation cabs"
 ];
 
 /** Auto-scrolling social proof strip shown right below the hero search widget. */

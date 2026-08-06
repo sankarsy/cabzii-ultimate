@@ -2,8 +2,9 @@ import { SITE_URL } from "./seo/constants";
 
 /** Responsive width for card / list thumbnails (mobile-first). */
 export const CARD_IMAGE_WIDTH = 640;
-export const PRODUCT_OG_WIDTH = 800;
-export const PRODUCT_OG_HEIGHT = 600;
+/** Social / OG recommended size (1200×630). */
+export const PRODUCT_OG_WIDTH = 1200;
+export const PRODUCT_OG_HEIGHT = 630;
 
 /** Trim Unsplash and similar CDN URLs for faster mobile loads. */
 export function optimizeImageUrl(url, width = CARD_IMAGE_WIDTH) {

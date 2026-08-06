@@ -8,35 +8,35 @@ export const CORE_INTERNAL_LINKS = [
   { href: "/holidays", label: "Holiday packages", desc: "Pilgrimage, beach & hill trips" },
   { href: "/holidays?category=pilgrimage", label: "Pilgrimage tours", desc: "Tirupati, Rameswaram, Shirdi & more" },
   { href: "/drivers", label: "Hire a driver", desc: "Acting & chauffeur drivers" },
-  { href: "/search?q=offers", label: "Offers & deals", desc: "Discounted fares" },
+  { href: "/cabs", label: "Local & outstation cabs", desc: "Transparent fares online" },
   { href: "/locations", label: "Service locations", desc: "Pickup points by city" },
   { href: "/blogs", label: "Travel blog", desc: "Tips & route guides" }
 ];
 
-/** Cities used for cab, acting-driver and multi-city service internal links. */
+/** Cities used for cab, acting-driver and multi-city service internal links — Chennai/TN first. */
 export const INTERNAL_LINK_CITIES = [
   "chennai",
-  "bengaluru",
-  "hyderabad",
   "coimbatore",
   "madurai",
-  "mysore",
-  "tirupati",
-  "salem",
   "trichy",
-  "pondicherry",
+  "salem",
   "vellore",
-  "hosur"
+  "erode",
+  "hosur",
+  "pondicherry",
+  "tirupati",
+  "bengaluru",
+  "ooty"
 ];
 
 /** Top cities for service landing cross-links (SEO). */
 export const SERVICE_LINK_CITIES = [
   "chennai",
-  "bengaluru",
-  "hyderabad",
   "coimbatore",
   "madurai",
-  "trichy"
+  "trichy",
+  "salem",
+  "bengaluru"
 ];
 
 function citiesBySlugs(slugs) {

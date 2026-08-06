@@ -51,27 +51,27 @@ export default function MmtCabResults({ cabs, trip, embedded = false, catalogMod
 
   return (
     <div
-      className={`${embedded ? "w-full" : "section-shell cabzii-section"} grid grid-cols-1 gap-3 ${
-        embedded ? "lg:gap-4" : "gap-4 lg:grid-cols-[220px_1fr] lg:gap-5"
+      className={`${embedded ? "w-full" : "section-shell cabzii-section"} grid grid-cols-1 gap-2.5 ${
+        embedded ? "lg:gap-3" : "gap-2.5 lg:grid-cols-[200px_1fr] lg:gap-4"
       }`}
     >
       <aside
         className={`cabzii-filter-panel h-fit ${
           embedded
-            ? "p-2.5 sm:p-3"
+            ? "p-2 sm:p-2.5"
             : "lg:sticky lg:top-20"
         }`}
       >
-        <h2 className={`font-bold text-slate-900 ${embedded ? "mb-2 text-xs" : "mb-3 text-sm"}`}>
+        <h2 className={`font-bold text-slate-900 ${embedded ? "mb-1.5 text-[11px]" : "mb-1.5 text-xs sm:mb-2 sm:text-sm"}`}>
           Filters
         </h2>
         {kmHint ? (
-          <p className="mb-2 rounded-lg bg-sky-50 px-2 py-1 text-[11px] font-semibold text-sky-800 sm:mb-3 sm:px-2.5 sm:py-1.5">
+          <p className="mb-1.5 rounded-md bg-sky-50 px-2 py-1 text-[10px] font-semibold text-sky-800 sm:mb-2 sm:text-[11px]">
             Fares for {kmHint} · per km × distance
           </p>
         ) : null}
-        <div className={embedded ? "mb-2.5" : "mb-4"}>
-          <h3 className="mb-1.5 text-xs font-semibold text-slate-800">Sort by</h3>
+        <div className={embedded ? "mb-2" : "mb-2.5 sm:mb-3"}>
+          <h3 className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-slate-500 sm:text-[11px]">Sort by</h3>
           <div
             className={embedded ? "flex flex-wrap gap-1.5" : "cabzii-radio-group"}
             role="radiogroup"
@@ -108,7 +108,7 @@ export default function MmtCabResults({ cabs, trip, embedded = false, catalogMod
         </div>
         {types.length > 0 ? (
           <div>
-            <h3 className="mb-1.5 text-xs font-semibold text-slate-800">Vehicle type</h3>
+            <h3 className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-slate-500 sm:text-[11px]">Vehicle type</h3>
             <div className={embedded ? "flex flex-wrap gap-1.5" : "cabzii-checkbox-group"}>
               {types.map((type) =>
                 embedded ? (
@@ -139,11 +139,11 @@ export default function MmtCabResults({ cabs, trip, embedded = false, catalogMod
         ) : null}
       </aside>
       <div className="min-w-0">
-        <p className="mb-2 text-xs text-slate-600 sm:mb-2.5 sm:text-sm">
+        <p className="mb-1.5 text-[11px] text-slate-600 sm:mb-2 sm:text-xs">
           {filtered.length} {filtered.length === 1 ? "cab" : "cabs"} available
           {kmHint ? ` · ${kmHint}` : ""}
         </p>
-        <div className="flex flex-col gap-2.5 sm:gap-3">
+        <div className="flex flex-col gap-2 sm:gap-2.5">
           {filtered.map((cab) => (
             <MmtCabResultCard
               key={String(cab._id ?? cab.id)}

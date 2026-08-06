@@ -185,12 +185,21 @@ function chennaiFullMesh() {
   return routes;
 }
 
-/** Merge route lists — later entries do not override earlier (manual overrides win). */
+/** Merge route lists — later entries do not override earlier (manual overrides win).
+ * Also dedupe by corridor (from→to) so bangalore vs bengaluru aliases do not create twin pages.
+ */
 export function buildExpandedRoutes(manualRoutes = []) {
   const bySlug = new Map();
+  const byCorridor = new Map();
+
+  const corridorKey = (route) => `${route.from}|${route.to}`;
 
   const add = (route) => {
-    if (route?.slug && !bySlug.has(route.slug)) bySlug.set(route.slug, route);
+    if (!route?.slug || bySlug.has(route.slug)) return;
+    const key = corridorKey(route);
+    if (byCorridor.has(key)) return;
+    bySlug.set(route.slug, route);
+    byCorridor.set(key, route.slug);
   };
 
   for (const r of manualRoutes) add(r);

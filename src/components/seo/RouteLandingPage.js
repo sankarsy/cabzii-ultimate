@@ -20,7 +20,7 @@ export default function RouteLandingPage({ route, faqs, extraBody = "", cabs = [
   const outstationSvc = SEO_SERVICES.find((s) => s.slug === "outstation-cab");
 
   return (
-    <article className="section-shell py-6 sm:py-10 md:py-14">
+    <article className="section-shell cabzii-seo-landing">
       <Breadcrumbs
         items={[
           { name: "Home", path: "/" },
@@ -29,11 +29,9 @@ export default function RouteLandingPage({ route, faqs, extraBody = "", cabs = [
         ]}
       />
 
-      <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-sky-600 sm:text-xs">One way cab · Cabzii</p>
-      <h1 className="mt-2 text-2xl font-extrabold text-slate-900 sm:mt-3 sm:text-3xl md:text-4xl">
-        {tunedRouteH1(route)}
-      </h1>
-      <p className="mt-3 text-sm leading-relaxed text-slate-700 sm:mt-4 sm:text-base md:text-lg">
+      <p className="cabzii-seo-kicker">One way cab · Cabzii</p>
+      <h1>{tunedRouteH1(route)}</h1>
+      <p className="cabzii-seo-lead">
         {tunedRouteDescription(route)} ({distance}, {duration})
       </p>
 
@@ -66,69 +64,69 @@ export default function RouteLandingPage({ route, faqs, extraBody = "", cabs = [
         variant="compact"
       />
 
-      <section className="mt-10">
-        <h2 className="text-xl font-bold text-slate-900 md:text-2xl">Distance &amp; travel time</h2>
-        <div className="mt-4 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-          <table className="w-full text-left text-sm">
+      <section className="cabzii-seo-block">
+        <h2>Distance &amp; travel time</h2>
+        <div className="mt-2 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+          <table className="w-full text-left text-[11px] sm:text-xs">
             <tbody>
               <tr className="border-b border-slate-100">
-                <th className="px-4 py-3 font-semibold text-slate-700">Route</th>
-                <td className="px-4 py-3 text-slate-600">
+                <th className="px-3 py-2 font-semibold text-slate-700">Route</th>
+                <td className="px-3 py-2 text-slate-600">
                   {fromCity.name} → {toCity.name}
                 </td>
               </tr>
               <tr className="border-b border-slate-100">
-                <th className="px-4 py-3 font-semibold text-slate-700">Pickup location</th>
-                <td className="px-4 py-3 text-slate-600">{fromCity.name}</td>
+                <th className="px-3 py-2 font-semibold text-slate-700">Pickup location</th>
+                <td className="px-3 py-2 text-slate-600">{fromCity.name}</td>
               </tr>
               <tr className="border-b border-slate-100">
-                <th className="px-4 py-3 font-semibold text-slate-700">Drop location</th>
-                <td className="px-4 py-3 text-slate-600">{toCity.name}</td>
+                <th className="px-3 py-2 font-semibold text-slate-700">Drop location</th>
+                <td className="px-3 py-2 text-slate-600">{toCity.name}</td>
               </tr>
               <tr className="border-b border-slate-100">
-                <th className="px-4 py-3 font-semibold text-slate-700">Distance</th>
-                <td className="px-4 py-3 text-slate-600">{distance}</td>
+                <th className="px-3 py-2 font-semibold text-slate-700">Distance</th>
+                <td className="px-3 py-2 text-slate-600">{distance}</td>
               </tr>
               <tr>
-                <th className="px-4 py-3 font-semibold text-slate-700">Travel time</th>
-                <td className="px-4 py-3 text-slate-600">{duration}</td>
+                <th className="px-3 py-2 font-semibold text-slate-700">Travel time</th>
+                <td className="px-3 py-2 text-slate-600">{duration}</td>
               </tr>
             </tbody>
           </table>
         </div>
       </section>
 
-      <section className="mt-10">
-        <h2 className="text-xl font-bold text-slate-900 md:text-2xl">Cab fare &amp; pricing</h2>
-        <div className="mt-4 overflow-hidden rounded-xl border border-slate-200 bg-slate-50 shadow-sm">
-          <table className="w-full text-left text-sm">
+      <section className="cabzii-seo-block">
+        <h2>Cab fare &amp; pricing</h2>
+        <div className="mt-2 overflow-hidden rounded-xl border border-slate-200 bg-slate-50 shadow-sm">
+          <table className="w-full text-left text-[11px] sm:text-xs">
             <tbody>
               <tr className="border-b border-slate-100 bg-white">
-                <th className="px-4 py-3 font-semibold text-slate-700">Sedan (Dzire / Etios)</th>
-                <td className="px-4 py-3 font-bold text-slate-900">from ₹{sedanFrom.toLocaleString("en-IN")}</td>
+                <th className="px-3 py-2 font-semibold text-slate-700">Sedan (Dzire / Etios)</th>
+                <td className="px-3 py-2 font-bold text-slate-900">from ₹{sedanFrom.toLocaleString("en-IN")}</td>
               </tr>
               <tr className="bg-white">
-                <th className="px-4 py-3 font-semibold text-slate-700">SUV / Innova</th>
-                <td className="px-4 py-3 font-bold text-slate-900">from ₹{suvFrom.toLocaleString("en-IN")}</td>
+                <th className="px-3 py-2 font-semibold text-slate-700">SUV / Innova</th>
+                <td className="px-3 py-2 font-bold text-slate-900">from ₹{suvFrom.toLocaleString("en-IN")}</td>
               </tr>
             </tbody>
           </table>
         </div>
-        <p className="mt-2 text-xs text-slate-500">
+        <p className="mt-1.5 text-[10px] text-slate-500">
           Indicative one-way fares — exact quote on Cabzii before booking. Tolls and state taxes may apply.
         </p>
       </section>
 
       {extraBody ? (
         <div
-          className="prose prose-slate mt-10 max-w-none text-sm text-slate-700 md:text-base"
+          className="prose prose-slate cabzii-seo-block max-w-none text-xs text-slate-700"
           dangerouslySetInnerHTML={{ __html: extraBody }}
         />
       ) : null}
 
-      <section className="mt-10">
-        <h2 className="text-xl font-bold text-slate-900 md:text-2xl">Why choose Cabzii for this route?</h2>
-        <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+      <section className="cabzii-seo-block">
+        <h2>Why choose Cabzii for this route?</h2>
+        <ul className="cabzii-seo-card-list mt-2.5 grid gap-2 sm:grid-cols-2">
           {[
             "True one-way pricing — no return empty charge confusion",
             `Highway-experienced drivers on ${fromCity.name} – ${toCity.name}`,
@@ -139,7 +137,7 @@ export default function RouteLandingPage({ route, faqs, extraBody = "", cabs = [
           ].map((item) => (
             <li
               key={item}
-              className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm"
+              className="rounded-xl border border-slate-200 bg-white text-slate-700 shadow-sm"
             >
               {item}
             </li>
@@ -147,35 +145,35 @@ export default function RouteLandingPage({ route, faqs, extraBody = "", cabs = [
         </ul>
       </section>
 
-      <section className="mt-10">
-        <h2 className="text-xl font-bold text-slate-900 md:text-2xl">Related services &amp; links</h2>
-        <ul className="mt-4 flex flex-wrap gap-2">
+      <section className="cabzii-seo-block">
+        <h2>Related services &amp; links</h2>
+        <ul className="mt-2.5 flex flex-wrap gap-1.5">
           <li>
-            <Link href={`/cab-booking/${fromCity.slug}`} className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:text-[var(--cabzii-brand)]">
+            <Link href={`/cab-booking/${fromCity.slug}`} className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:text-[var(--cabzii-brand)]">
               Cab booking {fromCity.name}
             </Link>
           </li>
           {outstationSvc ? (
             <li>
-              <Link href={servicePath(outstationSvc, fromCity)} className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:text-[var(--cabzii-brand)]">
+              <Link href={servicePath(outstationSvc, fromCity)} className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:text-[var(--cabzii-brand)]">
                 Outstation cab {fromCity.name}
               </Link>
             </li>
           ) : null}
           {fromCity.slug === "chennai" && airportSvc ? (
             <li>
-              <Link href={servicePath(airportSvc, fromCity)} className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:text-[var(--cabzii-brand)]">
+              <Link href={servicePath(airportSvc, fromCity)} className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:text-[var(--cabzii-brand)]">
                 Airport taxi Chennai
               </Link>
             </li>
           ) : null}
           <li>
-            <Link href={reversePath} className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:text-[var(--cabzii-brand)]">
+            <Link href={reversePath} className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:text-[var(--cabzii-brand)]">
               {toCity.name} → {fromCity.name} cab
             </Link>
           </li>
           <li>
-            <Link href={driverHref} className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:text-[var(--cabzii-brand)]">
+            <Link href={driverHref} className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:text-[var(--cabzii-brand)]">
               Acting driver · same route
             </Link>
           </li>
@@ -184,12 +182,12 @@ export default function RouteLandingPage({ route, faqs, extraBody = "", cabs = [
 
       <FaqSection title={`${fromCity.name} to ${toCity.name} cab — FAQ`} faqs={faqs} />
 
-      <section className="mt-10 rounded-2xl bg-[var(--cabzii-brand)] p-5 text-white md:p-6">
-        <h2 className="text-lg font-bold md:text-xl">Book {fromCity.name} to {toCity.name} cab now</h2>
-        <p className="mt-1.5 text-xs text-blue-100 md:text-sm">
+      <section className="cabzii-seo-block rounded-xl bg-[var(--cabzii-brand)] p-3.5 text-white sm:p-4">
+        <h2 className="!text-white text-sm font-bold sm:text-base">Book {fromCity.name} to {toCity.name} cab now</h2>
+        <p className="mt-1 text-[11px] text-blue-100 sm:text-xs">
           Instant online quote · Professional drivers · 24/7 WhatsApp &amp; phone support
         </p>
-        <div className="mt-3 flex flex-wrap gap-2">
+        <div className="mt-2.5 flex flex-wrap gap-1.5">
           <Link
             href={searchHref}
             className="cabzii-btn cabzii-btn-sm cabzii-tap rounded-full bg-white font-bold text-[var(--cabzii-brand)] hover:bg-slate-100"

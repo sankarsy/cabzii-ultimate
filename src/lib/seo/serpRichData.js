@@ -1,5 +1,6 @@
 import { formatInrCurrency } from "../formatInr";
 import { formatCabSeatLabel } from "../cabSeats";
+import { packageDisplayPrice } from "../tourPackagePricing";
 
 /** Default fleet shown on service landing pages (matches Google rich-result attribute rows). */
 export const DEFAULT_SERVICE_FLEET = ["Dzire", "Etios", "Innova", "Crysta"];
@@ -109,11 +110,12 @@ export function tourPackageSerpBadges(pkg) {
       { label: "Customizable", schemaName: "Customization", schemaValue: "Customizable itinerary" }
     );
   }
-  if (pkg.price) {
+  const fromPrice = packageDisplayPrice(pkg);
+  if (fromPrice > 0) {
     badges.unshift({
-      label: formatSerpPrice(pkg.price, { prefix: "From" }),
+      label: formatSerpPrice(fromPrice, { prefix: "From" }),
       schemaName: "Starting price",
-      schemaValue: formatInrCurrency(pkg.price)
+      schemaValue: formatInrCurrency(fromPrice)
     });
   }
   return badges;

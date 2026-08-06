@@ -40,9 +40,13 @@ export const WIKIDATA_URL = process.env.NEXT_PUBLIC_WIKIDATA_URL || "";
 export const KNOWLEDGE_GRAPH_ID = process.env.NEXT_PUBLIC_KNOWLEDGE_GRAPH_ID || "";
 
 /** Verified customer reviews on /testimonials — used in AggregateRating schema. */
+/**
+ * UI-only fallback labels — NEVER use in AggregateRating / review schema.
+ * Real ratings come from fetchSiteReviewStats() (approved testimonials/reviews only).
+ */
 export const SITE_REVIEW_STATS = {
-  ratingValue: "4.9",
-  reviewCount: "6",
+  ratingValue: "0",
+  reviewCount: "0",
   bestRating: "5",
   worstRating: "1"
 };
@@ -99,8 +103,11 @@ export function getBackendUrl() {
   return url.trim().replace(/\/+$/, "");
 }
 
-/** Homepage SERP title — brand first for branded queries. */
-export const HOME_SEO_TITLE = "Cabzii | Cab Booking & Taxi Service Across India";
+/**
+ * Homepage SERP title — keywords first so Google doesn’t collapse branded mobile results to “Cabzii”.
+ * Keep under ~60 chars; end with brand.
+ */
+export const HOME_SEO_TITLE = "Cab Booking Chennai & Tamil Nadu Taxi | Airport & Outstation | Cabzii";
 
 function normalizePath(path) {
   if (!path || path === "/") return "/";
@@ -202,7 +209,7 @@ export function buildPageMetadata({
     ...(buildVerification(verification) ? { verification: buildVerification(verification) } : {}),
     other: {
       "apple-mobile-web-app-capable": "yes",
-      "apple-mobile-web-app-title": SITE_NAME,
+      "apple-mobile-web-app-title": "Cabzii Cabs",
       "apple-mobile-web-app-status-bar-style": "default",
       "mobile-web-app-capable": "yes"
     }
@@ -228,10 +235,10 @@ export function actingDriverDescription(cityName, state) {
 export const homeMetadata = buildPageMetadata({
   title: HOME_SEO_TITLE,
   description:
-    "Book cabs, taxis, airport transfers, outstation trips, acting drivers and tour packages across India. Instant confirmation, verified drivers and transparent fares on Cabzii.in.",
+    "Book cabs from Chennai and across Tamil Nadu with Cabzii — airport taxi, local packages, outstation and one-way trips. Transparent fares, OTP booking and WhatsApp support.",
   path: "/",
   image: "/opengraph-image",
-  imageAlt: "Cabzii — Cab Booking & Taxi Service Across India",
+  imageAlt: "Cabzii — Cab Booking Chennai & Tamil Nadu",
   keywords: [
     "cab booking chennai",
     "taxi service chennai",
@@ -248,6 +255,7 @@ export const homeMetadata = buildPageMetadata({
   "chennai to tirupati taxi",
   "chennai to salem taxi",
   "chennai to trichy taxi",
+  "cab booking tamil nadu",
   ...DEFAULT_KEYWORDS
   ]
 });

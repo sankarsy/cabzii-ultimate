@@ -29,6 +29,55 @@ export const SEO_CITIES = [
   { slug: "chandigarh", name: "Chandigarh", state: "Punjab", region: "IN-PB", langs: ["en"] }
 ];
 
+/** HQ + core operating focus — Chennai first, then Tamil Nadu. */
+export const TAMIL_NADU_CITY_SLUGS = [
+  "chennai",
+  "coimbatore",
+  "madurai",
+  "trichy",
+  "salem",
+  "vellore",
+  "erode",
+  "hosur",
+  "tirunelveli",
+  "rameswaram",
+  "ooty",
+  "kodaikanal"
+];
+
+/** Priority crawl/link focus: TN + nearby demand corridors. */
+export const PRIMARY_FOCUS_CITY_SLUGS = [
+  ...TAMIL_NADU_CITY_SLUGS,
+  "pondicherry",
+  "tirupati",
+  "bengaluru"
+];
+
+export function isTamilNaduCity(cityOrSlug) {
+  const slug = typeof cityOrSlug === "string" ? cityOrSlug : cityOrSlug?.slug;
+  return TAMIL_NADU_CITY_SLUGS.includes(slug);
+}
+
+export function isPrimaryFocusCity(cityOrSlug) {
+  const slug = typeof cityOrSlug === "string" ? cityOrSlug : cityOrSlug?.slug;
+  return PRIMARY_FOCUS_CITY_SLUGS.includes(slug);
+}
+
+/** Peer city links for hubs — TN peers first when viewing a TN city. */
+export function peerCitiesForHub(city, limit = 12) {
+  const others = SEO_CITIES.filter((c) => c.slug !== city.slug);
+  if (isTamilNaduCity(city)) {
+    const tn = others.filter((c) => isTamilNaduCity(c));
+    const rest = others.filter((c) => !isTamilNaduCity(c) && isPrimaryFocusCity(c));
+    return [...tn, ...rest].slice(0, limit);
+  }
+  if (isPrimaryFocusCity(city)) {
+    const focus = others.filter((c) => isPrimaryFocusCity(c));
+    return focus.slice(0, limit);
+  }
+  return others.filter((c) => isPrimaryFocusCity(c)).slice(0, limit);
+}
+
 export function cityBySlug(slug) {
   return SEO_CITIES.find((c) => c.slug === slug) ?? null;
 }

@@ -44,9 +44,11 @@ function tripServiceLabel(trip) {
 
 /** Subtitle for homepage / catalog browse cards (no route pre-fill). */
 export function getCabCatalogSubtitle(cab = {}, city = "") {
-  const type = cab.type?.trim() || "Cab";
+  const type = cab.type?.trim() || cab.category?.trim() || "Cab";
   const vendor = cab.vendor?.trim() || "Cabzii Partner";
-  return city ? `${type} · ${vendor} · ${city}` : `${type} · ${vendor}`;
+  /* Prefer the cab's registered city so HQ inventory is not overwritten by a browsed city */
+  const shown = String(cab.city || "").trim() || String(city || "").trim();
+  return shown ? `${type} · ${vendor} · ${shown}` : `${type} · ${vendor}`;
 }
 
 /** Title on cards, passenger page & payment — matches the active trip. */

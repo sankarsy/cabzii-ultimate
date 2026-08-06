@@ -62,13 +62,13 @@ export default function DriversBrowsePage() {
           { name: "Drivers", path: "/drivers" }
         ]}
       >
-        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-          <MmtDriverSearchWidget defaultCity={displayCity} />
+        <div className="rounded-xl border border-slate-200 bg-slate-50 p-2.5 sm:rounded-2xl sm:p-3.5">
+          <MmtDriverSearchWidget defaultCity={displayCity} compact />
         </div>
       </CabziiBrowseHeader>
 
       {loading ? (
-        <div className="py-16 text-center text-slate-500">Loading all drivers…</div>
+        <div className="py-8 text-center text-sm text-slate-500 sm:py-10">Loading all drivers…</div>
       ) : (
         <>
           <MmtDriverResults drivers={drivers} trip={defaultTrip} />

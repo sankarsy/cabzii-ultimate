@@ -107,11 +107,11 @@ export default function HolidaysListPage() {
             </Link>
           ))}
         </div>
-        <div className="flex flex-wrap items-end gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5">
-          <div className="min-w-[10rem] flex-1 sm:max-w-[14rem]">
-            <label className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">Vendor</label>
+        <div className="inline-flex max-w-full flex-wrap items-end gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2 py-1.5 sm:gap-2 sm:px-2.5 sm:py-2">
+          <div className="min-w-[8.5rem] sm:min-w-[11rem]">
+            <label className="text-[9px] font-semibold uppercase tracking-wide text-slate-500">Vendor</label>
             <select
-              className="cabzii-input mt-0.5 w-full rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-medium"
+              className="cabzii-input mt-0.5 w-full rounded-md border border-slate-200 px-2 py-1 text-[11px] font-medium sm:text-xs"
               value={vendor}
               onChange={(e) => setVendor(e.target.value)}
               disabled={facetsLoading}
@@ -130,27 +130,27 @@ export default function HolidaysListPage() {
               setCategory("all");
               router.push("/holidays");
             }}
-            className="cabzii-btn cabzii-btn-secondary cabzii-btn-sm cabzii-tap"
+            className="cabzii-btn cabzii-btn-secondary cabzii-btn-sm cabzii-tap !min-h-7 !px-2.5 !text-[10px]"
           >
             Reset
           </button>
         </div>
         {category !== "all" ? (
-          <p className="text-xs text-slate-600">
+          <p className="text-[11px] text-slate-600">
             Showing <span className="font-semibold text-slate-800">{categoryLabel(category)}</span> packages
           </p>
         ) : null}
       </CabziiBrowseHeader>
 
-      <div className="section-shell py-5 md:py-6">
+      <div className="section-shell py-3 sm:py-4 md:py-5">
         {loading ? (
-          <div className="rounded-xl border border-dashed border-slate-200 bg-white p-8 text-center text-sm text-slate-500">
+          <div className="rounded-xl border border-dashed border-slate-200 bg-white p-6 text-center text-xs text-slate-500 sm:p-8 sm:text-sm">
             Loading holiday packages…
           </div>
         ) : (
           <>
-            {paginationLabel ? <p className="mb-3 text-[11px] text-slate-500">{paginationLabel}</p> : null}
-            <div className="grid grid-cols-2 gap-2.5 sm:gap-3 md:grid-cols-3 lg:grid-cols-4">
+            {paginationLabel ? <p className="mb-2.5 text-[11px] text-slate-500 sm:mb-3">{paginationLabel}</p> : null}
+            <div className="grid w-full grid-cols-2 gap-3 sm:gap-3.5 md:grid-cols-4 md:gap-4">
               {packages.map((pkg) => (
                 <PackageCard
                   key={String(pkg._id ?? pkg.id)}
@@ -161,12 +161,12 @@ export default function HolidaysListPage() {
               ))}
             </div>
             {!packages.length ? (
-              <div className="rounded-xl border border-dashed border-slate-200 p-6 text-center text-sm text-slate-500 sm:p-8">
+              <div className="rounded-xl border border-dashed border-slate-200 p-5 text-center text-xs text-slate-500 sm:p-6 sm:text-sm">
                 No packages in {categoryLabel(category)}. Try another category or reset filters.
               </div>
             ) : null}
             {meta.totalPages > 1 ? (
-              <div className="mt-6 flex justify-center gap-2">
+              <div className="mt-4 flex justify-center gap-2 sm:mt-5">
                 <button
                   type="button"
                   disabled={page <= 1}
@@ -175,7 +175,7 @@ export default function HolidaysListPage() {
                 >
                   Previous
                 </button>
-                <span className="flex items-center px-2 text-xs text-slate-600">
+                <span className="flex items-center px-2 text-[11px] text-slate-600 sm:text-xs">
                   Page {meta.page} of {meta.totalPages}
                 </span>
                 <button
@@ -190,11 +190,11 @@ export default function HolidaysListPage() {
             ) : null}
           </>
         )}
-        <div className="mt-8">
+        <div className="mt-5 sm:mt-6">
           <RelatedSeoLinks page="packages" />
         </div>
-        <p className="mt-6 text-center">
-          <Link href="/" className="text-sm font-semibold text-[var(--cabzii-brand)]">
+        <p className="mt-4 text-center sm:mt-5">
+          <Link href="/" className="text-xs font-semibold text-[var(--cabzii-brand)] sm:text-sm">
             ← Back to home
           </Link>
         </p>

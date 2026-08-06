@@ -10,8 +10,8 @@ const MANUAL_ROUTES = [
     to: "bengaluru",
     distance: "350 km",
     duration: "6–7 hours",
-    sedanFrom: 4500,
-    suvFrom: 6500
+    sedanFrom: 5499,
+    suvFrom: 7499
   },
   {
     slug: "chennai-to-pondicherry-cab",
@@ -19,8 +19,8 @@ const MANUAL_ROUTES = [
     to: "pondicherry",
     distance: "160 km",
     duration: "3–4 hours",
-    sedanFrom: 2800,
-    suvFrom: 3800
+    sedanFrom: 2899,
+    suvFrom: 3799
   },
   {
     slug: "chennai-to-tirupati-cab",
@@ -28,8 +28,8 @@ const MANUAL_ROUTES = [
     to: "tirupati",
     distance: "135 km",
     duration: "3–4 hours",
-    sedanFrom: 3200,
-    suvFrom: 4200
+    sedanFrom: 3299,
+    suvFrom: 4299
   },
   {
     slug: "chennai-to-coimbatore-cab",
@@ -37,8 +37,8 @@ const MANUAL_ROUTES = [
     to: "coimbatore",
     distance: "505 km",
     duration: "8–9 hours",
-    sedanFrom: 6500,
-    suvFrom: 8500
+    sedanFrom: 7499,
+    suvFrom: 9999
   },
   {
     slug: "chennai-to-madurai-cab",
@@ -46,8 +46,8 @@ const MANUAL_ROUTES = [
     to: "madurai",
     distance: "460 km",
     duration: "7–8 hours",
-    sedanFrom: 6000,
-    suvFrom: 8000
+    sedanFrom: 6999,
+    suvFrom: 9299
   },
   {
     slug: "bengaluru-to-mysore-cab",
@@ -55,8 +55,8 @@ const MANUAL_ROUTES = [
     to: "mysore",
     distance: "145 km",
     duration: "3–4 hours",
-    sedanFrom: 2500,
-    suvFrom: 3500
+    sedanFrom: 2499,
+    suvFrom: 3499
   },
   {
     slug: "bengaluru-to-chennai-cab",
@@ -64,8 +64,8 @@ const MANUAL_ROUTES = [
     to: "chennai",
     distance: "350 km",
     duration: "6–7 hours",
-    sedanFrom: 4500,
-    suvFrom: 6500
+    sedanFrom: 5499,
+    suvFrom: 7499
   },
   {
     slug: "bengaluru-to-hyderabad-cab",
@@ -73,8 +73,8 @@ const MANUAL_ROUTES = [
     to: "hyderabad",
     distance: "575 km",
     duration: "9–10 hours",
-    sedanFrom: 7500,
-    suvFrom: 9500
+    sedanFrom: 8499,
+    suvFrom: 10999
   },
   {
     slug: "hyderabad-to-bengaluru-cab",
@@ -82,8 +82,8 @@ const MANUAL_ROUTES = [
     to: "bengaluru",
     distance: "575 km",
     duration: "9–10 hours",
-    sedanFrom: 7500,
-    suvFrom: 9500
+    sedanFrom: 8499,
+    suvFrom: 10999
   },
   {
     slug: "coimbatore-to-bengaluru-cab",
@@ -343,8 +343,8 @@ const MANUAL_ROUTES = [
     to: "rameswaram",
     distance: "560 km",
     duration: "8–9 hours",
-    sedanFrom: 5200,
-    suvFrom: 6800
+    sedanFrom: 8499,
+    suvFrom: 10999
   },
   {
     slug: "madurai-to-rameswaram-cab",
@@ -436,8 +436,17 @@ export function allRouteSlugsForBuild() {
 }
 
 export function routesForCity(citySlug) {
-  return SEO_ROUTES.filter((r) => r.from === citySlug || r.to === citySlug)
-    .map((r) => routeBySlug(r.slug))
-    .filter(Boolean);
+  const seen = new Set();
+  const out = [];
+  for (const r of SEO_ROUTES) {
+    if (r.from !== citySlug && r.to !== citySlug) continue;
+    const key = `${r.from}|${r.to}`;
+    if (seen.has(key)) continue;
+    const resolved = routeBySlug(r.slug);
+    if (!resolved) continue;
+    seen.add(key);
+    out.push(resolved);
+  }
+  return out;
 }
 

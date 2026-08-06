@@ -58,10 +58,9 @@ function DestinationCard({ d, index }) {
     <Link
       href={d.href}
       title={d.packageName || d.name}
-      className="group min-w-[min(280px,85vw)] max-w-[320px] shrink-0 snap-start overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[var(--emt-shadow-card)] transition-all duration-200 hover:-translate-y-1 hover:shadow-[var(--emt-shadow-hover)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cabzii-brand)] focus-visible:ring-offset-2 lg:min-w-[calc(25%-0.75rem)] lg:max-w-[calc(25%-0.75rem)]"
+      className="group min-w-[min(200px,72vw)] max-w-[240px] shrink-0 snap-start overflow-hidden rounded-lg border border-slate-200 bg-white shadow-[var(--emt-shadow-card)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[var(--emt-shadow-hover)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cabzii-brand)] focus-visible:ring-offset-2 sm:min-w-[220px] sm:max-w-[260px] sm:rounded-xl lg:min-w-[calc(25%-0.75rem)] lg:max-w-[calc(25%-0.75rem)]"
     >
-      {/* Banner — destination photo, gradient fallback otherwise */}
-      <div className={`relative h-36 overflow-hidden bg-linear-to-br ${CARD_COLORS[index % CARD_COLORS.length]}`}>
+      <div className={`relative h-24 overflow-hidden bg-linear-to-br sm:h-28 ${CARD_COLORS[index % CARD_COLORS.length]}`}>
         {src ? (
           <img
             src={src}
@@ -72,23 +71,22 @@ function DestinationCard({ d, index }) {
             onError={onImageError}
           />
         ) : null}
-        <span className="absolute left-3 top-3 rounded-full bg-white/95 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-sky-700 shadow-sm">
+        <span className="absolute left-2 top-2 rounded-full bg-white/95 px-2 py-px text-[9px] font-bold uppercase tracking-wide text-sky-700 shadow-sm">
           Holidays
         </span>
       </div>
 
-      {/* Body — name / price below the image */}
-      <div className="flex min-h-[7.25rem] flex-col p-4">
-        <h3 className="line-clamp-1 text-base font-extrabold leading-snug text-slate-900 group-hover:text-[var(--cabzii-brand)]">
+      <div className="flex min-h-[5.25rem] flex-col p-2.5 sm:min-h-[5.75rem] sm:p-3">
+        <h3 className="line-clamp-1 text-xs font-extrabold leading-snug text-slate-900 group-hover:text-[var(--cabzii-brand)] sm:text-sm">
           {d.name}
         </h3>
-        <p className="mt-1 text-sm font-extrabold text-[var(--cabzii-brand)]">
+        <p className="mt-0.5 text-xs font-extrabold text-[var(--cabzii-brand)] sm:text-sm">
           {d.priceFrom > 0 ? `From ${formatINR(d.priceFrom)}` : "Explore packages"}
         </p>
-        <div className="mt-auto flex items-center justify-between border-t border-slate-100 pt-3">
-          <span className="text-[11px] font-medium text-slate-400">Instant enquiry</span>
-          <span className="inline-flex items-center gap-1 text-xs font-extrabold tracking-wide text-slate-900 transition group-hover:text-[var(--cabzii-cta)]">
-            BOOK NOW
+        <div className="mt-auto flex items-center justify-between border-t border-slate-100 pt-2">
+          <span className="text-[10px] font-medium text-slate-400">Instant enquiry</span>
+          <span className="inline-flex items-center gap-1 text-[10px] font-extrabold tracking-wide text-slate-900 transition group-hover:text-[var(--cabzii-cta)] sm:text-[11px]">
+            BOOK
             <span aria-hidden className="transition-transform group-hover:translate-x-0.5">→</span>
           </span>
         </div>

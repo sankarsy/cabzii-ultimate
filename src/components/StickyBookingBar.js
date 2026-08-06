@@ -29,7 +29,7 @@ export default function StickyBookingBar() {
 
   return (
     <>
-      <div className="h-[4.25rem] sm:hidden" aria-hidden />
+      <div className="h-[3rem] sm:hidden" aria-hidden />
       <nav
         className="fixed inset-x-0 bottom-0 z-50 grid grid-cols-3 gap-px border-t border-slate-200 bg-white/95 pb-[env(safe-area-inset-bottom,0px)] shadow-[0_-4px_20px_rgba(15,23,42,0.08)] backdrop-blur-sm sm:hidden"
         aria-label="Quick booking"
@@ -39,8 +39,8 @@ export default function StickyBookingBar() {
           className="cabzii-sticky-bar-item cabzii-tap text-[var(--cabzii-brand)]"
           aria-label="Call Cabzii now"
         >
-          <Phone className="h-5 w-5" strokeWidth={2} aria-hidden />
-          <span>Call now</span>
+          <Phone className="h-3.5 w-3.5" strokeWidth={2} aria-hidden />
+          <span>Call</span>
         </a>
         <a
           href={waHref}
@@ -49,7 +49,7 @@ export default function StickyBookingBar() {
           className="cabzii-sticky-bar-item cabzii-tap text-[#1da851]"
           aria-label="Get instant quote on WhatsApp"
         >
-          <WhatsAppIcon className="h-5 w-5" />
+          <WhatsAppIcon className="h-3.5 w-3.5" />
           <span>WhatsApp</span>
         </a>
         <Link
@@ -58,8 +58,8 @@ export default function StickyBookingBar() {
           style={{ background: "var(--cabzii-gradient-brand)" }}
           aria-label="Book a cab now"
         >
-          <CabIcon className="h-5 w-5" aria-hidden />
-          <span>Book now</span>
+          <CabIcon className="h-3.5 w-3.5" aria-hidden />
+          <span>Book</span>
         </Link>
       </nav>
     </>

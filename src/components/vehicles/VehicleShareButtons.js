@@ -4,7 +4,7 @@ import { Link2, MessageCircle, Share2 } from "lucide-react";
 import { toast } from "react-toastify";
 import { catalogPublicPath } from "../../lib/catalogProduct";
 
-export default function VehicleShareButtons({ cab }) {
+export default function VehicleShareButtons({ cab, compact = false }) {
   const url =
     typeof window !== "undefined"
       ? `${window.location.origin}${catalogPublicPath(cab, "/cabs")}`
@@ -21,23 +21,26 @@ export default function VehicleShareButtons({ cab }) {
   };
 
   const wa = `https://wa.me/?text=${encodeURIComponent(`${text} ${url}`)}`;
+  const btn =
+    "inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-1 text-[10px] font-semibold text-slate-600 hover:bg-slate-50 sm:gap-1.5 sm:rounded-lg sm:px-2.5 sm:py-1.5 sm:text-xs";
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
-      <span className="text-xs font-semibold text-slate-500">Share</span>
-      <button type="button" onClick={copyLink} className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-500 hover:bg-slate-50">
-        <Link2 className="h-3.5 w-3.5 text-sky-400" /> Copy link
+    <div className={`flex flex-wrap items-center ${compact ? "gap-1.5" : "gap-2"}`}>
+      {!compact ? <span className="text-[10px] font-semibold text-slate-500 sm:text-xs">Share</span> : null}
+      <button type="button" onClick={copyLink} className={btn}>
+        <Link2 className="h-3 w-3 text-sky-500 sm:h-3.5 sm:w-3.5" /> Copy
       </button>
-      <a href={wa} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-600 hover:bg-emerald-100">
-        <MessageCircle className="h-3.5 w-3.5 text-emerald-400" /> WhatsApp
+      <a href={wa} target="_blank" rel="noopener noreferrer" className={`${btn} border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100`}>
+        <MessageCircle className="h-3 w-3 text-emerald-500 sm:h-3.5 sm:w-3.5" /> WhatsApp
       </a>
-      {typeof navigator !== "undefined" && navigator.share ? (
+      {typeof navigator !== "undefined" && typeof navigator.share === "function" ? (
         <button
           type="button"
           onClick={() => navigator.share({ title: text, url }).catch(() => {})}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-500 hover:bg-slate-50"
+          className={btn}
+          aria-label="Share"
         >
-          <Share2 className="h-3.5 w-3.5 text-sky-400" /> Share
+          <Share2 className="h-3 w-3 text-sky-500 sm:h-3.5 sm:w-3.5" />
         </button>
       ) : null}
     </div>

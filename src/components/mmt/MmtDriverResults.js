@@ -54,16 +54,16 @@ export default function MmtDriverResults({ drivers, trip }) {
   const pkgLabel = DRIVER_HERO_PACKAGES.find((p) => p.id === trip.packageId)?.label;
 
   return (
-    <div className="section-shell cabzii-section grid w-full grid-cols-1 gap-5 lg:grid-cols-[260px_1fr] lg:gap-6">
+    <div className="section-shell cabzii-section grid w-full grid-cols-1 gap-2.5 lg:grid-cols-[200px_1fr] lg:gap-4">
       <aside className="cabzii-filter-panel h-fit lg:sticky lg:top-20">
-        <h2 className="mb-4 text-base font-bold text-slate-900">Filters</h2>
+        <h2 className="mb-1.5 text-xs font-bold text-slate-900 sm:mb-2 sm:text-sm">Filters</h2>
         {pkgLabel ? (
-          <p className="mb-4 rounded-lg bg-blue-50 px-3 py-2 text-xs font-semibold text-[var(--emt-primary)]">
+          <p className="mb-1.5 rounded-md bg-blue-50 px-2 py-1 text-[10px] font-semibold text-[var(--emt-primary)] sm:mb-2 sm:text-[11px]">
             Package: {pkgLabel}
           </p>
         ) : null}
-        <div className="mb-6">
-          <h3 className="mb-2 text-sm font-semibold text-slate-800">Sort by</h3>
+        <div className="mb-2.5 sm:mb-3">
+          <h3 className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-slate-500 sm:text-[11px]">Sort by</h3>
           <div className="cabzii-radio-group" role="radiogroup" aria-label="Sort drivers">
             {SORTS.map((s) => (
               <RadioOption
@@ -79,7 +79,7 @@ export default function MmtDriverResults({ drivers, trip }) {
         </div>
         {types.length > 0 ? (
           <div>
-            <h3 className="mb-2 text-sm font-semibold text-slate-800">Driver type</h3>
+            <h3 className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-slate-500 sm:text-[11px]">Driver type</h3>
             <div className="cabzii-checkbox-group">
               {types.map((type) => (
                 <CheckboxOption
@@ -94,11 +94,11 @@ export default function MmtDriverResults({ drivers, trip }) {
         ) : null}
       </aside>
       <div>
-        <p className="mb-3 text-sm text-slate-600">
+        <p className="mb-1.5 text-[11px] text-slate-600 sm:mb-2 sm:text-xs">
           {filtered.length} {filtered.length === 1 ? "driver" : "drivers"} available
           {pkgLabel ? ` · ${pkgLabel}` : ""}
         </p>
-        <div className="flex flex-col gap-3 sm:gap-4">
+        <div className="flex flex-col gap-2 sm:gap-2.5">
           {filtered.map((driver) => (
             <MmtDriverResultCard key={String(driver._id ?? driver.id)} driver={driver} trip={trip} />
           ))}

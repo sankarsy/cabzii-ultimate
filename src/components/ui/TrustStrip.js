@@ -2,7 +2,7 @@ import Link from "next/link";
 import { getTrustIcon, TRUST_ICON_STYLES } from "../icons/heroIcons";
 
 const TRUST_ITEMS = [
-  { label: "4.9 rated", iconKey: "rated", href: "/testimonials" },
+  { label: "Customer reviews", iconKey: "rated", href: "/testimonials" },
   { label: "Verified drivers", iconKey: "verified" },
   { label: "Upfront fares", iconKey: "price" },
   { label: "OTP secure booking", iconKey: "secure" },

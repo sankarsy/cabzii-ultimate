@@ -98,18 +98,18 @@ export default function MmtCabResultCard({ cab, trip, layout = "row", catalogMod
   );
 
   return (
-    <article className="cabzii-card cabzii-card-interactive cabzii-result-card-row flex flex-row items-stretch gap-3 cabzii-card-pad sm:gap-4">
-      <div className="cabzii-result-card-media relative h-20 w-28 shrink-0 overflow-hidden rounded-lg bg-slate-100 sm:h-24 sm:w-40">
+    <article className="cabzii-card cabzii-card-interactive cabzii-result-card-row flex flex-row items-stretch gap-2.5 cabzii-card-pad sm:gap-3">
+      <div className="cabzii-result-card-media relative h-16 w-24 shrink-0 overflow-hidden rounded-lg bg-slate-100 sm:h-20 sm:w-32 md:h-24 md:w-36">
         <CatalogCardImage src={imageSrc} alt={imageAlt} product={cab} sizes="112px" className="object-cover" />
       </div>
       <div className="min-w-0 flex flex-1 flex-col justify-center">
-        <h3 className="text-base font-bold tracking-tight text-slate-900 sm:text-lg">{title}</h3>
-        <p className="text-sm text-slate-500">{subtitle}</p>
-        <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs text-slate-500 sm:gap-x-4">{features}</div>
+        <h3 className="text-sm font-bold tracking-tight text-slate-900 sm:text-base">{title}</h3>
+        <p className="text-[11px] text-slate-500 sm:text-xs">{subtitle}</p>
+        <div className="mt-1.5 flex flex-wrap gap-x-2.5 gap-y-0.5 text-[10px] text-slate-500 sm:mt-2 sm:gap-x-3 sm:text-xs">{features}</div>
       </div>
-      <div className="cabzii-result-card-actions flex flex-row items-center justify-between gap-3 border-t border-slate-100 pt-3 sm:flex-col sm:items-end sm:border-l sm:border-t-0 sm:pl-4 sm:pt-0 sm:justify-end">
-        <MmtCardPriceBlock {...priceBlockProps} compact={false} />
-        <Link href={href} className="cabzii-btn cabzii-btn-primary cabzii-btn-sm cabzii-tap shrink-0">
+      <div className="cabzii-result-card-actions flex flex-row items-center justify-between gap-2 border-t border-slate-100 pt-2 sm:flex-col sm:items-end sm:justify-end sm:border-l sm:border-t-0 sm:pl-3 sm:pt-0">
+        <MmtCardPriceBlock {...priceBlockProps} compact />
+        <Link href={href} className="cabzii-btn cabzii-btn-primary cabzii-btn-sm cabzii-tap shrink-0 px-3 py-1.5 text-[11px] sm:text-xs">
           {catalogMode ? "View" : "Select"}
         </Link>
       </div>

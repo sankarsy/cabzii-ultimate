@@ -18,6 +18,7 @@ import HeroTabUrlSync from "../emt/HeroTabUrlSync";
 import { HOME_PAGE_FAQS } from "../../lib/seo/content";
 import { sortBySelectedCity } from "../../lib/locationPriority";
 import { useSelectedCity } from "../../lib/useSelectedCity";
+import { DEFAULT_HQ_CITY } from "../../lib/vehicleAdminConfig";
 import { isValidDriverTripSearch, parseDriverTripSearchParams } from "../../lib/driverTrip";
 import { isValidTripSearch, parseTripSearchParams } from "../../lib/mmtTrip";
 import { extractCabList, extractDriverList, fetchJson } from "../../lib/apiClient";
@@ -95,7 +96,7 @@ function HomePageBody({
         <MmtHomeCatalogSection
           eyebrow="Our fleet"
           title="Top cabs for you"
-          subtitle={`Dzire, Ertiga, Innova & Tempo taxi cars · ${displayCity}`}
+          subtitle={`Dzire, Ertiga, Innova & Tempo taxi cars · ${DEFAULT_HQ_CITY}`}
           viewAllHref="/cabs"
           viewAllLabel="View all cabs"
           loading={loadingCabs}
@@ -106,7 +107,7 @@ function HomePageBody({
           <MmtHomeCatalogScroll>
             {cabs.map((cab) => (
               <MmtHomeCatalogScrollItem key={String(cab._id ?? cab.id)}>
-                <MmtCabResultCard cab={cab} layout="card" catalogMode displayCity={displayCity} />
+                <MmtCabResultCard cab={cab} layout="card" catalogMode displayCity={cab.city || DEFAULT_HQ_CITY} />
               </MmtHomeCatalogScrollItem>
             ))}
           </MmtHomeCatalogScroll>
@@ -210,14 +211,15 @@ export default function MmtHomePage() {
     setCabsError("");
     const q = new URLSearchParams({
       limit: String(HOME_CABS_LIMIT),
-      page: "1"
+      page: "1",
+      /* Cabzii HQ inventory first — Chennai */
+      priorityCity: DEFAULT_HQ_CITY
     });
-    if (displayCity) q.set("priorityCity", displayCity);
 
     fetchJson(`/api/cabs?${q}`)
       .then((json) => {
         if (cancelled) return;
-        const list = sortCabsForHome(sortBySelectedCity(extractCabList(json), displayCity));
+        const list = sortCabsForHome(sortBySelectedCity(extractCabList(json), DEFAULT_HQ_CITY));
         setCabs(list.slice(0, HOME_CABS_LIMIT));
       })
       .catch((err) => {
@@ -232,7 +234,7 @@ export default function MmtHomePage() {
     return () => {
       cancelled = true;
     };
-  }, [displayCity]);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;

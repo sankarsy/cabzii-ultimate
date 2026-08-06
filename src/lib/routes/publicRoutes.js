@@ -11,7 +11,9 @@ export const PUBLIC_ROUTE_REDIRECTS = {
   "/driver-service": "/drivers",
   "/chennai-airport-taxi": "/services/airport-taxi/chennai",
   "/chennai-to-tirupati-cab": "/routes/chennai-to-tirupati-cab",
-  "/chennai-to-pondicherry-cab": "/routes/chennai-to-pondicherry-cab"
+  "/chennai-to-pondicherry-cab": "/routes/chennai-to-pondicherry-cab",
+  /* Canonical corridor: keep featured bangalore slug; mesh twin redirects here */
+  "/routes/chennai-to-bengaluru-cab": "/routes/chennai-to-bangalore-cab"
 };
 
 const VEHICLE_SLUG_MAP = {

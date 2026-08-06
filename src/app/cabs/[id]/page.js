@@ -42,10 +42,10 @@ export default async function CabDetailRoutePage({ params }) {
     <>
       {schema ? <JsonLd data={schema} /> : null}
       {cab ? (
-        <div className="section-shell pt-6">
+        <div className="section-shell pt-2 sm:pt-4">
           <SerpRichBar
-            ratingValue={cab.rating || reviewStats.ratingValue}
-            reviewCount={cab.reviewCount || reviewStats.reviewCount}
+            ratingValue={cab.rating || reviewStats?.ratingValue}
+            reviewCount={cab.reviewCount || reviewStats?.reviewCount}
             priceLabel={formatSerpPrice(cab.price)}
             badges={vehicleSerpBadges(cab)}
           />

@@ -23,8 +23,8 @@ function firstParam(value) {
 const SECTION_LINKS = [
   { href: "#packages", label: "Packages" },
   { href: "#product-details", label: "Details" },
-  { href: "#about", label: "About" },
-  { href: "#similar-drivers", label: "Alternatives" }
+  { href: "#similar-drivers", label: "Alternatives" },
+  { href: "#about", label: "About" }
 ];
 
 function applyDriverData(data, setDriver, setSelection, preferredPackageId = "") {
@@ -114,60 +114,60 @@ export default function DriverDetailPage({ driverId, initialDriver = null }) {
     : null;
 
   return (
-    <section className="bg-cabzii-page py-8 md:py-10">
+    <section className="bg-cabzii-page py-3 sm:py-6 md:py-8">
       <div className="section-shell">
-          <nav className="mb-4 text-xs text-slate-500" aria-label="Breadcrumb">
+          <nav className="mb-2.5 text-[10px] text-slate-500 sm:mb-3 sm:text-xs" aria-label="Breadcrumb">
             <Link href="/" className="hover:text-[var(--cabzii-brand)]">
               Home
             </Link>
-            <span className="mx-2">/</span>
+            <span className="mx-1.5 text-slate-300">/</span>
             <Link href="/drivers" className="hover:text-[var(--cabzii-brand)]">
               Drivers
             </Link>
-            <span className="mx-2">/</span>
-            <span className="text-slate-700">{driver?.name ?? "Details"}</span>
+            <span className="mx-1.5 text-slate-300">/</span>
+            <span className="text-slate-600">{driver?.name ?? "Details"}</span>
           </nav>
 
           {loading ? (
-            <div className="rounded-2xl border border-slate-200 bg-white p-12 text-center text-sm text-slate-600">
+            <div className="rounded-xl border border-slate-200 bg-white p-8 text-center text-sm text-slate-600">
               Loading driver…
             </div>
           ) : loadError || !driver ? (
-            <div className="rounded-2xl border border-amber-200 bg-amber-50 p-8 text-center">
+            <div className="rounded-xl border border-amber-200 bg-amber-50 p-6 text-center">
               <p className="font-semibold text-amber-900">{loadError || "Driver not available."}</p>
-              <Link href="/drivers" className="mt-4 inline-block text-sm font-semibold text-[var(--cabzii-brand)] hover:underline">
+              <Link href="/drivers" className="mt-3 inline-block text-sm font-semibold text-[var(--cabzii-brand)] hover:underline">
                 ← Browse all drivers
               </Link>
             </div>
           ) : (
             <>
-              <header className="mb-5">
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--cabzii-brand)]">
+              <header className="mb-2.5 sm:mb-3">
+                <p className="text-[9px] font-semibold uppercase tracking-wider text-[var(--cabzii-brand)] sm:text-[10px]">
                   Driver · cabzii.in
                 </p>
-                <h1 className="mt-1 text-xl font-bold text-slate-900 sm:text-2xl">{seoTitle}</h1>
-                {seoDescription ? <p className="mt-1.5 max-w-3xl text-xs text-slate-600">{seoDescription}</p> : null}
+                <h1 className="mt-0.5 text-base font-bold text-slate-900 sm:text-xl">{driver.name}</h1>
+                {seoDescription ? <p className="mt-1 max-w-3xl text-[11px] text-slate-600 sm:text-xs">{seoDescription}</p> : null}
               </header>
 
               <nav
-                className="scroll-x-touch mb-5 flex gap-1.5 overflow-x-auto rounded-xl border border-slate-200 bg-white p-1 text-xs shadow-sm [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                className="scroll-x-touch mb-2.5 flex gap-1 overflow-x-auto rounded-lg border border-slate-200 bg-white p-0.5 text-[11px] shadow-sm sm:mb-3 sm:gap-1.5 sm:rounded-xl sm:p-1 sm:text-xs [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
                 aria-label="Page sections"
               >
                 {SECTION_LINKS.map((link) => (
                   <a
                     key={link.href}
                     href={link.href}
-                    className="shrink-0 rounded-lg px-2.5 py-1 font-medium text-slate-600 transition hover:bg-slate-100 hover:text-[var(--cabzii-brand)]"
+                    className="shrink-0 rounded-md px-2 py-1 font-medium text-slate-600 transition hover:bg-slate-100 hover:text-[var(--cabzii-brand)] sm:rounded-lg sm:px-2.5"
                   >
                     {link.label}
                   </a>
                 ))}
               </nav>
 
-              <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-                <div className="space-y-6 lg:col-span-2">
+              <div className="grid grid-cols-1 gap-3 lg:grid-cols-3 lg:gap-5">
+                <div className="space-y-3 sm:space-y-4 lg:col-span-2">
                   <section id="packages" className="scroll-mt-24">
-                    <h2 className="mb-2 text-base font-bold text-slate-900">Choose your package</h2>
+                    <h2 className="mb-1 text-xs font-semibold text-slate-900 sm:mb-1.5 sm:text-sm">Choose your package</h2>
                     <DriverBookingDetail
                       driver={driver}
                       initialPackageId={packageFromUrl}
@@ -177,22 +177,26 @@ export default function DriverDetailPage({ driverId, initialDriver = null }) {
 
                   <DriverProductSpecs driver={driver} />
 
-                  <article id="about" className="scroll-mt-24 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:p-5">
-                    <h2 className="text-base font-bold text-slate-900">About this chauffeur service</h2>
-                    <p className="mt-2 text-xs leading-relaxed text-slate-600">
+                  <ReviewsSection itemType="driver" itemId={driverPk} />
+
+                  <SimilarDrivers currentDriverId={driverPk} vendor={driver.vendor} />
+
+                  <article id="about" className="scroll-mt-24 rounded-xl border border-slate-200 bg-white p-3 shadow-sm sm:p-4">
+                    <h2 className="text-xs font-semibold text-slate-900 sm:text-sm">About this chauffeur service</h2>
+                    <p className="mt-1.5 text-[11px] leading-relaxed text-slate-600 sm:text-xs">
                       {driver.seoDescription ||
                         `Hire an acting driver for your ${driver.name} with ${driver.vendor || "Cabzii"} on cabzii.in. Verified chauffeur for local and outstation trips — same package structure as cab booking with clear fares and additional charges.`}
                     </p>
                     {seoKeywords.length > 0 ? (
-                      <div className="mt-4 flex flex-wrap gap-2">
+                      <div className="mt-2.5 flex flex-wrap gap-1.5">
                         {seoKeywords.map((kw) => (
-                          <span key={kw} className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-medium text-slate-700">
+                          <span key={kw} className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-700">
                             {kw}
                           </span>
                         ))}
                       </div>
                     ) : null}
-                    <ul className="mt-3 grid gap-1.5 text-xs text-slate-600 sm:grid-cols-2">
+                    <ul className="mt-2.5 grid gap-1 text-[11px] text-slate-600 sm:grid-cols-2 sm:text-xs">
                       {[
                         "Verified vendor & drivers",
                         "Local & outstation packages",
@@ -208,10 +212,6 @@ export default function DriverDetailPage({ driverId, initialDriver = null }) {
                       ))}
                     </ul>
                   </article>
-
-                  <ReviewsSection itemType="driver" itemId={driverPk} />
-
-                  <SimilarDrivers currentDriverId={driverPk} vendor={driver.vendor} />
                 </div>
 
                 <aside className="lg:col-span-1">

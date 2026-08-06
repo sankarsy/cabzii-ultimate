@@ -78,9 +78,14 @@ export default async function CabBookingCityPage({ params }) {
     faqFromPairs(faqs)
   ];
 
-  const extraBody = cms?.body
-    ? `${cms.body}${getCityLandingBody(city, "cab") || ""}`
-    : getCityLandingBody(city, "cab");
+  const extraBody = (() => {
+    const generated = getCityLandingBody(city, "cab") || "";
+    const cmsBody = typeof cms?.body === "string" ? cms.body.trim() : "";
+    /* Prefer unique CMS body when substantial; avoid stacking duplicate long templates */
+    if (cmsBody.length > 400) return cmsBody;
+    if (cmsBody && generated) return `${cmsBody}${generated}`;
+    return cmsBody || generated;
+  })();
 
   return (
     <>

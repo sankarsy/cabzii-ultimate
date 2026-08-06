@@ -17,7 +17,7 @@ import { SegmentedOption } from "../ui/RadioOption";
 const TRIP_TABS = [
   { id: "outstation", label: "Outstation" },
   { id: "airport", label: "Airport" },
-  { id: "hourly", label: "Hourly Rentals" },
+  { id: "hourly", label: "Hourly" },
   { id: "local", label: "Local" }
 ];
 
@@ -444,23 +444,11 @@ export default function MmtCabSearchWidget({
       className={
         emtLayout
           ? "emt-search-submit cabzii-tap"
-          : compact
-            ? "cabzii-btn cabzii-btn-primary cabzii-btn-sm cabzii-tap w-full sm:w-auto sm:min-w-[140px]"
-            : "cabzii-btn cabzii-btn-primary cabzii-btn-lg w-full sm:w-auto sm:min-w-[220px]"
+          : "cabzii-btn cabzii-btn-primary cabzii-btn-sm cabzii-tap mx-auto w-auto min-w-[8.5rem] max-w-[10.5rem] justify-center px-4"
       }
     >
-      <SearchIcon className={compact ? "h-4 w-4 text-slate-400" : "h-5 w-5 text-slate-400"} />
-      {searching
-        ? emtLayout
-          ? "Searching…"
-          : compact
-            ? "Searching…"
-            : "Calculating distance…"
-        : emtLayout
-          ? "SEARCH"
-          : compact
-            ? "Search"
-            : "Search Cabs"}
+      <SearchIcon className="h-3.5 w-3.5 text-white/90" />
+      {searching ? "Searching…" : emtLayout ? "SEARCH" : "Search cabs"}
     </button>
   );
 
@@ -489,9 +477,9 @@ export default function MmtCabSearchWidget({
       className={
         emtLayout
           ? "flex flex-wrap gap-2 pb-4"
-          : compact
-            ? "hero-tabs-scroll -mx-0.5 flex gap-1.5 overflow-x-auto pb-2"
-            : "hero-tabs-scroll -mx-0.5 flex gap-2 overflow-x-auto pb-4"
+            : compact
+            ? "hero-tabs-scroll -mx-0.5 flex gap-1.5 overflow-x-auto pb-1.5"
+            : "hero-tabs-scroll -mx-0.5 flex gap-1.5 overflow-x-auto pb-2.5 sm:gap-2 sm:pb-3"
       }
     >
       {visibleTripTabs.map((tab) => (
@@ -523,7 +511,7 @@ export default function MmtCabSearchWidget({
 
   const subOptions = heroMode ? null : tripType === "outstation" ? (
       <div
-        className={`cabzii-segmented ${compact ? "cabzii-segmented-compact mb-2.5 mt-2" : "mb-4 mt-4"}`}
+        className={`cabzii-segmented ${compact ? "cabzii-segmented-compact mb-2 mt-1.5" : "mb-2.5 mt-2"}`}
         role="radiogroup"
         aria-label="Trip direction"
       >
@@ -542,7 +530,7 @@ export default function MmtCabSearchWidget({
       </div>
     ) : tripType === "airport" ? (
       <div
-        className={`cabzii-segmented ${compact ? "cabzii-segmented-compact mb-2.5 mt-2" : "mb-4 mt-4"}`}
+        className={`cabzii-segmented ${compact ? "cabzii-segmented-compact mb-2 mt-1.5" : "mb-2.5 mt-2"}`}
         role="radiogroup"
         aria-label="Airport transfer type"
       >
@@ -573,7 +561,7 @@ export default function MmtCabSearchWidget({
   ) : (
     <>
       <div className={`cabzii-search-grid ${compact ? "cabzii-search-grid-compact" : ""}`}>{searchFields}</div>
-      <div className={`flex justify-stretch sm:justify-center ${compact ? "mt-3" : "mt-5 sm:mt-6"}`}>
+      <div className={`flex justify-center ${compact ? "mt-2.5" : "mt-3 sm:mt-4"}`}>
         {searchButton}
       </div>
     </>

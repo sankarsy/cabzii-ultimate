@@ -58,19 +58,13 @@ export function middleware(request) {
     return NextResponse.redirect(url, 301);
   }
 
-  if (pathname.startsWith("/holidays/")) {
-    const segment = pathname.slice("/holidays/".length).split("/")[0];
-    const isMongoId = /^[a-f0-9]{24}$/i.test(segment);
-    const isSlug = /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(segment);
-    if (segment && !isMongoId && isSlug) {
-      return NextResponse.redirect(new URL(`/tour-packages/${segment}${pathname.slice("/holidays/".length + segment.length)}`, request.url), 301);
-    }
-  }
+  /* /holidays/{slug|id} is the booking page (slug preferred). SEO landing stays at /tour-packages/{slug}. */
 
   if (pathname === "/tour-booking") {
     const id = request.nextUrl.searchParams.get("id");
-    if (id) {
-      return NextResponse.redirect(new URL(`/holidays/${id}`, request.url), 301);
+    const slug = request.nextUrl.searchParams.get("slug");
+    if (slug || id) {
+      return NextResponse.redirect(new URL(`/holidays/${slug || id}`, request.url), 301);
     }
     return NextResponse.redirect(new URL("/holidays", request.url), 301);
   }

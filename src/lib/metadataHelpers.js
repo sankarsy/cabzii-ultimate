@@ -1,20 +1,21 @@
 import { catalogPublicPath } from "./catalogProduct";
-import { resolveMediaUrl } from "./media";
-import { absoluteImageUrl, PRODUCT_OG_HEIGHT, PRODUCT_OG_WIDTH } from "./imageOptimize";
+import { resolveProductImageSeo } from "./dynamicImageSeo";
 import { buildPageMetadata, productJsonLd, tourPackageJsonLd } from "./seo";
 import { clampDescription } from "./seo/programmaticMeta";
 import { serpPriceLine, tourPackageSerpBadges, vehicleSerpBadges } from "./seo/serpRichData";
-import { buildVehicleJsonLd, robotsIsNoindex, withPublicEnterpriseSeo } from "./vehicleEnterpriseSeo";
+import { packageDisplayPrice, packageSchemaPriceRange } from "./tourPackagePricing";
+import { buildVehicleJsonLd, normalizeSeoCity, robotsIsNoindex, withPublicEnterpriseSeo } from "./vehicleEnterpriseSeo";
 
-function applyEnterpriseMetaOverrides(metadata, item, { pathPrefix = "/cabs" } = {}) {
+function applyEnterpriseMetaOverrides(metadata, item, { pathPrefix = "/cabs", imageSeo = null } = {}) {
   if (!metadata || !item) return metadata;
   const es = item.enterpriseSeo && typeof item.enterpriseSeo === "object" ? item.enterpriseSeo : {};
+  const seo = imageSeo || resolveProductImageSeo(item);
   const ogTitle = es.ogTitle || item.seoTitle || metadata.openGraph?.title;
   const ogDescription = es.ogDescription || item.seoDescription || metadata.openGraph?.description;
-  const ogImage = absoluteImageUrl(resolveMediaUrl(es.ogImage)) || metadata.openGraph?.images?.[0]?.url;
+  const ogImage = seo.ogUrl || metadata.openGraph?.images?.[0]?.url;
   const twitterTitle = es.twitterTitle || ogTitle;
   const twitterDescription = es.twitterDescription || ogDescription;
-  const twitterImage = absoluteImageUrl(resolveMediaUrl(es.twitterImage || es.ogImage)) || metadata.twitter?.images?.[0];
+  const twitterImage = seo.twitterUrl || metadata.twitter?.images?.[0];
 
   if (item.canonicalUrl) {
     metadata.alternates = { ...(metadata.alternates || {}), canonical: item.canonicalUrl };
@@ -29,7 +30,16 @@ function applyEnterpriseMetaOverrides(metadata, item, { pathPrefix = "/cabs" } =
     title: ogTitle,
     description: ogDescription,
     ...(ogImage
-      ? { images: [{ url: ogImage, alt: item.imageAlt || ogTitle, width: PRODUCT_OG_WIDTH, height: PRODUCT_OG_HEIGHT }] }
+      ? {
+          images: [
+            {
+              url: ogImage,
+              alt: seo.alt || item.imageAlt || ogTitle,
+              width: seo.width,
+              height: seo.height
+            }
+          ]
+        }
       : {})
   };
   metadata.twitter = {
@@ -38,7 +48,6 @@ function applyEnterpriseMetaOverrides(metadata, item, { pathPrefix = "/cabs" } =
     description: twitterDescription,
     ...(twitterImage ? { images: [twitterImage] } : {})
   };
-  // pathPrefix reserved for future absolute OG URL helpers
   void pathPrefix;
   return metadata;
 }
@@ -60,10 +69,11 @@ function tourPackageMetaFields(pkg, slug) {
     pkg?.days > 0
       ? `${pkg.days} Day${pkg.days > 1 ? "s" : ""}${pkg.nights > 0 ? ` / ${pkg.nights} Night${pkg.nights > 1 ? "s" : ""}` : ""}`
       : pkg?.duration || "";
+  const fromPrice = packageDisplayPrice(pkg);
   const title =
     pkg?.seoTitle ||
-    `${pkg.name}${durationLabel ? ` — ${durationLabel}` : ""} | Book from ₹${Number(pkg?.price || 0).toLocaleString("en-IN")}`;
-  const priceLine = serpPriceLine(pkg?.price);
+    `${pkg.name}${durationLabel ? ` — ${durationLabel}` : ""} | Book from ₹${Number(fromPrice || 0).toLocaleString("en-IN")}`;
+  const priceLine = serpPriceLine(fromPrice);
   const description =
     pkg?.seoDescription ||
     pkg?.description?.slice(0, 158) ||
@@ -74,11 +84,10 @@ function tourPackageMetaFields(pkg, slug) {
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean);
-  const image = resolveMediaUrl(pkg?.image);
-  const absoluteImage = absoluteImageUrl(image);
+  const imageSeo = resolveProductImageSeo(pkg, { kind: "holiday" });
   const path = `/tour-packages/${pkg?.slug || slug}`;
 
-  return { origin, title, description, keywords, absoluteImage, path };
+  return { origin, title, description, keywords, absoluteImage: imageSeo.ogUrl, path, imageSeo };
 }
 
 export function cabDetailMetadata(cab, id) {
@@ -95,22 +104,24 @@ export function cabDetailMetadata(cab, id) {
   }
 
   const enriched = withPublicEnterpriseSeo(cab);
-  const title =
+  const imageSeo = resolveProductImageSeo(enriched, { kind: "cab" });
+  const cityLabel = normalizeSeoCity(enriched.city);
+  const rawTitle =
     enriched.seoTitle ||
-    (enriched.city ? `${enriched.title} Rental in ${enriched.city} | Best Price | Cabzii` : `${enriched.title} Rental | Best Price | Cabzii`);
+    `${enriched.title} Rental in ${cityLabel} | Best Price | Cabzii`;
+  const title = String(rawTitle).replace(/\bAll India\b/gi, cityLabel);
   const priceLine = serpPriceLine(enriched.price);
-  const description =
+  const description = String(
     enriched.seoDescription ||
-    enriched.shortDescription ||
-    clampDescription(
-      `${priceLine}Book ${enriched.title} — ${enriched.type || "AC cab"} with driver included, sanitized car, local 4hr/8hr & outstation packages on Cabzii.in.`
-    );
+      enriched.shortDescription ||
+      clampDescription(
+        `${priceLine}Book ${enriched.title} in ${cityLabel} — ${enriched.type || "AC cab"} with driver included, sanitized car, local 4hr/8hr & outstation packages on Cabzii.in.`
+      )
+  ).replace(/\bAll India\b/gi, cityLabel);
   const keywords = (enriched.metaKeywords || enriched.seo || "")
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean);
-  const image = resolveMediaUrl(enriched.ogImage || enriched.image);
-  const absoluteImage = absoluteImageUrl(image);
   const path = detailPath(enriched, "/cabs", id);
   const noindex = robotsIsNoindex(enriched.robots);
 
@@ -120,15 +131,15 @@ export function cabDetailMetadata(cab, id) {
       description,
       path,
       keywords: keywords.length ? keywords : undefined,
-      image: absoluteImage || undefined,
-      imageAlt: enriched.imageAlt || enriched.imageTitle || enriched.title,
-      imageWidth: PRODUCT_OG_WIDTH,
-      imageHeight: PRODUCT_OG_HEIGHT,
+      image: imageSeo.ogUrl || undefined,
+      imageAlt: imageSeo.alt,
+      imageWidth: imageSeo.width,
+      imageHeight: imageSeo.height,
       type: "website",
       noindex
     }),
     enriched,
-    { pathPrefix: "/cabs" }
+    { pathPrefix: "/cabs", imageSeo }
   );
 
   const jsonLd =
@@ -138,7 +149,10 @@ export function cabDetailMetadata(cab, id) {
           {
             ...enriched,
             seoTitle: title,
-            seoDescription: description
+            seoDescription: description,
+            ogImage: imageSeo.ogUrl,
+            image: imageSeo.coverUrl,
+            imageAlt: imageSeo.alt
           },
           "/cabs"
         ) ||
@@ -146,7 +160,7 @@ export function cabDetailMetadata(cab, id) {
           name: enriched.title,
           description,
           urlPath: path,
-          image: absoluteImage || undefined,
+          image: imageSeo.absoluteUrl || undefined,
           price: enriched.price,
           ...(enriched.originalPrice && Number(enriched.originalPrice) > Number(enriched.price)
             ? { lowPrice: enriched.price, highPrice: enriched.originalPrice }
@@ -174,6 +188,7 @@ export function driverDetailMetadata(driver, id) {
   }
 
   const enriched = withPublicEnterpriseSeo(driver);
+  const imageSeo = resolveProductImageSeo(enriched, { kind: "driver" });
   const title =
     enriched.seoTitle ||
     `${enriched.name} Acting Driver | ${enriched.city || "South India"} | Cabzii`;
@@ -185,8 +200,6 @@ export function driverDetailMetadata(driver, id) {
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean);
-  const image = resolveMediaUrl(enriched.ogImage || enriched.image);
-  const absoluteImage = absoluteImageUrl(image);
   const path = detailPath(enriched, "/drivers", id);
   const noindex = robotsIsNoindex(enriched.robots);
 
@@ -196,14 +209,14 @@ export function driverDetailMetadata(driver, id) {
       description,
       path,
       keywords: keywords.length ? keywords : undefined,
-      image: absoluteImage || undefined,
-      imageAlt: enriched.imageAlt || enriched.imageTitle || enriched.name,
-      imageWidth: PRODUCT_OG_WIDTH,
-      imageHeight: PRODUCT_OG_HEIGHT,
+      image: imageSeo.ogUrl || undefined,
+      imageAlt: imageSeo.alt,
+      imageWidth: imageSeo.width,
+      imageHeight: imageSeo.height,
       noindex
     }),
     enriched,
-    { pathPrefix: "/drivers" }
+    { pathPrefix: "/drivers", imageSeo }
   );
 
   return {
@@ -212,7 +225,7 @@ export function driverDetailMetadata(driver, id) {
       name: `${enriched.name} — Acting Driver`,
       description,
       urlPath: path,
-      image: absoluteImage || undefined,
+      image: imageSeo.absoluteUrl || undefined,
       price: enriched.pricing?.day || enriched.pricing?.hourly,
       lowPrice: enriched.pricing?.hourly,
       highPrice: enriched.pricing?.day,
@@ -238,7 +251,7 @@ export function tourPackageLandingMetadata(pkg, slug) {
   }
 
   const enriched = withPublicEnterpriseSeo(pkg);
-  const { origin, title, description, keywords, absoluteImage, path } = tourPackageMetaFields(enriched, slug);
+  const { origin, title, description, keywords, absoluteImage, path, imageSeo } = tourPackageMetaFields(enriched, slug);
   const noindex = robotsIsNoindex(enriched.robots);
   const metadata = applyEnterpriseMetaOverrides(
     buildPageMetadata({
@@ -246,28 +259,27 @@ export function tourPackageLandingMetadata(pkg, slug) {
       description: enriched.shortDescription || description,
       path,
       keywords: keywords.length ? keywords : undefined,
-      image: absoluteImageUrl(resolveMediaUrl(enriched.ogImage)) || absoluteImage || undefined,
-      imageAlt: enriched.imageAlt || enriched.imageTitle || enriched.name,
-      imageWidth: PRODUCT_OG_WIDTH,
-      imageHeight: PRODUCT_OG_HEIGHT,
+      image: absoluteImage || undefined,
+      imageAlt: imageSeo.alt,
+      imageWidth: imageSeo.width,
+      imageHeight: imageSeo.height,
       noindex
     }),
     enriched,
-    { pathPrefix: "/tour-packages" }
+    { pathPrefix: "/tour-packages", imageSeo }
   );
 
+  const priceRange = packageSchemaPriceRange(enriched);
   return {
     metadata,
     jsonLd: tourPackageJsonLd({
       name: enriched.name,
       description: enriched.shortDescription || description,
       urlPath: path,
-      image: absoluteImageUrl(resolveMediaUrl(enriched.ogImage)) || absoluteImage || undefined,
-      price: enriched.price,
+      image: absoluteImage || undefined,
+      price: packageDisplayPrice(enriched),
       originCity: origin,
-      ...(enriched.originalPrice && Number(enriched.originalPrice) > Number(enriched.price)
-        ? { lowPrice: enriched.price, highPrice: enriched.originalPrice }
-        : {}),
+      ...(priceRange || {}),
       additionalBadges: tourPackageSerpBadges(enriched)
     })
   };
@@ -289,7 +301,8 @@ export function packageDetailMetadata(pkg, id) {
 
   const origin = pkg.pricingOriginCity || pkg.city || "Chennai";
   const title = pkg.seoTitle || `${pkg.name} Tour Package from ${origin} | Cabzii`;
-  const priceLine = serpPriceLine(pkg.price);
+  const fromPrice = packageDisplayPrice(pkg);
+  const priceLine = serpPriceLine(fromPrice);
   const description =
     pkg.seoDescription ||
     clampDescription(
@@ -299,11 +312,11 @@ export function packageDetailMetadata(pkg, id) {
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean);
-  const image = resolveMediaUrl(pkg.image);
-  const absoluteImage = absoluteImageUrl(image);
+  const imageSeo = resolveProductImageSeo(pkg, { kind: "holiday" });
   const catalogPath = detailPath(pkg, "/holidays", id);
   const seoLandingPath = tourPackageSeoPath(pkg);
   const canonicalPath = seoLandingPath || catalogPath;
+  const priceRange = packageSchemaPriceRange(pkg);
 
   return {
     metadata: buildPageMetadata({
@@ -311,22 +324,20 @@ export function packageDetailMetadata(pkg, id) {
       description,
       path: canonicalPath,
       keywords: keywords.length ? keywords : undefined,
-      image: absoluteImage || undefined,
-      imageAlt: pkg.imageAlt || pkg.imageTitle || pkg.name,
-      imageWidth: PRODUCT_OG_WIDTH,
-      imageHeight: PRODUCT_OG_HEIGHT,
+      image: imageSeo.ogUrl || undefined,
+      imageAlt: imageSeo.alt,
+      imageWidth: imageSeo.width,
+      imageHeight: imageSeo.height,
       noindex: Boolean(seoLandingPath)
     }),
     jsonLd: tourPackageJsonLd({
       name: pkg.name,
       description,
       urlPath: canonicalPath,
-      image: absoluteImage || undefined,
-      price: pkg.price,
+      image: imageSeo.absoluteUrl || undefined,
+      price: fromPrice,
       originCity: origin,
-      ...(pkg.originalPrice && Number(pkg.originalPrice) > Number(pkg.price)
-        ? { lowPrice: pkg.price, highPrice: pkg.originalPrice }
-        : {}),
+      ...(priceRange || {}),
       additionalBadges: tourPackageSerpBadges(pkg)
     })
   };

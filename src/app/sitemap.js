@@ -7,17 +7,17 @@ import {
   getBackendUrl,
   servicePath
 } from "../lib/seo";
+import { isPrimaryFocusCity, isTamilNaduCity } from "../lib/seo/cities";
 import { catalogPublicPath } from "../lib/catalogProduct";
-import { resolveMediaUrl } from "../lib/media";
+import { resolveProductImageSeo } from "../lib/dynamicImageSeo";
 import { dedupeSitemapEntries, isPublishedBlogPost, isPublishedCatalogItem } from "../lib/seo/sitemapUtils";
 
 const HERO_IMAGE = `${SITE_URL}/images/hero-banner.svg`;
 
-function absoluteImage(path) {
-  const resolved = resolveMediaUrl(path);
-  if (!resolved) return null;
-  if (/^https?:\/\//i.test(resolved)) return resolved;
-  return `${SITE_URL}${resolved.startsWith("/") ? resolved : `/${resolved}`}`;
+function sitemapImageFromProduct(item, kind) {
+  if (!item) return null;
+  const seo = resolveProductImageSeo(item, { kind });
+  return seo.sitemapImage?.url || seo.absoluteUrl || null;
 }
 
 async function fetchAllIds(path, maxPages = 25) {
@@ -66,18 +66,22 @@ export default async function sitemap() {
   const cityRoutes = SEO_CITIES.flatMap((city) => {
     const isChennai = city.slug === "chennai";
     const isTirupati = city.slug === "tirupati";
+    const isTn = isTamilNaduCity(city);
+    const isFocus = isPrimaryFocusCity(city);
+    const hubPriority = isChennai ? 0.98 : isTn ? 0.94 : isFocus ? 0.9 : 0.72;
+    const driverPriority = isTirupati ? 0.96 : isChennai ? 0.94 : isTn ? 0.9 : isFocus ? 0.85 : 0.65;
     return [
       {
         url: `${base}/cab-booking/${city.slug}`,
         lastModified: now,
-        changeFrequency: "weekly",
-        priority: isChennai ? 0.98 : 0.92
+        changeFrequency: isFocus ? "weekly" : "monthly",
+        priority: hubPriority
       },
       {
         url: `${base}/acting-driver/${city.slug}`,
         lastModified: now,
-        changeFrequency: "weekly",
-        priority: isTirupati ? 0.96 : isChennai ? 0.94 : 0.9
+        changeFrequency: isFocus ? "weekly" : "monthly",
+        priority: driverPriority
       }
     ];
   });
@@ -95,12 +99,20 @@ export default async function sitemap() {
   const cmsRouteSlugs = new Set((cmsRoutes || []).filter((r) => r.slug && r.published !== false).map((r) => r.slug));
 
   const staticServiceRoutes = SEO_CITIES.flatMap((city) =>
-    SEO_SERVICES.filter((service) => !cmsServiceSlugs.has(service.slug)).map((service) => ({
-      url: `${base}${servicePath(service, city)}`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: city.slug === "chennai" && ["car-rental", "cab-rental", "airport-taxi"].includes(service.slug) ? 0.9 : 0.86
-    }))
+    SEO_SERVICES.filter((service) => !cmsServiceSlugs.has(service.slug)).map((service) => {
+      const chennaiCore =
+        city.slug === "chennai" &&
+        ["car-rental", "cab-rental", "airport-taxi", "outstation-cab", "one-way-cab", "local-taxi"].includes(
+          service.slug
+        );
+      const tnCore = isTamilNaduCity(city) && ["airport-taxi", "outstation-cab", "one-way-cab"].includes(service.slug);
+      return {
+        url: `${base}${servicePath(service, city)}`,
+        lastModified: now,
+        changeFrequency: isPrimaryFocusCity(city) ? "weekly" : "monthly",
+        priority: chennaiCore ? 0.92 : tnCore ? 0.88 : isPrimaryFocusCity(city) ? 0.82 : 0.65
+      };
+    })
   );
 
   const cmsServiceRoutes = (cmsServices || [])
@@ -143,7 +155,7 @@ export default async function sitemap() {
   const cabRoutes = cabs
     .filter(isPublishedCatalogItem)
     .map((item) => {
-      const image = absoluteImage(item.image);
+      const image = sitemapImageFromProduct(item, "cab");
       return {
         url: `${base}${catalogPublicPath(item, "/cabs")}`,
         lastModified: item.updatedAt ? new Date(item.updatedAt) : now,
@@ -156,7 +168,7 @@ export default async function sitemap() {
   const driverRoutes = drivers
     .filter(isPublishedCatalogItem)
     .map((item) => {
-      const image = absoluteImage(item.image);
+      const image = sitemapImageFromProduct(item, "driver");
       return {
         url: `${base}${catalogPublicPath(item, "/drivers")}`,
         lastModified: item.updatedAt ? new Date(item.updatedAt) : now,
@@ -170,27 +182,24 @@ export default async function sitemap() {
     packages.filter((item) => item.slug).map((item) => String(item.slug))
   );
 
-  /* Booking detail URLs — skip when a richer /tour-packages/{slug} landing exists */
-  const packageRoutes = packages
-    .filter(isPublishedCatalogItem)
-    .filter((item) => !item.slug || !tourPackageSlugs.has(String(item.slug)))
-    .map((item) => {
-      const image = absoluteImage(item.image);
-      return {
-        url: `${base}${catalogPublicPath(item, "/holidays")}`,
-        lastModified: item.updatedAt ? new Date(item.updatedAt) : now,
-        changeFrequency: "weekly",
-        priority: 0.65,
-        ...(image ? { images: [image] } : {})
-      };
-    });
+  /* Booking pages at /holidays/{slug|id}; SEO landings stay at /tour-packages/{slug} */
+  const packageRoutes = packages.filter(isPublishedCatalogItem).map((item) => {
+    const image = sitemapImageFromProduct(item, "holiday");
+    const hasSeoLanding = item.slug && tourPackageSlugs.has(String(item.slug));
+    return {
+      url: `${base}${catalogPublicPath(item, "/holidays")}`,
+      lastModified: item.updatedAt ? new Date(item.updatedAt) : now,
+      changeFrequency: "weekly",
+      priority: hasSeoLanding ? 0.55 : 0.65,
+      ...(image ? { images: [image] } : {})
+    };
+  });
 
-  /* SEO landing pages for tour packages (slug-based, richer than /holidays detail) */
   const tourPackageRoutes = packages
     .filter(isPublishedCatalogItem)
     .filter((item) => item.slug)
     .map((item) => {
-      const image = absoluteImage(item.image);
+      const image = sitemapImageFromProduct(item, "holiday");
       return {
         url: `${base}/tour-packages/${item.slug}`,
         lastModified: item.updatedAt ? new Date(item.updatedAt) : now,
@@ -203,7 +212,10 @@ export default async function sitemap() {
   const blogRoutes = blogPosts
     .filter(isPublishedBlogPost)
     .map((item) => {
-      const image = absoluteImage(item.image);
+      const image = sitemapImageFromProduct(
+        { image: item.coverImage || item.ogImage || item.image, imageAlt: item.title },
+        "default"
+      );
       return {
         url: `${base}/blog/${item.slug}`,
         lastModified: item.updatedAt ? new Date(item.updatedAt) : now,

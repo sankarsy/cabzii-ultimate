@@ -728,23 +728,59 @@ export const CATALOG_TABS = {
     sample: {
       name: "Tirupati Balaji Darshan",
       vendor: "Your Vendor Name",
-      duration: "",
-      price: 4999,
-      originalPrice: 6499,
-      discountPercentage: 23,
+      duration: "2 Days / 1 Night",
+      price: 6999,
+      originalPrice: 0,
+      discountPercentage: 0,
       image: "/uploads/package.jpg",
       gallery: ["/uploads/package.jpg"],
       city: "Tirupati",
       pricingOriginCity: "Chennai",
       location: "Tirumala",
       category: "pilgrimage",
+      destination: "Tirupati · Tirumala",
+      state: "Andhra Pradesh",
+      days: 2,
+      nights: 1,
+      description:
+        "Experience Tirupati Balaji Darshan with a curated pilgrimage package from Chennai. Travel in an AC cab with darshan planning support, hotel stay options and a verified tour partner on cabzii.in.\n\nToll, permit and driver bata are billed as per actuals.",
+      highlights: [
+        "Temple darshan planning support",
+        "AC cab with experienced driver",
+        "Flexible pickup from Chennai",
+        "Verified pilgrimage tour partner"
+      ],
+      inclusions: [
+        "AC cab with driver for the itinerary",
+        "Pickup & drop as selected at booking",
+        "Tour coordination support"
+      ],
+      exclusions: [
+        "Toll, parking & state permits (as actuals)",
+        "Temple entry / special darshan tickets",
+        "Meals & hotel extras not listed"
+      ],
+      itinerary: [
+        {
+          day: 1,
+          title: "Chennai to Tirupati · Local darshan",
+          details: "Pickup from your location, drive to Tirupati, temple visit support and overnight stay as per package."
+        },
+        {
+          day: 2,
+          title: "Morning visit & return to Chennai",
+          details: "Checkout after breakfast, remaining local visits if scheduled, and comfortable return to Chennai."
+        }
+      ],
       cabTypes: [
         { id: "sedan", label: "Sedan", seats: 4, multiplier: 1 },
         { id: "suv", label: "SUV", seats: 6, multiplier: 1.12 },
         { id: "innova", label: "Innova", seats: 7, multiplier: 1.18 },
         { id: "tempo", label: "Tempo Traveller", seats: 12, multiplier: 1.35 }
       ],
-      tags: ["Pilgrimage", "Tirupati"]
+      tags: ["Pilgrimage", "Tirupati"],
+      seoDescription:
+        "Book Tirupati Balaji Darshan package from Chennai on cabzii.in — AC cab options, transparent fares & instant confirmation."
     },
     required: ["name", "vendor", "price"]
   },
@@ -1022,6 +1058,10 @@ export function emptySeoServiceForm() {
     priceFrom: 0,
     highlights: "",
     body: "",
+    image: "",
+    imageAlt: "",
+    imageTitle: "",
+    gallery: "",
     seo: "",
     seoTitle: "",
     seoDescription: "",
@@ -1045,6 +1085,10 @@ export function seoServiceFormFromItem(item) {
     priceFrom: numField(item?.priceFrom),
     highlights: Array.isArray(item?.highlights) ? item.highlights.join(", ") : "",
     body: item?.body || "",
+    image: item?.image || "",
+    imageAlt: item?.imageAlt || "",
+    imageTitle: item?.imageTitle || "",
+    gallery: Array.isArray(item?.gallery) ? item.gallery.join(", ") : "",
     seo: item?.seo || "",
     seoTitle,
     seoDescription: item?.seoDescription || "",
@@ -1069,6 +1113,13 @@ export function seoServiceFormToPayload(form) {
     priceFrom: numField(form.priceFrom),
     highlights: form.highlights || "",
     body: form.body || "",
+    image: form.image || "",
+    imageAlt: form.imageAlt || "",
+    imageTitle: form.imageTitle || "",
+    gallery: String(form.gallery || "")
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean),
     seo,
     seoTitle,
     seoDescription: String(form.seoDescription || "").trim(),

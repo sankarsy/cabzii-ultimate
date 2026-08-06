@@ -1,83 +1,62 @@
 import { resolveMediaUrl } from "./media";
+import {
+  detectServiceKind,
+  resolveCoverImage,
+  resolveImageAlt,
+  resolveProductImageSeo,
+  serviceFallbackPath
+} from "./dynamicImageSeo";
 
-/** Distinct placeholder images per vehicle — never one shared Fiat for all cabs. */
+/** @deprecated Use SERVICE_FALLBACK_PATHS via dynamicImageSeo — kept for import compatibility. */
 export const VEHICLE_STOCK_IMAGES = {
-  dzire:
-    "https://images.unsplash.com/photo-1621007947382-b6263ac8e237?auto=format&fit=crop&w=640&q=75",
-  etios:
-    "https://images.unsplash.com/photo-1552519507-da3b42c508e2?auto=format&fit=crop&w=640&q=75",
-  wagon:
-    "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?auto=format&fit=crop&w=640&q=75",
-  hatchback:
-    "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?auto=format&fit=crop&w=640&q=75",
-  innova:
-    "https://images.unsplash.com/photo-1563729784474-d77dcd085025?auto=format&fit=crop&w=640&q=75",
-  ertiga:
-    "https://images.unsplash.com/photo-1533473359331-0135ef1b58dd?auto=format&fit=crop&w=640&q=75",
-  suv:
-    "https://images.unsplash.com/photo-1533473359331-0135ef1b58dd?auto=format&fit=crop&w=640&q=75",
-  tempo:
-    "https://images.unsplash.com/photo-1570125909232-e097327a4962?auto=format&fit=crop&w=640&q=75",
-  van:
-    "https://images.unsplash.com/photo-1570125909232-e097327a4962?auto=format&fit=crop&w=640&q=75",
-  bus:
-    "https://images.unsplash.com/photo-1570125909232-e097327a4962?auto=format&fit=crop&w=640&q=75",
-  sedan:
-    "https://images.unsplash.com/photo-1621007947382-b6263ac8e237?auto=format&fit=crop&w=640&q=75"
+  dzire: serviceFallbackPath("cab"),
+  etios: serviceFallbackPath("cab"),
+  wagon: serviceFallbackPath("cab"),
+  hatchback: serviceFallbackPath("cab"),
+  innova: serviceFallbackPath("suv"),
+  ertiga: serviceFallbackPath("suv"),
+  suv: serviceFallbackPath("suv"),
+  tempo: serviceFallbackPath("tempo"),
+  van: serviceFallbackPath("tempo"),
+  bus: serviceFallbackPath("bus"),
+  sedan: serviceFallbackPath("cab")
 };
 
-function haystack(product = {}) {
-  return [
-    product.vehicleModel,
-    product.title,
-    product.name,
-    product.examples,
-    product.type,
-    product.speciality
-  ]
-    .filter(Boolean)
-    .join(" ")
-    .toLowerCase();
-}
-
-/** Pick stock image key from product title / model / category. */
-export function detectVehicleImageKey(product = {}) {
-  const text = haystack(product);
-  if (/wagon|swift|alto|i10|i20|hatch/.test(text)) return "wagon";
-  if (/dzire/.test(text)) return "dzire";
-  if (/etios|amaze|xcent|verna/.test(text)) return "etios";
-  if (/innova|crysta|hycross|fortuner/.test(text)) return "innova";
-  if (/ertiga|xl6|suv|xuv|creta|seltos/.test(text)) return "ertiga";
-  if (/tempo|traveller|van|bus|coach/.test(text)) return "tempo";
-  const type = String(product.type || "").toLowerCase();
-  if (type.includes("hatch")) return "hatchback";
-  if (type.includes("suv")) return "suv";
-  if (type.includes("van") || type.includes("bus")) return "tempo";
-  return "sedan";
-}
+export { detectServiceKind as detectVehicleImageKey };
 
 export function stockImageForProduct(product = {}) {
-  const key = detectVehicleImageKey(product);
-  return VEHICLE_STOCK_IMAGES[key] || VEHICLE_STOCK_IMAGES.sedan;
+  return serviceFallbackPath(detectServiceKind(product));
 }
 
-/** Uploaded image first; otherwise type-aware stock photo (not one global fallback). */
+/** Uploaded cover/gallery first; local service fallback last — never a hardcoded CDN product photo. */
 export function resolveCabImage(cab = {}) {
-  const uploaded = resolveMediaUrl(cab.image);
-  if (uploaded) return uploaded;
-  const fromGallery = resolveMediaUrl(Array.isArray(cab.gallery) ? cab.gallery[0] : "");
-  if (fromGallery) return fromGallery;
-  return stockImageForProduct(cab);
+  return resolveCoverImage(cab, { kind: "cab" }).url;
 }
 
 export function resolveDriverImage(driver = {}) {
-  const uploaded = resolveMediaUrl(driver.image);
-  if (uploaded) return uploaded;
-  return stockImageForProduct({ ...driver, type: driver.type || "Sedan" });
+  return resolveCoverImage(driver, { kind: "driver" }).url;
 }
 
 export function resolvePackageImage(pkg = {}) {
-  const uploaded = resolveMediaUrl(pkg.image);
+  return resolveCoverImage(pkg, { kind: "holiday" }).url;
+}
+
+export function resolveProductDisplayImage(product = {}, kind) {
+  const seo = resolveProductImageSeo(product, { kind });
+  return {
+    src: seo.displayUrl || seo.coverUrl,
+    alt: seo.alt,
+    title: seo.title,
+    absoluteUrl: seo.absoluteUrl
+  };
+}
+
+export function resolveCabImageAlt(cab = {}) {
+  return resolveImageAlt(cab, resolveCoverImage(cab, { kind: "cab" }), { kind: "cab" });
+}
+
+export function resolveUploadedOrFallback(url, product = {}, kind) {
+  const uploaded = resolveMediaUrl(url);
   if (uploaded) return uploaded;
-  return VEHICLE_STOCK_IMAGES.sedan;
+  return resolveCoverImage(product, { kind }).url;
 }

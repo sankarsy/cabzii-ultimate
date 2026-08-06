@@ -1,6 +1,7 @@
 "use client";
 
 import { previewCatalogSlug } from "../../lib/catalogProduct";
+import ImageUploadField from "./ImageUploadField";
 
 function inputCls() {
   return "w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-sky-600";
@@ -31,7 +32,7 @@ function routeSlugPreview(form) {
   return `/routes/${manual || "…"}`;
 }
 
-export function AdminSeoServiceForm({ form, onChange }) {
+export function AdminSeoServiceForm({ form, onChange, authToken = "" }) {
   const set = (patch) => onChange((prev) => ({ ...prev, ...patch }));
   const productName = form.name || form.menuLabel || "";
 
@@ -115,6 +116,29 @@ export function AdminSeoServiceForm({ form, onChange }) {
             <textarea className={inputCls()} rows={4} value={form.body || ""} onChange={(e) => set({ body: e.target.value })} />
           </Field>
         </div>
+        <div className="sm:col-span-2">
+          <ImageUploadField
+            label="Cover photo (homepage + SEO cards)"
+            hint="Shown on “Cab services in all cities” and social previews"
+            value={form.image || ""}
+            authToken={authToken}
+            alt={form.seoTitle || form.name || "Service"}
+            onChange={(image) =>
+              set({
+                image,
+                imageAlt:
+                  form.imageAlt ||
+                  `${form.seoTitle || form.name || "Cabzii service"} in ${form.menuCitySlug || "India"}`
+              })
+            }
+          />
+        </div>
+        <Field label="Image alt text">
+          <input className={inputCls()} value={form.imageAlt || ""} onChange={(e) => set({ imageAlt: e.target.value })} />
+        </Field>
+        <Field label="Image title">
+          <input className={inputCls()} value={form.imageTitle || ""} onChange={(e) => set({ imageTitle: e.target.value })} />
+        </Field>
         <label className="flex items-center gap-2 text-sm text-slate-700">
           <input type="checkbox" checked={form.allCities !== false} onChange={(e) => set({ allCities: e.target.checked })} />
           All cities (sitemap URL per city)

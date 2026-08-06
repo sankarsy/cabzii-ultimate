@@ -21,14 +21,14 @@ export default function FaqSection({
     : "";
 
   return (
-    <div className={showIntro || hideTitle ? "" : "mt-10"}>
+    <div className={showIntro || hideTitle ? "" : "mt-5 sm:mt-6"}>
       {showIntro ? <SectionIntro eyebrow={eyebrow} title={title} subtitle={subtitle} /> : null}
 
       <section
-        className={`cabzii-card overflow-hidden p-5 md:p-6 ${showIntro || hideTitle ? "mt-6" : ""}`}
+        className={`cabzii-card overflow-hidden p-3 sm:p-4 ${showIntro || hideTitle ? "mt-3" : ""}`}
       >
-        {showCardTitle ? <h2 className="text-lg font-bold text-slate-900 sm:text-xl">{title}</h2> : null}
-        <div className={`${scrollable ? "faq-scroll-wrap relative" : ""} ${showCardTitle ? "mt-4" : ""}`}>
+        {showCardTitle ? <h2 className="text-xs font-semibold text-slate-900 sm:text-sm">{title}</h2> : null}
+        <div className={`${scrollable ? "faq-scroll-wrap relative" : ""} ${showCardTitle ? "mt-2.5" : ""}`}>
           <div className={`cabzii-faq ${listClass}`}>
             {faqs.map(([question, answer]) => (
               <FaqItem key={question} question={question} answer={answer} />

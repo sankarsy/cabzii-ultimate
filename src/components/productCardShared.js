@@ -1,40 +1,39 @@
 "use client";
 
 import { optimizeImageUrl } from "../lib/imageOptimize";
+import { serviceFallbackPath } from "../lib/dynamicImageSeo";
 
 /** Shared layout tokens matching CabCard (image + meta below). */
 
-import { typo } from "../lib/typography";
 import { CheckIcon } from "./icons";
 
 export const CARD_ARTICLE_CLASS =
   "cabzii-card cabzii-card-interactive group relative flex h-full flex-col overflow-hidden";
 
 export const CARD_BOOK_BTN_CLASS =
-  "cabzii-btn cabzii-btn-primary cabzii-tap w-full text-sm sm:w-auto";
+  "cabzii-btn cabzii-btn-primary cabzii-btn-sm cabzii-tap w-full !text-[11px] sm:w-auto";
 
 export function MetaPill({ icon, label }) {
   return (
-    <span className={`inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 ${typo.caption}`}>
+    <span className="inline-flex items-center gap-0.5 rounded-full border border-slate-200 bg-slate-50 px-1.5 py-px text-[9px] leading-snug text-slate-600 sm:gap-1 sm:px-2 sm:text-[10px]">
       {icon ? <span className="text-sky-400">{icon}</span> : null}
       {label}
     </span>
   );
 }
 
-const FALLBACK_PRODUCT_IMAGE =
-  "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=640&q=75";
+const FALLBACK_PRODUCT_IMAGE = serviceFallbackPath("cab");
 
-export function ProductImageFrame({ src, alt, badges, imageClassName = "h-[185px] w-full object-cover" }) {
+export function ProductImageFrame({ src, alt, badges, imageClassName = "h-[120px] w-full object-cover sm:h-[140px] md:h-[130px]" }) {
   const imageSrc = optimizeImageUrl(src || FALLBACK_PRODUCT_IMAGE, 640);
   return (
-    <div className="relative p-1.5">
-      <div className="relative overflow-hidden rounded-[16px] bg-slate-100">
+    <div className="relative p-1 sm:p-1.5">
+      <div className="relative overflow-hidden rounded-lg bg-slate-100 sm:rounded-xl">
         <img
           src={imageSrc}
-          alt={alt || "Vehicle"}
+          alt={alt || "Cabzii service"}
           width={640}
-          height={400}
+          height={320}
           loading="lazy"
           decoding="async"
           className={`${imageClassName} transition-transform duration-300 group-hover:scale-[1.02]`}
@@ -52,16 +51,16 @@ export function ProductImageFrame({ src, alt, badges, imageClassName = "h-[185px
 
 export function ProductMetaBlock({ title, vendor, vendorFallback = "Cabzii", children }) {
   return (
-    <div className="px-2.5 pb-1">
-      <h3 className={`line-clamp-1 ${typo.h3}`}>{title}</h3>
+    <div className="px-2 pb-1 sm:px-2.5">
+      <h3 className="line-clamp-1 text-xs font-bold leading-snug text-slate-900 sm:text-sm">{title}</h3>
       <div className="mt-0.5 flex items-center justify-between gap-2">
-        <p className={`line-clamp-1 ${typo.caption}`}>by {vendor || vendorFallback}</p>
-        <span className={`shrink-0 flex items-center gap-0.5 ${typo.caption}`}>
+        <p className="line-clamp-1 text-[10px] text-slate-500 sm:text-[11px]">by {vendor || vendorFallback}</p>
+        <span className="flex shrink-0 items-center gap-0.5 text-[10px] text-slate-500 sm:text-[11px]">
           <CheckIcon className="h-2.5 w-2.5 text-emerald-400" />
           Verified
         </span>
       </div>
-      {children ? <div className="mt-1.5 flex flex-wrap gap-1">{children}</div> : null}
+      {children ? <div className="mt-1 flex flex-wrap gap-1">{children}</div> : null}
     </div>
   );
 }
@@ -79,51 +78,51 @@ export function PriceSummaryCard({
 }) {
   const d = Math.min(99, Math.max(0, discountPct));
   return (
-    <div className="mt-1.5 rounded-xl border border-slate-200 bg-slate-50 p-2.5">
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <p className={`${typo.badge} text-slate-400`}>{priceLabel}</p>
-          <div className="mt-1 flex items-center gap-2">
-            <p className={typo.price}>
+    <div className="mt-1 rounded-lg border border-slate-200 bg-slate-50 p-1.5 sm:mt-1.5 sm:rounded-xl sm:p-2">
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0">
+          <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">{priceLabel}</p>
+          <div className="mt-0.5 flex flex-wrap items-center gap-1.5">
+            <p className="text-sm font-extrabold tracking-tight text-slate-900 sm:text-base">
               ₹{finalPrice.toLocaleString("en-IN")}
-              {priceSuffix ? <span className={`ml-1 text-xs font-medium text-slate-500`}>{priceSuffix}</span> : null}
+              {priceSuffix ? <span className="ml-1 text-[10px] font-medium text-slate-500">{priceSuffix}</span> : null}
             </p>
             {originalPrice > finalPrice ? (
-              <span className="text-xs font-medium text-slate-400 line-through">
+              <span className="text-[10px] font-medium text-slate-400 line-through sm:text-xs">
                 ₹{originalPrice.toLocaleString("en-IN")}
               </span>
             ) : null}
           </div>
           {savedAmount > 0 ? (
-            <p className={`mt-1 text-xs font-semibold text-slate-600`}>
+            <p className="mt-0.5 text-[10px] font-semibold text-slate-600 sm:text-[11px]">
               Save ₹{savedAmount.toLocaleString("en-IN")}
             </p>
           ) : null}
         </div>
         {d > 0 ? (
-          <div className="rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-center">
-            <p className={`${typo.badge} text-slate-500`}>Discount</p>
-            <p className="text-xs font-bold text-slate-800">{d}% OFF</p>
+          <div className="shrink-0 rounded-md border border-slate-200 bg-white px-1.5 py-1 text-center sm:rounded-lg sm:px-2">
+            <p className="text-[8px] font-bold uppercase tracking-wider text-slate-500 sm:text-[9px]">Off</p>
+            <p className="text-[10px] font-bold text-slate-800 sm:text-xs">{d}%</p>
           </div>
         ) : null}
       </div>
       {(extraKmCharge != null || extraHourCharge != null) && (
-        <div className="mt-3 grid grid-cols-2 gap-2">
+        <div className="mt-1.5 grid grid-cols-2 gap-1.5 sm:mt-2 sm:gap-2">
           {extraKmCharge != null ? (
-            <div className="rounded-lg bg-white px-2 py-2">
-              <p className={`${typo.badge} text-slate-400`}>Extra KM</p>
-              <p className="mt-0.5 text-xs font-bold text-slate-800">₹{extraKmCharge}/km</p>
+            <div className="rounded-md bg-white px-1.5 py-1 sm:rounded-lg sm:px-2 sm:py-1.5">
+              <p className="text-[8px] font-bold uppercase tracking-wider text-slate-400">Extra KM</p>
+              <p className="text-[10px] font-bold text-slate-800 sm:text-xs">₹{extraKmCharge}/km</p>
             </div>
           ) : null}
           {extraHourCharge != null ? (
-            <div className="rounded-lg bg-white px-2 py-2">
-              <p className={`${typo.badge} text-slate-400`}>Extra Hour</p>
-              <p className="mt-0.5 text-xs font-bold text-slate-800">₹{extraHourCharge}/hr</p>
+            <div className="rounded-md bg-white px-1.5 py-1 sm:rounded-lg sm:px-2 sm:py-1.5">
+              <p className="text-[8px] font-bold uppercase tracking-wider text-slate-400">Extra Hour</p>
+              <p className="text-[10px] font-bold text-slate-800 sm:text-xs">₹{extraHourCharge}/hr</p>
             </div>
           ) : null}
         </div>
       )}
-      {extraBadges ? <div className="mt-2 flex flex-wrap gap-1.5">{extraBadges}</div> : null}
+      {extraBadges ? <div className="mt-1.5 flex flex-wrap gap-1">{extraBadges}</div> : null}
     </div>
   );
 }

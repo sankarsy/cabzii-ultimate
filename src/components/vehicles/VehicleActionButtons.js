@@ -23,11 +23,11 @@ export default function VehicleActionButtons({ vehicleId, className = "" }) {
           toggle(id);
           toast.info(wishlisted ? "Removed from wishlist" : "Saved to wishlist");
         }}
-        className={`flex h-9 w-9 items-center justify-center rounded-full border bg-white/95 shadow-sm backdrop-blur transition hover:scale-105 ${
+        className={`flex h-8 w-8 items-center justify-center rounded-full border bg-white/95 shadow-sm backdrop-blur transition hover:scale-105 sm:h-9 sm:w-9 ${
           wishlisted ? "border-rose-200 text-rose-400" : "border-slate-200 text-slate-400 hover:text-rose-400"
         }`}
       >
-        <Heart className={`h-4 w-4 ${wishlisted ? "fill-current" : ""}`} strokeWidth={2} />
+        <Heart className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${wishlisted ? "fill-current" : ""}`} strokeWidth={2} />
       </button>
     </div>
   );

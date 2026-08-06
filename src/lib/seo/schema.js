@@ -12,7 +12,6 @@ import {
   WIKIDATA_URL,
   KNOWLEDGE_GRAPH_ID,
   DEFAULT_OG_IMAGE,
-  SITE_REVIEW_STATS,
   CITY_CAB_PRICE_RANGE,
   CITY_DRIVER_PRICE_RANGE
 } from "./constants";
@@ -28,36 +27,15 @@ function priceValidUntil() {
 }
 
 export function siteAggregateRating(overrides = {}) {
+  const ratingValue = overrides.ratingValue;
+  const reviewCount = overrides.reviewCount;
+  if (!ratingValue || !Number(reviewCount)) return null;
   return {
     "@type": "AggregateRating",
-    ratingValue: overrides.ratingValue ?? SITE_REVIEW_STATS.ratingValue,
-    reviewCount: overrides.reviewCount ?? SITE_REVIEW_STATS.reviewCount,
-    bestRating: overrides.bestRating ?? SITE_REVIEW_STATS.bestRating,
-    worstRating: overrides.worstRating ?? SITE_REVIEW_STATS.worstRating
-  };
-}
-
-function offerShippingDetails() {
-  return {
-    "@type": "OfferShippingDetails",
-    shippingRate: {
-      "@type": "MonetaryAmount",
-      value: "0",
-      currency: "INR"
-    },
-    shippingDestination: {
-      "@type": "DefinedRegion",
-      addressCountry: "IN"
-    },
-    deliveryTime: {
-      "@type": "ShippingDeliveryTime",
-      handlingTime: {
-        "@type": "QuantitativeValue",
-        minValue: 0,
-        maxValue: 2,
-        unitCode: "HUR"
-      }
-    }
+    ratingValue: String(ratingValue),
+    reviewCount: String(reviewCount),
+    bestRating: overrides.bestRating ?? "5",
+    worstRating: overrides.worstRating ?? "1"
   };
 }
 
@@ -68,8 +46,7 @@ function buildOffers({ url, price, lowPrice, highPrice, offerCount }) {
     itemCondition: "https://schema.org/NewCondition",
     url,
     priceValidUntil: priceValidUntil(),
-    seller: { "@id": ORG_ID },
-    shippingDetails: offerShippingDetails()
+    seller: { "@id": ORG_ID }
   };
   if (lowPrice != null && highPrice != null && Number(lowPrice) !== Number(highPrice)) {
     return {
@@ -129,8 +106,9 @@ export function servicePageJsonLd({
   const url = `${SITE_URL}${urlPath}`;
   const low = priceFrom ?? CITY_CAB_PRICE_RANGE.low;
   const high = priceTo ?? Math.round((priceFrom ?? CITY_CAB_PRICE_RANGE.low) * 3.5);
-  const stats = reviewStats || SITE_REVIEW_STATS;
+  const stats = reviewStats;
   const extraProps = badgesToSchemaProperties(additionalBadges);
+  const hasRealRating = includeSiteRating && stats && Number(stats.reviewCount) > 0;
 
   return {
     "@context": "https://schema.org",
@@ -141,7 +119,7 @@ export function servicePageJsonLd({
     image: absoluteImageUrl(image) || DEFAULT_OG_IMAGE,
     brand: { "@type": "Brand", name: SITE_NAME },
     category: `${serviceName} · Taxi Booking`,
-    ...(includeSiteRating && Number(stats.reviewCount) > 0
+    ...(hasRealRating
       ? {
           aggregateRating: siteAggregateRating({
             ratingValue: stats.ratingValue,
@@ -195,9 +173,12 @@ export function routeServiceJsonLd({
   priceFrom,
   priceTo,
   image,
-  includeSiteRating = true
+  includeSiteRating = true,
+  reviewStats = null
 }) {
   const url = `${SITE_URL}${urlPath}`;
+  const stats = reviewStats;
+  const hasRealRating = includeSiteRating && stats && Number(stats.reviewCount) > 0;
   return {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -207,12 +188,20 @@ export function routeServiceJsonLd({
     image: absoluteImageUrl(image) || DEFAULT_OG_IMAGE,
     brand: { "@type": "Brand", name: SITE_NAME },
     category: "One Way Cab · Outstation",
-    ...(includeSiteRating ? { aggregateRating: siteAggregateRating() } : {}),
+    ...(hasRealRating
+      ? {
+          aggregateRating: siteAggregateRating({
+            ratingValue: stats.ratingValue,
+            reviewCount: stats.reviewCount
+          })
+        }
+      : {}),
     offers: buildOffers({
       url,
       price: priceFrom,
       lowPrice: priceFrom,
-      highPrice: priceTo ?? Math.round((priceFrom || 1400) * 1.8)
+      highPrice: priceTo ?? (priceFrom != null ? Math.round(Number(priceFrom) * 1.8) : undefined),
+      offerCount: 8
     })
   };
 }
@@ -220,7 +209,8 @@ export function routeServiceJsonLd({
 export function organizationJsonLd(reviewStats) {
   const sameAs = [...SOCIAL_PROFILES];
   if (WIKIDATA_URL) sameAs.push(WIKIDATA_URL);
-  const stats = reviewStats || SITE_REVIEW_STATS;
+  const stats = reviewStats;
+  const hasRealRating = stats && Number(stats.reviewCount) > 0;
 
   return {
     "@context": "https://schema.org",
@@ -243,7 +233,7 @@ export function organizationJsonLd(reviewStats) {
     telephone: ORG_PHONE,
     foundingDate: "2024",
     areaServed: { "@type": "Country", name: "India" },
-    ...(Number(stats.reviewCount) > 0
+    ...(hasRealRating
       ? {
           aggregateRating: siteAggregateRating({
             ratingValue: stats.ratingValue,
@@ -289,12 +279,7 @@ export function websiteJsonLd() {
       "@type": "WebPage",
       name: link.name,
       url: `${SITE_URL}${link.path}`
-    })),
-    potentialAction: {
-      "@type": "SearchAction",
-      target: `${SITE_URL}/search?q={search_term_string}`,
-      "query-input": "required name=search_term_string"
-    }
+    }))
   };
 }
 
@@ -330,6 +315,7 @@ export function faqJsonLd() {
 export function localBusinessJsonLd(cityName, cityRegion, urlPath, geo) {
   const url = urlPath ? `${SITE_URL}${urlPath}` : SITE_URL;
   const sameAs = [...SOCIAL_PROFILES];
+  const isHqCity = /^chennai$/i.test(String(cityName || "").trim());
 
   return {
     "@context": "https://schema.org",
@@ -342,8 +328,13 @@ export function localBusinessJsonLd(cityName, cityRegion, urlPath, geo) {
     telephone: ORG_PHONE,
     email: ORG_EMAIL,
     description: `Book cabs, airport taxi, outstation trips and acting drivers in ${cityName} with instant confirmation on Cabzii.in.`,
-    areaServed: cityName,
+    areaServed: {
+      "@type": "City",
+      name: cityName,
+      ...(cityRegion ? { containedInPlace: { "@type": "State", name: cityRegion } } : {})
+    },
     priceRange: "₹₹",
+    parentOrganization: { "@id": ORG_ID },
     ...(sameAs.length ? { sameAs } : {}),
     ...(geo?.lat && geo?.lng
       ? {
@@ -362,17 +353,15 @@ export function localBusinessJsonLd(cityName, cityRegion, urlPath, geo) {
         closes: "23:59"
       }
     ],
-    offers: buildOffers({
-      url,
-      lowPrice: CITY_CAB_PRICE_RANGE.low,
-      highPrice: CITY_CAB_PRICE_RANGE.high,
-      offerCount: 20
-    }),
-    address: {
-      "@type": "PostalAddress",
-      ...ORG_ADDRESS,
-      ...(cityRegion ? { addressRegion: cityRegion } : {})
-    }
+    /* Postal address only for HQ city — do not invent Chennai NAP for every city page */
+    ...(isHqCity
+      ? {
+          address: {
+            "@type": "PostalAddress",
+            ...ORG_ADDRESS
+          }
+        }
+      : {})
   };
 }
 
@@ -381,7 +370,8 @@ export function cityCabSearchJsonLd(city, { productName, description, urlPath, p
   const url = `${SITE_URL}${urlPath}`;
   const low = priceLow ?? CITY_CAB_PRICE_RANGE.low;
   const high = priceHigh ?? CITY_CAB_PRICE_RANGE.high;
-  const stats = reviewStats || SITE_REVIEW_STATS;
+  const stats = reviewStats;
+  const hasRealRating = stats && Number(stats.reviewCount) > 0;
 
   return {
     "@context": "https://schema.org",
@@ -394,7 +384,7 @@ export function cityCabSearchJsonLd(city, { productName, description, urlPath, p
     image: absoluteImageUrl(image) || DEFAULT_OG_IMAGE,
     brand: { "@type": "Brand", name: SITE_NAME },
     category: "Taxi & Cab Booking",
-    ...(Number(stats.reviewCount) > 0
+    ...(hasRealRating
       ? {
           aggregateRating: siteAggregateRating({
             ratingValue: stats.ratingValue,

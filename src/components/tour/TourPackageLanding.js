@@ -7,13 +7,20 @@ import { resolveMediaUrl } from "../../lib/media";
 import { whatsappBookingUrl, telUrl } from "../../lib/conversion";
 import { formatCabSeatLabel } from "../../lib/cabSeats";
 import { packageBookingHref, packageSeoHref } from "../../lib/holidayHome";
+import { withPublicTourPackageContent } from "../../lib/tourPackageContent";
+import {
+  packageDisplayPrice,
+  packageHasManualDiscount,
+  packageStrikePrice
+} from "../../lib/tourPackagePricing";
 
 function inr(n) {
   return `₹${Number(n || 0).toLocaleString("en-IN")}`;
 }
 
 /** SEO landing page for a tour package — hero, overview, itinerary, pricing, gallery, FAQs, CTA. */
-export default function TourPackageLanding({ pkg, related = [] }) {
+export default function TourPackageLanding({ pkg: rawPkg, related = [] }) {
+  const pkg = withPublicTourPackageContent(rawPkg);
   const bookingHref = packageBookingHref(pkg);
   const cover = resolveMediaUrl(pkg.image);
   const gallery = (pkg.gallery || []).map(resolveMediaUrl).filter(Boolean);
@@ -24,8 +31,10 @@ export default function TourPackageLanding({ pkg, related = [] }) {
   const waUrl = whatsappBookingUrl({
     message: `Hi Cabzii, I'm interested in the "${pkg.name}" tour package${durationLabel ? ` (${durationLabel})` : ""}. Please share availability and final price.`
   });
-  const hasDiscount = Number(pkg.originalPrice) > Number(pkg.price);
-  const faqs = (pkg.faqs || [])
+  const hasDiscount = packageHasManualDiscount(pkg);
+  const displayPrice = packageDisplayPrice(pkg);
+  const strikePrice = packageStrikePrice(pkg);
+  const faqs = (pkg.faqs || pkg.faq || [])
     .filter((f) => f.question && f.answer)
     .map((f) => [f.question, f.answer]);
   const itinerary = (pkg.itinerary || []).filter((d) => d.title || d.details);
@@ -64,8 +73,15 @@ export default function TourPackageLanding({ pkg, related = [] }) {
           </div>
           <div className="mt-4 flex flex-wrap items-center gap-3">
             <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-extrabold text-white">{inr(pkg.price)}</span>
-              {hasDiscount ? <span className="text-sm text-white/60 line-through">{inr(pkg.originalPrice)}</span> : null}
+              <span className="text-3xl font-extrabold text-white">{inr(displayPrice)}</span>
+              {hasDiscount && strikePrice > 0 ? (
+                <span className="text-sm text-white/60 line-through">{inr(strikePrice)}</span>
+              ) : null}
+              {hasDiscount ? (
+                <span className="rounded bg-white/20 px-1.5 py-0.5 text-[11px] font-bold text-white">
+                  {Math.min(99, Number(pkg.discountPercentage) || 0)}% OFF
+                </span>
+              ) : null}
               <span className="text-xs text-white/70">per package</span>
             </div>
           </div>

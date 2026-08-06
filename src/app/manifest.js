@@ -4,7 +4,7 @@ import { SITE_NAME } from "../lib/seo";
 export default function manifest() {
   return {
     name: `${SITE_NAME} — Online Cab, Taxi & Driver Booking`,
-    short_name: SITE_NAME,
+    short_name: "Cabzii Cabs",
     description:
       "Book cabs, taxis, airport transfers, outstation trips, acting drivers and tour packages across South India on cabzii.in.",
     id: "/",

@@ -187,6 +187,18 @@ const SERVICE_META_OVERRIDES = {
       "Full day taxi and cab rental in Chennai — 4, 8 and 12 hour packages with upfront fares. Ideal for weddings, meetings and city tours. Book on Cabzii.in."
     )
   },
+  "chennai:driver-on-hire": {
+    title: formatSerpTitle("Driver on Hire Chennai", "Acting Driver Service"),
+    description: clampDescription(
+      "Hire a professional driver in Chennai for your own car — hourly, daily and outstation chauffeur packages on Cabzii. Book online with OTP confirmation."
+    )
+  },
+  "chennai:chauffeur-service": {
+    title: formatSerpTitle("Chauffeur Service Chennai", "Driver for Your Car"),
+    description: clampDescription(
+      "Book chauffeur service in Chennai with Cabzii — verified drivers for city, airport and highway trips in your vehicle. Transparent packages online."
+    )
+  },
   "coimbatore:car-rental": {
     title: formatSerpTitle("Car Rental Coimbatore", "Hourly Cabs & Packages"),
     description: clampDescription(
@@ -258,21 +270,45 @@ export const AIRPORT_BY_CITY = {
 /** Cab hub /cab-booking/{city} */
 const CAB_BOOKING_META = {
   chennai: {
-    title: "Cab Booking Chennai | Airport Taxi, Local & Outstation Cabs | Cabzii",
+    title: formatSerpTitle("Cab Booking Chennai", "Airport & Outstation"),
     description: clampDescription(
-      "Book airport taxi, local taxi, outstation taxi and one-way cabs in Chennai. Instant confirmation, professional drivers and affordable fares. Book online with Cabzii."
+      "Book cabs in Chennai with Cabzii — airport taxi, local packages, outstation and one-way trips. Upfront fares, OTP booking and WhatsApp support. Book online 24/7."
     )
   },
-  bengaluru: {
-    title: formatSerpTitle("Bengaluru Cab Booking", "24/7 Taxi & Low Rates"),
+  salem: {
+    title: formatSerpTitle("Cab Booking Salem", "Outstation & Local Taxi"),
     description: clampDescription(
-      "Book affordable cabs in Bengaluru with Cabzii.in. Airport drops, outstation trips and local hire. Clean fleets, zero hidden charges, OTP booking 24/7."
+      "Cab booking in Salem on Cabzii — outstation to Chennai and Coimbatore, local packages and one-way cabs. Transparent fares and OTP booking online."
+    )
+  },
+  vellore: {
+    title: formatSerpTitle("Cab Booking Vellore", "Airport & Outstation"),
+    description: clampDescription(
+      "Book cabs in Vellore with Cabzii — Chennai trips, temple travel and local hire. Sedan, SUV and Innova with upfront fares. Book online 24/7."
+    )
+  },
+  erode: {
+    title: formatSerpTitle("Cab Booking Erode", "Outstation & Local"),
+    description: clampDescription(
+      "Cab booking in Erode on Cabzii — outstation to Chennai and Coimbatore, local taxi packages and one-way trips. Compare fares and book online."
+    )
+  },
+  hosur: {
+    title: formatSerpTitle("Cab Booking Hosur", "Bengaluru & Chennai"),
+    description: clampDescription(
+      "Book cabs in Hosur with Cabzii — quick trips to Bengaluru and Chennai, local packages and outstation hire. Upfront fares and OTP booking."
     )
   },
   madurai: {
     title: formatSerpTitle("Cab Booking Madurai", "Online Taxi & Outstation"),
     description: clampDescription(
       "Cab booking in Madurai on Cabzii.in — online taxi, one-way and outstation cabs to Trichy, Chennai and hill stations. Transparent fares, OTP booking 24/7."
+    )
+  },
+  bengaluru: {
+    title: formatSerpTitle("Bengaluru Cab Booking", "24/7 Taxi & Low Rates"),
+    description: clampDescription(
+      "Book affordable cabs in Bengaluru with Cabzii.in. Airport drops, outstation trips and local hire. Clean fleets, zero hidden charges, OTP booking 24/7."
     )
   },
   hyderabad: {
@@ -309,6 +345,12 @@ const ROUTE_META_OVERRIDES = {
     )
   },
   "chennai-to-bangalore-cab": {
+    title: formatSerpTitle("Chennai to Bangalore Taxi", "One-Way Best Rates"),
+    description: clampDescription(
+      "Chennai to Bangalore taxi on Cabzii — one-way cab from ₹4,500 sedan. NH48 route, 350 km, 6–7 hours. Compare sedan, SUV and Innova fares online."
+    )
+  },
+  "chennai-to-bengaluru-cab": {
     title: formatSerpTitle("Chennai to Bangalore Taxi", "One-Way Best Rates"),
     description: clampDescription(
       "Chennai to Bangalore taxi on Cabzii — one-way cab from ₹4,500 sedan. NH48 route, 350 km, 6–7 hours. Compare sedan, SUV and Innova fares online."
@@ -395,6 +437,24 @@ export function getServiceMeta(service, city) {
       title: formatSerpTitle(`Cab Rental ${city.name}`, "Hourly & Full-Day Packages"),
       description: clampDescription(
         `Cab rental in ${city.name} on Cabzii.in — hourly and full-day packages for local trips, weddings and sightseeing. Book online with transparent fares 24/7.`
+      )
+    };
+  }
+
+  if (service.slug === "driver-on-hire") {
+    return {
+      title: formatSerpTitle(`Driver on Hire ${city.name}`, "Acting Driver"),
+      description: clampDescription(
+        `Hire a driver in ${city.name} for your own car — hourly, daily and outstation chauffeur packages on Cabzii. Book online with upfront fares.`
+      )
+    };
+  }
+
+  if (service.slug === "chauffeur-service") {
+    return {
+      title: formatSerpTitle(`Chauffeur Service ${city.name}`, "Driver for Your Car"),
+      description: clampDescription(
+        `Book chauffeur service in ${city.name} with Cabzii — verified drivers for city and highway trips in your vehicle. Transparent packages online.`
       )
     };
   }
@@ -536,6 +596,10 @@ export function getServiceH1(service, city) {
   if (templateId === "airport") return `24/7 Airport Taxi in ${city.name}`;
   if (templateId === "local_rental") {
     if (service.slug === "cab-rental") return `Cab Rental in ${city.name}`;
+    if (service.slug === "driver-on-hire") return `Driver on Hire in ${city.name}`;
+    if (service.slug === "chauffeur-service") return `Chauffeur Service in ${city.name}`;
+    if (service.slug === "hourly-rental") return `Hourly Cab Rental in ${city.name}`;
+    if (service.slug === "local-taxi") return `Local Taxi in ${city.name}`;
     return `Car Rental in ${city.name}`;
   }
   if (service.slug === "one-way-cab") return `One-Way Cabs in ${city.name}`;
@@ -543,11 +607,13 @@ export function getServiceH1(service, city) {
 }
 
 export function getCabBookingH1(city) {
-  if (city.slug === "chennai") return "Chennai Cabs Booking — Packages, Hours & Outstation";
+  if (city.slug === "chennai") return "Cab Booking in Chennai — Airport, Local & Outstation";
   if (city.slug === "madurai") return "Cab Booking Madurai — Online Taxi & Outstation";
   if (city.slug === "coimbatore") return "Cab Booking in Coimbatore — Online Taxi Service";
   if (city.slug === "trichy") return "Cab Booking Trichy — Online Taxi & Local Rental";
   if (city.slug === "kodaikanal") return "Cab Booking Kodaikanal — Hill Station Taxi";
+  if (city.slug === "salem") return "Cab Booking in Salem — Outstation & Local Taxi";
+  if (city.slug === "vellore") return "Cab Booking in Vellore — Online Taxi Service";
   return `Cab Booking in ${city.name} — Online Taxi Service`;
 }
 

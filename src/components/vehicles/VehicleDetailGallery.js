@@ -1,71 +1,101 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { resolveMediaUrl } from "../../lib/media";
 import { optimizeImageUrl } from "../../lib/imageOptimize";
+import { getCabVehicleName } from "../../lib/catalogDisplay";
 import { resolveCabImage } from "../../lib/vehicleImages";
 
 function galleryImages(cab) {
+  const shortAlt = getCabVehicleName(cab) || cab?.title || "Cab photo";
+  const fallback = resolveCabImage(cab);
+  const seen = new Set();
+  const out = [];
+
+  const push = (rawUrl, alt, type) => {
+    const url = resolveMediaUrl(rawUrl) || String(rawUrl || "").trim();
+    if (!url || seen.has(url)) return;
+    seen.add(url);
+    out.push({ url, alt: alt || shortAlt, type: type || "gallery" });
+  };
+
   if (Array.isArray(cab?.images) && cab.images.length) {
-    return [...cab.images]
+    [...cab.images]
       .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
-      .map((img) => ({ url: img.url, alt: img.alt || cab.title, type: img.type }));
+      .forEach((img) => push(img?.url, img?.alt || shortAlt, img?.type));
+  } else {
+    if (cab?.image) push(cab.image, cab.imageAlt || shortAlt, "cover");
+    if (Array.isArray(cab?.gallery)) {
+      cab.gallery.forEach((url, i) => push(url, `${shortAlt} photo ${i + 1}`, "gallery"));
+    }
   }
-  const urls = [];
-  if (cab?.image) urls.push({ url: cab.image, alt: cab.imageAlt || cab.title, type: "cover" });
-  if (Array.isArray(cab?.gallery)) {
-    cab.gallery.forEach((url, i) => {
-      if (url && url !== cab.image) urls.push({ url, alt: `${cab.title} photo ${i + 1}`, type: "gallery" });
-    });
-  }
-  if (!urls.length) urls.push({ url: resolveCabImage(cab), alt: cab?.title || "Cab", type: "cover" });
-  return urls;
+
+  if (!out.length && fallback) push(fallback, shortAlt, "cover");
+  return out;
 }
 
 export default function VehicleDetailGallery({ cab }) {
-  const images = galleryImages(cab);
+  const images = useMemo(() => galleryImages(cab), [cab]);
   const [active, setActive] = useState(0);
+  const [broken, setBroken] = useState({});
+  const fallbackSrc = resolveCabImage(cab);
+  const shortAlt = getCabVehicleName(cab) || cab?.title || "Cab photo";
+
   const current = images[active] || images[0];
-  const heroAlt = current?.alt || cab?.imageAlt || cab?.title || "Vehicle photo";
+  const rawSrc = current?.url || fallbackSrc;
+  const src =
+    broken[rawSrc] && fallbackSrc && fallbackSrc !== rawSrc
+      ? optimizeImageUrl(fallbackSrc, 960)
+      : optimizeImageUrl(rawSrc, 960);
+
+  if (!src) return null;
 
   return (
-    <div className="space-y-3">
-      <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-slate-100">
+    <div className="space-y-2">
+      <div className="relative overflow-hidden rounded-xl border border-slate-200 bg-slate-100 sm:rounded-2xl">
         <img
+          key={src}
           loading="eager"
           fetchPriority="high"
           decoding="async"
-          src={optimizeImageUrl(resolveMediaUrl(current?.url), 960)}
-          alt={heroAlt}
+          src={src}
+          alt={shortAlt}
           width={960}
-          height={600}
-          className="aspect-[16/10] w-full object-cover sm:aspect-[2/1]"
+          height={480}
+          onError={() => {
+            if (!rawSrc) return;
+            setBroken((prev) => (prev[rawSrc] ? prev : { ...prev, [rawSrc]: true }));
+          }}
+          className="aspect-[16/9] max-h-48 w-full object-cover sm:aspect-[2/1] sm:max-h-[20rem]"
         />
         {images.length > 1 ? (
-          <div className="absolute bottom-3 right-3 rounded-full bg-black/60 px-2.5 py-1 text-[11px] font-semibold text-white">
-            {active + 1} / {images.length}
+          <div className="absolute bottom-2 right-2 rounded-full bg-black/60 px-2 py-0.5 text-[10px] font-semibold text-white sm:bottom-3 sm:right-3 sm:px-2.5 sm:py-1 sm:text-[11px]">
+            {Math.min(active + 1, images.length)} / {images.length}
           </div>
         ) : null}
       </div>
       {images.length > 1 ? (
-        <div className="scroll-x-touch flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="scroll-x-touch flex gap-1.5 overflow-x-auto pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:gap-2">
           {images.map((img, i) => (
             <button
               key={`${img.url}-${i}`}
               type="button"
               onClick={() => setActive(i)}
-              className={`relative h-16 w-24 shrink-0 overflow-hidden rounded-lg border-2 transition ${
-                i === active ? "border-sky-400 ring-2 ring-sky-200" : "border-slate-200 opacity-80 hover:opacity-100"
+              className={`relative h-12 w-16 shrink-0 overflow-hidden rounded-md border-2 transition sm:h-14 sm:w-20 sm:rounded-lg ${
+                i === active ? "border-sky-400 ring-1 ring-sky-200" : "border-slate-200 opacity-80 hover:opacity-100"
               }`}
             >
               <img
                 loading="lazy"
                 decoding="async"
-                src={optimizeImageUrl(resolveMediaUrl(img.url), 192)}
-                alt={img.alt || `Photo ${i + 1}`}
+                src={optimizeImageUrl(img.url, 192)}
+                alt={img.alt || `${shortAlt} ${i + 1}`}
                 width={192}
                 height={128}
                 className="h-full w-full object-cover"
+                onError={(e) => {
+                  if (fallbackSrc) e.currentTarget.src = optimizeImageUrl(fallbackSrc, 192);
+                }}
               />
             </button>
           ))}

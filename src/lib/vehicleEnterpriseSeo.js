@@ -61,10 +61,34 @@ function num(v, fallback = 0) {
   return Number.isFinite(n) ? n : fallback;
 }
 
+export function normalizeSeoCity(city) {
+  const c = String(city || "").trim();
+  if (!c || /^(all\s*india|india|pan[\s-]*india|nationwide|pan\s*india)$/i.test(c)) {
+    return "Chennai";
+  }
+  return c;
+}
+
+export function normalizeSeoState(state, city) {
+  const s = String(state || "").trim();
+  if (!s || /^(india|all\s*india)$/i.test(s)) {
+    return normalizeSeoCity(city) === "Chennai" ? "Tamil Nadu" : s || "Tamil Nadu";
+  }
+  return s;
+}
+
+/** Demote H1 inside body HTML (page already has one H1) and tidy empty tags. */
+export function compactVehicleSeoHtml(html) {
+  return String(html || "")
+    .replace(/<h1(\s[^>]*)?>/gi, "<h2$1>")
+    .replace(/<\/h1>/gi, "</h2>")
+    .trim();
+}
+
 export function seoVars(form = {}) {
   const vehicle = form.vehicleName || form.title || form.name || "Cab";
-  const city = form.city || "Chennai";
-  const state = form.state || "Tamil Nadu";
+  const city = normalizeSeoCity(form.city);
+  const state = normalizeSeoState(form.state, city);
   const price =
     num(form.pricePerKm) > 0
       ? `₹${num(form.pricePerKm)}/km`
@@ -438,17 +462,111 @@ export function robotsIsNoindex(robots) {
     .includes("noindex");
 }
 
+/**
+ * Deterministic SEO sample copy for cabs missing admin content.
+ * Used on public product pages so every package has indexable body text.
+ */
+export function buildSampleVehiclePageSeo(item = {}) {
+  const vars = seoVars(item);
+  const vehicle = vars.vehicle;
+  const city = vars.city;
+  const state = vars.state;
+  const price = vars.price;
+  const seats = vars.seats || "4";
+  const category = item.category || item.type || "Cab";
+  const brand = vars.brand;
+
+  const h1 = applySeoTemplate(SEO_TEMPLATES.h1, item);
+  const shortDescription = `Book ${vehicle} (${category}) rental in ${city}, ${state} with Cabzii. Airport transfers, local hourly packages and outstation trips — verified drivers, AC cabs and upfront fares from ${price}.`;
+  const seoTitle = applySeoTemplate(SEO_TEMPLATES.title, item).slice(0, 60);
+  const seoDescription = applySeoTemplate(SEO_TEMPLATES.description, item).slice(0, 160);
+  const h2 = [
+    `Why book ${vehicle} in ${city}?`,
+    `${vehicle} local & hourly packages`,
+    `Airport taxi with ${vehicle}`,
+    `Outstation trips from ${city}`,
+    `How to book on Cabzii`
+  ];
+  const highlights = ["Verified Drivers", "Upfront Fares", "OTP Secure", "Sanitized Vehicles"];
+
+  const longSeoContent = [
+    `<h2>${vehicle} cab rental in ${city}</h2>`,
+    `<p>Looking for a reliable <strong>${vehicle}</strong> in ${city}? Cabzii offers ${brand} ${category.toLowerCase()} hire with professional drivers for airport drops, local city rides and outstation travel across ${state}.</p>`,
+    `<h3>Vehicle overview</h3>`,
+    `<p>This ${seats}-seater ${category.toLowerCase()} is suited for families, couples and small groups. Enjoy AC comfort, luggage space and a cleaned vehicle for every trip.</p>`,
+    `<h3>Popular use cases</h3>`,
+    `<ul>`,
+    `<li>Chennai / ${city} airport pickup and drop</li>`,
+    `<li>Local 4-hour and 8-hour packages</li>`,
+    `<li>One-way and round-trip outstation cabs</li>`,
+    `<li>Corporate and hotel transfers</li>`,
+    `</ul>`,
+    `<h3>Transparent pricing</h3>`,
+    `<p>Fares start from ${price}. Choose a package on this page, review inclusions (hours/km) and book online with OTP — no hidden charges at the end of the trip.</p>`,
+    `<h3>Why Cabzii</h3>`,
+    `<p>Verified partner drivers, sanitized cars, 24×7 support and instant confirmation. Book ${vehicle} in ${city} on <a href="https://www.cabzii.in">cabzii.in</a>.</p>`
+  ].join("");
+
+  return {
+    h1,
+    h2,
+    shortDescription,
+    longSeoContent,
+    seoTitle,
+    seoDescription,
+    highlights
+  };
+}
+
+function hasMeaningfulText(value) {
+  return Boolean(String(value || "").replace(/<[^>]+>/g, " ").trim());
+}
+
 /** Merge enterprise SEO fields onto a public catalog item for rendering/metadata. */
 export function withPublicEnterpriseSeo(item) {
   if (!item) return item;
   const flat = flattenEnterpriseSeo(item);
+  const city = normalizeSeoCity(flat.city || item.city);
+  const rewrite = (value) =>
+    typeof value === "string" ? value.replace(/\bAll India\b/gi, city) : value;
+  const sample = buildSampleVehiclePageSeo({ ...item, ...flat, city });
+  const shortDescription = hasMeaningfulText(flat.shortDescription || item.shortDescription)
+    ? flat.shortDescription || item.shortDescription
+    : sample.shortDescription;
+  const longSeoContent = hasMeaningfulText(flat.longSeoContent || item.longSeoContent)
+    ? flat.longSeoContent || item.longSeoContent
+    : sample.longSeoContent;
+  const h1 = hasMeaningfulText(flat.h1 || item.h1) ? flat.h1 || item.h1 : sample.h1;
+  const h2Raw = Array.isArray(flat.h2) ? flat.h2.filter(Boolean) : [];
+  const h2 = h2Raw.length ? h2Raw : sample.h2;
+  const highlights =
+    Array.isArray(flat.highlights) && flat.highlights.length
+      ? flat.highlights
+      : Array.isArray(item.highlights) && item.highlights.length
+        ? item.highlights
+        : sample.highlights;
+
   return {
     ...item,
     ...flat,
-    // Keep package string highlights when enterprise highlights empty
-    highlights:
-      Array.isArray(flat.highlights) && flat.highlights.length
-        ? flat.highlights
-        : item.highlights
+    city,
+    state: normalizeSeoState(flat.state || item.state, city),
+    seoTitle: rewrite(flat.seoTitle || item.seoTitle || sample.seoTitle),
+    seoDescription: rewrite(flat.seoDescription || item.seoDescription || sample.seoDescription),
+    shortDescription: rewrite(shortDescription),
+    h1: rewrite(h1),
+    longSeoContent: rewrite(longSeoContent),
+    h2: h2.map((h) => rewrite(h)),
+    highlights,
+    enterpriseSeo: {
+      ...(item.enterpriseSeo && typeof item.enterpriseSeo === "object" ? item.enterpriseSeo : {}),
+      h1: rewrite(h1),
+      h2: h2.map((h) => rewrite(h)),
+      shortDescription: rewrite(shortDescription),
+      longSeoContent: rewrite(longSeoContent),
+      highlights,
+      seoTitle: rewrite(flat.seoTitle || item.seoTitle || sample.seoTitle),
+      seoDescription: rewrite(flat.seoDescription || item.seoDescription || sample.seoDescription)
+    }
   };
 }

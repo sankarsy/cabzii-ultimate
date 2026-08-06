@@ -142,8 +142,8 @@ export default function PaymentPage({ searchParams }) {
       ? `/cabs/${itemId}`
       : type === "driver" && itemId
         ? `/drivers/${itemId}`
-        : type === "tour" && itemId
-          ? `/holidays/${itemId}`
+        : type === "tour" && (firstParam(searchParams?.slug) || itemId)
+          ? `/holidays/${firstParam(searchParams?.slug) || itemId}`
           : type === "tour"
             ? "/holidays"
             : "/drivers";

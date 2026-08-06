@@ -54,7 +54,7 @@ export const metadata = {
   ...(Object.keys(siteVerification).length ? { verification: siteVerification } : {}),
   other: {
     "apple-mobile-web-app-capable": "yes",
-    "apple-mobile-web-app-title": "Cabzii",
+    "apple-mobile-web-app-title": "Cabzii Cabs",
     "apple-mobile-web-app-status-bar-style": "default",
     "mobile-web-app-capable": "yes"
   }

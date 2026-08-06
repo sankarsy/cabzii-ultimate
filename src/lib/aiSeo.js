@@ -209,42 +209,42 @@ function fallbackH2(ctx) {
 }
 
 function fallbackContent(ctx) {
-  const md = `# ${ctx.vehicle} Rental in ${ctx.city}
+  const md = `## ${ctx.vehicle} rental in ${ctx.city}
 
-## Introduction
+### Introduction
 Book **${ctx.vehicle}** online in ${ctx.city}, ${ctx.state} with Cabzii. Transparent fares starting from ${ctx.price}.
 
-## Vehicle Overview
+### Vehicle overview
 Our ${ctx.vehicle} (${ctx.seats || "comfortable"} seater) is ideal for airport transfers, local hire, outstation and corporate travel.
 
-## Features
+### Features
 AC, verified drivers, GPS tracking, and sanitized vehicles.
 
-## Pricing
+### Pricing
 Packages start from ${ctx.price}. See exact fares before payment.
 
-## Why Choose Cabzii
+### Why choose Cabzii
 OTP booking, upfront pricing, 24×7 support, and professional drivers across South India.
 
-## Popular Routes
+### Popular routes
 Explore popular one-way and round-trip routes from ${ctx.city}.
 
-## Airport Transfer
+### Airport transfer
 Reliable airport pickup and drop for ${ctx.vehicle} in ${ctx.city}.
 
-## Corporate Travel
+### Corporate travel
 Invoice-friendly corporate cab packages with Cabzii.
 
-## Wedding Travel
+### Wedding travel
 Group travel options for wedding and family events.
 
-## Tour Packages
+### Tour packages
 Combine cab hire with popular tour packages from Cabzii.
 
-## FAQs
+### FAQs
 See FAQs on this page for fare, inclusions and booking steps.
 
-## Conclusion
+### Conclusion
 Book your ${ctx.vehicle} in ${ctx.city} today on [cabzii.in](https://www.cabzii.in).`;
   return { html: marked.parse(md), markdown: md };
 }
@@ -328,11 +328,12 @@ Return JSON: {"faqs":[{"question":"","answer":""}]}`
       }
       case "content": {
         const ai = await chatText(
-          brandRules() + " Write long-form SEO content in Markdown only.",
-          `Write 1500-2500 words Markdown SEO article for ${ctx.vehicle} rental in ${ctx.city}, ${ctx.state}.
+          brandRules() +
+            " Write long-form SEO content in Markdown only. Never use a top-level # H1 — the product page already has one H1. Use ## for main sections and ### for subsections. Keep headings short (under 60 characters). Never write 'All India' as a city — use Chennai or the given city.",
+          `Write 900-1500 words Markdown SEO article for ${ctx.vehicle} rental in ${ctx.city}, ${ctx.state}.
 Price from ${ctx.price}. Seats: ${ctx.seats}. Brand: ${ctx.brand}. Category: ${ctx.category}.
-Structure with these H2s:
-Introduction, Vehicle Overview, Features, Pricing, Why Choose Cabzii, Popular Routes, Airport Transfer, Corporate Travel, Wedding Travel, Tour Packages, FAQs, Conclusion.
+Start with ## ${ctx.vehicle} rental in ${ctx.city} (not #).
+Then use ## or ### for: Introduction, Vehicle Overview, Features, Pricing, Why Choose Cabzii, Popular Routes, Airport Transfer, Corporate Travel, Wedding Travel, Tour Packages, FAQs, Conclusion.
 Use natural keywords. End with a CTA to book on Cabzii.`
         );
         if (ai) {

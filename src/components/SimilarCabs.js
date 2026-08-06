@@ -44,21 +44,23 @@ export default function SimilarCabs({ currentCabId, cabSlug, cabType, vendor }) 
   if (!loading && similar.length === 0) return null;
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:p-5">
+    <section className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm sm:rounded-2xl sm:p-4">
       <div className="flex flex-wrap items-end justify-between gap-2">
         <div>
-          <h2 className="text-base font-bold text-slate-900">Related vehicles</h2>
-          <p className="mt-0.5 text-xs text-slate-600">
-            More {cabType || "cab"} options{cabType && vendor ? " from other vendors" : ""}.
+          <h2 className="text-xs font-semibold text-slate-900 sm:text-sm">Similar packages</h2>
+          <p className="mt-0.5 text-[11px] text-slate-600 sm:text-xs">
+            More {cabType || "cab"} options you can book next.
           </p>
         </div>
-        <Link href="/cabs" className="text-xs font-semibold text-[#0056D2] hover:underline">View all cabs →</Link>
+        <Link href="/cabs" className="text-[11px] font-semibold text-[#0056D2] hover:underline sm:text-xs">
+          View all cabs →
+        </Link>
       </div>
 
       {loading ? (
-        <p className="mt-4 text-xs text-slate-500">Loading related vehicles…</p>
+        <p className="mt-2.5 text-[11px] text-slate-500">Loading similar packages…</p>
       ) : (
-        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="mt-2.5 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
           {similar.map((cab) => (
             <MmtCabResultCard key={String(cab._id ?? cab.id)} cab={cab} layout="card" catalogMode displayCity={cab.city} />
           ))}

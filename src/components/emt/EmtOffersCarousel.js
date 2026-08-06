@@ -54,7 +54,7 @@ export default function EmtOffersCarousel() {
           <ScrollButton direction="left" onClick={() => scrollBy(-1)} />
           <ScrollButton direction="right" onClick={() => scrollBy(1)} />
           <Link
-            href="/search?q=offers"
+            href="/cabs"
             className="text-sm font-semibold text-[var(--cabzii-brand)] hover:underline"
           >
             View all →

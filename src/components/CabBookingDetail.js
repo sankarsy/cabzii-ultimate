@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from "react";
 import { Star } from "lucide-react";
-import { resolveMediaUrl } from "../lib/media";
 import PackageOptionCard from "./PackageOptionCard";
 import AdditionalChargesGrid from "./AdditionalChargesGrid";
 import {
@@ -111,7 +110,7 @@ export default function CabBookingDetail({ cab, onSelectionChange, hideHeroImage
   );
 
   return (
-    <article className="overflow-hidden rounded-[18px] border border-slate-200 bg-white shadow-lg">
+    <article className={`overflow-hidden border border-slate-200 bg-white ${hideHeroImage ? "rounded-xl shadow-sm" : "rounded-[18px] shadow-lg"}`}>
       {!hideHeroImage ? (
         <ProductImageFrame src={imageSrc} alt={cab.title || "Cab"} badges={imageBadges} imageClassName="h-[200px] w-full object-contain p-2 sm:h-[220px]" />
       ) : null}
@@ -126,7 +125,7 @@ export default function CabBookingDetail({ cab, onSelectionChange, hideHeroImage
       ) : null}
 
       <div className="lg:grid lg:grid-cols-[1fr_300px] xl:grid-cols-[1fr_320px]">
-        <div className="border-t border-slate-100 p-3 sm:p-4 lg:border-r">
+        <div className={`border-t border-slate-100 lg:border-r ${hideHeroImage ? "p-2.5 sm:p-3" : "p-3 sm:p-4"}`}>
           <ServiceToggle serviceTab={serviceTab} setServiceTab={handleServiceTab} />
           <PackageSection
             visiblePackages={visiblePackages}
@@ -134,14 +133,14 @@ export default function CabBookingDetail({ cab, onSelectionChange, hideHeroImage
             onSelectPackage={handleSelectPackage}
             discount={discount}
           />
-          <ChargesGrid items={chargeItems} />
+          <ChargesGrid items={chargeItems} compact />
         </div>
 
-        <aside className="flex flex-col border-t border-slate-100 bg-slate-50/60 p-3 sm:p-4 lg:border-t-0">
-          <VendorBox vendor={cab.vendor} />
-          <TrustGrid />
-          <p className="mt-auto flex items-center justify-center gap-1 pt-3 text-[10px] text-slate-500">
-            <LockIcon className="h-3.5 w-3.5 text-slate-400" />
+        <aside className={`flex flex-col border-t border-slate-100 bg-slate-50/60 lg:border-t-0 ${hideHeroImage ? "p-2.5 sm:p-3" : "p-3 sm:p-4"}`}>
+          <VendorBox vendor={cab.vendor} compact={hideHeroImage} />
+          <TrustGrid compact={hideHeroImage} />
+          <p className="mt-auto flex items-center justify-center gap-1 pt-2 text-[9px] text-slate-500 sm:pt-3 sm:text-[10px]">
+            <LockIcon className="h-3 w-3 text-slate-400 sm:h-3.5 sm:w-3.5" />
             100% Safe & Secure Payments
           </p>
         </aside>
@@ -152,25 +151,25 @@ export default function CabBookingDetail({ cab, onSelectionChange, hideHeroImage
 
 function ServiceToggle({ serviceTab, setServiceTab }) {
   return (
-    <div className="mt-4 inline-flex rounded-full border border-slate-200 bg-slate-50 p-0.5">
+    <div className="inline-flex rounded-full border border-slate-200 bg-slate-50 p-0.5">
       <button
         type="button"
         onClick={() => setServiceTab("local")}
-        className={`inline-flex items-center gap-1 rounded-full px-4 py-1.5 text-xs font-semibold transition ${
+        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold transition sm:px-3.5 sm:py-1.5 sm:text-xs ${
           serviceTab === "local" ? "bg-[#0056D2] text-white shadow-sm" : "text-slate-500 hover:text-slate-700"
         }`}
       >
-        <PinIcon className="h-3.5 w-3.5 text-current" />
+        <PinIcon className="h-3 w-3 text-current sm:h-3.5 sm:w-3.5" />
         Local
       </button>
       <button
         type="button"
         onClick={() => setServiceTab("outstation")}
-        className={`inline-flex items-center gap-1 rounded-full px-4 py-1.5 text-xs font-semibold transition ${
+        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold transition sm:px-3.5 sm:py-1.5 sm:text-xs ${
           serviceTab === "outstation" ? "bg-[#0056D2] text-white shadow-sm" : "text-slate-500 hover:text-slate-700"
         }`}
       >
-        <RoadIcon className="h-3.5 w-3.5 text-current" />
+        <RoadIcon className="h-3 w-3 text-current sm:h-3.5 sm:w-3.5" />
         Outstation
       </button>
     </div>
@@ -178,11 +177,23 @@ function ServiceToggle({ serviceTab, setServiceTab }) {
 }
 
 function PackageSection({ visiblePackages, selectedPackageId, onSelectPackage, discount }) {
+  const few = visiblePackages.length <= 2;
+
   return (
-    <div className="mt-5">
-      <div className="scroll-x-touch -mx-1 flex gap-3 overflow-x-auto pb-2 pt-1 [-ms-overflow-style:none] [scrollbar-width:none] sm:mx-0 sm:grid sm:auto-rows-fr sm:grid-cols-2 sm:overflow-visible sm:pb-0 lg:grid-cols-2 xl:grid-cols-2 [&::-webkit-scrollbar]:hidden">
+    <div className="mt-2.5 sm:mt-3">
+      {/* ≤2 packages: always 2-up grid so both fit on one mobile screen */}
+      <div
+        className={
+          few
+            ? "grid grid-cols-2 gap-2 pt-2"
+            : "scroll-x-touch -mx-0.5 flex gap-2 overflow-x-auto pb-1.5 pt-2 [-ms-overflow-style:none] [scrollbar-width:none] sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-2.5 sm:overflow-visible sm:pb-0 sm:pt-1 [&::-webkit-scrollbar]:hidden"
+        }
+      >
         {visiblePackages.map((pkg) => (
-          <div key={pkg.id} className="flex min-h-[8.75rem] min-w-[13rem] shrink-0 snap-start sm:min-h-0 sm:min-w-0">
+          <div
+            key={pkg.id}
+            className={few ? "min-w-0" : "flex w-[9.5rem] shrink-0 snap-start sm:w-auto sm:min-w-0"}
+          >
             <PackageOptionCard
               pkg={pkg}
               selected={selectedPackageId === pkg.id}
@@ -197,37 +208,43 @@ function PackageSection({ visiblePackages, selectedPackageId, onSelectPackage, d
   );
 }
 
-function ChargesGrid({ items }) {
-  return <AdditionalChargesGrid items={items} />;
+function ChargesGrid({ items, compact = false }) {
+  return <AdditionalChargesGrid items={items} compact={compact} />;
 }
 
-function VendorBox({ vendor }) {
+function VendorBox({ vendor, compact = false }) {
   return (
-    <div className="mt-3 rounded-xl border border-slate-100 bg-white p-3 shadow-sm">
-      <div className="flex items-center gap-2.5">
-        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-sm font-bold text-sky-400">
+    <div className={`rounded-lg border border-slate-100 bg-white shadow-sm ${compact ? "mt-2 p-2" : "mt-3 p-3"}`}>
+      <div className="flex items-center gap-2">
+        <span
+          className={`flex items-center justify-center rounded-full bg-slate-100 font-bold text-sky-500 ${
+            compact ? "h-8 w-8 text-xs" : "h-10 w-10 text-sm"
+          }`}
+        >
           {vendorInitials(vendor)}
         </span>
         <div>
-          <p className="text-sm font-bold text-slate-900">{vendor}</p>
-          <p className="mt-0.5 flex items-center gap-1 text-xs font-medium text-slate-600">
-            <CheckIcon className="h-3.5 w-3.5 text-emerald-400" />
+          <p className={`font-bold text-slate-900 ${compact ? "text-xs" : "text-sm"}`}>{vendor}</p>
+          <p className={`mt-0.5 flex items-center gap-1 font-medium text-slate-600 ${compact ? "text-[10px]" : "text-xs"}`}>
+            <CheckIcon className="h-3 w-3 text-emerald-400" />
             Verified Vendor
           </p>
         </div>
       </div>
-      <div className="mt-2 flex flex-wrap gap-1.5">
-        {["Trusted & Verified", "Professional Drivers", "100% Safe & Secure"].map((tag) => (
-          <span key={tag} className="rounded-full bg-slate-100 px-2 py-0.5 text-[9px] font-semibold text-slate-600">
-            {tag}
-          </span>
-        ))}
-      </div>
+      {!compact ? (
+        <div className="mt-2 flex flex-wrap gap-1.5">
+          {["Trusted & Verified", "Professional Drivers", "100% Safe & Secure"].map((tag) => (
+            <span key={tag} className="rounded-full bg-slate-100 px-2 py-0.5 text-[9px] font-semibold text-slate-600">
+              {tag}
+            </span>
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 }
 
-function TrustGrid() {
+function TrustGrid({ compact = false }) {
   const items = [
     { label: "Secure Booking", sub: "Your safety our priority", icon: ShieldIcon },
     { label: "Transparent Pricing", sub: "No hidden charges", icon: TagIcon },
@@ -235,14 +252,14 @@ function TrustGrid() {
     { label: "Easy Cancellation", sub: "Flexible policies", icon: CalendarIcon }
   ];
   return (
-    <div className="mt-4 grid grid-cols-2 gap-2">
+    <div className={`grid grid-cols-2 ${compact ? "mt-2 gap-1.5" : "mt-4 gap-2"}`}>
       {items.map((item) => {
         const Icon = item.icon;
         return (
-          <div key={item.label} className="rounded-lg bg-white px-2 py-2 text-center shadow-sm">
-            <Icon className="mx-auto h-4 w-4 text-sky-400" />
-            <p className="mt-1 text-[10px] font-bold text-slate-800">{item.label}</p>
-            <p className="text-[9px] text-slate-500">{item.sub}</p>
+          <div key={item.label} className={`rounded-lg bg-white text-center shadow-sm ${compact ? "px-1.5 py-1.5" : "px-2 py-2"}`}>
+            <Icon className={`mx-auto text-sky-400 ${compact ? "h-3.5 w-3.5" : "h-4 w-4"}`} />
+            <p className={`mt-0.5 font-bold text-slate-800 ${compact ? "text-[9px]" : "text-[10px]"}`}>{item.label}</p>
+            {!compact ? <p className="text-[9px] text-slate-500">{item.sub}</p> : null}
           </div>
         );
       })}

@@ -45,6 +45,7 @@ import { AdminProductSeoSection } from "./AdminProductSeoSection";
 import { AdminGalleryField, AdminProductImageField, parseGallery } from "./AdminProductImageField";
 import FarePackagesEditor from "./FarePackagesEditor";
 import AdminPackageExcelToolbar from "./AdminPackageExcelToolbar";
+import TourPackageContentEditor from "./TourPackageContentEditor";
 import {
   builtInSeoRoutePayloads,
   builtInSeoServicePayloads,
@@ -1077,7 +1078,7 @@ export default function AdminCatalogPanel({
             </label>
           </div>
         ) : tab.form === "seoService" ? (
-          <AdminSeoServiceForm form={seoServiceForm} onChange={setSeoServiceForm} />
+          <AdminSeoServiceForm form={seoServiceForm} onChange={setSeoServiceForm} authToken={token} />
         ) : tab.form === "seoRoute" ? (
           <AdminSeoRouteForm form={seoRouteForm} onChange={setSeoRouteForm} />
         ) : tab.form === "seoCityPage" ? (
@@ -1245,22 +1246,58 @@ export default function AdminCatalogPanel({
             <div className="rounded-xl border border-blue-200 bg-blue-50/40 p-4">
               <p className="text-xs font-bold uppercase tracking-wide text-slate-700">Pricing & vehicles</p>
               <p className="mt-1 text-[11px] leading-relaxed text-slate-600">
-                <strong>MRP</strong> is the full list price (before discount). <strong>You pay</strong> is the sedan price from the included pickup hub.
-                Discount applies to the entire subtotal (package + extra transport). Other pickup cities get automatic transport add-on at booking.
+                <strong>Package price</strong> is the public fare (SEO + cards). Leave discount at <strong>0</strong> for no promo.
+                Enter a discount % only when you want an “% OFF” badge — then set MRP (struck-through) manually.
               </p>
               <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                <Field label="MRP / list price ₹" hint="Shown struck-through on booking page">
-                  <input type="number" min={0} className={inputCls()} value={tourPackageForm.originalPrice} onChange={(e) => setTourPackageForm((p) => ({ ...p, originalPrice: Number(e.target.value) }))} />
-                </Field>
-                <Field label="You pay (sedan, from hub) ₹" hint="Base package price before vehicle multiplier">
+                <Field label="Package price ₹ *" hint="Selling price shown on site & in Google (no auto discount)">
                   <input type="number" min={0} className={inputCls()} value={tourPackageForm.price} onChange={(e) => setTourPackageForm((p) => ({ ...p, price: Number(e.target.value) }))} />
                 </Field>
-                <Field label="Online discount %" hint="Applied on subtotal at checkout">
-                  <input type="number" min={0} max={99} className={inputCls()} value={tourPackageForm.discountPercentage} onChange={(e) => setTourPackageForm((p) => ({ ...p, discountPercentage: Number(e.target.value) }))} />
-                </Field>
-                <Field label="Included pickup hub" hint="Round-trip transport from this city is bundled in MRP">
+                <Field label="Included pickup hub" hint="Round-trip transport from this city is bundled in price">
                   <input className={inputCls()} value={tourPackageForm.pricingOriginCity || "Chennai"} onChange={(e) => setTourPackageForm((p) => ({ ...p, pricingOriginCity: e.target.value }))} placeholder="Chennai" />
                 </Field>
+              </div>
+              <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50/70 p-3">
+                <p className="text-[11px] font-bold uppercase tracking-wide text-amber-900">Optional discount (manual)</p>
+                <p className="mt-0.5 text-[11px] text-amber-800/90">
+                  Default is 0 — no badge, no “You save” line, no schema price range. Set both fields only for a real promo.
+                </p>
+                <div className="mt-2 grid gap-3 sm:grid-cols-2">
+                  <Field label="Online discount %" hint="0 = no discount (recommended)">
+                    <input
+                      type="number"
+                      min={0}
+                      max={99}
+                      className={inputCls()}
+                      value={tourPackageForm.discountPercentage}
+                      onChange={(e) => setTourPackageForm((p) => ({ ...p, discountPercentage: Number(e.target.value) }))}
+                    />
+                  </Field>
+                  <Field label="MRP / list price ₹" hint="Struck-through when discount &gt; 0">
+                    <input
+                      type="number"
+                      min={0}
+                      className={inputCls()}
+                      value={tourPackageForm.originalPrice}
+                      onChange={(e) => setTourPackageForm((p) => ({ ...p, originalPrice: Number(e.target.value) }))}
+                      disabled={!(Number(tourPackageForm.discountPercentage) > 0)}
+                    />
+                  </Field>
+                </div>
+                {Number(tourPackageForm.discountPercentage) > 0 && Number(tourPackageForm.originalPrice) > 0 ? (
+                  <p className="mt-2 text-[11px] font-medium text-amber-950">
+                    Preview: customer pays ≈ ₹
+                    {Math.round(
+                      Number(tourPackageForm.originalPrice) * (1 - Math.min(99, Number(tourPackageForm.discountPercentage)) / 100)
+                    ).toLocaleString("en-IN")}{" "}
+                    ({tourPackageForm.discountPercentage}% off MRP ₹{Number(tourPackageForm.originalPrice).toLocaleString("en-IN")}).
+                    Also update Package price to match if needed.
+                  </p>
+                ) : (
+                  <p className="mt-2 text-[11px] text-slate-600">No promo active — frontend & SEO use Package price only.</p>
+                )}
+              </div>
+              <div className="mt-3 grid gap-3 sm:grid-cols-2">
                 <Field label="Destination city" hint="Transport route ends here — e.g. Tirupati">
                   <input className={inputCls()} value={tourPackageForm.city} onChange={(e) => setTourPackageForm((p) => ({ ...p, city: e.target.value }))} placeholder="Tirupati" />
                 </Field>
@@ -1324,49 +1361,11 @@ export default function AdminCatalogPanel({
               </div>
             </div>
 
-            <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-3">
-              <p className="text-xs font-bold uppercase tracking-wide text-slate-600">Tour details</p>
-              <p className="mt-0.5 text-[11px] text-slate-500">
-                Powers the SEO landing page at /tour-packages/&#123;slug&#125;. All fields optional.
-              </p>
-              <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                <Field label="Destination">
-                  <input className={inputCls()} value={tourPackageForm.destination || ""} onChange={(e) => setTourPackageForm((p) => ({ ...p, destination: e.target.value }))} placeholder="Madurai – Rameswaram" />
-                </Field>
-                <Field label="State">
-                  <input className={inputCls()} value={tourPackageForm.state || ""} onChange={(e) => setTourPackageForm((p) => ({ ...p, state: e.target.value }))} placeholder="Tamil Nadu" />
-                </Field>
-                <Field label="Days">
-                  <input type="number" min={0} className={inputCls()} value={tourPackageForm.days || 0} onChange={(e) => setTourPackageForm((p) => ({ ...p, days: Number(e.target.value) }))} />
-                </Field>
-                <Field label="Nights">
-                  <input type="number" min={0} className={inputCls()} value={tourPackageForm.nights || 0} onChange={(e) => setTourPackageForm((p) => ({ ...p, nights: Number(e.target.value) }))} />
-                </Field>
-                <div className="sm:col-span-2">
-                  <Field label="Description">
-                    <textarea rows={3} className={inputCls()} value={tourPackageForm.description || ""} onChange={(e) => setTourPackageForm((p) => ({ ...p, description: e.target.value }))} placeholder="Full package overview shown on the landing page" />
-                  </Field>
-                </div>
-                <Field label="Highlights" hint="One per line">
-                  <textarea rows={3} className={inputCls()} value={tourPackageForm.highlights || ""} onChange={(e) => setTourPackageForm((p) => ({ ...p, highlights: e.target.value }))} placeholder={"Tirumala darshan with priority entry\nAC vehicle throughout"} />
-                </Field>
-                <Field label="Itinerary" hint="One day per line: day | title | details">
-                  <textarea rows={3} className={inputCls()} value={tourPackageForm.itinerary || ""} onChange={(e) => setTourPackageForm((p) => ({ ...p, itinerary: e.target.value }))} placeholder={"1 | Arrival & temple visit | Pickup at 6 AM...\n2 | Return journey | Checkout after breakfast..."} />
-                </Field>
-                <Field label="Inclusions" hint="One per line">
-                  <textarea rows={3} className={inputCls()} value={tourPackageForm.inclusions || ""} onChange={(e) => setTourPackageForm((p) => ({ ...p, inclusions: e.target.value }))} placeholder={"AC cab with driver\nDriver allowance"} />
-                </Field>
-                <Field label="Exclusions" hint="One per line">
-                  <textarea rows={3} className={inputCls()} value={tourPackageForm.exclusions || ""} onChange={(e) => setTourPackageForm((p) => ({ ...p, exclusions: e.target.value }))} placeholder={"Entry tickets\nMeals"} />
-                </Field>
-                <Field label="Cancellation policy">
-                  <textarea rows={2} className={inputCls()} value={tourPackageForm.cancellationPolicy || ""} onChange={(e) => setTourPackageForm((p) => ({ ...p, cancellationPolicy: e.target.value }))} />
-                </Field>
-                <Field label="Terms & conditions">
-                  <textarea rows={2} className={inputCls()} value={tourPackageForm.termsAndConditions || ""} onChange={(e) => setTourPackageForm((p) => ({ ...p, termsAndConditions: e.target.value }))} />
-                </Field>
-              </div>
-            </div>
+            <TourPackageContentEditor
+              form={tourPackageForm}
+              onChange={setTourPackageForm}
+              disabled={!canEdit}
+            />
 
             <AdminProductSeoSection form={tourPackageForm} onChange={setTourPackageForm} pathPrefix="/tour-packages" titleField="name" cityField="city" authToken={token} />
 

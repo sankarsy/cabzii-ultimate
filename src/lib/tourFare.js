@@ -179,7 +179,7 @@ export function tourSelectionFromTotals(
   };
 }
 
-export function buildTourPaymentParams(pkgId, { totals, pickup, date, cabType, cabLabel, transport }) {
+export function buildTourPaymentParams(pkgId, { totals, pickup, date, cabType, cabLabel, transport, slug }) {
   const q = new URLSearchParams({
     type: "tour",
     id: String(pkgId),
@@ -193,6 +193,7 @@ export function buildTourPaymentParams(pkgId, { totals, pickup, date, cabType, c
     packageListPrice: String(totals.packageListPrice),
     transportListPrice: String(totals.transportListPrice)
   });
+  if (slug) q.set("slug", String(slug));
   if (pickup?.trim()) q.set("pickup", pickup.trim());
   if (date?.trim()) q.set("date", date.trim());
   if (cabType) q.set("cabType", cabType);

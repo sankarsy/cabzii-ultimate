@@ -50,6 +50,44 @@ export const FEATURE_PRESETS = [
   "Wheelchair"
 ];
 
+/** Vehicle / cab type presets — searchable in admin (still allow custom). */
+export const VEHICLE_CATEGORY_OPTIONS = [
+  "Sedan",
+  "SUV",
+  "MUV",
+  "Hatchback",
+  "Luxury",
+  "Premium Sedan",
+  "Innova",
+  "Innova Crysta",
+  "Ertiga",
+  "Dzire",
+  "Etios",
+  "Tempo Traveller",
+  "Mini Bus",
+  "Bus",
+  "Electric"
+];
+
+export const FUEL_TYPE_OPTIONS = ["Petrol", "Diesel", "CNG", "Electric", "Hybrid"];
+
+export const TRANSMISSION_OPTIONS = ["Manual", "Automatic"];
+
+export const BRAND_OPTIONS = [
+  "Maruti Suzuki",
+  "Toyota",
+  "Honda",
+  "Hyundai",
+  "Mahindra",
+  "Tata",
+  "Ford",
+  "Kia",
+  "MG",
+  "Force"
+];
+
+export const DEFAULT_HQ_CITY = "Chennai";
+
 function num(v, fallback = 0) {
   const n = Number(v);
   return Number.isFinite(n) ? n : fallback;
@@ -83,8 +121,8 @@ export function emptyVehicleForm() {
     year: "",
     category: "Sedan",
     type: "Sedan",
-    vendor: "",
-    city: "",
+    vendor: "Cabzii",
+    city: DEFAULT_HQ_CITY,
     location: "",
     pickupLocations: [],
     status: "active",
