@@ -3,10 +3,12 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import AdminOpsDashboard from "../../components/admin/AdminOpsDashboard";
 import AdminCatalogPanel from "../../components/admin/AdminCatalogPanel";
 import VehicleAdminPanel from "../../components/admin/vehicles/VehicleAdminPanel";
 import AdminSeoPagesIndex from "../../components/admin/AdminSeoPagesIndex";
 import AdminCrm from "../../components/admin/AdminCrm";
+import AdminAiChat from "../../components/admin/AdminAiChat";
 import AdminCustomers from "../../components/admin/AdminCustomers";
 import AdminMasterData from "../../components/admin/AdminMasterData";
 import AdminReports from "../../components/admin/AdminReports";
@@ -28,7 +30,7 @@ export default function AdminPage() {
   const [prefillType, setPrefillType] = useState("");
   const [prefillSlug, setPrefillSlug] = useState("");
   const [panelMode, setPanelMode] = useState("list");
-  const [activeTab, setActiveTab] = useState("master");
+  const [activeTab, setActiveTab] = useState("ops");
   const [enterpriseSection, setEnterpriseSection] = useState("dashboard");
   const [masterSection, setMasterSection] = useState("vendors");
   const [token, setToken] = useState("");
@@ -51,10 +53,12 @@ export default function AdminPage() {
     const section = searchParams.get("section");
     if (
       tab &&
-      (tab === "master" ||
+      (      tab === "master" ||
+        tab === "ops" ||
         tab === "settings" ||
         tab === "enterprise" ||
         tab === "crm" ||
+        tab === "aiChat" ||
         tab === "customers" ||
         tab === "reports" ||
         tab === "reviews" ||
@@ -119,18 +123,46 @@ export default function AdminPage() {
     router.push("/login");
   };
 
-  const sidebarItems = [
-    { key: "reports", label: "Reports & analytics", superAdminOnly: true },
-    { key: "crm", label: "CRM & leads", superAdminOnly: true },
-    { key: "customers", label: "Customers", superAdminOnly: true },
-    { key: "reviews", label: "Reviews", superAdminOnly: true },
-    { key: "enterprise", label: "Enterprise CMS", superAdminOnly: true },
-    { key: "settings", label: "Site settings", superAdminOnly: true },
-    { key: "seoPagesHub", label: "SEO & ads dashboard", superAdminOnly: true },
-    ...CATALOG_TAB_KEYS.map((tab) => ({ key: tab, label: CATALOG_TABS[tab].label })),
-    { key: "vendors", label: "Vendor admins", tab: "master", section: "vendors" },
-    { key: "cities", label: "Cities", tab: "master", section: "cities" },
-    { key: "locations", label: "Locations", tab: "master", section: "locations" }
+  const sidebarGroups = [
+    {
+      label: "Ops",
+      items: [
+        { key: "ops", label: "Operations" },
+        { key: "reports", label: "Reports", superAdminOnly: true },
+        { key: "crm", label: "CRM", superAdminOnly: true },
+        { key: "aiChat", label: "AI chat list", superAdminOnly: true },
+        { key: "customers", label: "Customers", superAdminOnly: true },
+        { key: "reviews", label: "Reviews", superAdminOnly: true }
+      ]
+    },
+    {
+      label: "Catalog",
+      items: CATALOG_TAB_KEYS.filter((tab) => ["cabs", "drivers", "buses", "packages", "bookings"].includes(tab)).map(
+        (tab) => ({
+          key: tab,
+          label: tab === "packages" ? "Holidays" : tab === "buses" ? "Buses" : CATALOG_TABS[tab].label
+        })
+      )
+    },
+    {
+      label: "Content",
+      items: [
+        ...CATALOG_TAB_KEYS.filter((tab) => !["cabs", "drivers", "buses", "packages", "bookings"].includes(tab)).map(
+          (tab) => ({ key: tab, label: CATALOG_TABS[tab].label })
+        ),
+        { key: "enterprise", label: "CMS", superAdminOnly: true },
+        { key: "settings", label: "Settings", superAdminOnly: true },
+        { key: "seoPagesHub", label: "SEO & ads", superAdminOnly: true }
+      ]
+    },
+    {
+      label: "Master",
+      items: [
+        { key: "vendors", label: "Vendors", tab: "master", section: "vendors" },
+        { key: "cities", label: "Cities", tab: "master", section: "cities" },
+        { key: "locations", label: "Locations", tab: "master", section: "locations" }
+      ]
+    }
   ];
 
   const panel = (
@@ -157,44 +189,54 @@ export default function AdminPage() {
           </div>
         </div>
       ) : token ? (
-        <div className="grid gap-4 lg:grid-cols-[260px_minmax(0,1fr)]">
-          <aside className="sticky top-20 h-fit self-start rounded-xl border border-slate-200 bg-white p-3 shadow-[var(--cabzii-shadow-card)]">
-            <p className="mb-2 px-2 text-xs font-bold uppercase tracking-wide text-slate-500">Menu</p>
-            <nav className="space-y-1">
-              {sidebarItems
-                .filter((item) => !item.superAdminOnly || isSuperAdmin)
-                .map((item) => {
-                  const tab = item.tab || item.key;
-                  const section = item.section || "";
-                  const isActive =
-                    activeTab === tab && (!section || (tab === "master" && masterSection === section));
-                  return (
-                    <button
-                      key={item.key}
-                      type="button"
-                      onClick={() => {
-                        setActiveTab(tab);
-                        if (tab === "master") setMasterSection(section || "vendors");
-                        const qs = tab === "master" ? `?tab=master&section=${section || "vendors"}` : `?tab=${tab}`;
-                        router.push(`/admin${qs}`);
-                      }}
-                      className={`flex w-full items-center rounded-lg px-3 py-2 text-left text-sm font-semibold transition ${
-                        isActive
-                          ? "bg-[var(--cabzii-brand)] text-white"
-                          : "text-slate-700 hover:bg-slate-100"
-                      }`}
-                    >
-                      {item.label}
-                    </button>
-                  );
-                })}
-            </nav>
+        <div className="grid gap-3 lg:grid-cols-[140px_minmax(0,1fr)]">
+          <aside className="sticky top-20 max-h-[42vh] self-start overflow-y-scroll overscroll-contain rounded-xl border border-slate-200 bg-white p-1.5 shadow-[var(--cabzii-shadow-card)] lg:max-h-[calc(100vh-6.5rem)]">
+            {sidebarGroups.map((group) => {
+              const items = group.items.filter((item) => !item.superAdminOnly || isSuperAdmin);
+              if (!items.length) return null;
+              return (
+                <div key={group.label} className="mb-2">
+                  <p className="mb-1 px-2 pt-1 text-[10px] font-bold uppercase tracking-wide text-slate-400">{group.label}</p>
+                  <nav className="space-y-0.5">
+                    {items.map((item) => {
+                      const tab = item.tab || item.key;
+                      const section = item.section || "";
+                      const isActive =
+                        activeTab === tab && (!section || (tab === "master" && masterSection === section));
+                      return (
+                        <button
+                          key={item.key}
+                          type="button"
+                          onClick={() => {
+                            setActiveTab(tab);
+                            if (tab === "master") setMasterSection(section || "vendors");
+                            const qs = tab === "master" ? `?tab=master&section=${section || "vendors"}` : `?tab=${tab}`;
+                            router.push(`/admin${qs}`);
+                          }}
+                          className={`flex w-full items-center rounded-md px-2 py-1.5 text-left text-xs font-semibold transition ${
+                            isActive
+                              ? "bg-[var(--cabzii-brand)] text-white"
+                              : "text-slate-700 hover:bg-slate-100"
+                          }`}
+                        >
+                          {item.label}
+                        </button>
+                      );
+                    })}
+                  </nav>
+                </div>
+              );
+            })}
           </aside>
           <div className="min-w-0">
-            {activeTab === "reports" ? (
+            {activeTab === "ops" ? (
+              <AdminOpsDashboard token={token} isSuperAdmin={isSuperAdmin} />
+            ) : activeTab === "reports" ? (
               <AdminReports token={token} isSuperAdmin={isSuperAdmin} />
             ) : activeTab === "crm" ? (
               <AdminCrm token={token} isSuperAdmin={isSuperAdmin} />
+            ) : activeTab === "aiChat" ? (
+              <AdminAiChat token={token} isSuperAdmin={isSuperAdmin} />
             ) : activeTab === "customers" ? (
               <AdminCustomers token={token} isSuperAdmin={isSuperAdmin} />
             ) : activeTab === "reviews" ? (

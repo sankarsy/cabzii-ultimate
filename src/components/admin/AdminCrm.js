@@ -24,12 +24,25 @@ const EMPTY_LEAD = {
   email: "",
   source: "website",
   stage: "new",
+  productType: "cab",
   route: "",
   vehicleType: "",
+  operator: "",
+  seats: "",
+  boardingPoint: "",
+  droppingPoint: "",
   estimatedFare: "",
   assignedTo: "",
   followUpAt: ""
 };
+
+const PRODUCT_TYPES = [
+  { id: "cab", label: "Cab" },
+  { id: "bus", label: "Bus" },
+  { id: "driver", label: "Driver" },
+  { id: "tour", label: "Holiday" },
+  { id: "other", label: "Other" }
+];
 
 export default function AdminCrm({ token, isSuperAdmin }) {
   const [dashboard, setDashboard] = useState(null);
@@ -37,6 +50,7 @@ export default function AdminCrm({ token, isSuperAdmin }) {
   const [meta, setMeta] = useState({ page: 1, totalPages: 1, total: 0 });
   const [page, setPage] = useState(1);
   const [stageFilter, setStageFilter] = useState("");
+  const [productFilter, setProductFilter] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [selected, setSelected] = useState(null);
@@ -67,6 +81,7 @@ export default function AdminCrm({ token, isSuperAdmin }) {
     try {
       const params = new URLSearchParams({ page: String(page), limit: "20" });
       if (stageFilter) params.set("stage", stageFilter);
+      if (productFilter) params.set("productType", productFilter);
       const res = await fetch(`/api/crm?${params}`, { headers: authHeaders });
       const data = await res.json();
       if (!res.ok || data?.success === false) throw new Error(data?.message || "Could not load leads.");
@@ -79,7 +94,7 @@ export default function AdminCrm({ token, isSuperAdmin }) {
       setLoading(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, stageFilter, token]);
+  }, [page, stageFilter, productFilter, token]);
 
   useEffect(() => {
     if (isSuperAdmin) {
@@ -167,6 +182,22 @@ export default function AdminCrm({ token, isSuperAdmin }) {
     }
   };
 
+  const importBookings = async () => {
+    setImporting(true);
+    try {
+      const res = await fetch("/api/crm/import-bookings", { method: "POST", headers: authHeaders });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.message || "Import failed");
+      loadLeads();
+      loadDashboard();
+      alert(`Imported ${data?.data?.imported ?? 0} bookings into CRM.`);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setImporting(false);
+    }
+  };
+
   const importChatLeads = async () => {
     setImporting(true);
     try {
@@ -197,7 +228,7 @@ export default function AdminCrm({ token, isSuperAdmin }) {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="text-xl font-bold text-slate-900">CRM & lead pipeline</h2>
-          <p className="text-sm text-slate-600">Track enquiries from chat, website & calls through to booking.</p>
+          <p className="text-sm text-slate-600">Cabs, buses, drivers and holiday enquiries — from chat, website and bookings through to confirmation.</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <button
@@ -206,6 +237,14 @@ export default function AdminCrm({ token, isSuperAdmin }) {
             className="rounded-lg bg-[var(--cabzii-brand)] px-4 py-2 text-sm font-semibold text-white hover:bg-[var(--cabzii-brand-hover)]"
           >
             + New lead
+          </button>
+          <button
+            type="button"
+            onClick={importBookings}
+            disabled={importing}
+            className="rounded-lg border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-800 hover:bg-rose-100 disabled:opacity-60"
+          >
+            {importing ? "Importing…" : "Import bookings (incl. bus)"}
           </button>
           <button
             type="button"
@@ -231,6 +270,10 @@ export default function AdminCrm({ token, isSuperAdmin }) {
           <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
             <p className="text-xs font-bold uppercase text-slate-500">Conversion</p>
             <p className="mt-1 text-2xl font-extrabold text-[var(--cabzii-brand)]">{dashboard.conversionRate ?? 0}%</p>
+          </div>
+          <div className="rounded-xl border border-rose-200 bg-rose-50 p-4 shadow-sm">
+            <p className="text-xs font-bold uppercase text-rose-700">Bus leads</p>
+            <p className="mt-1 text-2xl font-extrabold text-rose-800">{dashboard.busLeads ?? dashboard.byProductType?.bus ?? 0}</p>
           </div>
           <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 shadow-sm">
             <p className="text-xs font-bold uppercase text-amber-700">Due follow-ups</p>
@@ -259,6 +302,26 @@ export default function AdminCrm({ token, isSuperAdmin }) {
           </button>
         ))}
       </div>
+      <div className="flex flex-wrap gap-2">
+        <button
+          type="button"
+          onClick={() => { setProductFilter(""); setPage(1); }}
+          className={`rounded-full px-3 py-1 text-xs font-bold ${!productFilter ? "bg-rose-600 text-white" : "bg-slate-100 text-slate-700"}`}
+        >
+          All services
+        </button>
+        {PRODUCT_TYPES.map((p) => (
+          <button
+            key={p.id}
+            type="button"
+            onClick={() => { setProductFilter(p.id); setPage(1); }}
+            className={`rounded-full px-3 py-1 text-xs font-bold ${productFilter === p.id ? "bg-rose-600 text-white" : "bg-slate-100 text-slate-700"}`}
+          >
+            {p.label}
+            {dashboard?.byProductType?.[p.id] != null ? ` (${dashboard.byProductType[p.id]})` : ""}
+          </button>
+        ))}
+      </div>
 
       {error ? <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p> : null}
 
@@ -269,6 +332,7 @@ export default function AdminCrm({ token, isSuperAdmin }) {
               <thead className="border-b border-slate-200 bg-slate-50 text-xs font-bold uppercase text-slate-500">
                 <tr>
                   <th className="px-4 py-3">Lead</th>
+                  <th className="px-4 py-3">Service</th>
                   <th className="px-4 py-3">Route</th>
                   <th className="px-4 py-3">Stage</th>
                   <th className="px-4 py-3">Follow-up</th>
@@ -276,9 +340,9 @@ export default function AdminCrm({ token, isSuperAdmin }) {
               </thead>
               <tbody>
                 {loading ? (
-                  <tr><td colSpan={4} className="px-4 py-8 text-center text-slate-500">Loading…</td></tr>
+                  <tr><td colSpan={5} className="px-4 py-8 text-center text-slate-500">Loading…</td></tr>
                 ) : rows.length === 0 ? (
-                  <tr><td colSpan={4} className="px-4 py-8 text-center text-slate-500">No leads yet.</td></tr>
+                  <tr><td colSpan={5} className="px-4 py-8 text-center text-slate-500">No leads yet.</td></tr>
                 ) : (
                   rows.map((row) => (
                     <tr
@@ -289,6 +353,11 @@ export default function AdminCrm({ token, isSuperAdmin }) {
                       <td className="px-4 py-3">
                         <p className="font-semibold text-slate-900">{row.name}</p>
                         <p className="text-xs text-slate-500">{row.mobile}{row.repeatCustomer ? " · Repeat" : ""}</p>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${row.productType === "bus" ? "bg-rose-100 text-rose-800" : "bg-slate-100 text-slate-600"}`}>
+                          {row.productType || "cab"}
+                        </span>
                       </td>
                       <td className="px-4 py-3 text-slate-600">{row.route || "—"}</td>
                       <td className="px-4 py-3">
@@ -322,7 +391,8 @@ export default function AdminCrm({ token, isSuperAdmin }) {
               <div>
                 <h3 className="text-lg font-bold text-slate-900">{detail.name}</h3>
                 <p className="text-sm text-slate-600">{detail.mobile}{detail.email ? ` · ${detail.email}` : ""}</p>
-                <p className="mt-1 text-xs text-slate-500">Source: {detail.source || "website"}</p>
+                <p className="mt-1 text-xs text-slate-500">Source: {detail.source || "website"} · {detail.productType || "cab"}</p>
+                {detail.operator ? <p className="text-xs text-slate-500">Operator: {detail.operator}{detail.seats ? ` · Seats ${detail.seats}` : ""}</p> : null}
               </div>
 
               <label className="block">
@@ -334,6 +404,19 @@ export default function AdminCrm({ token, isSuperAdmin }) {
                 >
                   {CRM_PIPELINE_STAGES.map((s) => (
                     <option key={s.id} value={s.id}>{s.label}</option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="block">
+                <span className="text-xs font-bold uppercase text-slate-500">Service</span>
+                <select
+                  value={detail.productType || "cab"}
+                  onChange={(e) => updateLead({ ...detail, productType: e.target.value }).catch((err) => setError(err.message))}
+                  className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                >
+                  {PRODUCT_TYPES.map((p) => (
+                    <option key={p.id} value={p.id}>{p.label}</option>
                   ))}
                 </select>
               </label>
@@ -420,7 +503,7 @@ export default function AdminCrm({ token, isSuperAdmin }) {
           <form onSubmit={createLead} className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
             <h3 className="text-lg font-bold text-slate-900">New lead</h3>
             <div className="mt-4 space-y-3">
-              {["name", "mobile", "email", "route", "vehicleType", "assignedTo"].map((field) => (
+              {["name", "mobile", "email", "route", "vehicleType", "operator", "seats", "assignedTo"].map((field) => (
                 <label key={field} className="block">
                   <span className="text-xs font-bold uppercase text-slate-500">{field}</span>
                   <input
@@ -431,6 +514,18 @@ export default function AdminCrm({ token, isSuperAdmin }) {
                   />
                 </label>
               ))}
+              <label className="block">
+                <span className="text-xs font-bold uppercase text-slate-500">Service</span>
+                <select
+                  value={form.productType}
+                  onChange={(e) => setForm({ ...form, productType: e.target.value })}
+                  className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                >
+                  {PRODUCT_TYPES.map((p) => (
+                    <option key={p.id} value={p.id}>{p.label}</option>
+                  ))}
+                </select>
+              </label>
             </div>
             <div className="mt-4 flex justify-end gap-2">
               <button type="button" onClick={() => setShowCreate(false)} className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold">Cancel</button>

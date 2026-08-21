@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { readSelectedCity } from "../../lib/locationPriority";
 
-const PLACEHOLDER = "Search cabs, drivers, holidays, flights, hotels…";
+const PLACEHOLDER = "Search cabs, buses, drivers, holidays…";
 
 function SearchForm({ initialQuery = "" }) {
   const router = useRouter();

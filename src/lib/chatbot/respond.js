@@ -1,6 +1,6 @@
 const QUICK_LINKS = {
   cabs: "/cabs",
-  drivers: "/drivers",
+  drivers: "/call-driver",
   holidays: "/holidays",
   booking: "/cabs",
   testimonials: "/testimonials",
@@ -75,8 +75,8 @@ export function generateChatReply(message, { name = "there", history = [] } = {}
 
   if (pick(text, ["driver", "acting", "chauffeur", "hire driver"])) {
     return {
-      reply: `Need a professional acting driver? Cabzii lists verified drivers for local and outstation hire.\n\n👉 Browse: ${QUICK_LINKS.drivers}`,
-      suggestions: ["Hire acting driver", "Daily driver hire"]
+      reply: `Need a professional driver for your own car? Book a Cabzii Call Driver service — local, outstation, airport, monthly, corporate or valet. We assign a driver after you book.\n\n👉 Book: ${QUICK_LINKS.drivers}`,
+      suggestions: ["Call driver Chennai", "Outstation driver"]
     };
   }
 

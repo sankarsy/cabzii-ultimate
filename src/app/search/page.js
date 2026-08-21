@@ -15,8 +15,9 @@ const includesQuery = (query, values) => values.some((value) => normalize(String
 
 const SERVICE_SHORTCUTS = [
   { id: "cabs", label: "Book Cab", href: "/cabs", keywords: ["cab", "cabs", "taxi", "sedan", "suv", "innova", "tempo", "outstation", "one way"] },
+  { id: "buses", label: "Bus tickets", href: "/buses", keywords: ["bus", "buses", "volvo", "sleeper", "seater"] },
   { id: "airport", label: "Airport Taxi", href: "/cabs/results?serviceTripType=airport", keywords: ["airport", "transfer", "pickup", "drop"] },
-  { id: "drivers", label: "Drivers", href: "/drivers", keywords: ["driver", "drivers", "chauffeur", "acting driver"] },
+  { id: "drivers", label: "Call Driver", href: "/call-driver", keywords: ["driver", "drivers", "chauffeur", "acting driver", "call driver"] },
   {
     id: "holidays",
     label: "Temple Tours",
@@ -60,10 +61,6 @@ export default async function SearchPage({ searchParams }) {
   if (city) cabQs.set("priorityCity", city);
   if (rawQuery.trim()) cabQs.set("q", rawQuery.trim());
 
-  const driverQs = new URLSearchParams({ limit: "50" });
-  if (city) driverQs.set("priorityCity", city);
-  if (rawQuery.trim()) driverQs.set("q", rawQuery.trim());
-
   const packageQs = new URLSearchParams({ limit: "50" });
   if (city) packageQs.set("priorityCity", city);
   if (rawQuery.trim()) packageQs.set("q", rawQuery.trim());
@@ -72,9 +69,8 @@ export default async function SearchPage({ searchParams }) {
 
   const shouldFetch = Boolean(query || city || hasInstantBookingFilters);
 
-  const [matchingCabs, matchingDrivers, matchingPackages, allBlogs, allTestimonials] = await Promise.all([
+  const [matchingCabs, matchingPackages, allBlogs, allTestimonials] = await Promise.all([
     shouldFetch ? fetchList(`/api/v1/cabs?${cabQs.toString()}`) : Promise.resolve([]),
-    shouldFetch && rawQuery.trim() ? fetchList(`/api/v1/drivers?${driverQs.toString()}`) : Promise.resolve([]),
     shouldFetch && rawQuery.trim() ? fetchList(`/api/v1/packages?${packageQs.toString()}`) : Promise.resolve([]),
     query ? fetchList("/api/v1/blogs?limit=50&page=1") : Promise.resolve([]),
     query ? fetchList(`/api/v1/testimonials?${testimonialQs.toString()}`) : Promise.resolve([])
@@ -91,7 +87,7 @@ export default async function SearchPage({ searchParams }) {
   const shortcuts = matchingShortcuts(query);
 
   const showOnlyInstantBookingResults = hasInstantBookingFilters;
-  const visibleDrivers = showOnlyInstantBookingResults ? [] : matchingDrivers;
+  const visibleDrivers = [];
   const visiblePackages = showOnlyInstantBookingResults ? [] : matchingPackages;
   const visibleBlogs = showOnlyInstantBookingResults ? [] : matchingBlogs;
   const visibleTestimonials = showOnlyInstantBookingResults ? [] : matchingTestimonials;
@@ -107,7 +103,7 @@ export default async function SearchPage({ searchParams }) {
     <div className="section-shell py-8">
       <section className="py-6 md:py-10">
         <h1 className="text-center text-2xl font-bold text-slate-900 sm:text-3xl">Search Cabzii</h1>
-        <p className="mt-2 text-center text-sm text-slate-600">Cabs · Drivers · Holidays · Flights · Hotels · Blogs</p>
+        <p className="mt-2 text-center text-sm text-slate-600">Cabs · Buses · Call Driver · Holidays · Blogs</p>
         <div className="mt-6">
           <SearchPageSearchBar initialQuery={rawQuery} />
         </div>
@@ -200,38 +196,17 @@ export default async function SearchPage({ searchParams }) {
               </section>
             )}
 
-            {visibleDrivers.length > 0 && (
-              <section>
-                <div className="flex items-center justify-between gap-2">
-                  <h2 className="text-2xl font-bold text-slate-900">Drivers</h2>
-                  <Link href="/drivers" className="text-sm font-semibold text-[var(--cabzii-brand)] hover:underline">
-                    View all
-                  </Link>
-                </div>
-                <div className="mt-4 flex flex-col gap-3">
-                  {visibleDrivers.map((driver) => {
-                    const id = String(driver._id ?? driver.id);
-                    const name = driver.name || driver.serviceTitle || "Driver";
-                    return (
-                      <Link
-                        key={id}
-                        href={catalogPublicPath(driver, "/drivers")}
-                        className="flex items-center justify-between rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-[var(--cabzii-brand)] hover:shadow-md"
-                      >
-                        <div>
-                          <p className="font-bold text-slate-900">{name}</p>
-                          <p className="text-sm text-slate-500">
-                            {driver.vendor || "Cabzii Partner"}
-                            {driver.city ? ` · ${driver.city}` : ""}
-                          </p>
-                        </div>
-                        <span className="text-sm font-semibold text-[var(--cabzii-brand)]">View →</span>
-                      </Link>
-                    );
-                  })}
-                </div>
+            {query && /driver|chauffeur|call driver|acting/i.test(query) ? (
+              <section className="rounded-2xl border border-sky-200 bg-sky-50 p-4">
+                <h2 className="text-lg font-bold text-slate-900">Call Driver Service</h2>
+                <p className="mt-1 text-sm text-slate-600">
+                  Book a professional driver for your own car. Cabzii assigns an available driver after booking.
+                </p>
+                <Link href="/call-driver" className="mt-3 inline-flex min-h-11 items-center rounded-xl bg-[var(--cabzii-brand)] px-4 text-sm font-semibold text-white">
+                  Book a Driver
+                </Link>
               </section>
-            )}
+            ) : null}
 
             {visiblePackages.length > 0 && (
               <section>

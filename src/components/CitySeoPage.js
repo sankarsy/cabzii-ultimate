@@ -27,7 +27,7 @@ export default function CitySeoPage({
 }) {
   const isCab = variant === "cab";
   const title = headingOverride || (isCab ? tunedCabBookingH1(city) : tunedActingDriverH1(city));
-  const lead = isCab ? tunedCabBookingDescription(city) : `Hire verified acting drivers and chauffeurs in ${city.name} for hourly, daily and outstation trips on Cabzii.`;
+  const lead = isCab ? tunedCabBookingDescription(city) : `Book a Cabzii Call Driver / acting driver in ${city.name} for your own car — local, outstation and airport driver service. Cabzii assigns a professional driver after you book.`;
 
   const hubPath = isCab ? `/cab-booking/${city.slug}` : `/acting-driver/${city.slug}`;
   const faqs = getCityFaqs(city, isCab ? "cab" : "driver");
@@ -35,7 +35,7 @@ export default function CitySeoPage({
   const topServices = isCab ? servicesForCityHub(city.slug, 8) : servicesForCityHub(city.slug, 4);
   const bookHref = isCab
     ? `/cabs?city=${encodeURIComponent(city.slug)}`
-    : `/drivers?city=${encodeURIComponent(city.slug)}`;
+    : `/call-driver`;
 
   return (
     <article className="section-shell cabzii-seo-landing">
@@ -56,7 +56,7 @@ export default function CitySeoPage({
         <BookingCtaBar
           variant="compact"
           bookHref={bookHref}
-          bookLabel={isCab ? `Book cab in ${city.name}` : `Hire driver in ${city.name}`}
+          bookLabel={isCab ? `Book cab in ${city.name}` : `Book a driver in ${city.name}`}
         />
 
         {isCab ? (
@@ -81,16 +81,16 @@ export default function CitySeoPage({
 
         <div className="mt-3 flex flex-wrap gap-1.5">
           <Link
-            href={isCab ? "/cabs" : "/drivers"}
+            href={isCab ? "/cabs" : "/call-driver"}
             className="cabzii-btn cabzii-btn-primary cabzii-btn-sm"
           >
-            {isCab ? `Book cab in ${city.name}` : `Hire driver in ${city.name}`}
+            {isCab ? `Book cab in ${city.name}` : `Book a driver in ${city.name}`}
           </Link>
           <Link href="/cabs" className="cabzii-btn cabzii-btn-secondary cabzii-btn-sm">
             Browse all cabs
           </Link>
-          <Link href="/drivers" className="cabzii-btn cabzii-btn-secondary cabzii-btn-sm">
-            Browse drivers
+          <Link href="/call-driver" className="cabzii-btn cabzii-btn-secondary cabzii-btn-sm">
+            Call Driver services
           </Link>
         </div>
 

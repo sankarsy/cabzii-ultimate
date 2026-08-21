@@ -3,7 +3,7 @@
  * Prefer backend normalizeCabForApi; this mirrors the per-km + bata formula only.
  */
 
-import { num, packageYouPay } from "./cabFare";
+import { num } from "./cabFare";
 
 function fareFromLegacyPkg(pkg, includedKm) {
   if (!pkg || typeof pkg !== "object") return null;
@@ -11,12 +11,10 @@ function fareFromLegacyPkg(pkg, includedKm) {
   const coverage =
     includedKm !== undefined && includedKm !== null ? num(includedKm) : num(pkg.coverage) || 100;
   const bata = num(pkg.bata);
-  const discount = num(pkg.discount);
   if (perKm <= 0 && bata <= 0) return null;
   const originalPrice = Math.max(Math.round(perKm * coverage + bata), bata > 0 ? Math.round(bata * 2) : 0);
   if (originalPrice <= 0) return null;
-  const price = discount > 0 ? Math.round(originalPrice * (1 - discount / 100)) : originalPrice;
-  return { originalPrice, price, discountPercentage: discount };
+  return { originalPrice, price: originalPrice, discountPercentage: 0 };
 }
 
 export function isLegacyCabRecord(cab) {
@@ -44,7 +42,7 @@ export function normalizeCabRecord(cab) {
     originalPrice: num(outstationOneWay?.originalPrice) || price,
     hourlyRate: local4hr ? Math.round(local4hr.price / 4) : 0,
     dayRate: local8hr?.price || 0,
-    discountPercentage: num(oneWay?.discount) || num(cab.discountPercentage),
+    discountPercentage: 0,
     farePackages: {
       local4hr: local4hr || outstationOneWay,
       local8hr: local8hr || outstationOneWay,

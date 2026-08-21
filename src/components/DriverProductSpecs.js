@@ -20,10 +20,6 @@ export default function DriverProductSpecs({ driver }) {
     { label: "Day rate", value: day > 0 ? `₹${day.toLocaleString("en-IN")}/day` : "—" },
     { label: "Extra hour", value: extraHr > 0 ? `₹${extraHr.toLocaleString("en-IN")}/hr` : "—" },
     { label: "Extra km", value: extraKm > 0 ? `₹${extraKm}/km` : "—" },
-    {
-      label: "Discount",
-      value: driver.discountPercentage ? `${driver.discountPercentage}% OFF` : "—"
-    },
     ...(ratingText ? [{ label: "Rating", value: `${ratingText} / 5 · ${driver.reviewCount} verified` }] : [])
   ];
 

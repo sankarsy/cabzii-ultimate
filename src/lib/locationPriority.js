@@ -59,9 +59,20 @@ export function matchesSelectedCity(item, selectedCity) {
   return hay.includes(city.toLowerCase());
 }
 
+export function chennaiFirst(items, getName = (item) => item?.name || item?.city || item) {
+  return [...items].sort((a, b) => {
+    const an = String(getName(a) || "").toLowerCase();
+    const bn = String(getName(b) || "").toLowerCase();
+    const ac = an === "chennai" || an.startsWith("chennai") ? 0 : 1;
+    const bc = bn === "chennai" || bn.startsWith("chennai") ? 0 : 1;
+    if (ac !== bc) return ac - bc;
+    return 0;
+  });
+}
+
 export function sortBySelectedCity(items, selectedCity) {
   const city = normalizeCityName(selectedCity);
-  if (!city) return [...items];
+  if (!city) return chennaiFirst(items);
   return [...items].sort((a, b) => {
     const am = matchesSelectedCity(a, city) ? 1 : 0;
     const bm = matchesSelectedCity(b, city) ? 1 : 0;

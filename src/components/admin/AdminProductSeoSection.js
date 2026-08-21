@@ -78,7 +78,8 @@ export function AdminProductSeoSection({
     // Prefer nested enterprise arrays over package string fields (e.g. highlights)
     ...flatEnterprise,
     vehicleName: form.vehicleName || form[titleField] || form.name || "",
-    title: form.title || form.name || "",
+    title: form.title || form.name || form[titleField] || "",
+    city: form[cityField] || form.city || "",
     metaKeywords: form.metaKeywords || form.seo || "",
     images: Array.isArray(form.images)
       ? form.images

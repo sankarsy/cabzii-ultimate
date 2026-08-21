@@ -48,7 +48,8 @@ export default async function sitemap() {
   const staticRoutes = [
     { url: `${base}/`, lastModified: now, changeFrequency: "daily", priority: 1, images: [HERO_IMAGE] },
     { url: `${base}/cabs`, lastModified: now, changeFrequency: "daily", priority: 0.95, images: [HERO_IMAGE] },
-    { url: `${base}/drivers`, lastModified: now, changeFrequency: "daily", priority: 0.95, images: [HERO_IMAGE] },
+    { url: `${base}/call-driver`, lastModified: now, changeFrequency: "weekly", priority: 0.95, images: [HERO_IMAGE] },
+    { url: `${base}/drivers`, lastModified: now, changeFrequency: "weekly", priority: 0.6, images: [HERO_IMAGE] },
     { url: `${base}/holidays`, lastModified: now, changeFrequency: "daily", priority: 0.92, images: [HERO_IMAGE] },
     { url: `${base}/buses`, lastModified: now, changeFrequency: "daily", priority: 0.9, images: [HERO_IMAGE] },
     { url: `${base}/blogs`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
@@ -86,9 +87,8 @@ export default async function sitemap() {
     ];
   });
 
-  const [cabs, drivers, packages, blogPosts, cmsServices, cmsRoutes] = await Promise.all([
+  const [cabs, packages, blogPosts, cmsServices, cmsRoutes] = await Promise.all([
     fetchAllIds("/cabs"),
-    fetchAllIds("/drivers"),
     fetchAllIds("/packages"),
     fetchAllIds("/blogs"),
     fetchAllIds("/seo-services"),
@@ -165,19 +165,6 @@ export default async function sitemap() {
       };
     });
 
-  const driverRoutes = drivers
-    .filter(isPublishedCatalogItem)
-    .map((item) => {
-      const image = sitemapImageFromProduct(item, "driver");
-      return {
-        url: `${base}${catalogPublicPath(item, "/drivers")}`,
-        lastModified: item.updatedAt ? new Date(item.updatedAt) : now,
-        changeFrequency: "weekly",
-        priority: 0.7,
-        ...(image ? { images: [image] } : {})
-      };
-    });
-
   const tourPackageSlugs = new Set(
     packages.filter((item) => item.slug).map((item) => String(item.slug))
   );
@@ -233,7 +220,6 @@ export default async function sitemap() {
     ...staticRoutePages,
     ...cmsRoutePages,
     ...cabRoutes,
-    ...driverRoutes,
     ...packageRoutes,
     ...tourPackageRoutes,
     ...blogRoutes

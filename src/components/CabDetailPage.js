@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Star } from "lucide-react";
 import CabBookingDetail from "./CabBookingDetail";
 import CabProductSpecs from "./CabProductSpecs";
+import TariffTerms from "./TariffTerms";
 import PaymentBreakdown from "./PaymentBreakdown";
 import SimilarCabs from "./SimilarCabs";
 import ReviewsSection from "./reviews/ReviewsSection";
@@ -38,7 +39,7 @@ function getInitialSelection(cab) {
   if (!cab) return null;
   const slabs = buildFareSlabs(cab);
   const first = slabs.find((p) => p.id === "local_4hr") || slabs[0];
-  return first ? selectionFromPackage(first, first.group, cab.discountPercentage) : null;
+  return first ? selectionFromPackage(first, first.group, cab) : null;
 }
 
 function applyCabData(data, setCab, setSelection) {
@@ -46,7 +47,7 @@ function applyCabData(data, setCab, setSelection) {
   setCab(enriched);
   const slabs = buildFareSlabs(enriched);
   const first = slabs.find((p) => p.id === "local_4hr") || slabs[0];
-  if (first) setSelection(selectionFromPackage(first, first.group, enriched.discountPercentage));
+  if (first) setSelection(selectionFromPackage(first, first.group, enriched));
 }
 
 function parseBreadcrumb(cab) {
@@ -226,6 +227,7 @@ export default function CabDetailPage({ cabId, initialCab = null }) {
 
                 <VehicleDetailExtras cab={cab} showPageContent={false} />
                 <CabProductSpecs cab={cab} />
+                <TariffTerms compact />
 
                 <div id="reviews" className="scroll-mt-24">
                   <ReviewsSection itemType="cab" itemId={cabPk} />

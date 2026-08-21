@@ -2,12 +2,11 @@
 
 import { Suspense, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { Bus, ShieldCheck, Armchair, Ticket } from "lucide-react";
 import MmtLayout from "../../components/mmt/MmtLayout";
 import EmtBusSearchForm from "../../components/emt/EmtBusSearchForm";
-import { HERO_TAB_ICONS } from "../../components/icons/heroIcons";
-import Link from "next/link";
-
-const BusIcon = HERO_TAB_ICONS.buses;
+import { POPULAR_BUS_ROUTES, busResultsHref } from "../../lib/popularBusRoutes";
 
 function BusesLandingContent() {
   const router = useRouter();
@@ -22,42 +21,51 @@ function BusesLandingContent() {
   }, [from, to, router, searchParams]);
 
   return (
-    <div className="section-shell cabzii-seo-landing">
-      <div className="mb-3 text-center sm:mb-4">
-        <div className="mx-auto mb-2 flex h-9 w-9 items-center justify-center rounded-xl bg-sky-100 text-sky-600 sm:h-10 sm:w-10">
-          <BusIcon className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden />
-        </div>
-        <h1 className="text-base font-bold text-slate-900 sm:text-lg md:text-xl">Book bus tickets online</h1>
-        <p className="mx-auto mt-1 max-w-xl text-[11px] text-slate-600 sm:text-xs">
-          Compare AC seater & sleeper buses across South India. Choose boarding point, seat or berth, and pay securely on Cabzii.
-        </p>
-      </div>
-
-      <EmtBusSearchForm emtHero />
-
-      <div className="mt-4 grid gap-2 sm:mt-5 sm:grid-cols-3 sm:gap-3">
-        {[
-          { title: "Live seat map", desc: "Pick seater, lower or upper berth like top OTAs" },
-          { title: "Boarding & drop", desc: "Select your nearest boarding and dropping points" },
-          { title: "Instant confirm", desc: "SMS & email ticket after booking" }
-        ].map((f) => (
-          <div key={f.title} className="cabzii-card p-2.5 text-center sm:p-3">
-            <p className="text-xs font-bold text-slate-900 sm:text-sm">{f.title}</p>
-            <p className="mt-0.5 text-[11px] text-slate-600">{f.desc}</p>
+    <div className="rdb-hero-body">
+      <div className="section-shell py-8 sm:py-10">
+        <div className="mb-5 text-center text-white">
+          <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-white/15">
+            <Bus className="h-5 w-5" aria-hidden />
           </div>
-        ))}
+          <h1 className="text-xl font-extrabold sm:text-2xl md:text-3xl">Book bus tickets online</h1>
+          <p className="mx-auto mt-1.5 max-w-xl text-sm text-white/85">
+            Search AC seater & sleeper buses from Chennai and across South India. Pick seats, boarding point and confirm instantly.
+          </p>
+        </div>
+
+        <EmtBusSearchForm emtHero />
       </div>
 
-      <p className="mt-8 text-center text-sm text-slate-500">
-        Popular:{" "}
-        <Link href="/buses/results?from=Chennai&to=Bengaluru" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
-          Chennai → Bengaluru
-        </Link>
-        {" · "}
-        <Link href="/buses/results?from=Chennai&to=Madurai" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
-          Chennai → Madurai
-        </Link>
-      </p>
+      <div className="bg-[var(--cabzii-bg)] py-8">
+        <div className="section-shell">
+          <div className="grid gap-3 sm:grid-cols-3">
+            {[
+              { icon: Armchair, title: "Live seat map", desc: "Choose seater, lower or upper berth before you pay" },
+              { icon: Ticket, title: "Boarding & drop", desc: "Select the stop nearest to you — like RedBus" },
+              { icon: ShieldCheck, title: "Instant confirm", desc: "SMS ticket after booking · 24×7 WhatsApp support" }
+            ].map((f) => (
+              <div key={f.title} className="rdb-card p-4">
+                <f.icon className="mb-2 h-5 w-5 text-[#d84e55]" aria-hidden />
+                <p className="text-sm font-bold text-slate-900">{f.title}</p>
+                <p className="mt-0.5 text-xs text-slate-600">{f.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          <p className="mt-8 text-center text-sm font-semibold text-slate-700">Popular bus routes from Chennai</p>
+          <div className="mt-3 flex flex-wrap justify-center gap-2">
+            {POPULAR_BUS_ROUTES.filter((r) => r.from === "Chennai").map((r) => (
+              <Link
+                key={`${r.from}-${r.to}`}
+                href={busResultsHref(r.from, r.to)}
+                className="rounded-full border border-rose-200 bg-white px-3 py-1.5 text-xs font-bold text-rose-800 hover:bg-rose-50"
+              >
+                {r.from} → {r.to}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

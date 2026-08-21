@@ -8,7 +8,7 @@ export const PUBLIC_ROUTE_REDIRECTS = {
   "/airport-taxi": "/services/airport-taxi/chennai",
   "/local-rental": "/services/hourly-rental/chennai",
   "/one-way-cabs": "/services/one-way-cab/chennai",
-  "/driver-service": "/drivers",
+  "/driver-service": "/call-driver",
   "/chennai-airport-taxi": "/services/airport-taxi/chennai",
   "/chennai-to-tirupati-cab": "/routes/chennai-to-tirupati-cab",
   "/chennai-to-pondicherry-cab": "/routes/chennai-to-pondicherry-cab",

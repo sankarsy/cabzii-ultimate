@@ -24,6 +24,7 @@ const DISALLOW = [
   "/cabs/passenger",
   "/drivers/results",
   "/drivers/passenger",
+  "/call-driver/book",
   "/*?source=pwa",
   "/*?*sort=",
   "/*?*filter=",

@@ -1,4 +1,4 @@
-import { num, packageYouPay } from "./cabFare";
+import { num } from "./cabFare";
 
 /** Use distance × per-km when route distance is known (outstation / point-to-point). */
 export function shouldUseDistanceFare(trip) {
@@ -32,16 +32,13 @@ export function calculateDistanceFare({
   perKmRate,
   roundTrip = false,
   driverBatta = 0,
-  minFare = 0,
-  discountPct = 0
+  minFare = 0
 }) {
   const km = Math.max(1, Math.ceil(num(distanceKm)));
   const rate = Math.max(1, num(perKmRate));
   const multiplier = roundTrip ? 2 : 1;
   const distanceCharge = Math.round(km * rate * multiplier);
   const listPrice = Math.max(num(minFare), distanceCharge + num(driverBatta));
-  const discount = Math.min(99, Math.max(0, num(discountPct)));
-  const total = discount > 0 ? packageYouPay(listPrice, discount) : listPrice;
 
   return {
     distanceKm: km,
@@ -49,9 +46,9 @@ export function calculateDistanceFare({
     distanceCharge,
     driverBatta: num(driverBatta),
     listPrice,
-    total,
-    discountPct: discount,
-    discountAmount: Math.max(0, listPrice - total),
+    total: listPrice,
+    discountPct: 0,
+    discountAmount: 0,
     fareNote: `${km} km × ₹${rate}/km${roundTrip ? " (round trip)" : ""}${driverBatta > 0 ? ` + ₹${driverBatta} driver bata` : ""}`,
     usesDistance: true
   };
@@ -59,16 +56,14 @@ export function calculateDistanceFare({
 
 /** Cab fare for search results / booking — package or distance-based. */
 export function resolveCabTripFare(cab, slab, trip) {
-  const listPrice = num(slab?.originalPrice) || num(slab?.list) || num(cab?.price);
-  const discount = num(slab?.discountPercentage) || num(cab?.discountPercentage);
-  const packageTotal = num(slab?.price) > 0 ? num(slab.price) : packageYouPay(listPrice, discount);
+  const packageTotal = num(slab?.price) > 0 ? num(slab.price) : num(slab?.originalPrice) || num(slab?.list) || num(cab?.price);
 
   if (!shouldUseDistanceFare(trip)) {
     return {
-      listPrice,
+      listPrice: packageTotal,
       total: packageTotal,
-      discountPct: discount,
-      discountAmount: Math.max(0, listPrice - packageTotal),
+      discountPct: 0,
+      discountAmount: 0,
       perKmRate: resolvePerKmRate(slab, cab),
       usesDistance: false,
       fareNote: slab?.label ? `Package: ${slab.label}` : "Package fare"
@@ -76,34 +71,32 @@ export function resolveCabTripFare(cab, slab, trip) {
   }
 
   const perKm = resolvePerKmRate(slab, cab);
-  const driverBatta =
-    trip.tripType === "outstation" && packageTotal > perKm * trip.distanceKm
-      ? Math.max(0, Math.round(packageTotal - perKm * trip.distanceKm))
-      : 0;
+  const includedKm = num(slab?.includedKm);
+  const billedKm = Boolean(trip.roundTrip) ? num(trip.distanceKm) * 2 : num(trip.distanceKm);
+  const extraKmCharge = includedKm > 0 ? Math.max(0, billedKm - includedKm) * perKm : 0;
+  const driverBatta = trip.tripType === "outstation" ? num(cab?.driverAllowance) : 0;
+  const minFare = includedKm > 0 ? packageTotal + extraKmCharge : packageTotal;
 
   return calculateDistanceFare({
     distanceKm: trip.distanceKm,
     perKmRate: perKm,
     roundTrip: Boolean(trip.roundTrip),
     driverBatta,
-    minFare: Math.min(packageTotal, perKm * Math.ceil(num(trip.distanceKm))),
-    discountPct: discount
+    minFare,
+    discountPct: 0
   });
 }
 
-/** Driver fare for search results / booking — package or distance-based. */
 export function resolveDriverTripFare(driver, slab, trip) {
-  const listPrice = num(slab?.originalPrice) || num(slab?.list) || num(driver?.pricing?.day);
-  const discount = num(slab?.discountPercentage) || num(driver?.discountPercentage);
   const packageTotal =
-    num(slab?.price) > 0 ? num(slab.price) : listPrice > 0 ? packageYouPay(listPrice, discount) : 0;
+    num(slab?.price) > 0 ? num(slab.price) : num(slab?.originalPrice) || num(slab?.list) || num(driver?.pricing?.day);
 
   if (!shouldUseDistanceFare(trip)) {
     return {
-      listPrice,
+      listPrice: packageTotal,
       total: packageTotal,
-      discountPct: discount,
-      discountAmount: Math.max(0, listPrice - packageTotal),
+      discountPct: 0,
+      discountAmount: 0,
       perKmRate: resolvePerKmRate(slab, driver),
       usesDistance: false,
       fareNote: slab?.label ? `Package: ${slab.label}` : "Package fare"
@@ -116,6 +109,6 @@ export function resolveDriverTripFare(driver, slab, trip) {
     perKmRate: perKm,
     roundTrip: Boolean(trip.roundTrip),
     minFare: packageTotal > 0 ? Math.min(packageTotal, perKm * Math.ceil(num(trip.distanceKm))) : 0,
-    discountPct: discount
+    discountPct: 0
   });
 }

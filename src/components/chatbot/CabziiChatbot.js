@@ -48,7 +48,9 @@ export default function CabziiChatbot() {
   const whatsappNumber = String(settings.contact?.whatsapp || settings.whatsappFab?.number || "9944197416").replace(/\D/g, "");
   const waHref = whatsappBookingUrl({
     phone: whatsappNumber,
-    message: "Hi Cabzii, I need a taxi quote or tour package enquiry."
+    pathname,
+    searchParams: typeof window !== "undefined" ? window.location.search : "",
+    city: "Chennai"
   });
   const callHref = telUrl(phone);
   const launcherRef = useRef(null);

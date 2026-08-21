@@ -2,30 +2,23 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { CalendarIcon, TwoWayIcon } from "../icons";
-import { HERO_TAB_ICONS } from "../icons/heroIcons";
+import { ArrowLeftRight, Calendar } from "lucide-react";
 import { todayStr } from "../../lib/mmtTrip";
 import { addDays, formatDayName, formatEmtDate } from "../../lib/emt/heroDates";
-import { EmtHeroPriceHint } from "./EmtHeroPills";
+import { POPULAR_BUS_ROUTES, busResultsHref } from "../../lib/popularBusRoutes";
 
-const BusIcon = HERO_TAB_ICONS.buses;
-
-export default function EmtBusSearchForm({ emtHero = false }) {
+export default function EmtBusSearchForm({ emtHero = false, compact = false, initialFrom = "", initialTo = "", initialDate = "" }) {
   const router = useRouter();
-  const [from, setFrom] = useState("");
-  const [to, setTo] = useState("");
-  const [date, setDate] = useState(todayStr());
+  const [from, setFrom] = useState(initialFrom || "Chennai");
+  const [to, setTo] = useState(initialTo || "");
+  const [date, setDate] = useState(initialDate || todayStr());
 
   function search() {
-    const q = new URLSearchParams();
-    if (from.trim()) q.set("from", from.trim());
-    if (to.trim()) q.set("to", to.trim());
-    if (date) q.set("date", date);
-    router.push(`/buses/results?${q.toString()}`);
+    router.push(busResultsHref(from.trim() || "Chennai", to.trim(), date));
   }
 
   function swap() {
-    setFrom(to);
+    setFrom(to || "Chennai");
     setTo(from);
   }
 
@@ -33,96 +26,105 @@ export default function EmtBusSearchForm({ emtHero = false }) {
     setDate(addDays(todayStr(), offset));
   }
 
-  if (!emtHero) {
-    return null;
-  }
-
   const isToday = date === todayStr();
   const isTomorrow = date === addDays(todayStr(), 1);
 
   return (
-    <div>
-      <div className="mb-4 flex items-center justify-end">
-        <EmtHeroPriceHint>Book Bus Tickets Online</EmtHeroPriceHint>
-      </div>
+    <div className={compact ? "" : ""}>
+      {!compact ? (
+        <p className={`mb-3 text-right text-xs font-bold ${emtHero ? "text-white/90" : "text-rose-700"}`}>
+          India&apos;s bus tickets · AC seater & sleeper
+        </p>
+      ) : null}
 
-      <div className="emt-hero-search-card">
-        <div className="emt-search-wrap emt-search-wrap-bus">
-          <div className="emt-search-bar emt-search-bar-bus">
-            <div className="cabzii-search-cell">
-              <span className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500">
-                <BusIcon className="h-3.5 w-3.5 text-sky-400" aria-hidden />
-                From
-              </span>
-              <input
-                value={from}
-                onChange={(e) => setFrom(e.target.value)}
-                placeholder="Source City"
-                className="w-full min-w-0 border-0 bg-transparent text-base font-bold text-slate-900 placeholder:font-medium placeholder:text-slate-400 focus:outline-none sm:text-lg"
-              />
-            </div>
+      <div className="rdb-search-card">
+        <div className="rdb-search-bar">
+          <div className="rdb-search-cell">
+            <label className="rdb-search-label" htmlFor="rdb-from">
+              From
+            </label>
+            <input
+              id="rdb-from"
+              value={from}
+              onChange={(e) => setFrom(e.target.value)}
+              placeholder="Leaving from"
+              className="rdb-search-input"
+              autoComplete="off"
+            />
+          </div>
 
-            <div className="emt-search-swap-cell hidden lg:flex">
-              <button type="button" onClick={swap} className="emt-search-swap-btn" aria-label="Swap cities">
-                <TwoWayIcon className="h-4 w-4" />
-              </button>
-            </div>
+          <div className="flex items-center justify-center px-1 py-2 lg:py-0">
+            <button type="button" onClick={swap} className="rdb-swap-btn cabzii-tap" aria-label="Swap cities">
+              <ArrowLeftRight className="h-4 w-4" />
+            </button>
+          </div>
 
-            <div className="cabzii-search-cell">
-              <span className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500">
-                <BusIcon className="h-3.5 w-3.5 text-sky-400" aria-hidden />
-                To
-              </span>
-              <input
-                value={to}
-                onChange={(e) => setTo(e.target.value)}
-                placeholder="Destination City"
-                className="w-full min-w-0 border-0 bg-transparent text-base font-bold text-slate-900 placeholder:font-medium placeholder:text-slate-400 focus:outline-none sm:text-lg"
-              />
-            </div>
+          <div className="rdb-search-cell">
+            <label className="rdb-search-label" htmlFor="rdb-to">
+              To
+            </label>
+            <input
+              id="rdb-to"
+              value={to}
+              onChange={(e) => setTo(e.target.value)}
+              placeholder="Going to"
+              className="rdb-search-input"
+              autoComplete="off"
+            />
+          </div>
 
-            <div className="cabzii-search-cell emt-bus-date-cell">
-              <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Date</span>
-              <div className="flex flex-wrap items-center gap-2">
-                <div className="relative min-w-[8rem] flex-1">
-                  <CalendarIcon className="pointer-events-none absolute right-0 top-2 h-4 w-4 text-slate-400" aria-hidden />
-                  <p className="truncate text-base font-bold text-slate-900 sm:text-lg">
-                    {date ? formatEmtDate(date) : "DD-MM-YYYY"}
-                  </p>
-                  <p className="text-xs text-slate-500">{date ? formatDayName(date) : ""}</p>
-                  <input
-                    type="date"
-                    min={todayStr()}
-                    value={date}
-                    onChange={(e) => setDate(e.target.value)}
-                    className="emt-date-input absolute inset-0 h-full w-full cursor-pointer opacity-0"
-                    aria-label="Travel date"
-                  />
-                </div>
-                <div className="flex gap-1.5">
-                  <button
-                    type="button"
-                    onClick={() => pickQuick(0)}
-                    className={`emt-bus-quick cabzii-tap ${isToday ? "emt-bus-quick-active" : ""}`}
-                  >
-                    Today
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => pickQuick(1)}
-                    className={`emt-bus-quick cabzii-tap ${isTomorrow ? "emt-bus-quick-active" : ""}`}
-                  >
-                    Tomorrow
-                  </button>
-                </div>
+          <div className="rdb-search-cell">
+            <span className="rdb-search-label">Date of journey</span>
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="relative min-w-[8rem] flex-1">
+                <Calendar className="pointer-events-none absolute right-0 top-2 h-4 w-4 text-slate-400" aria-hidden />
+                <p className="truncate text-base font-extrabold text-slate-900">{date ? formatEmtDate(date) : "DD-MM-YYYY"}</p>
+                <p className="text-xs text-slate-500">{date ? formatDayName(date) : ""}</p>
+                <input
+                  type="date"
+                  min={todayStr()}
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                  className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                  aria-label="Travel date"
+                />
+              </div>
+              <div className="flex gap-1.5">
+                <button type="button" onClick={() => pickQuick(0)} className={`rdb-quick cabzii-tap ${isToday ? "rdb-quick-active" : ""}`}>
+                  Today
+                </button>
+                <button type="button" onClick={() => pickQuick(1)} className={`rdb-quick cabzii-tap ${isTomorrow ? "rdb-quick-active" : ""}`}>
+                  Tomorrow
+                </button>
               </div>
             </div>
           </div>
-          <button type="button" onClick={search} className="emt-search-submit cabzii-tap">
-            SEARCH
+
+          <button type="button" onClick={search} className="rdb-search-submit cabzii-tap w-full lg:w-auto">
+            Search
           </button>
         </div>
       </div>
+
+      {!compact ? (
+        <div className="mt-3 flex flex-wrap gap-2">
+          {POPULAR_BUS_ROUTES.slice(0, 6).map((r) => (
+            <button
+              key={`${r.from}-${r.to}`}
+              type="button"
+              onClick={() => {
+                setFrom(r.from);
+                setTo(r.to);
+              }}
+              className={`rounded-full px-3 py-1 text-[11px] font-bold ${
+                emtHero ? "bg-white/15 text-white hover:bg-white/25" : "bg-rose-50 text-rose-800 hover:bg-rose-100"
+              }`}
+            >
+              {r.from} → {r.to}
+            </button>
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 }

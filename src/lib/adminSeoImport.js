@@ -92,87 +92,23 @@ export function staticRouteToCreatePayload(item) {
   };
 }
 
-/** Deterministic sample bus trips for admin import (no random mock IDs). */
+/** Deterministic sample bus trips for admin import — Chennai-first, both directions. */
 export function sampleBusTripPayloads() {
   const rows = [
-    {
-      operator: "Orange Travels",
-      operatorCode: "OT",
-      fromCity: "Chennai",
-      toCity: "Bengaluru",
-      departureTime: "22:00",
-      arrivalTime: "05:30",
-      duration: "7h 30m",
-      durationMin: 450,
-      busType: "Volvo AC Sleeper",
-      seaterPrice: 699,
-      sleeperPrice: 999
-    },
-    {
-      operator: "Parveen Travels",
-      operatorCode: "PT",
-      fromCity: "Chennai",
-      toCity: "Madurai",
-      departureTime: "21:30",
-      arrivalTime: "05:00",
-      duration: "7h 30m",
-      durationMin: 450,
-      busType: "AC Sleeper",
-      seaterPrice: 650,
-      sleeperPrice: 899
-    },
-    {
-      operator: "KPN Travels",
-      operatorCode: "KPN",
-      fromCity: "Chennai",
-      toCity: "Coimbatore",
-      departureTime: "22:15",
-      arrivalTime: "06:15",
-      duration: "8h",
-      durationMin: 480,
-      busType: "AC Seater",
-      seaterPrice: 799,
-      sleeperPrice: 1099
-    },
-    {
-      operator: "SRS Travels",
-      operatorCode: "SRS",
-      fromCity: "Bengaluru",
-      toCity: "Hyderabad",
-      departureTime: "21:00",
-      arrivalTime: "06:00",
-      duration: "9h",
-      durationMin: 540,
-      busType: "Volvo AC Sleeper",
-      seaterPrice: 899,
-      sleeperPrice: 1299
-    },
-    {
-      operator: "VRL Travels",
-      operatorCode: "VRL",
-      fromCity: "Chennai",
-      toCity: "Tirupati",
-      departureTime: "06:00",
-      arrivalTime: "09:30",
-      duration: "3h 30m",
-      durationMin: 210,
-      busType: "AC Seater",
-      seaterPrice: 449,
-      sleeperPrice: 649
-    },
-    {
-      operator: "YBM Travels",
-      operatorCode: "YBM",
-      fromCity: "Chennai",
-      toCity: "Pondicherry",
-      departureTime: "07:00",
-      arrivalTime: "10:00",
-      duration: "3h",
-      durationMin: 180,
-      busType: "AC Seater",
-      seaterPrice: 399,
-      sleeperPrice: 599
-    }
+    { operator: "Orange Travels", operatorCode: "OT", fromCity: "Chennai", toCity: "Bengaluru", departureTime: "22:00", arrivalTime: "05:30", duration: "7h 30m", durationMin: 450, busType: "Volvo AC Sleeper", seaterPrice: 699, sleeperPrice: 999 },
+    { operator: "KPN Travels", operatorCode: "KPN", fromCity: "Chennai", toCity: "Bengaluru", departureTime: "23:00", arrivalTime: "06:15", duration: "7h 15m", durationMin: 435, busType: "AC Sleeper", seaterPrice: 749, sleeperPrice: 1049 },
+    { operator: "Parveen Travels", operatorCode: "PT", fromCity: "Chennai", toCity: "Madurai", departureTime: "21:30", arrivalTime: "05:00", duration: "7h 30m", durationMin: 450, busType: "AC Sleeper", seaterPrice: 650, sleeperPrice: 899 },
+    { operator: "KPN Travels", operatorCode: "KPN", fromCity: "Chennai", toCity: "Coimbatore", departureTime: "22:15", arrivalTime: "06:15", duration: "8h", durationMin: 480, busType: "AC Seater", seaterPrice: 799, sleeperPrice: 1099 },
+    { operator: "VRL Travels", operatorCode: "VRL", fromCity: "Chennai", toCity: "Tirupati", departureTime: "06:00", arrivalTime: "09:30", duration: "3h 30m", durationMin: 210, busType: "AC Seater", seaterPrice: 449, sleeperPrice: 649 },
+    { operator: "APS RTC", operatorCode: "APS", fromCity: "Chennai", toCity: "Tirupati", departureTime: "14:00", arrivalTime: "17:45", duration: "3h 45m", durationMin: 225, busType: "AC Seater", seaterPrice: 399, sleeperPrice: 599 },
+    { operator: "YBM Travels", operatorCode: "YBM", fromCity: "Chennai", toCity: "Pondicherry", departureTime: "07:00", arrivalTime: "10:00", duration: "3h", durationMin: 180, busType: "AC Seater", seaterPrice: 399, sleeperPrice: 599 },
+    { operator: "SRM Travels", operatorCode: "SRM", fromCity: "Chennai", toCity: "Trichy", departureTime: "22:30", arrivalTime: "04:30", duration: "6h", durationMin: 360, busType: "Volvo AC Sleeper", seaterPrice: 599, sleeperPrice: 849 },
+    { operator: "Orange Travels", operatorCode: "OT", fromCity: "Chennai", toCity: "Hyderabad", departureTime: "19:30", arrivalTime: "07:00", duration: "11h 30m", durationMin: 690, busType: "Volvo AC Sleeper", seaterPrice: 1099, sleeperPrice: 1499 },
+    { operator: "Parveen Travels", operatorCode: "PT", fromCity: "Chennai", toCity: "Salem", departureTime: "23:00", arrivalTime: "04:30", duration: "5h 30m", durationMin: 330, busType: "AC Sleeper", seaterPrice: 549, sleeperPrice: 799 },
+    { operator: "SRS Travels", operatorCode: "SRS", fromCity: "Bengaluru", toCity: "Chennai", departureTime: "22:30", arrivalTime: "06:00", duration: "7h 30m", durationMin: 450, busType: "Volvo AC Sleeper", seaterPrice: 729, sleeperPrice: 1029 },
+    { operator: "VRL Travels", operatorCode: "VRL", fromCity: "Tirupati", toCity: "Chennai", departureTime: "17:00", arrivalTime: "20:30", duration: "3h 30m", durationMin: 210, busType: "AC Seater", seaterPrice: 449, sleeperPrice: 649 },
+    { operator: "KPN Travels", operatorCode: "KPN", fromCity: "Madurai", toCity: "Chennai", departureTime: "21:00", arrivalTime: "04:45", duration: "7h 45m", durationMin: 465, busType: "AC Sleeper", seaterPrice: 679, sleeperPrice: 929 },
+    { operator: "YBM Travels", operatorCode: "YBM", fromCity: "Pondicherry", toCity: "Chennai", departureTime: "18:00", arrivalTime: "21:00", duration: "3h", durationMin: 180, busType: "AC Seater", seaterPrice: 399, sleeperPrice: 599 }
   ];
 
   return rows.map((row) => ({

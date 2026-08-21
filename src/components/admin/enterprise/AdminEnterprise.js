@@ -119,6 +119,7 @@ export default function AdminEnterprise({ token, initialSection = "dashboard" })
   const [bulkEntity, setBulkEntity] = useState("faqs");
   const [bulkJson, setBulkJson] = useState("[]");
   const [aiVars, setAiVars] = useState({ City: "Chennai", FromCity: "Chennai", ToCity: "Bengaluru" });
+  const [aiPrompt, setAiPrompt] = useState("");
   const [aiDraft, setAiDraft] = useState(null);
 
   const loadDashboard = useCallback(async () => {
@@ -255,7 +256,7 @@ export default function AdminEnterprise({ token, initialSection = "dashboard" })
 
   async function runAiDraft(type) {
     try {
-      const d = await enterpriseFetch("ai/draft", { token, method: "POST", body: { type, vars: aiVars } });
+      const d = await enterpriseFetch("ai/draft", { token, method: "POST", body: { type, vars: aiVars, prompt: aiPrompt } });
       setAiDraft(d.data);
       setMessage("AI draft generated (template-based).");
     } catch (err) {
@@ -323,6 +324,7 @@ export default function AdminEnterprise({ token, initialSection = "dashboard" })
           </div>
           <div className="rounded-xl border border-slate-200 bg-white p-4">
             <h3 className="font-bold text-slate-900">AI Content Assistant</h3>
+            <p className="mt-1 text-xs text-slate-500">Type what you need, then generate. Defaults to Chennai.</p>
             <div className="mt-3 grid gap-2 sm:grid-cols-3">
               <Field label="City">
                 <input className={inputCls()} value={aiVars.City} onChange={(e) => setAiVars((p) => ({ ...p, City: e.target.value }))} />
@@ -334,6 +336,15 @@ export default function AdminEnterprise({ token, initialSection = "dashboard" })
                 <input className={inputCls()} value={aiVars.ToCity} onChange={(e) => setAiVars((p) => ({ ...p, ToCity: e.target.value }))} />
               </Field>
             </div>
+            <Field label="AI input / prompt">
+              <textarea
+                className={inputCls()}
+                rows={3}
+                value={aiPrompt}
+                onChange={(e) => setAiPrompt(e.target.value)}
+                placeholder="e.g. Write SEO for Chennai to Tirupati cab and bus booking, include FAQs"
+              />
+            </Field>
             <div className="mt-3 flex flex-wrap gap-2">
               {["city", "route", "faq", "blog"].map((t) => (
                 <button key={t} type="button" onClick={() => runAiDraft(t)} className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white">

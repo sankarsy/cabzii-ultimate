@@ -7,7 +7,7 @@ export const CORE_INTERNAL_LINKS = [
   { href: "/cabs", label: "Book a cab", desc: "Sedan, SUV, Innova & more" },
   { href: "/holidays", label: "Holiday packages", desc: "Pilgrimage, beach & hill trips" },
   { href: "/holidays?category=pilgrimage", label: "Pilgrimage tours", desc: "Tirupati, Rameswaram, Shirdi & more" },
-  { href: "/drivers", label: "Hire a driver", desc: "Acting & chauffeur drivers" },
+  { href: "/call-driver", label: "Call Driver", desc: "Acting driver for your own car" },
   { href: "/cabs", label: "Local & outstation cabs", desc: "Transparent fares online" },
   { href: "/locations", label: "Service locations", desc: "Pickup points by city" },
   { href: "/blogs", label: "Travel blog", desc: "Tips & route guides" }
@@ -118,7 +118,7 @@ export function relatedLinksForPage(page) {
     { href: "/", label: "Home" },
     { href: "/cabs", label: "All cabs" },
     { href: "/holidays", label: "Holiday packages" },
-    { href: "/drivers", label: "Drivers" }
+    { href: "/call-driver", label: "Call Driver" }
   ];
 
   if (page === "cabs") {

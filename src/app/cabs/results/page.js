@@ -2,8 +2,9 @@
 
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import MmtCabResults from "../../../components/mmt/MmtCabResults";
-import MmtTripSummaryBar from "../../../components/mmt/MmtTripSummaryBar";
+import MmtCabSearchWidget from "../../../components/mmt/MmtCabSearchWidget";
 import TripRoutePanel from "../../../components/maps/TripRoutePanel";
 import { mergeTripDistance } from "../../../lib/mergeTripDistance";
 import { parseTripSearchParams, isValidTripSearch } from "../../../lib/mmtTrip";
@@ -35,6 +36,12 @@ function ResultsContent() {
     const q = new URLSearchParams({ limit: "50", page: "1" });
     const city = trip.from?.split(",")[0] || trip.city || selectedCity;
     if (city) q.set("priorityCity", city);
+    if (trip.date) q.set("date", trip.date);
+    if (trip.time) q.set("time", trip.time);
+    if (trip.packageHours) q.set("packageHours", String(trip.packageHours));
+    if (trip.packageId) q.set("packageId", trip.packageId);
+    if (trip.tripType) q.set("serviceTripType", trip.tripType);
+    if (trip.roundTrip) q.set("roundTrip", "true");
 
     fetch(`/api/cabs?${q}`, { cache: "no-store" })
       .then(async (r) => {
@@ -63,19 +70,37 @@ function ResultsContent() {
   }, [searchParams.toString(), selectedCity, trip.from, trip.to, trip.tripType, router]);
 
   return (
-    <>
-      <MmtTripSummaryBar trip={tripWithDistance} />
-      <div className="section-shell">
-        <TripRoutePanel trip={tripWithDistance} />
+    <div className="bg-[#f4f5f7] pb-10">
+      <div className="border-b border-slate-200 bg-white py-3 shadow-sm">
+        <div className="section-shell">
+          <MmtCabSearchWidget compact initialTrip={tripWithDistance} />
+        </div>
       </div>
-      {loading ? (
-        <div className="py-16 text-center text-slate-500">Finding best cabs for you…</div>
-      ) : error ? (
-        <div className="py-16 text-center text-rose-600">{error}</div>
-      ) : (
-        <MmtCabResults cabs={cabs} trip={tripWithDistance} />
-      )}
-    </>
+
+      <div className="section-shell py-5">
+        <div className="mb-4">
+          <TripRoutePanel trip={tripWithDistance} compact />
+        </div>
+        {loading ? (
+          <div className="rounded-xl border border-slate-200 bg-white p-12 text-center text-slate-500">
+            Finding best cabs for you…
+          </div>
+        ) : error ? (
+          <div className="rounded-xl border border-slate-200 bg-white p-12 text-center text-rose-600">{error}</div>
+        ) : cabs.length ? (
+          <MmtCabResults cabs={cabs} trip={tripWithDistance} />
+        ) : (
+          <div className="rounded-xl border border-dashed border-slate-200 bg-white p-12 text-center text-slate-500">
+            No cabs found for this route.
+            <div className="mt-3">
+              <Link href="/cabs" className="text-sm font-bold text-[#d84e55] hover:underline">
+                Modify search
+              </Link>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
 

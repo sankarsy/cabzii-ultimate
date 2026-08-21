@@ -4,9 +4,10 @@ export const DOMESTIC_TAGLINE =
 
 export const DOMESTIC_NAV_LINKS = [
   { href: "/cabs", label: "Book Cab" },
+  { href: "/buses", label: "Bus tickets" },
   { href: "/cabs/results?serviceTripType=airport", label: "Airport Taxi" },
   { href: "/holidays?category=pilgrimage", label: "Temple Tours" },
-  { href: "/drivers", label: "Drivers" },
+  { href: "/call-driver", label: "Call Driver" },
   { href: "/holidays", label: "Tour Packages" }
 ];
 
@@ -14,7 +15,7 @@ export const DOMESTIC_NAV_LINKS = [
 export const DOMESTIC_HERO_TABS = [
   { id: "cabs", label: "Cabs", iconKey: "car" },
   { id: "holidays", label: "Temple Tours", iconKey: "holiday" },
-  { id: "drivers", label: "Drivers", iconKey: "driver" }
+  { id: "drivers", label: "Call Driver", iconKey: "driver" }
 ];
 
 export const PILGRIMAGE_PACKAGES = [
@@ -85,8 +86,8 @@ export const SEO_CITY_TARGETS = [
 export const DOMESTIC_OFFERS = [
   {
     tag: "OUTSTATION",
-    title: "20% OFF outstation cabs",
-    desc: "Book Sedan, SUV, Innova & Tempo Traveller cabs and save on every outstation trip.",
+    title: "Outstation cab packages",
+    desc: "Book Sedan, SUV, Innova & Tempo Traveller cabs for every outstation trip.",
     iconKey: "car",
     color: "from-[var(--cabzii-brand)] to-blue-500",
     image: "/images/offers/offer-outstation.png",
@@ -145,7 +146,7 @@ export const DOMESTIC_OFFERS = [
     iconKey: "driver",
     color: "from-slate-700 to-slate-500",
     image: "/images/offers/offer-driver.png",
-    href: "/drivers",
+    href: "/call-driver",
     code: "DRIVER900",
     validTill: "31st Jul, 2026"
   },

@@ -4,12 +4,12 @@
  *  - Static assets (_next/static, images, fonts): stale-while-revalidate.
  *  - Never caches API, admin, auth or payment responses.
  */
-const VERSION = "v2";
+const VERSION = "v3";
 const STATIC_CACHE = `cabzii-static-${VERSION}`;
 const PAGE_CACHE = `cabzii-pages-${VERSION}`;
 const OFFLINE_URL = "/";
 
-const NEVER_CACHE = ["/api/", "/admin", "/payment", "/login", "/signin", "/my-bookings", "/booking"];
+const NEVER_CACHE = ["/api/", "/admin", "/driver", "/payment", "/login", "/signin", "/my-bookings", "/booking"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(

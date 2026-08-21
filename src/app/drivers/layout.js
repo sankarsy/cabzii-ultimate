@@ -4,7 +4,7 @@ import { fetchSiteSettings } from "../../lib/serverSiteSettings";
 
 export async function generateMetadata() {
   const settings = await fetchSiteSettings();
-  return buildMetadataForPath("/drivers", settings);
+  return buildMetadataForPath("/call-driver", settings);
 }
 
 export default function DriversLayout({ children }) {

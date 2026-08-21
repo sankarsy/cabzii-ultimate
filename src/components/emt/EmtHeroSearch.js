@@ -2,17 +2,14 @@
 
 import EmtBusSearchForm from "./EmtBusSearchForm";
 import EmtCategoryTabs from "./EmtCategoryTabs";
-import EmtFlightSearchForm from "./EmtFlightSearchForm";
 import EmtHeroFeatures from "./EmtHeroFeatures";
 import EmtHolidaySearchForm from "./EmtHolidaySearchForm";
-import EmtHotelSearchForm from "./EmtHotelSearchForm";
-import EmtTrainSearchForm from "./EmtTrainSearchForm";
 import { useHeroSearch } from "./HeroSearchContext";
+import CallDriverHeroPanel from "../call-driver/CallDriverHeroPanel";
 import MmtCabSearchWidget from "../mmt/MmtCabSearchWidget";
-import MmtDriverSearchWidget from "../mmt/MmtDriverSearchWidget";
 
 export default function EmtHeroSearch({
-  defaultCity = "",
+  defaultCity = "Chennai",
   defaultTab = "cabs",
   initialCabTrip = null,
   initialDriverTrip = null,
@@ -27,7 +24,8 @@ export default function EmtHeroSearch({
   };
 
   const isHoliday = active === "holidays";
-  const bodyClass = isHoliday ? "emt-hero-holidays" : "emt-hero-gradient";
+  const isBus = active === "buses";
+  const bodyClass = isHoliday ? "emt-hero-holidays" : isBus ? "rdb-hero-body" : "emt-hero-gradient";
 
   return (
     <section className="emt-hero-section">
@@ -44,17 +42,12 @@ export default function EmtHeroSearch({
 
         <div className={`emt-hero-shell-body ${bodyClass}`}>
           <div className={isHoliday ? "w-full" : "emt-hero-inner"}>
-            {active === "flights" ? <EmtFlightSearchForm emtHero /> : null}
-            {active === "hotels" ? <EmtHotelSearchForm emtHero /> : null}
-            {active === "trains" ? <EmtTrainSearchForm emtHero /> : null}
             {active === "buses" ? <EmtBusSearchForm emtHero /> : null}
             {active === "holidays" ? <EmtHolidaySearchForm emtHero /> : null}
             {active === "cabs" ? (
               <MmtCabSearchWidget defaultCity={defaultCity} initialTrip={initialCabTrip} emtLayout heroMode />
             ) : null}
-            {active === "drivers" ? (
-              <MmtDriverSearchWidget defaultCity={defaultCity} initialTrip={initialDriverTrip} emtLayout heroMode />
-            ) : null}
+            {active === "drivers" ? <CallDriverHeroPanel /> : null}
           </div>
         </div>
 

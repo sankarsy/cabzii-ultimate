@@ -33,7 +33,7 @@ export default function AdminPackageExcelToolbar({
     const headers = authHeaders;
     const [cabsRes, driversRes, packagesRes] = await Promise.all([
       fetch("/api/cabs?limit=5000", { headers, cache: "no-store" }),
-      fetch("/api/drivers?limit=5000", { headers, cache: "no-store" }),
+      fetch("/api/drivers?admin=1&limit=5000", { headers, cache: "no-store" }),
       fetch("/api/packages?limit=5000", { headers, cache: "no-store" })
     ]);
     const [cabsJson, driversJson, packagesJson] = await Promise.all([

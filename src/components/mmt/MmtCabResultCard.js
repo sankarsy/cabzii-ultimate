@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { buildFareSlabs } from "../../lib/cabFare";
+import { Star, ShieldCheck } from "lucide-react";
+import { buildFareSlabs, formatRating } from "../../lib/cabFare";
 import { resolveCabTripFare } from "../../lib/distanceFare";
 import { catalogPublicPath } from "../../lib/catalogProduct";
 import {
@@ -14,10 +15,13 @@ import {
 import { formatCabSeatLabel, inferPassengerSeats } from "../../lib/cabSeats";
 import { resolveCabImage } from "../../lib/vehicleImages";
 import { cabSlabForTrip, tripToSearchQuery } from "../../lib/mmtTrip";
-import { FuelIcon, ICON_SOFT_CLASS, LuggageIcon, PersonIcon, SnowflakeIcon } from "../icons";
+import { FuelIcon, LuggageIcon, PersonIcon, SnowflakeIcon } from "../icons";
 import CatalogCardImage from "./CatalogCardImage";
-import MmtCardPriceBlock from "./MmtCardPriceBlock";
 import CatalogVehicleCard, { FeatureChip } from "../ui/CatalogVehicleCard";
+
+function formatINR(n) {
+  return `₹${Number(n || 0).toLocaleString("en-IN")}`;
+}
 
 export default function MmtCabResultCard({ cab, trip, layout = "row", catalogMode = false, displayCity = "" }) {
   const id = String(cab._id ?? cab.id ?? "");
@@ -25,27 +29,18 @@ export default function MmtCabResultCard({ cab, trip, layout = "row", catalogMod
   const catalogPerKm = catalogMode ? getCatalogPerKmFare(cab, slabs) : null;
   const slab = catalogMode ? null : cabSlabForTrip(slabs, trip);
   const fare = catalogMode ? null : resolveCabTripFare(cab, slab, trip);
-  const listPrice = catalogMode ? 0 : fare.listPrice;
-  const discount = catalogMode ? 0 : fare.discountPct;
-  const total = catalogMode ? 0 : fare.total;
+  const total = catalogMode ? catalogPerKm?.perKmRate || Number(cab.price) || 0 : fare?.total || Number(cab.price) || 0;
   const usesDistance = !catalogMode && fare?.usesDistance;
-  const priceBlockProps = {
-    originalPrice: listPrice,
-    finalPrice: total,
-    discountPct: discount,
-    compact: layout === "card",
-    perKmRate: catalogMode ? catalogPerKm?.perKmRate : usesDistance ? fare?.perKmRate : undefined,
-    distanceKm: usesDistance ? fare.distanceKm : undefined,
-    roundTrip: Boolean(trip?.roundTrip),
-    fareNote: catalogMode ? catalogPerKm?.fareNote : undefined
-  };
-
   const passengerSeats = inferPassengerSeats(cab);
   const seatLabel = formatCabSeatLabel(cab);
   const bags = cab.bags ?? (passengerSeats >= 6 ? 3 : 2);
   const imageSrc = resolveCabImage(cab);
   const vehicleName = getCabVehicleName(cab);
   const imageAlt = cab.imageAlt || vehicleName;
+  const ratingText = formatRating(cab);
+  const reviewCountRaw = cab.reviewCount ?? cab.reviews;
+  const reviewCount =
+    reviewCountRaw != null && Number.isFinite(Number(reviewCountRaw)) ? Number(reviewCountRaw) : null;
 
   const href = catalogMode
     ? catalogPublicPath(cab, "/cabs")
@@ -57,6 +52,17 @@ export default function MmtCabResultCard({ cab, trip, layout = "row", catalogMod
 
   const title = catalogMode ? vehicleName : getCabDisplayTitle(cab, trip);
   const subtitle = catalogMode ? getCabCatalogSubtitle(cab, displayCity) : getCabDisplaySubtitle(cab, trip);
+
+  const priceBlockProps = {
+    originalPrice: total,
+    finalPrice: total,
+    discountPct: 0,
+    compact: true,
+    perKmRate: catalogMode ? catalogPerKm?.perKmRate : usesDistance ? fare?.perKmRate : undefined,
+    distanceKm: usesDistance ? fare.distanceKm : undefined,
+    roundTrip: Boolean(trip?.roundTrip),
+    fareNote: catalogMode ? catalogPerKm?.fareNote : usesDistance ? fare?.fareNote : "package fare"
+  };
 
   if (layout === "card") {
     return (
@@ -80,38 +86,79 @@ export default function MmtCabResultCard({ cab, trip, layout = "row", catalogMod
     );
   }
 
-  const features = (
-    <>
-      <span className={`inline-flex items-center gap-1 ${ICON_SOFT_CLASS}`}>
-        <PersonIcon className="h-3.5 w-3.5" /> {seatLabel} Seats
-      </span>
-      <span className={`inline-flex items-center gap-1 ${ICON_SOFT_CLASS}`}>
-        <LuggageIcon className="h-3.5 w-3.5" /> {bags} Bags
-      </span>
-      <span className={`inline-flex items-center gap-1 ${ICON_SOFT_CLASS}`}>
-        <SnowflakeIcon className="h-3.5 w-3.5" /> AC
-      </span>
-      <span className={`inline-flex items-center gap-1 ${ICON_SOFT_CLASS}`}>
-        <FuelIcon className="h-3.5 w-3.5" /> Fuel included
-      </span>
-    </>
-  );
+  const tags = [
+    cab.type || "Cab",
+    `${seatLabel} Seats`,
+    `${bags} Bags`,
+    "AC",
+    "Fuel included"
+  ];
 
   return (
-    <article className="cabzii-card cabzii-card-interactive cabzii-result-card-row flex flex-row items-stretch gap-2.5 cabzii-card-pad sm:gap-3">
-      <div className="cabzii-result-card-media relative h-16 w-24 shrink-0 overflow-hidden rounded-lg bg-slate-100 sm:h-20 sm:w-32 md:h-24 md:w-36">
-        <CatalogCardImage src={imageSrc} alt={imageAlt} product={cab} sizes="112px" className="object-cover" />
+    <article className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+      <div className="flex flex-wrap items-center gap-2 border-b border-sky-100 bg-sky-50 px-4 py-1.5 text-[11px] font-semibold text-sky-800">
+        <span className="inline-flex items-center gap-1 rounded bg-sky-600 px-1.5 py-0.5 text-[10px] font-bold text-white">
+          <ShieldCheck className="h-3 w-3" /> Cabzii Assured
+        </span>
+        <span>{cab.vendor || "Cabzii Partner"} · verified listing</span>
       </div>
-      <div className="min-w-0 flex flex-1 flex-col justify-center">
-        <h3 className="text-sm font-bold tracking-tight text-slate-900 sm:text-base">{title}</h3>
-        <p className="text-[11px] text-slate-500 sm:text-xs">{subtitle}</p>
-        <div className="mt-1.5 flex flex-wrap gap-x-2.5 gap-y-0.5 text-[10px] text-slate-500 sm:mt-2 sm:gap-x-3 sm:text-xs">{features}</div>
-      </div>
-      <div className="cabzii-result-card-actions flex flex-row items-center justify-between gap-2 border-t border-slate-100 pt-2 sm:flex-col sm:items-end sm:justify-end sm:border-l sm:border-t-0 sm:pl-3 sm:pt-0">
-        <MmtCardPriceBlock {...priceBlockProps} compact />
-        <Link href={href} className="cabzii-btn cabzii-btn-primary cabzii-btn-sm cabzii-tap shrink-0 px-3 py-1.5 text-[11px] sm:text-xs">
-          {catalogMode ? "View" : "Select"}
-        </Link>
+
+      <div className="grid gap-4 p-4 lg:grid-cols-[112px_minmax(0,1.2fr)_minmax(0,1fr)_160px] lg:items-center">
+        <div className="relative h-20 w-28 overflow-hidden rounded-lg bg-slate-100 sm:h-24 sm:w-32 lg:h-[5.5rem] lg:w-28">
+          <CatalogCardImage src={imageSrc} alt={imageAlt} product={cab} sizes="128px" className="object-cover" />
+        </div>
+
+        <div className="min-w-0">
+          <p className="text-base font-extrabold text-slate-900">{title}</p>
+          <p className="mt-0.5 text-xs font-medium text-slate-500">{subtitle}</p>
+          {ratingText ? (
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              <span className="inline-flex items-center gap-0.5 rounded bg-emerald-600 px-1.5 py-0.5 text-[11px] font-bold text-white">
+                <Star className="h-3 w-3 fill-white" /> {ratingText}
+              </span>
+              {reviewCount != null ? <span className="text-[11px] text-slate-500">{reviewCount} ratings</span> : null}
+            </div>
+          ) : null}
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {tags.map((t) => (
+              <span key={t} className="rounded border border-sky-200 px-1.5 py-0.5 text-[10px] font-semibold text-sky-800">
+                {t}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <div className="hidden text-xs text-slate-500 lg:block">
+          {usesDistance ? (
+            <>
+              <p className="font-semibold text-slate-700">{Math.ceil(Number(fare.distanceKm) || 0)} km trip</p>
+              <p className="mt-1">₹{fare.perKmRate}/km{trip?.roundTrip ? " · round trip" : ""}</p>
+              <p className="mt-1 text-slate-400">Driver, fuel &amp; parking as per package</p>
+            </>
+          ) : (
+            <>
+              <p className="font-semibold text-slate-700">{slab?.label || "Package fare"}</p>
+              <p className="mt-1">Extra km ₹{slab?.extraKm || 12}/km</p>
+              <p className="mt-1">Extra hr ₹{slab?.extraHr || 250}/hr</p>
+            </>
+          )}
+        </div>
+
+        <div className="flex flex-col items-stretch gap-2 lg:items-end">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">From</p>
+          <p className="text-lg font-extrabold text-slate-900">{formatINR(total)}</p>
+          {catalogMode && catalogPerKm?.perKmRate ? (
+            <p className="text-[11px] text-slate-500">₹{catalogPerKm.perKmRate}/km</p>
+          ) : (
+            <p className="text-[11px] text-slate-500">package fare</p>
+          )}
+          <Link
+            href={href}
+            className="rounded-lg bg-[#d84e55] px-4 py-2 text-center text-sm font-bold text-white hover:bg-[#c03940]"
+          >
+            {catalogMode ? "View Cab" : "Select Cab"}
+          </Link>
+        </div>
       </div>
     </article>
   );

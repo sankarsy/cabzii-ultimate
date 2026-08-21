@@ -1,14 +1,11 @@
 "use client";
 
 import { Sparkles } from "lucide-react";
-import { packageYouPay } from "../lib/cabFare";
 import { formatInrCurrency } from "../lib/formatInr";
 import { ClockIcon, ICON_SOFT_CLASS, RoadIcon, TwoWayIcon } from "./icons";
 
-export default function PackageOptionCard({ pkg, selected, discount, onSelect, compact = false }) {
-  const list = pkg.list;
-  const d = Math.min(99, Math.max(0, Number(discount) || 0));
-  const youPay = packageYouPay(list, d);
+export default function PackageOptionCard({ pkg, selected, onSelect, compact = false }) {
+  const youPay = Number(pkg.price) > 0 ? Number(pkg.price) : Number(pkg.list) || 0;
   const isTrip = Boolean(pkg.note);
   const title = pkg.label || pkg.shortLabel;
   const PackageIcon = pkg.group === "outstation" ? (pkg.id?.includes("twoway") ? TwoWayIcon : RoadIcon) : ClockIcon;
@@ -44,21 +41,6 @@ export default function PackageOptionCard({ pkg, selected, discount, onSelect, c
         <PackageIcon className={compact ? `h-3 w-3 shrink-0 ${ICON_SOFT_CLASS}` : `h-3.5 w-3.5 shrink-0 ${ICON_SOFT_CLASS}`} />
         <span className="line-clamp-1 min-w-0 flex-1">{title}</span>
       </span>
-
-      {d > 0 ? (
-        <div className={`flex flex-wrap items-center gap-1 ${compact ? "mt-0.5" : "mt-1"}`}>
-          <span className={`text-slate-400 line-through ${compact ? "text-[9px]" : "text-xs"}`}>
-            {formatInrCurrency(list)}
-          </span>
-          <span
-            className={`rounded-full bg-emerald-50 font-bold text-emerald-700 ${
-              compact ? "px-1 py-px text-[8px]" : "px-1.5 py-px text-[10px]"
-            }`}
-          >
-            {d}% OFF
-          </span>
-        </div>
-      ) : null}
 
       <p
         className={`shrink-0 font-extrabold leading-none text-[#0056D2] ${

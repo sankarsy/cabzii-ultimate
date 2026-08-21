@@ -5,12 +5,20 @@ import Link from "next/link";
 import { authHeaders, buildLoginHref, formatMobileDisplay, getUser, isLoggedIn } from "../../lib/auth";
 import { useRouter } from "next/navigation";
 import BookingReviewForm from "../../components/reviews/BookingReviewForm";
+import { shouldShowTrackTrip } from "../../lib/customerTrackingUi";
+
+import { DRIVER_OPS_STATUS_LABELS } from "../../lib/callDriver";
 
 const STATUS_STYLES = {
   pending: "bg-amber-100 text-amber-800",
   confirmed: "bg-emerald-100 text-emerald-800",
   finished: "bg-sky-100 text-sky-800",
-  cancelled: "bg-slate-200 text-slate-700"
+  cancelled: "bg-slate-200 text-slate-700",
+  driver_assigned: "bg-indigo-100 text-indigo-800",
+  driver_on_the_way: "bg-sky-100 text-sky-800",
+  driver_arrived: "bg-violet-100 text-violet-800",
+  trip_started: "bg-blue-100 text-blue-800",
+  trip_completed: "bg-sky-100 text-sky-800"
 };
 
 export default function MyBookingsPage() {
@@ -166,13 +174,24 @@ function BookingGroup({ title, items, empty, onFinish, finishingId }) {
 
 function BookingCard({ booking, onFinish, finishing }) {
   const contact = booking.vendorContact;
-  const showContact = booking.status === "confirmed" && contact && (contact.phone || contact.whatsapp || contact.name);
+  const assigned = Boolean(booking.driverAssigned || booking.assignedDriverId);
+  const ops = booking.driverOpsStatus || booking.callDriver?.opsStatus || booking.status;
+  const showDriver =
+    booking.type === "driver" &&
+    (assigned || booking.callDriver?.serviceType);
+  const showContact =
+    assigned &&
+    booking.status === "confirmed" &&
+    contact &&
+    (contact.phone || contact.whatsapp || contact.name);
 
   return (
     <li className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
-          <p className="text-xs font-semibold uppercase text-[#0056D2]">{booking.type}</p>
+          <p className="text-xs font-semibold uppercase text-[#0056D2]">
+            {booking.callDriver?.serviceType ? "Call Driver Service" : booking.type}
+          </p>
           <p className="text-sm font-bold text-slate-900">
             {booking.itemTitle || booking.type || "Booking"}
           </p>
@@ -185,11 +204,17 @@ function BookingCard({ booking, onFinish, finishing }) {
             {booking.pickupTime ? ` · ${booking.pickupTime}` : ""} · ₹
             {Number(booking.amount || 0).toLocaleString("en-IN")}
           </p>
+          {showDriver ? (
+            <p className="mt-2 text-xs text-slate-700">
+              Driver: {assigned ? booking.assignedDriverName : "Professional Cabzii Driver"}
+              {assigned && booking.assignedDriverPhone ? ` · ${booking.assignedDriverPhone}` : ""}
+            </p>
+          ) : null}
         </div>
         <span
-          className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase ${STATUS_STYLES[booking.status] || STATUS_STYLES.pending}`}
+          className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase ${STATUS_STYLES[ops] || STATUS_STYLES[booking.status] || STATUS_STYLES.pending}`}
         >
-          {booking.status}
+          {DRIVER_OPS_STATUS_LABELS[ops] || booking.status}
         </span>
       </div>
 
@@ -225,6 +250,14 @@ function BookingCard({ booking, onFinish, finishing }) {
 
       {booking.status === "confirmed" ? (
         <div className="mt-4 flex flex-wrap items-center gap-3">
+          {shouldShowTrackTrip(booking) ? (
+            <Link
+              href={`/my-bookings/${booking._id}/track`}
+              className="rounded-lg bg-sky-700 px-4 py-2 text-xs font-semibold text-white hover:bg-sky-800"
+            >
+              Track Trip
+            </Link>
+          ) : null}
           <button
             type="button"
             onClick={() => onFinish(String(booking._id))}
@@ -239,6 +272,14 @@ function BookingCard({ booking, onFinish, finishing }) {
 
       {booking.status === "finished" ? (
         <>
+          {shouldShowTrackTrip(booking) ? (
+            <Link
+              href={`/my-bookings/${booking._id}/track`}
+              className="mt-4 inline-flex rounded-lg border border-slate-300 px-4 py-2 text-xs font-semibold text-slate-800 hover:bg-slate-50"
+            >
+              Track Trip
+            </Link>
+          ) : null}
           <p className="mt-3 text-xs text-slate-500">Trip completed. Contact details are no longer shown.</p>
           {booking.type === "cab" || booking.type === "driver" ? <BookingReviewForm booking={booking} /> : null}
         </>

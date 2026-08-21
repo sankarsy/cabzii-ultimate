@@ -16,6 +16,7 @@ import { clearCheckoutDraft, loadCheckoutDraft } from "../../lib/checkoutStorage
 import { isPaymentMethodEnabled } from "../../lib/paymentMethods";
 import { readTripCoords } from "../../lib/tripCoords";
 import { parseTripSearchParams } from "../../lib/mmtTrip";
+import { callDriverServiceById } from "../../lib/callDriver";
 import {
   getCabDisplaySubtitle,
   getCabDisplayTitle,
@@ -33,7 +34,7 @@ export default function PaymentPage({ searchParams }) {
   const [paymentOpen, setPaymentOpen] = useState(false);
   const [offersOpen, setOffersOpen] = useState(false);
   const [appliedCoupon, setAppliedCoupon] = useState("");
-  const [customerName, setCustomerName] = useState("");
+  const [customerName, setCustomerName] = useState(firstParam(searchParams?.passengerName));
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [pickup, setPickup] = useState(firstParam(searchParams?.pickup));
@@ -42,7 +43,9 @@ export default function PaymentPage({ searchParams }) {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [bookingId, setBookingId] = useState("");
+  const [confirmedAmount, setConfirmedAmount] = useState(null);
   const type = searchParams?.type ?? "cab";
+  const callDriverFlag = firstParam(searchParams?.callDriver) === "1";
   const itemId = String(searchParams?.id ?? searchParams?.cabId ?? "");
   const taxes = Number(searchParams?.taxes ?? 0);
   const baseFare = Number(searchParams?.baseFare ?? 0);
@@ -89,7 +92,7 @@ export default function PaymentPage({ searchParams }) {
   }, [router]);
 
   useEffect(() => {
-    if (!itemId) return;
+    if (!itemId || callDriverFlag) return;
     const base =
       type === "tour"
         ? `/api/packages/${encodeURIComponent(itemId)}`
@@ -146,16 +149,18 @@ export default function PaymentPage({ searchParams }) {
           ? `/holidays/${firstParam(searchParams?.slug) || itemId}`
           : type === "tour"
             ? "/holidays"
-            : "/drivers";
+      : type === "driver"
+        ? "/call-driver"
+        : "/drivers";
 
   const bookingType = type === "tour" ? "tour" : type === "driver" ? "driver" : type === "bus" ? "bus" : "cab";
   const bookLabel =
-    type === "bus" ? "Book Bus" : type === "driver" ? "Book Driver" : type === "tour" ? "Book Package" : "Book Cab";
+    type === "bus" ? "Book Bus" : type === "driver" ? "Book Call Driver" : type === "tour" ? "Book Package" : "Book Cab";
   const busSeats = firstParam(searchParams?.seats);
   const busOperator = firstParam(searchParams?.operator);
 
   const confirmBooking = async () => {
-    if (type !== "bus" && !itemId) {
+    if (type !== "bus" && !itemId && !(type === "driver" && callDriverFlag)) {
       setSubmitError("Missing booking item. Go back and select again.");
       return;
     }
@@ -180,7 +185,7 @@ export default function PaymentPage({ searchParams }) {
           phone: mobileNumber,
           email: email.trim(),
           type: bookingType,
-          itemId: type === "bus" && !/^[a-f0-9]{24}$/i.test(itemId) ? "" : itemId,
+          itemId: callDriverFlag || (type === "bus" && !/^[a-f0-9]{24}$/i.test(itemId)) ? "" : itemId,
           pickup: pickup.trim(),
           drop: type === "tour" ? "" : drop,
           date,
@@ -192,7 +197,10 @@ export default function PaymentPage({ searchParams }) {
                 : serviceTab || firstParam(searchParams?.routeType),
           tripType: type === "bus" ? firstParam(searchParams?.busType) || "AC Bus" : firstParam(searchParams?.tripType),
           pickupTime: firstParam(searchParams?.time),
-          serviceTripType: type === "bus" ? busOperator : firstParam(searchParams?.serviceTripType),
+          serviceTripType:
+            type === "bus" ? busOperator : cabTrip.tripType || firstParam(searchParams?.serviceTripType) || serviceTab,
+          callDriver:
+            type === "driver" && callDriverFlag ? loadCheckoutDraft().callDriver || { serviceType: serviceTab } : undefined,
           busMeta:
             type === "bus"
               ? {
@@ -203,11 +211,23 @@ export default function PaymentPage({ searchParams }) {
                   droppingPoint: drop.trim(),
                   busType: firstParam(searchParams?.busType),
                   fromCity: firstParam(searchParams?.from),
-                  toCity: firstParam(searchParams?.to)
+                  toCity: firstParam(searchParams?.to),
+                  tripGuarantee: firstParam(searchParams?.guarantee) === "1",
+                  passengers: [
+                    {
+                      name: customerName.trim(),
+                      age: Number(firstParam(searchParams?.age)) || null,
+                      gender: firstParam(searchParams?.gender) || "M",
+                      seatId: busSeats.split(",").filter(Boolean)[0] || ""
+                    }
+                  ]
                 }
               : undefined,
           roundTrip: firstParam(searchParams?.roundTrip) === "true",
           packageHours: Number(firstParam(searchParams?.packageHours)) || undefined,
+          packageId: firstParam(searchParams?.packageId) || cabTrip.packageId || undefined,
+          cabType: firstParam(searchParams?.cabType) || undefined,
+          persons: type === "tour" ? tourPersons : undefined,
           amount: total,
           paymentMethod: "cash",
           pickupLat: tripCoords.fromLat ?? undefined,
@@ -223,6 +243,8 @@ export default function PaymentPage({ searchParams }) {
       if (!res.ok || data?.success === false) throw new Error(data?.message || "Booking failed");
       const id = data?.data?._id || data?.data?.id;
       setBookingId(String(id || ""));
+      const serverAmount = Number(data?.data?.finalAmount ?? data?.data?.amount);
+      setConfirmedAmount(Number.isFinite(serverAmount) ? serverAmount : null);
       clearCheckoutDraft();
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : "Booking failed");
@@ -237,7 +259,7 @@ export default function PaymentPage({ searchParams }) {
     <div className="section-shell py-6 pb-8">
       <nav className="mb-4 text-xs text-slate-500">
         <Link href={backHref} className="font-medium text-[#0056D2] hover:underline">
-          ← Back to {type === "bus" ? "passenger" : type === "driver" ? "driver" : type === "tour" ? "package" : "cab"} details
+          ← Back to {type === "bus" ? "passenger" : type === "driver" ? "Call Driver" : type === "tour" ? "package" : "cab"} details
         </Link>
       </nav>
 
@@ -314,6 +336,9 @@ export default function PaymentPage({ searchParams }) {
             <div className="mt-5 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-900">
               <p className="font-semibold">Booking confirmed!</p>
               <p className="mt-1">Reference: {bookingId}</p>
+              {confirmedAmount != null ? (
+                <p className="mt-1">Amount payable: ₹{confirmedAmount.toLocaleString("en-IN")}</p>
+              ) : null}
               <button
                 type="button"
                 onClick={() => router.push("/")}
@@ -339,14 +364,17 @@ export default function PaymentPage({ searchParams }) {
           )}
         </div>
 
-        {(type === "cab" || type === "driver") && selectedItem ? (
+        {(type === "cab" || type === "driver") && (selectedItem || callDriverFlag) ? (
           <PaymentBreakdown
             item={
               type === "driver"
                 ? {
-                    title: getDriverDisplayTitle(selectedItem, cabTrip),
-                    type: selectedItem.type || "Driver",
-                    vendor: selectedItem.vendor || "Cabzii Partner"
+                    title: callDriverFlag
+                      ? callDriverServiceById(serviceTab)?.title || "Call Driver Service"
+                      : getDriverDisplayTitle(selectedItem, cabTrip),
+                    type: "Call Driver Service",
+                    vendor: "Cabzii",
+                    subtitle: "Professional Cabzii Driver assigned after booking"
                   }
                 : {
                     title: getCabDisplayTitle(selectedItem, cabTrip),

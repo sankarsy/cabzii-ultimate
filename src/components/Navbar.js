@@ -16,10 +16,9 @@ function BrandIcon(props) {
 const fallbackNavLinks = [
   { href: "/", label: "Home" },
   { href: "/cabs", label: "Cabs" },
-  { href: "/drivers", label: "Drivers" },
-  { href: "/holidays", label: "Holidays" },
-  { href: "/hotels", label: "Hotels" },
-  { href: "/flights", label: "Flights" }
+  { href: "/buses", label: "Buses" },
+  { href: "/call-driver", label: "Call Driver" },
+  { href: "/holidays", label: "Holidays" }
 ];
 
 export default function Navbar({ variant = "default" }) {
@@ -103,11 +102,12 @@ export default function Navbar({ variant = "default" }) {
     ...cmsMenuLinks
   ]
     .filter((link) => link.visible !== false)
+    .filter((link) => !["/hotels", "/flights", "/trains"].includes(String(link.href || "").split("?")[0]))
     .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
 
   const brandName = settings.siteName || "cabzii.in";
   const brandColor = settings.brandColor || "#0056D2";
-  const searchPlaceholder = settings.hero?.searchPlaceholder || "Search cabs, drivers, holidays, flights…";
+  const searchPlaceholder = settings.hero?.searchPlaceholder || "Search cabs, buses, drivers, holidays…";
 
   if (hideOnTravelShell) return null;
 

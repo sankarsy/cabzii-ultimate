@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { num, packageYouPay } from "../lib/cabFare";
+import { num } from "../lib/cabFare";
 import { categoryLabel } from "../lib/holidays";
 import { packageSeoHref } from "../lib/holidayHome";
 import { resolveMediaUrl } from "../lib/media";
@@ -74,8 +74,7 @@ export default function SimilarPackages({ currentPackageId, category, vendor }) 
           {similar.map((pkg) => {
             const id = String(pkg._id ?? pkg.id);
             const price = num(pkg.price);
-            const discount = num(pkg.discountPercentage);
-            const youPay = packageYouPay(price, discount);
+            const youPay = price;
             const img = resolveMediaUrl(pkg.image) || FALLBACK_IMAGE;
             return (
               <Link

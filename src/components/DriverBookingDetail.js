@@ -37,7 +37,6 @@ const FALLBACK_DRIVER_IMAGE =
   "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=1200&q=80";
 
 export default function DriverBookingDetail({ driver, onSelectionChange, initialPackageId = "" }) {
-  const discount = num(driver.discountPercentage, 0);
   const chargeItems = useMemo(() => buildDriverChargeItems(driver), [driver]);
   const imageSrc = resolveMediaUrl(driver.image) || FALLBACK_DRIVER_IMAGE;
   const vehicles = Array.isArray(driver.supportedVehicles) ? driver.supportedVehicles : [];
@@ -46,7 +45,6 @@ export default function DriverBookingDetail({ driver, onSelectionChange, initial
   const reviewCountRaw = driver.reviewCount ?? driver.reviews;
   const reviewCount =
     reviewCountRaw != null && Number.isFinite(Number(reviewCountRaw)) ? Number(reviewCountRaw) : null;
-  const d = Math.min(99, Math.max(0, discount));
   const displayName = driver.serviceTitle || driver.name || "Driver";
   const typeLabel = driver.type
     ? String(driver.type).replace(/\b\w/g, (c) => c.toUpperCase())
@@ -66,7 +64,7 @@ export default function DriverBookingDetail({ driver, onSelectionChange, initial
 
   const emitSelection = (pkg, tab) => {
     if (!pkg || !onSelectionChange) return;
-    onSelectionChange(selectionFromDriverPackage(pkg, tab, discount));
+    onSelectionChange(selectionFromDriverPackage(pkg, tab));
   };
 
   useEffect(() => {
@@ -77,7 +75,7 @@ export default function DriverBookingDetail({ driver, onSelectionChange, initial
       setServiceTab(pkg.group);
       emitSelection(pkg, pkg.group);
     }
-  }, [initialPackageId, fareSlabs, driver._id, discount, onSelectionChange]);
+  }, [initialPackageId, fareSlabs, driver._id, onSelectionChange]);
 
   const handleServiceTab = (tab) => {
     setServiceTab(tab);
@@ -96,11 +94,6 @@ export default function DriverBookingDetail({ driver, onSelectionChange, initial
   const imageBadges = (
     <>
       <div className="absolute left-1.5 top-1.5 flex items-center gap-1">
-        {d > 0 && (
-          <span className="rounded-md bg-[#0056D2] px-1.5 py-0.5 text-[8px] font-bold text-white shadow">
-            {d}% OFF
-          </span>
-        )}
         <span className="rounded-md bg-white/10 px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-wide text-white backdrop-blur">
           {typeLabel}
         </span>
@@ -142,7 +135,6 @@ export default function DriverBookingDetail({ driver, onSelectionChange, initial
             visiblePackages={visiblePackages}
             selectedPackageId={selectedPackageId}
             onSelectPackage={handleSelectPackage}
-            discount={discount}
           />
           <AdditionalChargesGrid items={chargeItems} />
         </div>
@@ -191,7 +183,7 @@ function ServiceToggle({ serviceTab, setServiceTab }) {
   );
 }
 
-function PackageSection({ visiblePackages, selectedPackageId, onSelectPackage, discount }) {
+function PackageSection({ visiblePackages, selectedPackageId, onSelectPackage }) {
   return (
     <div className="mt-5">
       <div className="scroll-x-touch -mx-1 flex gap-3 overflow-x-auto pb-2 pt-1 [-ms-overflow-style:none] [scrollbar-width:none] sm:mx-0 sm:grid sm:auto-rows-fr sm:grid-cols-2 sm:overflow-visible sm:pb-0 lg:grid-cols-2 xl:grid-cols-2 [&::-webkit-scrollbar]:hidden">
@@ -200,7 +192,6 @@ function PackageSection({ visiblePackages, selectedPackageId, onSelectPackage, d
             <PackageOptionCard
               pkg={pkg}
               selected={selectedPackageId === pkg.id}
-              discount={discount}
               compact
               onSelect={() => onSelectPackage(pkg)}
             />

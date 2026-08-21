@@ -41,16 +41,7 @@ export default function FarePackagesEditor({
                   placeholder={defaultLabel}
                 />
               </Field>
-              <div className="mt-2 grid gap-2 sm:grid-cols-3 lg:grid-cols-5">
-                <Field label="Original ₹">
-                  <input
-                    type="number"
-                    min={0}
-                    className={inputCls()}
-                    value={pkg.originalPrice ?? 0}
-                    onChange={(e) => onUpdateFare(key, "originalPrice", Number(e.target.value))}
-                  />
-                </Field>
+              <div className="mt-2 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
                 <Field label="Price ₹">
                   <input
                     type="number"
@@ -58,16 +49,6 @@ export default function FarePackagesEditor({
                     className={inputCls()}
                     value={pkg.price ?? 0}
                     onChange={(e) => onUpdateFare(key, "price", Number(e.target.value))}
-                  />
-                </Field>
-                <Field label="Discount %">
-                  <input
-                    type="number"
-                    min={0}
-                    max={99}
-                    className={inputCls()}
-                    value={pkg.discountPercentage ?? 0}
-                    onChange={(e) => onUpdateFare(key, "discountPercentage", Number(e.target.value))}
                   />
                 </Field>
                 <Field label="Extra km ₹">

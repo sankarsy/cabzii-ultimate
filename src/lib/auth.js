@@ -70,6 +70,8 @@ export function sanitizeUser(raw) {
 
     name: raw.name || "",
 
+    driverId: raw.driverId || "",
+
     createdAt: raw.createdAt || null,
   };
 }

@@ -1,4 +1,4 @@
-import { num, packageYouPay } from "./cabFare";
+import { num } from "./cabFare";
 import { normalizeCityName } from "./tamilNaduCities";
 import { SEO_CITIES } from "./seo/cities";
 import { lookupRouteTripData } from "./seo/routeCatalog";
@@ -121,9 +121,8 @@ export function calculateTourTotals(
   const packageListPrice = Math.round(num(packagePrice) * mult);
   const listSubtotal = packageListPrice + transportListPrice;
   const count = clampTourPersons(persons);
-  const d = Math.min(99, Math.max(0, num(discountPct)));
-  const total = packageYouPay(listSubtotal, d);
-  const discountAmount = Math.max(0, listSubtotal - total);
+  const total = listSubtotal;
+  const discountAmount = 0;
 
   return {
     persons: count,
@@ -136,7 +135,7 @@ export function calculateTourTotals(
     /** @deprecated use listSubtotal */
     listTotal: listSubtotal,
     total,
-    discountPct: d,
+    discountPct: 0,
     discountAmount,
     perPersonList: listSubtotal,
     perPersonPay: total,

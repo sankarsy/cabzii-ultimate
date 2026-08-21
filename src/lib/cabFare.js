@@ -5,25 +5,19 @@ export function num(v, fallback = 0) {
   return Number.isFinite(n) ? n : fallback;
 }
 
-export function packageYouPay(list, discount) {
-  const d = Math.min(99, Math.max(0, num(discount)));
-  return d > 0 ? Math.round(list * (1 - d / 100)) : list;
+export function packageYouPay(list) {
+  return Math.max(0, num(list));
 }
 
 function resolvePackageFare(pkg, cab, fallbackList) {
-  const cabDiscount = num(cab.discountPercentage);
-  const originalPrice =
-    num(pkg?.originalPrice) > 0
-      ? num(pkg.originalPrice)
-      : num(pkg?.list) > 0
-        ? num(pkg.list)
-        : Math.max(num(fallbackList), 0);
-  const discountPercentage =
-    pkg?.discountPercentage != null && pkg?.discountPercentage !== ""
-      ? num(pkg.discountPercentage)
-      : cabDiscount;
-  const price =
-    num(pkg?.price) > 0 ? num(pkg.price) : packageYouPay(originalPrice, discountPercentage);
+  const selling =
+    num(pkg?.price) > 0
+      ? num(pkg.price)
+      : num(pkg?.originalPrice) > 0
+        ? num(pkg.originalPrice)
+        : num(pkg?.list) > 0
+          ? num(pkg.list)
+          : Math.max(num(fallbackList), 0);
   const extraKm =
     num(pkg?.extraKmRate) > 0
       ? num(pkg.extraKmRate)
@@ -33,7 +27,7 @@ function resolvePackageFare(pkg, cab, fallbackList) {
       ? num(pkg.extraHourRate)
       : num(cab.extraHourRate) || Math.max(12, Math.floor(num(cab.price) / 12) || 12);
 
-  return { originalPrice, price, discountPercentage, extraKm, extraHr };
+  return { originalPrice: selling, price: selling, discountPercentage: 0, extraKm, extraHr };
 }
 
 function buildLegacySlabs(cab) {
@@ -119,6 +113,8 @@ function slabsFromDynamicPackages(cab) {
         note: row.packageType === "one_way" || row.packageType === "round_trip" ? "Per Trip Quote" : undefined,
         extraKm: fare.extraKm,
         extraHr: fare.extraHr,
+        includedKm: num(row.includedKm),
+        includedHours: num(row.includedHours),
         packageType: row.packageType
       };
     });
@@ -199,14 +195,9 @@ export function vendorInitials(vendor) {
 }
 
 /** Full payment breakdown for a selected package (GST not shown or added to payable total) */
-export function calculateBookingTotals(listPrice, discountPct) {
+export function calculateBookingTotals(listPrice) {
   const list = Math.max(0, num(listPrice));
-  const d = Math.min(99, Math.max(0, num(discountPct)));
-  const baseFare = packageYouPay(list, d);
-  const discountAmount = list - baseFare;
-  const taxes = 0;
-  const total = baseFare;
-  return { listPrice: list, discountPct: d, discountAmount, baseFare, taxes, total, taxRate: 0 };
+  return { listPrice: list, discountPct: 0, discountAmount: 0, baseFare: list, taxes: 0, total: list, taxRate: 0 };
 }
 
 export function buildPaymentSearchParams(cabId, selection) {
@@ -227,15 +218,11 @@ export function buildPaymentSearchParams(cabId, selection) {
   return q;
 }
 
-export function selectionFromPackage(pkg, tab, fallbackDiscountPct) {
-  const discountPct =
-    pkg?.discountPercentage != null && pkg?.discountPercentage !== ""
-      ? num(pkg.discountPercentage)
-      : num(fallbackDiscountPct);
-  const listPrice = num(pkg?.originalPrice) > 0 ? num(pkg.originalPrice) : num(pkg?.list ?? 0);
-  const baseFromPkg = num(pkg?.price) > 0 ? num(pkg.price) : packageYouPay(listPrice, discountPct);
-  const totals = calculateBookingTotals(listPrice, discountPct);
-  const total = listPrice > 0 && num(pkg?.price) > 0 ? baseFromPkg : totals.total;
+export function selectionFromPackage(pkg, tab, cab) {
+  const listPrice = num(pkg?.price) > 0 ? num(pkg.price) : num(pkg?.originalPrice) || num(pkg?.list ?? 0);
+  const totals = calculateBookingTotals(listPrice);
+  const isOutstation = tab === "outstation" || pkg?.packageType === "one_way" || pkg?.packageType === "round_trip";
+  const driverBatta = isOutstation ? num(cab?.driverAllowance) : 0;
 
   return {
     packageId: pkg?.id,
@@ -244,11 +231,14 @@ export function selectionFromPackage(pkg, tab, fallbackDiscountPct) {
     listPrice,
     extraKm: pkg?.extraKm,
     extraHr: pkg?.extraHr,
+    includedKm: pkg?.includedKm,
+    includedHours: pkg?.includedHours,
+    driverBatta,
     note: pkg?.note,
     ...totals,
-    baseFare: total,
-    total,
-    fare: total
+    baseFare: listPrice + driverBatta,
+    total: listPrice + driverBatta,
+    fare: listPrice + driverBatta
   };
 }
 

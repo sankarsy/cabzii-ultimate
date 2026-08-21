@@ -59,7 +59,7 @@ export default async function ActingDriverCityPage({ params }) {
   const jsonLd = [
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
-      { name: "Drivers", path: "/drivers" },
+      { name: "Call Driver", path: "/call-driver" },
       { name: `Acting driver ${city.name}`, path }
     ]),
     cityDriverSearchJsonLd(city, {

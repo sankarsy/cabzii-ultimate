@@ -228,13 +228,14 @@ export default function VehicleForm({
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           <Field label="Base price (₹) *"><input type="number" min={0} className={inputCls()} disabled={disabled} value={form.price} onChange={(e) => patch({ price: Number(e.target.value) })} /></Field>
           <Field label="Starting from (₹)"><input type="number" min={0} className={inputCls()} disabled={disabled} value={form.startingPrice} onChange={(e) => patch({ startingPrice: Number(e.target.value) })} /></Field>
-          <Field label="Original price (₹)"><input type="number" min={0} className={inputCls()} disabled={disabled} value={form.originalPrice} onChange={(e) => patch({ originalPrice: Number(e.target.value) })} /></Field>
-          <Field label="Discount %"><input type="number" min={0} max={100} className={inputCls()} disabled={disabled} value={form.discountPercentage} onChange={(e) => patch({ discountPercentage: Number(e.target.value) })} /></Field>
           <Field label="Price per KM"><input type="number" min={0} className={inputCls()} disabled={disabled} value={form.pricePerKm} onChange={(e) => patch({ pricePerKm: Number(e.target.value) })} /></Field>
           <Field label="Price per hour"><input type="number" min={0} className={inputCls()} disabled={disabled} value={form.pricePerHour} onChange={(e) => patch({ pricePerHour: Number(e.target.value) })} /></Field>
           <Field label="Hourly rate"><input type="number" min={0} className={inputCls()} disabled={disabled} value={form.hourlyRate} onChange={(e) => patch({ hourlyRate: Number(e.target.value) })} /></Field>
           <Field label="Day rate"><input type="number" min={0} className={inputCls()} disabled={disabled} value={form.dayRate} onChange={(e) => patch({ dayRate: Number(e.target.value) })} /></Field>
           <Field label="Extra hour rate"><input type="number" min={0} className={inputCls()} disabled={disabled} value={form.extraHourRate} onChange={(e) => patch({ extraHourRate: Number(e.target.value) })} /></Field>
+          <Field label="Driver batta / day (₹)" hint="Outstation calendar-day allowance">
+            <input type="number" min={0} className={inputCls()} disabled={disabled} value={form.driverAllowance || 0} onChange={(e) => patch({ driverAllowance: Number(e.target.value) })} />
+          </Field>
         </div>
       )}
 

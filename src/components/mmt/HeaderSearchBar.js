@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { readSelectedCity } from "../../lib/locationPriority";
 import { SearchIcon } from "../icons";
 
-const PLACEHOLDER = "Search cabs, drivers, holidays, flights…";
+const PLACEHOLDER = "Search cabs, buses, drivers, holidays…";
 
 export default function HeaderSearchBar({
   className = "",

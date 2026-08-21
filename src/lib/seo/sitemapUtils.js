@@ -17,8 +17,9 @@ export function dedupeSitemapEntries(entries = []) {
 export function isPublishedCatalogItem(item) {
   if (!item) return false;
   if (item.published === false) return false;
-  if (item.status === "draft" || item.status === "archived") return false;
-  return Boolean(item._id || item.id || item.slug);
+  if (item.isDeleted) return false;
+  if (item.status === "draft" || item.status === "archived" || item.status === "inactive") return false;
+  return Boolean(item.slug || item._id || item.id);
 }
 
 export function isPublishedBlogPost(post) {

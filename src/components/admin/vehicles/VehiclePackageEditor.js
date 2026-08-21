@@ -69,7 +69,7 @@ export default function VehiclePackageEditor({ packages = [], onChange, disabled
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
           <h3 className="text-sm font-bold text-slate-900">Fare packages</h3>
-          <p className="text-xs text-slate-500">Add unlimited local, airport, outstation and custom packages.</p>
+          <p className="text-xs text-slate-500">Add local, outstation and custom packages. Leave price at 0 for a package that is not offered.</p>
         </div>
         <button
           type="button"
@@ -114,14 +114,8 @@ export default function VehiclePackageEditor({ packages = [], onChange, disabled
               <Field label="Included KM">
                 <input type="number" min={0} className={inputCls()} disabled={disabled} value={pkg.includedKm ?? 0} onChange={(e) => update(index, { includedKm: numField(e.target.value) })} />
               </Field>
-              <Field label="Original price (₹)">
-                <input type="number" min={0} className={inputCls()} disabled={disabled} value={pkg.originalPrice ?? 0} onChange={(e) => update(index, { originalPrice: numField(e.target.value) })} />
-              </Field>
               <Field label="Price (₹)">
-                <input type="number" min={0} className={inputCls()} disabled={disabled} value={pkg.price ?? 0} onChange={(e) => update(index, { price: numField(e.target.value) })} />
-              </Field>
-              <Field label="Discount %">
-                <input type="number" min={0} max={100} className={inputCls()} disabled={disabled} value={pkg.discountPercentage ?? 0} onChange={(e) => update(index, { discountPercentage: numField(e.target.value) })} />
+                <input type="number" min={0} className={inputCls()} disabled={disabled} value={pkg.price ?? 0} onChange={(e) => update(index, { price: numField(e.target.value), originalPrice: numField(e.target.value), discountPercentage: 0 })} />
               </Field>
               <Field label="Extra KM rate">
                 <input type="number" min={0} className={inputCls()} disabled={disabled} value={pkg.extraKmRate ?? 0} onChange={(e) => update(index, { extraKmRate: numField(e.target.value) })} />
@@ -129,6 +123,16 @@ export default function VehiclePackageEditor({ packages = [], onChange, disabled
               <Field label="Extra hour rate">
                 <input type="number" min={0} className={inputCls()} disabled={disabled} value={pkg.extraHourRate ?? 0} onChange={(e) => update(index, { extraHourRate: numField(e.target.value) })} />
               </Field>
+              <label className="flex items-end gap-2 text-xs font-semibold text-slate-600">
+                <input
+                  type="checkbox"
+                  className="mb-2.5 rounded border-slate-300"
+                  disabled={disabled}
+                  checked={pkg.active !== false}
+                  onChange={(e) => update(index, { active: e.target.checked })}
+                />
+                Offered (active)
+              </label>
             </div>
           </div>
         ))}

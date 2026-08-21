@@ -1,6 +1,7 @@
 /** Routes that use TravelLayoutClient (cabzii.in header + footer). Legacy Navbar/Footer must not render here. */
 export const TRAVEL_SHELL_PREFIXES = [
   "/cabs",
+  "/call-driver",
   "/drivers",
   "/drivers/results",
   "/flights",

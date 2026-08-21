@@ -1,45 +1,9 @@
-import { Suspense } from "react";
-import DriverDetailPage from "../../../components/DriverDetailPage";
-import JsonLd from "../../../components/seo/JsonLd";
-import { fetchDriverById } from "../../../lib/serverCatalog";
-import { catalogPublicPath } from "../../../lib/catalogProduct";
-import { driverDetailMetadata } from "../../../lib/metadataHelpers";
-import { breadcrumbJsonLd } from "../../../lib/seo";
+import { permanentRedirect } from "next/navigation";
 
-export async function generateMetadata({ params }) {
-  const id = params?.id;
-  if (!id) {
-    return driverDetailMetadata(null, "").metadata ?? { title: "Driver Booking" };
-  }
-  const driver = await fetchDriverById(id);
-  return driverDetailMetadata(driver, id).metadata;
-}
+export const metadata = {
+  robots: { index: false, follow: true }
+};
 
-export default async function DriverDetailRoutePage({ params }) {
-  const id = params?.id;
-  const driver = id ? await fetchDriverById(id) : null;
-  const { jsonLd } = driver ? driverDetailMetadata(driver, id) : { jsonLd: null };
-  const schema = driver
-    ? [
-        breadcrumbJsonLd([
-          { name: "Home", path: "/" },
-          { name: "Drivers", path: "/drivers" },
-          { name: driver.name || "Driver", path: catalogPublicPath(driver, "/drivers") }
-        ]),
-        jsonLd
-      ]
-    : null;
-
-  return (
-    <>
-      {schema ? <JsonLd data={schema} /> : null}
-      <Suspense
-        fallback={
-          <div className="section-shell py-16 text-center text-sm text-slate-600">Loading driver…</div>
-        }
-      >
-        <DriverDetailPage driverId={id} initialDriver={driver} />
-      </Suspense>
-    </>
-  );
+export default function DriverDetailRedirect() {
+  permanentRedirect("/call-driver");
 }

@@ -69,8 +69,10 @@ export default function CabsBrowsePage() {
       {loading ? (
         <div className="py-8 text-center text-sm text-slate-500 sm:py-10">Loading all cabs…</div>
       ) : (
-        <>
-          <MmtCabResults cabs={cabs} trip={defaultTrip} />
+        <div className="bg-[#f4f5f7] py-5">
+          <div className="section-shell">
+            <MmtCabResults cabs={cabs} trip={defaultTrip} />
+          </div>
           {meta.totalPages > 1 ? (
             <div className="section-shell flex justify-center gap-3 pb-10">
               <button
@@ -94,7 +96,7 @@ export default function CabsBrowsePage() {
               </button>
             </div>
           ) : null}
-        </>
+        </div>
       )}
 
       <div className="section-shell pb-8">

@@ -81,6 +81,7 @@ function contextFromPayload(payload = {}) {
     existingTitle: payload.seoTitle || "",
     existingDescription: payload.seoDescription || "",
     content: payload.content || payload.longSeoContent || "",
+    customPrompt: String(payload.customPrompt || payload.instruction || "").trim(),
     imageType: payload.imageType || "gallery",
     index: payload.index || 1
   };
@@ -133,6 +134,10 @@ function brandRules() {
 Write natural Indian English for Google search. Focus on CTR, local SEO, and conversion.
 Never invent fake certifications. Prefer Chennai/Tamil Nadu style local SEO when city matches.
 Return ONLY valid JSON when asked for JSON.`;
+}
+
+function promptNote(ctx) {
+  return ctx.customPrompt ? `\nExtra instructions from admin: ${ctx.customPrompt}` : "";
 }
 
 /* ── Fallbacks (no API key) ─────────────────────────────────── */
@@ -276,7 +281,7 @@ City: ${ctx.city}
 State: ${ctx.state}
 Price: ${ctx.price}
 Seats: ${ctx.seats}
-Category: ${ctx.category}
+Category: ${ctx.category}${promptNote(ctx)}
 Rules: under 60 characters, CTR optimized, include city + primary keyword, natural language.
 Return JSON: {"titles":["..."]}`
         );
@@ -287,7 +292,7 @@ Return JSON: {"titles":["..."]}`
         const ai = await chatJson(
           brandRules(),
           `Generate 5 meta descriptions for Cabzii.
-Vehicle: ${ctx.vehicle}, City: ${ctx.city}, State: ${ctx.state}, Price: ${ctx.price}, Seats: ${ctx.seats}
+Vehicle: ${ctx.vehicle}, City: ${ctx.city}, State: ${ctx.state}, Price: ${ctx.price}, Seats: ${ctx.seats}${promptNote(ctx)}
 Rules: under 160 chars, high CTR, include CTA + keyword.
 Return JSON: {"descriptions":["..."]}`
         );

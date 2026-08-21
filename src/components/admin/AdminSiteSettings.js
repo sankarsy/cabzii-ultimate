@@ -14,7 +14,8 @@ const SECTIONS = [
   { id: "whyChooseUs", label: "Why Cabzii section" },
   { id: "homeSections", label: "Homepage sections" },
   { id: "holidayCategories", label: "Explore by category photos" },
-  { id: "whatsapp", label: "WhatsApp button" }
+  { id: "whatsapp", label: "WhatsApp button" },
+  { id: "callDriver", label: "Call Driver tariff" }
 ];
 
 function Field({ label, children, hint }) {
@@ -109,6 +110,7 @@ export default function AdminSiteSettings({ token, isSuperAdmin }) {
   const [homeSections, setHomeSections] = useState([]);
   const [holidayCategories, setHolidayCategories] = useState([]);
   const [whatsappFab, setWhatsappFab] = useState({ enabled: true, number: "" });
+  const [callDriverTariff, setCallDriverTariff] = useState({});
 
   const authHeaders = token ? { authorization: `Bearer ${token}` } : {};
 
@@ -157,6 +159,7 @@ export default function AdminSiteSettings({ token, isSuperAdmin }) {
       enabled: s.whatsappFab?.enabled !== false,
       number: s.whatsappFab?.number || ""
     });
+    setCallDriverTariff(s.callDriverTariff && typeof s.callDriverTariff === "object" ? s.callDriverTariff : {});
   }, []);
 
   useEffect(() => {
@@ -201,6 +204,8 @@ export default function AdminSiteSettings({ token, isSuperAdmin }) {
         return { holidayCategories };
       case "whatsapp":
         return { whatsappFab };
+      case "callDriver":
+        return { callDriverTariff };
       default:
         return {};
     }
@@ -733,6 +738,41 @@ export default function AdminSiteSettings({ token, isSuperAdmin }) {
             <Field label="WhatsApp number (digits only)">
               <input className={inputCls()} value={whatsappFab.number} onChange={(e) => setWhatsappFab((p) => ({ ...p, number: e.target.value }))} placeholder="9944197416" />
             </Field>
+          </div>
+        )}
+
+        {activeSection === "callDriver" && (
+          <div className="max-w-2xl space-y-5">
+            <p className="text-sm text-slate-600">
+              These rates power Call Driver fare calculation on the backend. Customers never pick an individual driver.
+            </p>
+            {[
+              ["local", "Local Chennai", ["minHours", "standard", "premium", "extraHourStandard", "extraHourPremium", "nightCharge"]],
+              ["outstation", "Outstation", ["perDayStandard", "perDayPremium", "longKmThreshold", "perDayLongStandard", "perDayLongPremium", "extraHourStandard", "extraHourPremium", "nightCharge"]],
+              ["airport", "Airport driver-only", ["minHours", "standard", "premium", "extraHourStandard", "extraHourPremium", "nightCharge"]],
+              ["valet", "Valet", ["driverRate", "minHours", "extraHour", "supervisorRate", "driversPerSupervisor"]]
+            ].map(([group, label, keys]) => (
+              <div key={group} className="rounded-xl border border-slate-200 p-3">
+                <h3 className="text-sm font-bold text-slate-900">{label}</h3>
+                <div className="mt-3 grid gap-3 sm:grid-cols-3">
+                  {keys.map((key) => (
+                    <Field key={key} label={key}>
+                      <input
+                        type="number"
+                        className={inputCls()}
+                        value={callDriverTariff?.[group]?.[key] ?? ""}
+                        onChange={(e) =>
+                          setCallDriverTariff((p) => ({
+                            ...p,
+                            [group]: { ...(p[group] || {}), [key]: Number(e.target.value) }
+                          }))
+                        }
+                      />
+                    </Field>
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </div>

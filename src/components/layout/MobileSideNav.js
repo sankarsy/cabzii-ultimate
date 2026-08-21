@@ -9,16 +9,13 @@ import {
   Car,
   ChevronRight,
   CircleUser,
-  Building2,
   FileText,
   HelpCircle,
   LogIn,
   MapPin,
   MessageCircle,
   Phone,
-  Plane,
   Star,
-  TrainFront,
   Umbrella,
   UserRound,
   X
@@ -32,9 +29,6 @@ const BOOK_LINKS = [
   { href: "/?tab=cabs", label: "Cabs", icon: Car },
   { href: "/?tab=drivers", label: "Drivers", icon: CircleUser },
   { href: "/?tab=buses", label: "Buses", icon: Bus },
-  { href: "/?tab=hotels", label: "Hotels", icon: Building2 },
-  { href: "/?tab=trains", label: "Trains", icon: TrainFront },
-  { href: "/?tab=flights", label: "Flights", icon: Plane },
   { href: "/?tab=holidays", label: "Holidays", icon: Umbrella }
 ];
 
@@ -152,7 +146,9 @@ export default function MobileSideNav({
   const whatsappNumber = String(settings.whatsappFab?.number || settings.contact?.whatsapp || "9944197416").replace(/\D/g, "");
   const waHref = whatsappBookingUrl({
     phone: whatsappNumber,
-    message: "Hi Cabzii, I need a cab. Please share fare and availability."
+    pathname,
+    searchParams: typeof window !== "undefined" ? window.location.search : "",
+    city: "Chennai"
   });
 
   useEffect(() => {

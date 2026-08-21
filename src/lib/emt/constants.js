@@ -1,13 +1,10 @@
 import { BRAND } from "../brand";
 
-/** Home hero tabs — cab-first order (scroll on mobile) */
+/** Home hero tabs — live services only (flights / hotels / trains are paused). */
 export const HERO_TABS = [
   { id: "cabs", label: "Cabs", iconKey: "car" },
-  { id: "drivers", label: "Drivers", iconKey: "driver" },
+  { id: "drivers", label: "Call Driver", iconKey: "driver" },
   { id: "buses", label: "Buses", iconKey: "bus" },
-  { id: "hotels", label: "Hotels", iconKey: "hotel" },
-  { id: "trains", label: "Trains", iconKey: "train" },
-  { id: "flights", label: "Flights", iconKey: "plane" },
   { id: "holidays", label: "Holidays", iconKey: "holiday" }
 ];
 

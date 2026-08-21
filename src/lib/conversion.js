@@ -4,13 +4,125 @@ export const CABZII_PHONE = ORG_PHONE;
 export const CABZII_PHONE_DIGITS = "919944197416";
 export const CABZII_WHATSAPP = "9944197416";
 
+function titleFromSlug(slug = "") {
+  return String(slug)
+    .replace(/-/g, " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase())
+    .trim();
+}
+
+function asSearchParams(searchParams) {
+  if (!searchParams) return new URLSearchParams();
+  if (typeof searchParams.get === "function") return searchParams;
+  if (typeof searchParams === "string") return new URLSearchParams(searchParams);
+  return new URLSearchParams(searchParams);
+}
+
+/**
+ * Page-aware WhatsApp copy so Tirupati cab, bus, holiday, etc. send the matching enquiry.
+ */
+export function bookingWhatsappMessage({
+  pathname = "",
+  searchParams,
+  city = "Chennai",
+  intent = ""
+} = {}) {
+  const path = String(pathname || "").split("?")[0].toLowerCase();
+  const q = asSearchParams(searchParams);
+  const cityName = city || "Chennai";
+  const fromQ = q.get("from") || q.get("pickup") || "";
+  const toQ = q.get("to") || q.get("drop") || "";
+  const dateQ = q.get("date") || "___";
+  const holidayQ = q.get("q") || q.get("category") || "";
+
+  if (intent === "exit") {
+    if (path.includes("tirupati")) {
+      return "Hi Cabzii, I was looking at Tirupati cab booking — please share sedan/SUV fare, date availability and pickup options.";
+    }
+    if (path.startsWith("/buses")) {
+      return `Hi Cabzii, I was looking at bus tickets${fromQ && toQ ? ` from ${fromQ} to ${toQ}` : ""}. Please share seat availability and fare.`;
+    }
+    return `Hi Cabzii, I was about to leave — please share a quick quote for my trip from ${cityName}.`;
+  }
+
+  const routeMatch = path.match(/\/routes\/([a-z0-9-]+)/);
+  if (routeMatch) {
+    const slug = routeMatch[1].replace(/-cab$/, "");
+    const [fromSlug, toSlug] = slug.split("-to-");
+    if (fromSlug && toSlug) {
+      const from = titleFromSlug(fromSlug);
+      const to = titleFromSlug(toSlug);
+      return `Hi Cabzii, I want to book a ${from} to ${to} cab. Date: ${dateQ}. Passengers: ___. Please share sedan and SUV fare.`;
+    }
+  }
+
+  if (path.includes("/cab-booking/tirupati") || path.includes("/acting-driver/tirupati")) {
+    return "Hi Cabzii, I want to book a Tirupati cab. Pickup: ___. Date: ___. Passengers: ___. Please share sedan/SUV fare and availability.";
+  }
+
+  const cityPage = path.match(/\/(?:cab-booking|acting-driver)\/([a-z0-9-]+)/);
+  if (cityPage) {
+    const place = titleFromSlug(cityPage[1]);
+    const kind = path.includes("acting-driver") ? "acting driver" : "cab";
+    return `Hi Cabzii, I want to book a ${kind} in ${place}. Pickup: ___. Date: ___. Please share fare and availability.`;
+  }
+
+  const serviceMatch = path.match(/\/services\/([a-z0-9-]+)\/([a-z0-9-]+)/);
+  if (serviceMatch) {
+    const service = titleFromSlug(serviceMatch[1]);
+    const place = titleFromSlug(serviceMatch[2]);
+    return `Hi Cabzii, I want to book ${service} in ${place}. Date: ${dateQ}. Please share fare and availability.`;
+  }
+
+  if (path.startsWith("/buses")) {
+    const from = fromQ || cityName || "Chennai";
+    const to = toQ;
+    if (to) {
+      return `Hi Cabzii, I want to book a bus from ${from} to ${to}. Date: ${dateQ}. Seats: ___. Please share availability and fare.`;
+    }
+    return `Hi Cabzii, I want to book a bus from ${from}. Date: ${dateQ}. Please share routes and fares.`;
+  }
+
+  if (path.startsWith("/holidays") || path.startsWith("/tour-packages") || path.startsWith("/packages")) {
+    const topic = holidayQ || (path.includes("tirupati") ? "tirupati" : "");
+    if (String(topic).toLowerCase().includes("tirupati")) {
+      return "Hi Cabzii, I want to book a Tirupati tour package / cab. Pickup city: Chennai. Date: ___. Please share package options and fare.";
+    }
+    if (topic) {
+      return `Hi Cabzii, I want to book a ${titleFromSlug(topic)} holiday package. Pickup: ${cityName}. Date: ${dateQ}. Please share options and fare.`;
+    }
+    return `Hi Cabzii, I want to book a holiday package from ${cityName}. Date: ${dateQ}. Please share options and fare.`;
+  }
+
+  if (path.startsWith("/drivers") || path.startsWith("/call-driver") || path.startsWith("/acting-driver")) {
+    return `Hi Cabzii, I want to book a Call Driver service in ${cityName}. Date: ${dateQ}. Please share local, outstation or airport driver rates.`;
+  }
+
+  if (path.includes("airport")) {
+    return `Hi Cabzii, I need ${cityName} airport taxi. Terminal: ___. Flight time: ___. Please quote sedan/SUV fare.`;
+  }
+
+  if (fromQ && toQ) {
+    return `Hi Cabzii, I want to book a cab from ${fromQ} to ${toQ}. Date: ${dateQ}. Passengers: ___. Please share sedan and SUV fare.`;
+  }
+
+  return `Hi Cabzii, I want to book a cab in ${cityName}. Pickup: ___. Drop: ___. Date: ${dateQ}. Please share fare and availability.`;
+}
+
 /** Pre-filled WhatsApp message for booking intent (URL-encoded). */
 export function whatsappBookingUrl({
-  message = "Hi Cabzii, I want to book a cab in Chennai. Please share fare and availability.",
-  phone = CABZII_WHATSAPP
+  message,
+  phone = CABZII_WHATSAPP,
+  pathname,
+  searchParams,
+  city,
+  intent
 } = {}) {
   const digits = String(phone).replace(/\D/g, "");
-  return `https://wa.me/${digits}?text=${encodeURIComponent(message)}`;
+  const text =
+    message ||
+    bookingWhatsappMessage({ pathname, searchParams, city, intent });
+  return `https://wa.me/${digits}?text=${encodeURIComponent(text)}`;
 }
 
 export function telUrl(phone = CABZII_PHONE) {
@@ -18,17 +130,17 @@ export function telUrl(phone = CABZII_PHONE) {
   return `tel:${normalized.startsWith("+") ? normalized : `+91${normalized.replace(/^91/, "")}`}`;
 }
 
-export function airportTaxiWhatsappUrl(direction = "pickup") {
+export function airportTaxiWhatsappUrl(direction = "pickup", city = "Chennai") {
   const msg =
     direction === "drop"
-      ? "Hi Cabzii, I need Chennai airport DROP taxi. Pickup area: ___. Flight time: ___. Please quote sedan/SUV fare."
-      : "Hi Cabzii, I need Chennai airport PICKUP taxi. Terminal: ___. Flight landing: ___. Please quote sedan/SUV fare.";
+      ? `Hi Cabzii, I need ${city} airport DROP taxi. Pickup area: ___. Flight time: ___. Please quote sedan/SUV fare.`
+      : `Hi Cabzii, I need ${city} airport PICKUP taxi. Terminal: ___. Flight landing: ___. Please quote sedan/SUV fare.`;
   return whatsappBookingUrl({ message: msg });
 }
 
 export function routeQuoteWhatsappUrl(from, to) {
   return whatsappBookingUrl({
-    message: `Hi Cabzii, I need a one-way cab from ${from} to ${to}. Date: ___. Passengers: ___. Please share fare for sedan and SUV.`
+    message: `Hi Cabzii, I want to book a one-way cab from ${from} to ${to}. Date: ___. Passengers: ___. Please share fare for sedan and SUV.`
   });
 }
 

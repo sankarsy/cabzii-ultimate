@@ -1,6 +1,7 @@
 import { normalizeGalleryPaths, normalizeStoredImagePath } from "./media";
 import { DEFAULT_HOLIDAY_CAB_TYPES } from "./holidays";
 import { parseStops, stopsToLines } from "./busBooking";
+import { cancellationToText, parseCancellationText, parseRestStopsText, restStopsToText } from "./busExperience";
 import { SEO_ROUTES } from "./seo/routes";
 import { SEO_SERVICES } from "./seo/services";
 
@@ -250,6 +251,7 @@ export function emptyDriverForm() {
   return {
     ...emptyProductFields(),
     name: "",
+    phone: "",
     vendor: "",
     type: "local",
     experience: "0 Years",
@@ -259,6 +261,10 @@ export function emptyDriverForm() {
     gallery: "",
     city: "",
     location: "",
+    serviceAreas: "",
+    licenseNumber: "",
+    licenseExpiry: "",
+    availabilityStatus: "available",
     discountPercentage: 0,
     languages: "",
     supportedVehicles: "",
@@ -282,6 +288,7 @@ export function driverFormFromItem(item) {
   return {
     ...productFieldsFromItem(item),
     name: item?.name || "",
+    phone: item?.phone || "",
     vendor: item?.vendor || "",
     type: item?.type || "local",
     experience: item?.experience || "0 Years",
@@ -291,6 +298,10 @@ export function driverFormFromItem(item) {
     gallery: Array.isArray(item?.gallery) ? item.gallery.join(", ") : "",
     city: item?.city || "",
     location: item?.location || "",
+    serviceAreas: Array.isArray(item?.serviceAreas) ? item.serviceAreas.join(", ") : "",
+    licenseNumber: item?.licenseNumber || "",
+    licenseExpiry: item?.licenseExpiry || "",
+    availabilityStatus: item?.availabilityStatus || (item?.status === "inactive" ? "inactive" : "available"),
     discountPercentage: numField(item?.discountPercentage),
     languages: Array.isArray(item?.languages) ? item.languages.join(", ") : "",
     supportedVehicles: Array.isArray(item?.supportedVehicles) ? item.supportedVehicles.join(", ") : "",
@@ -328,6 +339,7 @@ export function driverFormToPayload(form) {
 
   return {
     name: form.name,
+    phone: String(form.phone || "").trim(),
     vendor: form.vendor || "",
     type: form.type || "local",
     experience: form.experience || "0 Years",
@@ -337,6 +349,13 @@ export function driverFormToPayload(form) {
     gallery: normalizeGalleryPaths(form.gallery).slice(0, 3),
     city: form.city || "",
     location: form.location || "",
+    serviceAreas: String(form.serviceAreas || "")
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean),
+    licenseNumber: String(form.licenseNumber || "").trim(),
+    licenseExpiry: String(form.licenseExpiry || "").trim(),
+    availabilityStatus: form.availabilityStatus || "available",
     discountPercentage: numField(form.discountPercentage),
     languages: String(form.languages || "")
       .split(",")
@@ -371,7 +390,7 @@ export function emptyBusTripForm() {
     operatorCode: "",
     operatorLogo: "",
     vendor: "Cabzii Partner",
-    fromCity: "",
+    fromCity: "Chennai",
     toCity: "",
     departureTime: "06:00",
     arrivalTime: "14:00",
@@ -385,10 +404,26 @@ export function emptyBusTripForm() {
     boardingPointsText: "",
     droppingPointsText: "",
     bookedSeats: "",
-    amenities: "Water bottle, Charging point",
+    amenities: "Water bottle, Charging point, Blanket, Pillow",
     rating: 4.2,
     reviewCount: 100,
+    exclusiveDiscount: 0,
+    tripGuaranteePrice: 24,
+    distanceKm: 0,
+    onTimePercent: 86,
+    liveTrackingEnabled: true,
+    liveLat: "",
+    liveLng: "",
+    cancellationPolicyText: "8 | 85\n4 | 50\n0 | 5",
+    restStopsText: "",
+    routeStopsText: "",
+    policyLuggage: "",
+    policyPets: "Pets are not allowed.",
+    policyLiquor: "",
+    policyPickup: "",
     status: "active",
+    slug: "",
+    enterpriseSeo: {},
     seoTitle: "",
     seoDescription: "",
     seo: ""
@@ -418,7 +453,23 @@ export function busTripFormFromItem(item) {
     amenities: Array.isArray(item?.amenities) ? item.amenities.join(", ") : item?.amenities || "",
     rating: numField(item?.rating) || 4.2,
     reviewCount: numField(item?.reviewCount) || 100,
+    exclusiveDiscount: numField(item?.exclusiveDiscount) || 0,
+    tripGuaranteePrice: numField(item?.tripGuaranteePrice) || 24,
+    distanceKm: numField(item?.distanceKm) || 0,
+    onTimePercent: numField(item?.onTimePercent) || 86,
+    liveTrackingEnabled: item?.liveTracking?.enabled !== false,
+    liveLat: item?.liveTracking?.lat ?? "",
+    liveLng: item?.liveTracking?.lng ?? "",
+    cancellationPolicyText: cancellationToText(item?.cancellationPolicy) || "8 | 85\n4 | 50\n0 | 5",
+    restStopsText: restStopsToText(item?.restStops),
+    routeStopsText: Array.isArray(item?.routeStops) ? item.routeStops.join(" → ") : item?.routeStops || "",
+    policyLuggage: item?.policies?.luggage || "",
+    policyPets: item?.policies?.pets || "",
+    policyLiquor: item?.policies?.liquor || "",
+    policyPickup: item?.policies?.pickupTime || "",
     status: item?.status || "active",
+    slug: item?.slug || "",
+    enterpriseSeo: item?.enterpriseSeo || {},
     seoTitle: item?.seoTitle || "",
     seoDescription: item?.seoDescription || "",
     seo: item?.seo || ""
@@ -454,7 +505,31 @@ export function busTripFormToPayload(form) {
       .filter(Boolean),
     rating: Number(form.rating) || 4.2,
     reviewCount: Number(form.reviewCount) || 100,
+    exclusiveDiscount: Number(form.exclusiveDiscount) || 0,
+    tripGuaranteePrice: Number(form.tripGuaranteePrice) || 24,
+    distanceKm: Number(form.distanceKm) || 0,
+    onTimePercent: Number(form.onTimePercent) || 86,
+    liveTracking: {
+      enabled: form.liveTrackingEnabled !== false,
+      lat: form.liveLat === "" || form.liveLat == null ? null : Number(form.liveLat),
+      lng: form.liveLng === "" || form.liveLng == null ? null : Number(form.liveLng),
+      status: "on_time"
+    },
+    cancellationPolicy: parseCancellationText(form.cancellationPolicyText),
+    restStops: parseRestStopsText(form.restStopsText),
+    routeStops: String(form.routeStopsText || "")
+      .split(/→|,/)
+      .map((s) => s.trim())
+      .filter(Boolean),
+    policies: {
+      luggage: form.policyLuggage?.trim() || "",
+      pets: form.policyPets?.trim() || "",
+      liquor: form.policyLiquor?.trim() || "",
+      pickupTime: form.policyPickup?.trim() || ""
+    },
     status: form.status || "active",
+    slug: form.slug?.trim() || "",
+    enterpriseSeo: form.enterpriseSeo || {},
     seoTitle: form.seoTitle?.trim(),
     seoDescription: form.seoDescription?.trim(),
     seo: form.seo?.trim()
@@ -660,8 +735,8 @@ export const CATALOG_TABS = {
       hourlyRate: 320,
       dayRate: 2800,
       extraHourRate: 250,
-      originalPrice: 1800,
-      discountPercentage: 22,
+      originalPrice: 1400,
+      discountPercentage: 0,
       rating: 4.8,
       image: "/uploads/cab.jpg",
       gallery: ["/uploads/cab.jpg"],
@@ -675,10 +750,10 @@ export const CATALOG_TABS = {
         outstationRoundTrip: "Outstation — Round Trip"
       },
       farePackages: {
-        local4hr: { originalPrice: 1280, price: 998, discountPercentage: 22, extraKmRate: 14, extraHourRate: 250 },
-        local8hr: { originalPrice: 2800, price: 2184, discountPercentage: 22, extraKmRate: 14, extraHourRate: 250 },
-        outstationOneWay: { originalPrice: 1800, price: 1400, discountPercentage: 22, extraKmRate: 16, extraHourRate: 250 },
-        outstationRoundTrip: { originalPrice: 5180, price: 4038, discountPercentage: 22, extraKmRate: 16, extraHourRate: 250 }
+        local4hr: { originalPrice: 998, price: 998, discountPercentage: 0, extraKmRate: 14, extraHourRate: 250 },
+        local8hr: { originalPrice: 2184, price: 2184, discountPercentage: 0, extraKmRate: 14, extraHourRate: 250 },
+        outstationOneWay: { originalPrice: 1400, price: 1400, discountPercentage: 0, extraKmRate: 16, extraHourRate: 250 },
+        outstationRoundTrip: { originalPrice: 4038, price: 4038, discountPercentage: 0, extraKmRate: 16, extraHourRate: 250 }
       },
       seoTitle: "",
       seoDescription: ""
@@ -1007,7 +1082,7 @@ export function seoCityPageFormToPayload(form) {
 export function buildCatalogListUrl(tabKey) {
   const tab = CATALOG_TABS[tabKey];
   if (!tab) return "";
-  const params = new URLSearchParams({ limit: "100", page: "1" });
+  const params = new URLSearchParams({ limit: tabKey === "buses" ? "500" : "100", page: "1" });
   if (
     tab.adminList ||
     tabKey === "cabs" ||

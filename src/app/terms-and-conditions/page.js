@@ -2,6 +2,7 @@ import Footer from "../../components/Footer";
 import Navbar from "../../components/Navbar";
 import JsonLd from "../../components/seo/JsonLd";
 import { buildPageMetadata, legalWebPageJsonLd } from "../../lib/seo";
+import { TariffTerms } from "../../components/TariffTerms";
 
 export const metadata = buildPageMetadata({
   title: "Terms and Conditions | Cabzii",
@@ -72,7 +73,12 @@ export default function TermsAndConditionsPage() {
               </section>
 
               <section>
-                <h2 className="text-base font-bold text-slate-900">6. Policy Updates</h2>
+                <h2 className="text-base font-bold text-slate-900">6. Cab rental tariff terms</h2>
+                <TariffTerms compact />
+              </section>
+
+              <section>
+                <h2 className="text-base font-bold text-slate-900">7. Policy Updates</h2>
                 <p className="mt-1">
                   Cabzii may update these terms periodically. Continued use of the platform after updates constitutes acceptance
                   of the revised terms.

@@ -13,16 +13,18 @@ export const DEFAULT_SITE_SETTINGS = {
   navbar: [
     { label: "Home", href: "/", visible: true, sortOrder: 1 },
     { label: "Cabs", href: "/cabs", visible: true, sortOrder: 2 },
-    { label: "Drivers", href: "/drivers", visible: true, sortOrder: 3 },
-    { label: "Holidays", href: "/holidays", visible: true, sortOrder: 4 },
-    { label: "Hotels", href: "/hotels", visible: true, sortOrder: 5 },
-    { label: "Flights", href: "/flights", visible: true, sortOrder: 6 }
+    { label: "Buses", href: "/buses", visible: true, sortOrder: 3 },
+    { label: "Call Driver", href: "/call-driver", visible: true, sortOrder: 4 },
+    { label: "Holidays", href: "/holidays", visible: true, sortOrder: 5 },
+    { label: "Hotels", href: "/hotels", visible: false, sortOrder: 6 },
+    { label: "Flights", href: "/flights", visible: false, sortOrder: 7 }
   ],
   footerQuickLinks: [
     { label: "Home", href: "/" },
     { label: "Cabs", href: "/cabs" },
+    { label: "Buses", href: "/buses" },
     { label: "Holidays", href: "/holidays" },
-    { label: "Drivers", href: "/drivers" },
+    { label: "Call Driver", href: "/call-driver" },
     { label: "Blog", href: "/blogs" },
     { label: "Reviews", href: "/testimonials" },
     { label: "Locations", href: "/locations" }
@@ -98,12 +100,12 @@ export const DEFAULT_SITE_SETTINGS = {
     {
       key: "drivers",
       enabled: true,
-      eyebrow: "Top Drivers",
-      title: "Verified Driver Partners",
-      subtitle: "Experienced drivers available now for safe and smooth rides.",
-      limit: 3,
+      eyebrow: "Call Driver",
+      title: "Need a Driver for Your Own Car?",
+      subtitle: "Book a trusted Cabzii Call Driver in Chennai and outstation.",
+      limit: 6,
       sortOrder: 2,
-      viewAllHref: "/drivers"
+      viewAllHref: "/call-driver"
     },
     {
       key: "holidays",

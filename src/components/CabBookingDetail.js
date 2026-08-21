@@ -35,14 +35,22 @@ const PinIcon = MapPinIcon;
 import { resolveCabImage } from "../lib/vehicleImages";
 
 export default function CabBookingDetail({ cab, onSelectionChange, hideHeroImage = false }) {
-  const discount = num(cab.discountPercentage, 0);
   const price = num(cab.price);
   const day = num(cab.dayRate);
   const hourly = num(cab.hourlyRate);
   const rawExtra = cab.extraHourRate;
+  const fareSlabs = useMemo(
+    () => buildFareSlabs(cab),
+    [cab._id, cab.hourlyRate, cab.dayRate, cab.price, cab.extraHourRate, cab.discountPercentage, cab.farePackages, cab.packages]
+  );
+  const extraKmRate =
+    num(cab.pricePerKm) > 0
+      ? num(cab.pricePerKm)
+      : num(fareSlabs.find((p) => num(p.extraKm) > 0)?.extraKm) || Math.max(12, Math.floor(price / 10) || 12);
   const extraHour =
-    rawExtra != null && rawExtra !== "" && Number.isFinite(Number(rawExtra)) ? num(rawExtra) : num(cab.price);
-  const extraKmRate = Math.max(12, Math.floor(price / 10) || 12);
+    rawExtra != null && rawExtra !== "" && Number.isFinite(Number(rawExtra)) && num(rawExtra) > 0
+      ? num(rawExtra)
+      : num(fareSlabs.find((p) => num(p.extraHr) > 0)?.extraHr) || 0;
   const nightCharge = extraHour > 0 ? Math.max(0, Math.round(extraHour * 0.25)) : null;
   const chargeItems = useMemo(
     () => buildCabChargeItems(cab, { extraKm: extraKmRate, extraHr: extraHour, nightCharge }),
@@ -59,17 +67,13 @@ export default function CabBookingDetail({ cab, onSelectionChange, hideHeroImage
   const reviewCount =
     reviewCountRaw != null && Number.isFinite(Number(reviewCountRaw)) ? Number(reviewCountRaw) : null;
 
-  const fareSlabs = useMemo(
-    () => buildFareSlabs(cab),
-    [cab._id, cab.hourlyRate, cab.dayRate, cab.price, cab.extraHourRate, cab.discountPercentage, cab.farePackages]
-  );
-  const [selectedPackageId, setSelectedPackageId] = useState("local_4hr");
-  const [serviceTab, setServiceTab] = useState("local");
+  const [selectedPackageId, setSelectedPackageId] = useState(fareSlabs[0]?.id || "local_4hr");
+  const [serviceTab, setServiceTab] = useState(fareSlabs[0]?.group || "local");
 
   const visiblePackages = fareSlabs.filter((pkg) => pkg.group === serviceTab);
   const emitSelection = (pkg, tab) => {
     if (!pkg || !onSelectionChange) return;
-    onSelectionChange(selectionFromPackage(pkg, tab, discount));
+    onSelectionChange(selectionFromPackage(pkg, tab, cab));
   };
 
   const handleServiceTab = (tab) => {
@@ -86,16 +90,9 @@ export default function CabBookingDetail({ cab, onSelectionChange, hideHeroImage
     emitSelection(pkg, serviceTab);
   };
 
-  const d = Math.min(99, Math.max(0, discount));
-
   const imageBadges = (
     <>
       <div className="absolute left-1.5 top-1.5 flex items-center gap-1">
-        {d > 0 && (
-          <span className="rounded-md bg-[#0056D2] px-1.5 py-0.5 text-[8px] font-bold text-white shadow">
-            {d}% OFF
-          </span>
-        )}
         <span className="rounded-md bg-white/10 px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-wide text-white backdrop-blur">
           {cab.type || "Cab"}
         </span>
@@ -131,7 +128,6 @@ export default function CabBookingDetail({ cab, onSelectionChange, hideHeroImage
             visiblePackages={visiblePackages}
             selectedPackageId={selectedPackageId}
             onSelectPackage={handleSelectPackage}
-            discount={discount}
           />
           <ChargesGrid items={chargeItems} compact />
         </div>
@@ -176,7 +172,7 @@ function ServiceToggle({ serviceTab, setServiceTab }) {
   );
 }
 
-function PackageSection({ visiblePackages, selectedPackageId, onSelectPackage, discount }) {
+function PackageSection({ visiblePackages, selectedPackageId, onSelectPackage }) {
   const few = visiblePackages.length <= 2;
 
   return (
@@ -197,7 +193,6 @@ function PackageSection({ visiblePackages, selectedPackageId, onSelectPackage, d
             <PackageOptionCard
               pkg={pkg}
               selected={selectedPackageId === pkg.id}
-              discount={discount}
               compact
               onSelect={() => onSelectPackage(pkg)}
             />

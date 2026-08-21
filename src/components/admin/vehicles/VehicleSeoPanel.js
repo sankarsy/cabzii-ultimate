@@ -229,6 +229,7 @@ export default function VehicleSeoPanel({ form, patch, disabled = false, pathPre
   const [aiBusyKind, setAiBusyKind] = useState("");
   const [openaiConfigured, setOpenaiConfigured] = useState(null);
   const [choice, setChoice] = useState(null);
+  const [aiPrompt, setAiPrompt] = useState("");
   const autosaveRef = useRef(null);
   const debounceRef = useRef(null);
 
@@ -309,7 +310,7 @@ export default function VehicleSeoPanel({ form, patch, disabled = false, pathPre
     setAiBusy(true);
     setAiBusyKind(kind);
     try {
-      const payload = buildAiPayload(form, pathPrefix);
+      const payload = { ...buildAiPayload(form, pathPrefix), customPrompt: aiPrompt };
       const json = await callAiSeo(task, payload, { token: authToken });
       const data = json.data || {};
       if (json.openaiConfigured != null) setOpenaiConfigured(json.openaiConfigured);
@@ -759,8 +760,7 @@ export default function VehicleSeoPanel({ form, patch, disabled = false, pathPre
               <option>Package</option>
             </select>
           </Field>
-          <Field label="Offer Text"><input className={inputCls()} disabled={disabled} value={form.offerText || ""} onChange={(e) => patch({ offerText: e.target.value })} placeholder="10% off weekend" /></Field>
-          <Field label="Discount %"><input type="number" className={inputCls()} disabled={disabled} value={form.discountPercentage || ""} onChange={(e) => patch({ discountPercentage: Number(e.target.value) })} /></Field>
+          <Field label="Offer Text"><input className={inputCls()} disabled={disabled} value={form.offerText || ""} onChange={(e) => patch({ offerText: e.target.value })} placeholder="Special weekend package" /></Field>
           <Field label="Offer Ends"><input type="date" className={inputCls()} disabled={disabled} value={form.offerEnds || ""} onChange={(e) => patch({ offerEnds: e.target.value })} /></Field>
         </div>
       </SectionCard>
@@ -968,6 +968,25 @@ export default function VehicleSeoPanel({ form, patch, disabled = false, pathPre
                   ? "OpenAI connected"
                   : "Template mode · add OPENAI_API_KEY"}
             </p>
+
+            <label className="mt-3 block text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+              AI input
+              <textarea
+                value={aiPrompt}
+                onChange={(e) => setAiPrompt(e.target.value)}
+                rows={3}
+                placeholder="e.g. Chennai to Tirupati Volvo sleeper — keywords, H1, FAQ"
+                className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-2.5 py-2 text-xs font-normal normal-case tracking-normal text-slate-900 outline-none focus:border-sky-600"
+              />
+            </label>
+            <button
+              type="button"
+              disabled={disabled || aiBusy}
+              onClick={() => generate("everything")}
+              className="mt-2 w-full rounded-full bg-sky-600 px-3 py-2 text-[11px] font-semibold text-white hover:bg-sky-700 disabled:opacity-50"
+            >
+              {aiBusy && aiBusyKind === "everything" ? "Working…" : "Run AI with this input"}
+            </button>
 
             <div className="mt-4 max-h-[min(58vh,28rem)] space-y-1.5 overflow-y-auto pr-0.5 lg:max-h-[calc(96vh-14rem)]">
               {generateActions.map(([key, label, primary]) => (

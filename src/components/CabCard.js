@@ -5,10 +5,8 @@ import Link from "next/link";
 import {
   buildFareSlabs,
   formatRating,
-  num,
-  packageYouPay
+  num
 } from "../lib/cabFare";
-import { resolveMediaUrl } from "../lib/media";
 import {
   CARD_ARTICLE_CLASS,
   CARD_BOOK_BTN_CLASS,
@@ -24,7 +22,6 @@ import { resolveCabImage } from "../lib/vehicleImages";
 import { formatCabSeatPill } from "../lib/cabSeats";
 
 export default function CabCard({ cab, onBook, bookHref }) {
-  const discount = num(cab.discountPercentage, 0);
   const basePrice = num(cab.price);
 
   const imageSrc = resolveCabImage(cab);
@@ -65,7 +62,8 @@ export default function CabCard({ cab, onBook, bookHref }) {
       cab.price,
       cab.extraHourRate,
       cab.discountPercentage,
-      cab.farePackages
+      cab.farePackages,
+      cab.packages
     ]
   );
 
@@ -95,39 +93,15 @@ export default function CabCard({ cab, onBook, bookHref }) {
     (pkg) => pkg.id === selectedPackageId
   );
 
-  const d = Math.min(
-    99,
-    Math.max(0, discount)
-  );
-
-  const packageDiscount = selectedPackage?.discountPercentage ?? d;
-
   const listPrice = selectedPackage
-    ? num(selectedPackage.originalPrice ?? selectedPackage.list)
+    ? num(selectedPackage.price ?? selectedPackage.originalPrice ?? selectedPackage.list)
     : basePrice;
 
-  const finalPrice = selectedPackage?.price
-    ? num(selectedPackage.price)
-    : packageYouPay(listPrice > 0 ? listPrice : basePrice, packageDiscount);
-
-  const originalPrice =
-    listPrice > 0
-      ? listPrice
-      : num(cab.originalPrice) > 0
-      ? num(cab.originalPrice)
-      : basePrice;
-
-  const savedAmount = Math.max(
-    0,
-    originalPrice - finalPrice
-  );
+  const finalPrice = listPrice;
 
   const extraKmCharge =
     selectedPackage?.extraKm ??
-    Math.max(
-      12,
-      Math.floor(basePrice / 10) || 12
-    );
+    (num(cab.pricePerKm) > 0 ? num(cab.pricePerKm) : Math.max(12, Math.floor(basePrice / 10) || 12));
 
   const rawExtraHour = cab.extraHourRate;
 
@@ -174,12 +148,6 @@ export default function CabCard({ cab, onBook, bookHref }) {
   const imageBadges = (
     <>
       <div className="absolute left-1.5 top-1.5 flex items-center gap-1">
-        {d > 0 && (
-          <span className="rounded-md bg-[#0056D2] px-1.5 py-0.5 text-[10px] font-bold text-white shadow">
-            {d}% OFF
-          </span>
-        )}
-
         <span className="rounded-md bg-white/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white backdrop-blur">
           {cab.type || "Cab"}
         </span>
@@ -300,9 +268,6 @@ export default function CabCard({ cab, onBook, bookHref }) {
         {selectedPackage && (
           <PriceSummaryCard
             finalPrice={finalPrice}
-            originalPrice={originalPrice}
-            savedAmount={savedAmount}
-            discountPct={packageDiscount}
             extraKmCharge={extraKmCharge}
             extraHourCharge={extraHourCharge}
             extraBadges={extraBadges}

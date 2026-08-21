@@ -1,6 +1,7 @@
 /** Routes where floating widgets (chat, call FAB, sticky bar) should hide entirely. */
 export const FLOATING_UI_HIDDEN_PREFIXES = [
   "/admin",
+  "/driver",
   "/payment",
   "/login",
   "/cabs/passenger",
@@ -19,6 +20,7 @@ export function isCatalogDetailPage(pathname) {
   if (cabDriver && !CATALOG_LIST_SEGMENTS.has(cabDriver[2])) return true;
   if (/^\/tour-packages\/[^/]+$/.test(pathname)) return true;
   if (/^\/holidays\/[^/]+$/.test(pathname)) return true;
+  if (pathname.startsWith("/call-driver/book")) return true;
   return false;
 }
 

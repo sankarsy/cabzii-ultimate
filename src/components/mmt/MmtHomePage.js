@@ -9,8 +9,8 @@ import MmtLayout from "./MmtLayout";
 import InternalLinksHub from "../seo/InternalLinksHub";
 import TrustStrip from "../ui/TrustStrip";
 import MmtCabResultCard from "./MmtCabResultCard";
-import MmtDriverResultCard from "./MmtDriverResultCard";
 import MmtHomeCatalogSection, { MmtHomeCatalogScroll, MmtHomeCatalogScrollItem } from "./MmtHomeCatalogSection";
+import CallDriverHomeSection from "../home/CallDriverHomeSection";
 import FaqSection from "../seo/FaqSection";
 import SocialProofTicker from "../conversion/SocialProofTicker";
 import { HeroSearchProvider } from "../emt/HeroSearchContext";
@@ -21,7 +21,7 @@ import { useSelectedCity } from "../../lib/useSelectedCity";
 import { DEFAULT_HQ_CITY } from "../../lib/vehicleAdminConfig";
 import { isValidDriverTripSearch, parseDriverTripSearchParams } from "../../lib/driverTrip";
 import { isValidTripSearch, parseTripSearchParams } from "../../lib/mmtTrip";
-import { extractCabList, extractDriverList, fetchJson } from "../../lib/apiClient";
+import { extractCabList, fetchJson } from "../../lib/apiClient";
 
 const EmtHolidayExplore = dynamic(() => import("../emt/EmtHolidayExplore"), { ssr: false });
 const EmtOffersCarousel = dynamic(() => import("../emt/EmtOffersCarousel"), { ssr: false });
@@ -31,15 +31,11 @@ const MmtPopularServices = dynamic(() => import("./MmtPopularServices"), { ssr: 
 const HomeBlogTeasers = dynamic(() => import("../home/HomeBlogTeasers"), { ssr: false });
 
 const HOME_CABS_LIMIT = 8;
-const HOME_DRIVERS_LIMIT = 8;
 
 function resolveHeroTab(tabParam) {
   if (tabParam === "drivers") return "drivers";
-  if (tabParam === "flights") return "flights";
-  if (tabParam === "hotels") return "hotels";
   if (tabParam === "holidays") return "holidays";
   if (tabParam === "buses") return "buses";
-  if (tabParam === "trains") return "trains";
   return "cabs";
 }
 
@@ -56,11 +52,8 @@ function sortCabsForHome(list) {
 function HomePageBody({
   displayCity,
   cabs,
-  drivers,
   loadingCabs,
-  loadingDrivers,
   cabsError,
-  driversError,
   heroTab,
   initialCabTrip,
   initialDriverTrip
@@ -113,30 +106,7 @@ function HomePageBody({
           </MmtHomeCatalogScroll>
         </MmtHomeCatalogSection>
 
-        {driversError ? (
-          <p className="section-shell text-sm text-rose-700">{driversError}</p>
-        ) : null}
-
-        <MmtHomeCatalogSection
-          eyebrow="Verified chauffeurs"
-          title="Top acting drivers for you"
-          subtitle={`Chauffeur for Dzire, Ertiga, Innova & Tempo · same packages as cabs · ${displayCity}`}
-          viewAllHref="/drivers"
-          viewAllLabel="View all drivers"
-          loading={loadingDrivers}
-          loadingLabel="Loading drivers…"
-          isEmpty={!loadingDrivers && drivers.length === 0}
-          emptyMessage="No acting drivers yet. Restart the backend (it auto-creates drivers from cabs), or add drivers in admin."
-          borderedTop
-        >
-          <MmtHomeCatalogScroll>
-            {drivers.map((driver) => (
-              <MmtHomeCatalogScrollItem key={String(driver._id ?? driver.id)}>
-                <MmtDriverResultCard driver={driver} layout="card" catalogMode displayCity={displayCity} />
-              </MmtHomeCatalogScrollItem>
-            ))}
-          </MmtHomeCatalogScroll>
-        </MmtHomeCatalogSection>
+        <CallDriverHomeSection />
 
         {/* 5. Cross-sell — temple tours & holiday packages */}
         <PilgrimagePackagesSection />
@@ -189,20 +159,14 @@ export default function MmtHomePage() {
   const { city: selectedCity } = useSelectedCity();
   const displayCity = selectedCity || "Chennai";
   const [cabs, setCabs] = useState([]);
-  const [drivers, setDrivers] = useState([]);
   const [loadingCabs, setLoadingCabs] = useState(true);
-  const [loadingDrivers, setLoadingDrivers] = useState(true);
   const [cabsError, setCabsError] = useState("");
-  const [driversError, setDriversError] = useState("");
 
   const sharedProps = {
     displayCity,
     cabs,
-    drivers,
     loadingCabs,
-    loadingDrivers,
-    cabsError,
-    driversError
+    cabsError
   };
 
   useEffect(() => {
@@ -235,29 +199,6 @@ export default function MmtHomePage() {
       cancelled = true;
     };
   }, []);
-
-  useEffect(() => {
-    let cancelled = false;
-    setLoadingDrivers(true);
-    const q = new URLSearchParams({ limit: String(HOME_DRIVERS_LIMIT), page: "1" });
-    if (displayCity) q.set("priorityCity", displayCity);
-    fetchJson(`/api/drivers?${q}`)
-      .then((json) => {
-        if (!cancelled) setDrivers(sortBySelectedCity(extractDriverList(json), displayCity).slice(0, HOME_DRIVERS_LIMIT));
-      })
-      .catch((err) => {
-        if (!cancelled) {
-          setDrivers([]);
-          setDriversError(err.message || "Could not load drivers");
-        }
-      })
-      .finally(() => {
-        if (!cancelled) setLoadingDrivers(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [displayCity]);
 
   return (
     <Suspense

@@ -17,7 +17,7 @@ export default function AdminShell({ user, onLogout, children }) {
               <CabziiLogo showDomain />
             </Link>
             <div className="hidden border-l border-white/20 pl-4 sm:block">
-              <p className="text-sm font-bold">Admin panel</p>
+              <p className="text-sm font-bold">{user?.role === "vendor_admin" ? "Operator panel" : "Admin panel"}</p>
               <p className="text-xs text-white/70">{BRAND.domain}</p>
             </div>
           </div>

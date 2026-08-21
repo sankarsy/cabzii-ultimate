@@ -1,3 +1,5 @@
+import { addIstDays, todayStr } from "../istDate";
+
 /** Shared date formatting for EMT-style hero search cells */
 
 export function formatDayName(iso) {
@@ -32,7 +34,5 @@ export function formatTime12(time24) {
 }
 
 export function addDays(iso, days) {
-  const d = new Date(`${iso}T12:00:00`);
-  d.setDate(d.getDate() + days);
-  return d.toISOString().split("T")[0];
+  return addIstDays(iso || todayStr(), days);
 }

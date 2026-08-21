@@ -469,22 +469,22 @@ export function cabsCatalogJsonLd() {
 
 /** Browse /drivers catalog — rich snippet for acting driver searches. */
 export function driversCatalogJsonLd() {
-  const url = `${SITE_URL}/drivers`;
+  const url = `${SITE_URL}/call-driver`;
   return {
     "@context": "https://schema.org",
-    "@type": "Product",
-    name: "Hire Acting Drivers & Chauffeurs Online",
+    "@type": "Service",
+    name: "Call Driver in Chennai | Acting Driver Service",
     description:
-      "Verified acting drivers for Dzire, Ertiga, Innova & Tempo. Hourly, daily and outstation chauffeur packages on cabzii.in.",
+      "Book a professional call driver or acting driver for your own car in Chennai — local, outstation, airport, monthly, corporate and valet parking.",
     url,
     image: DEFAULT_OG_IMAGE,
-    brand: { "@type": "Brand", name: SITE_NAME },
-    category: "Chauffeur & Driver Service",
+    provider: { "@type": "Organization", name: SITE_NAME },
+    areaServed: "Chennai",
     offers: buildOffers({
       url,
       lowPrice: CITY_DRIVER_PRICE_RANGE.low,
       highPrice: CITY_DRIVER_PRICE_RANGE.high,
-      offerCount: 24
+      offerCount: 6
     })
   };
 }

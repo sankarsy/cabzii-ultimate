@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { Phone } from "lucide-react";
 import WhatsAppIcon from "./WhatsAppIcon";
 import { useSiteSettings } from "./SiteSettingsProvider";
@@ -13,15 +14,22 @@ export default function ContactFab() {
   const pathname = usePathname();
   const settings = useSiteSettings();
   const { city } = useSelectedCity();
+  const [search, setSearch] = useState("");
   const whatsapp = settings.whatsappFab;
   const phone = settings.contact?.phone || "+91-9944197416";
   const whatsappNumber = String(whatsapp?.number || settings.contact?.whatsapp || "9944197416").replace(/\D/g, "");
+
+  useEffect(() => {
+    setSearch(typeof window !== "undefined" ? window.location.search : "");
+  }, [pathname]);
 
   if (shouldHideFloatingUi(pathname)) return null;
 
   const waHref = whatsappBookingUrl({
     phone: whatsappNumber,
-    message: `Hi Cabzii, I need a cab in ${city || "Chennai"}. Please share fare and availability.`
+    pathname,
+    searchParams: search,
+    city: city || "Chennai"
   });
 
   const showWa = whatsapp?.enabled !== false && whatsappNumber;

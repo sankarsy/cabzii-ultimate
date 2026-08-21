@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { Phone } from "lucide-react";
 import WhatsAppIcon from "./WhatsAppIcon";
 import { useSiteSettings } from "./SiteSettingsProvider";
@@ -15,16 +16,23 @@ const CabIcon = HERO_TAB_ICONS.cabs;
 export default function StickyBookingBar() {
   const pathname = usePathname();
   const settings = useSiteSettings();
+  const [search, setSearch] = useState("");
   const phone = settings.contact?.phone || "+91-9944197416";
   const whatsappNumber = String(
     settings.whatsappFab?.number || settings.contact?.whatsapp || "9944197416"
   ).replace(/\D/g, "");
 
+  useEffect(() => {
+    setSearch(typeof window !== "undefined" ? window.location.search : "");
+  }, [pathname]);
+
   if (shouldHideStickyBookingBar(pathname)) return null;
 
   const waHref = whatsappBookingUrl({
     phone: whatsappNumber,
-    message: "Hi Cabzii, I want to book a cab. Please share fare and availability."
+    pathname,
+    searchParams: search,
+    city: "Chennai"
   });
 
   return (

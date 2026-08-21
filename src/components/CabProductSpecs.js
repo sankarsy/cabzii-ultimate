@@ -4,9 +4,9 @@ import { formatInrCurrency } from "../lib/formatInr";
 
 export default function CabProductSpecs({ cab }) {
   const features = Array.isArray(cab.features) ? cab.features : [];
-  const hourly = num(cab.hourlyRate);
-  const day = num(cab.dayRate);
-  const extra = num(cab.extraHourRate);
+  const extra =
+    num(cab.extraHourRate) ||
+    num((cab.packages || []).find((p) => num(p.extraHourRate) > 0)?.extraHourRate);
   /* Only shown after the first approved verified review */
   const ratingText = formatRating(cab);
 
@@ -17,10 +17,9 @@ export default function CabProductSpecs({ cab }) {
     { label: "Vendor", value: cab.vendor },
     { label: "Seats", value: formatCabSeatLabel(cab) },
     { label: "Base price", value: cab.price ? formatInrCurrency(num(cab.price)) : "—" },
-    { label: "Hourly rate", value: hourly > 0 ? `${formatInrCurrency(hourly)}/hr` : "—" },
-    { label: "Day rate", value: day > 0 ? `${formatInrCurrency(day)}/day` : "—" },
+    { label: "Extra km", value: num(cab.pricePerKm) > 0 ? `${formatInrCurrency(num(cab.pricePerKm))}/km` : "—" },
     { label: "Extra hour", value: extra > 0 ? `${formatInrCurrency(extra)}/hr` : "—" },
-    { label: "Discount", value: cab.discountPercentage ? `${cab.discountPercentage}% OFF` : "—" },
+    { label: "Driver batta / day", value: num(cab.driverAllowance) > 0 ? formatInrCurrency(num(cab.driverAllowance)) : "—" },
     ...(ratingText ? [{ label: "Rating", value: `${ratingText} / 5 · ${cab.reviewCount} verified` }] : [])
   ];
 

@@ -1,4 +1,5 @@
 import { appendTripCoords, readTripCoords } from "./tripCoords";
+import { todayStr as istTodayStr } from "./istDate";
 
 /** Hero & results search params for acting driver booking (mirrors cab mmtTrip). */
 
@@ -24,7 +25,7 @@ export const DRIVER_HERO_PACKAGES = [
 ];
 
 export function todayStr() {
-  return new Date().toISOString().split("T")[0];
+  return istTodayStr();
 }
 
 export function packageIdFromTrip(trip) {

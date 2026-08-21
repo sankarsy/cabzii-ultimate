@@ -20,7 +20,8 @@ const COLUMNS = [
     links: [
       { label: "Outstation Cabs", href: "/cabs" },
       { label: "Airport Taxi Chennai", href: "/services/airport-taxi/chennai" },
-      { label: "Acting Drivers", href: "/drivers" },
+      { label: "Bus tickets", href: "/buses" },
+      { label: "Call Driver", href: "/call-driver" },
       { label: "Holiday Packages", href: "/holidays" },
       { label: "Cab Booking Chennai", href: "/cab-booking/chennai" }
     ]

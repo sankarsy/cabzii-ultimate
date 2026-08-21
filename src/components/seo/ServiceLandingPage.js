@@ -10,7 +10,6 @@ import { serviceSearchHref, tunedServiceDescription, tunedServiceH1 } from "../.
 import { formatSerpPrice, serviceSerpBadges } from "../../lib/seo/serpRichData";
 import { servicePath } from "../../lib/seo/services";
 import { routesForCity } from "../../lib/seo/routes";
-import { driverTripToSearchQuery } from "../../lib/driverTrip";
 import { todayStr } from "../../lib/mmtTrip";
 
 /** Map SEO service slug → search widget trip type so the right tab is pre-selected */
@@ -59,10 +58,7 @@ export default function ServiceLandingPage({
     packageHours: 8
   };
   const driverFocus = DRIVER_FOCUS_SLUGS.has(service.slug);
-  const driverSearchHref = `/drivers/results?${driverTripToSearchQuery({
-    ...widgetTrip,
-    tripType: tripType === "airport" ? "outstation" : tripType
-  }).toString()}`;
+  const driverSearchHref = "/call-driver";
   const dropHint =
     tripType === "airport"
       ? `${city.name} Airport`
@@ -111,10 +107,10 @@ export default function ServiceLandingPage({
           cabSearchHref={searchHref}
           driverSearchHref={driverSearchHref}
           cabs={cabs}
-          drivers={driverFocus ? drivers : []}
+          drivers={[]}
           trip={widgetTrip}
           showCabWidget
-          showDriverWidget={driverFocus}
+          showDriverWidget={false}
           showDriverCta={driverFocus}
           widgetDefaultCity={city.name}
           widgetInitialTrip={widgetTrip}

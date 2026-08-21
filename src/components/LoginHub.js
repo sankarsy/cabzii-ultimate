@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import OtpLogin from "./OtpLogin";
 import { normalizeMobileInput, sanitizeMobileInput, setSession } from "../lib/auth";
 import { BriefcaseIcon, ChevronRightIcon, ShieldIcon, UserIcon } from "./icons";
@@ -39,12 +39,21 @@ function parseJsonResponse(res) {
 }
 
 export default function LoginHub() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const nextUrl = searchParams.get("next") || "/";
   const initialRole = searchParams.get("role");
   const validInitial = ROLES.some((r) => r.id === initialRole) ? initialRole : null;
 
   const [selectedRole, setSelectedRole] = useState(validInitial);
+
+  useEffect(() => {
+    if (initialRole === "driver") router.replace("/driver/login");
+  }, [initialRole, router]);
+
+  if (initialRole === "driver") {
+    return <div className="mx-auto max-w-md text-center text-sm text-slate-600">Opening driver login…</div>;
+  }
 
   if (selectedRole === "customer") {
     return <OtpLogin nextUrl={nextUrl} onBack={() => setSelectedRole(null)} />;

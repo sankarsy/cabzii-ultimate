@@ -11,9 +11,11 @@ export function inferPassengerSeats(cab = {}) {
   return 4;
 }
 
-/** Display as Indian cab convention: passenger seats + driver — e.g. 4+1, 6+1, 12+1. */
+/** Display as Indian cab convention: passenger seats + driver — e.g. 4+1, 6+1. Vans/buses use seater count. */
 export function formatCabSeatLabel(cab = {}) {
-  return `${inferPassengerSeats(cab)}+1`;
+  const seats = inferPassengerSeats(cab);
+  if (seats >= 12) return `${seats} Seater`;
+  return `${seats}+1`;
 }
 
 export function formatCabSeatText(cab = {}, { word = "seats" } = {}) {

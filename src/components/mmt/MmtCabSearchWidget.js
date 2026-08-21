@@ -7,7 +7,7 @@ import PlaceAutocomplete from "../PlaceAutocomplete";
 import { CalendarIcon, ClockIcon, SearchIcon, TwoWayIcon } from "../icons";
 import { SEARCH_FIELD_ICON_CHIPS, SEARCH_FIELD_ICONS } from "../icons/heroIcons";
 import { EmtHeroPriceHint } from "../emt/EmtHeroPills";
-import { formatEmtDate, formatTime12 } from "../../lib/emt/heroDates";
+import { formatEmtDate, formatTime12, addDays } from "../../lib/emt/heroDates";
 import { applyDistanceToTrip, fetchTripDistance } from "../../lib/fetchTripDistance";
 import { coordsForPlaceLabel } from "../../lib/indiaCityCoords";
 import { HOURLY_PACKAGES, todayStr, tripNeedsDrop, tripToSearchQuery } from "../../lib/mmtTrip";
@@ -30,9 +30,7 @@ const CAB_MODE_TABS = [
 ];
 
 function nextDayStr(dateStr) {
-  const d = new Date(dateStr || todayStr());
-  d.setDate(d.getDate() + 1);
-  return d.toISOString().split("T")[0];
+  return addDays(dateStr || todayStr(), 1);
 }
 
 export default function MmtCabSearchWidget({

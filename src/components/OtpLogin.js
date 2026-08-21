@@ -23,7 +23,13 @@ async function parseJsonResponse(res) {
   }
 }
 
-export default function OtpLogin({ nextUrl: nextUrlProp, onBack }) {
+export default function OtpLogin({
+  nextUrl: nextUrlProp,
+  onBack,
+  loginAs,
+  title = "Customer Login",
+  subtitle = "Book cabs, tours & drivers with your 6-digit mobile OTP."
+}) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const nextUrl = nextUrlProp || searchParams.get("next") || "/";
@@ -58,7 +64,7 @@ export default function OtpLogin({ nextUrl: nextUrlProp, onBack }) {
       const res = await fetch("/api/auth/send-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mobileNumber })
+        body: JSON.stringify({ mobileNumber, ...(loginAs ? { loginAs } : {}) })
       });
       const data = await parseJsonResponse(res);
       if (!res.ok || data?.success === false) {
@@ -98,11 +104,14 @@ export default function OtpLogin({ nextUrl: nextUrlProp, onBack }) {
       const res = await fetch("/api/auth/verify-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mobileNumber, otp })
+        body: JSON.stringify({ mobileNumber, otp, ...(loginAs ? { loginAs } : {}) })
       });
       const data = await parseJsonResponse(res);
       if (!res.ok || !data?.data?.token) {
         throw new Error(data?.message || "Invalid OTP");
+      }
+      if (loginAs === "driver" && data.data.user?.role !== "driver") {
+        throw new Error("This mobile is not registered as a driver.");
       }
       setSession(data.data.token, data.data.user);
       const sessionRes = await fetch("/api/auth/session", {
@@ -167,8 +176,8 @@ export default function OtpLogin({ nextUrl: nextUrlProp, onBack }) {
           <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-sky-50 text-sky-400">
             <PhoneIcon className="h-6 w-6" />
           </span>
-          <h1 className="mt-3 text-xl font-bold text-slate-900">Customer Login</h1>
-          <p className="mt-1 text-sm text-slate-600">Book cabs, tours &amp; drivers with your 6-digit mobile OTP.</p>
+          <h1 className="mt-3 text-xl font-bold text-slate-900">{title}</h1>
+          <p className="mt-1 text-sm text-slate-600">{subtitle}</p>
         </div>
 
         {step === "mobile" ? (

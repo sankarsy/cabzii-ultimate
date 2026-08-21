@@ -4,6 +4,7 @@
  */
 
 import { SEO_SERVICES } from "./services";
+import { todayStr } from "../mmtTrip";
 
 export const META_TITLE_MAX = 60;
 export const META_DESC_MIN = 120;
@@ -626,7 +627,7 @@ export function serviceSearchHref(service, city) {
 
   const base = new URLSearchParams({
     from: city.name,
-    date: new Date().toISOString().split("T")[0],
+    date: todayStr(),
     time: "09:00"
   });
 

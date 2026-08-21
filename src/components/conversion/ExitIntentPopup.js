@@ -36,7 +36,8 @@ export default function ExitIntentPopup() {
   const whatsappNumber = String(settings.whatsappFab?.number || settings.contact?.whatsapp || "9944197416").replace(/\D/g, "");
   const waHref = whatsappBookingUrl({
     phone: whatsappNumber,
-    message: "Hi Cabzii, I was about to leave — please share a quick cab quote for my trip."
+    pathname,
+    intent: "exit"
   });
 
   const dismiss = useCallback(() => {

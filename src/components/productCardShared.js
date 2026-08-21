@@ -67,16 +67,12 @@ export function ProductMetaBlock({ title, vendor, vendorFallback = "Cabzii", chi
 
 export function PriceSummaryCard({
   finalPrice,
-  originalPrice,
-  savedAmount,
-  discountPct,
   extraKmCharge,
   extraHourCharge,
   extraBadges,
   priceLabel = "Starting From",
   priceSuffix = ""
 }) {
-  const d = Math.min(99, Math.max(0, discountPct));
   return (
     <div className="mt-1 rounded-lg border border-slate-200 bg-slate-50 p-1.5 sm:mt-1.5 sm:rounded-xl sm:p-2">
       <div className="flex items-start justify-between gap-2">
@@ -87,24 +83,8 @@ export function PriceSummaryCard({
               ₹{finalPrice.toLocaleString("en-IN")}
               {priceSuffix ? <span className="ml-1 text-[10px] font-medium text-slate-500">{priceSuffix}</span> : null}
             </p>
-            {originalPrice > finalPrice ? (
-              <span className="text-[10px] font-medium text-slate-400 line-through sm:text-xs">
-                ₹{originalPrice.toLocaleString("en-IN")}
-              </span>
-            ) : null}
           </div>
-          {savedAmount > 0 ? (
-            <p className="mt-0.5 text-[10px] font-semibold text-slate-600 sm:text-[11px]">
-              Save ₹{savedAmount.toLocaleString("en-IN")}
-            </p>
-          ) : null}
         </div>
-        {d > 0 ? (
-          <div className="shrink-0 rounded-md border border-slate-200 bg-white px-1.5 py-1 text-center sm:rounded-lg sm:px-2">
-            <p className="text-[8px] font-bold uppercase tracking-wider text-slate-500 sm:text-[9px]">Off</p>
-            <p className="text-[10px] font-bold text-slate-800 sm:text-xs">{d}%</p>
-          </div>
-        ) : null}
       </div>
       {(extraKmCharge != null || extraHourCharge != null) && (
         <div className="mt-1.5 grid grid-cols-2 gap-1.5 sm:mt-2 sm:gap-2">

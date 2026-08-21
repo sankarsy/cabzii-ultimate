@@ -1,4 +1,4 @@
-import { calculateBookingTotals, num, packageYouPay, vendorInitials } from "./cabFare";
+import { calculateBookingTotals, num, vendorInitials } from "./cabFare";
 import { buildStandardChargeItems } from "./productCharges";
 
 export { num, vendorInitials as driverInitials };
@@ -49,16 +49,18 @@ function pickStoredPackage(packages, meta) {
 }
 
 function resolveDriverPackageFare(pkg, driver, fallbackList) {
-  const discount = num(pkg?.discountPercentage ?? driver?.discountPercentage);
-  const originalPrice =
-    num(pkg?.originalPrice) > 0 ? num(pkg.originalPrice) : Math.max(num(fallbackList), 0);
-  const price = num(pkg?.price) > 0 ? num(pkg.price) : packageYouPay(originalPrice, discount);
+  const selling =
+    num(pkg?.price) > 0
+      ? num(pkg.price)
+      : num(pkg?.originalPrice) > 0
+        ? num(pkg.originalPrice)
+        : Math.max(num(fallbackList), 0);
   const hourly = num(driver?.pricing?.hourly);
   const day = num(driver?.pricing?.day);
   const extraHr = num(pkg?.extraHourRate) || num(driver?.pricing?.extraHour) || hourly || 0;
   const extraKm = num(pkg?.extraKmRate) > 0 ? num(pkg.extraKmRate) : Math.max(12, Math.floor((day || hourly || 100) / 10));
 
-  return { originalPrice, price, discountPercentage: discount, extraKm, extraHr };
+  return { originalPrice: selling, price: selling, discountPercentage: 0, extraKm, extraHr };
 }
 
 function buildLegacyDriverSlabs(driver) {
@@ -158,15 +160,10 @@ export function buildDriverPaymentSearchParams(driverId, selection) {
   return q;
 }
 
-export function selectionFromDriverPackage(pkg, tab, discountPct) {
-  const listPrice = num(pkg?.originalPrice) > 0 ? num(pkg.originalPrice) : num(pkg?.list ?? 0);
-  const d =
-    pkg?.discountPercentage != null && pkg?.discountPercentage !== ""
-      ? num(pkg.discountPercentage)
-      : num(discountPct);
-  const baseFromPkg = num(pkg?.price) > 0 ? num(pkg.price) : packageYouPay(listPrice, d);
-  const totals = calculateBookingTotals(listPrice, d);
-  const total = listPrice > 0 && num(pkg?.price) > 0 ? baseFromPkg : totals.total;
+export function selectionFromDriverPackage(pkg, tab) {
+  const listPrice = num(pkg?.price) > 0 ? num(pkg.price) : num(pkg?.originalPrice) || num(pkg?.list ?? 0);
+  const totals = calculateBookingTotals(listPrice);
+  const total = listPrice;
 
   return {
     packageId: pkg?.id,

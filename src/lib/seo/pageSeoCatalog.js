@@ -28,15 +28,16 @@ export const STATIC_PAGE_SEO_LIST = [
       "cab booking chennai, airport taxi, outstation cab, Maruti Dzire cab, Innova taxi, cabzii cabs"
   },
   {
-    id: "site:drivers",
-    path: "/drivers",
+    id: "site:call-driver",
+    path: "/call-driver",
     type: "site",
-    typeLabel: "Drivers listing",
-    productName: "Acting Drivers",
-    seoTitle: formatSerpTitle("Hire Acting Drivers Online", "Dzire, Ertiga, Innova"),
+    typeLabel: "Call Driver",
+    productName: "Call Driver Service",
+    seoTitle: "Call Driver in Chennai | Acting Driver Service | Cabzii",
     seoDescription:
-      "Hire acting drivers for your Maruti Dzire, Ertiga, Toyota Innova or Tempo Traveller. Same 4hr/8hr & outstation packages as cab booking on cabzii.in.",
-    seoKeywords: "acting driver chennai, driver on hire, chauffeur service, cabzii acting driver"
+      "Book a call driver in Chennai for your own car. Acting driver, outstation driver, airport call driver, monthly driver, corporate driver and valet parking on Cabzii.",
+    seoKeywords:
+      "call driver Chennai, acting driver Chennai, driver for own car Chennai, outstation driver Chennai, airport call driver Chennai, monthly driver Chennai, corporate driver service Chennai"
   },
   {
     id: "site:holidays",

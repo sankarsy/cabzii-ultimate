@@ -1041,6 +1041,19 @@ main h3,
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
+.emt-search-bar.emt-search-bar-drivers {
+  grid-template-columns: 1fr;
+}
+@media (min-width: 640px) {
+  .emt-search-bar.emt-search-bar-drivers {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1024px) {
+  .emt-search-bar.emt-search-bar-drivers {
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  }
+}
 
 .emt-search-submit {
   display: inline-flex;
@@ -2145,4 +2158,151 @@ main h3,
   font-weight: 700;
   letter-spacing: 0.02em;
   white-space: nowrap;
+}
+
+/* RedBus-style bus booking theme */
+:root {
+  --rdb-red: #d84e55;
+  --rdb-red-hover: #c03940;
+  --rdb-red-soft: #fff1f2;
+  --rdb-red-ring: #fecaca;
+}
+.rdb-hero-body {
+  background: linear-gradient(180deg, #d84e55 0%, #c03940 55%, #9f2d33 100%);
+  padding: 1.25rem 0 1.5rem;
+}
+.rdb-search-card {
+  overflow: hidden;
+  border-radius: 0.75rem;
+  background: #fff;
+  box-shadow: 0 12px 40px rgba(15, 23, 42, 0.18);
+}
+.rdb-search-bar {
+  display: grid;
+  gap: 0;
+}
+@media (min-width: 1024px) {
+  .rdb-search-bar {
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) minmax(0, 1.15fr) auto;
+  }
+}
+.rdb-search-cell {
+  padding: 0.85rem 1rem;
+  min-width: 0;
+}
+@media (min-width: 1024px) {
+  .rdb-search-cell {
+    border-right: 1px solid #f1f5f9;
+  }
+}
+.rdb-search-label {
+  display: block;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #d84e55;
+}
+.rdb-search-input {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #0f172a;
+  outline: none;
+}
+.rdb-search-input::placeholder {
+  font-weight: 500;
+  color: #94a3b8;
+}
+.rdb-swap-btn {
+  display: flex;
+  height: 2.25rem;
+  width: 2.25rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: 1px solid #fecaca;
+  background: #fff;
+  color: #d84e55;
+}
+.rdb-search-submit {
+  min-height: 3.25rem;
+  padding: 0.85rem 1.75rem;
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #fff;
+  background: #d84e55;
+}
+.rdb-search-submit:hover {
+  background: #c03940;
+}
+.rdb-quick {
+  border-radius: 9999px;
+  border: 1px solid #fecaca;
+  background: #fff1f2;
+  padding: 0.2rem 0.65rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: #9f1239;
+}
+.rdb-quick-active {
+  border-color: #d84e55;
+  background: #d84e55;
+  color: #fff;
+}
+.rdb-chip {
+  border-radius: 9999px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: capitalize;
+  color: #334155;
+}
+.rdb-chip-active {
+  border-color: #d84e55;
+  background: #d84e55;
+  color: #fff;
+}
+.rdb-card {
+  overflow: hidden;
+  border-radius: 0.75rem;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+.rdb-card:hover {
+  border-color: #fecaca;
+  box-shadow: 0 8px 24px rgba(216, 78, 85, 0.12);
+}
+.rdb-select-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  background: #d84e55;
+  padding: 0.6rem 1.15rem;
+  font-size: 0.8125rem;
+  font-weight: 800;
+  color: #fff;
+}
+.rdb-select-btn:hover {
+  background: #c03940;
+}
+.rdb-primo {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 0.25rem;
+  background: #fff1f2;
+  padding: 0.1rem 0.4rem;
+  font-size: 0.625rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #d84e55;
 }

@@ -43,6 +43,7 @@ import AdminBookingEditor from "./AdminBookingEditor";
 import { AdminSeoCityPageForm, AdminSeoRouteForm, AdminSeoServiceForm } from "./AdminSeoForm";
 import { AdminProductSeoSection } from "./AdminProductSeoSection";
 import { AdminGalleryField, AdminProductImageField, parseGallery } from "./AdminProductImageField";
+import ImageUploadField from "./ImageUploadField";
 import FarePackagesEditor from "./FarePackagesEditor";
 import AdminPackageExcelToolbar from "./AdminPackageExcelToolbar";
 import TourPackageContentEditor from "./TourPackageContentEditor";
@@ -84,9 +85,12 @@ function itemSubtitle(item, tabKey) {
   if (tabKey === "testimonials") return `${item.location || "—"} · ${item.rating ?? 5}★`;
   if (tabKey === "bookings") {
     const parts = [
+      item.type || "cab",
       item.status || "pending",
       item.phone || "",
-      item.itemTitle || "",
+      item.type === "bus"
+        ? [item.busMeta?.operator, item.busMeta?.fromCity && item.busMeta?.toCity ? `${item.busMeta.fromCity} → ${item.busMeta.toCity}` : "", item.busMeta?.seats?.length ? `Seats ${item.busMeta.seats.join(",")}` : ""].filter(Boolean).join(" · ")
+        : item.itemTitle || "",
       item.pickup ? `${item.pickup}${item.drop ? ` → ${item.drop}` : ""}` : "",
       `₹${Number(item.amount || 0).toLocaleString("en-IN")}`
     ];
@@ -167,6 +171,7 @@ export default function AdminCatalogPanel({
   const [errorMessage, setErrorMessage] = useState("");
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [typeFilter, setTypeFilter] = useState("all");
   const [sortKey, setSortKey] = useState("latest");
   const [listPage, setListPage] = useState(1);
   const [viewingId, setViewingId] = useState("");
@@ -375,7 +380,7 @@ export default function AdminCatalogPanel({
 
   useEffect(() => {
     setListPage(1);
-  }, [query, statusFilter, sortKey, tabKey]);
+  }, [query, statusFilter, typeFilter, sortKey, tabKey]);
 
   const getPayload = () => {
     if (tab?.form === "blog") return { ...blogForm };
@@ -913,7 +918,11 @@ export default function AdminCatalogPanel({
       const hay = JSON.stringify(item).toLowerCase();
       return hay.includes(q);
     });
-    const byStatus = searched.filter((item) => {
+    const byType = searched.filter((item) => {
+      if (tabKey !== "bookings" || typeFilter === "all") return true;
+      return String(item.type || "cab") === typeFilter;
+    });
+    const byStatus = byType.filter((item) => {
       if (statusFilter === "all") return true;
       if (tabKey === "bookings") {
         const st = (item.status || "pending").toLowerCase();
@@ -942,7 +951,7 @@ export default function AdminCatalogPanel({
       sorted.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
     }
     return sorted;
-  }, [items, query, statusFilter, sortKey, tabKey, tab]);
+  }, [items, query, statusFilter, typeFilter, sortKey, tabKey, tab]);
   const pageSize = 10;
   const totalPages = Math.max(1, Math.ceil(filteredItems.length / pageSize));
   const pagedItems = filteredItems.slice((listPage - 1) * pageSize, listPage * pageSize);
@@ -1113,6 +1122,16 @@ export default function AdminCatalogPanel({
               <Field label="Product name *">
                 <input className={inputCls()} value={driverForm.name} onChange={(e) => setDriverForm((p) => ({ ...p, name: e.target.value }))} placeholder="Rajesh — Acting Driver Chennai" />
               </Field>
+              <Field label="Driver mobile *">
+                <input
+                  className={inputCls()}
+                  inputMode="numeric"
+                  maxLength={10}
+                  value={driverForm.phone}
+                  onChange={(e) => setDriverForm((p) => ({ ...p, phone: e.target.value }))}
+                  placeholder="10-digit mobile (driver's own number)"
+                />
+              </Field>
               <Field label="Vendor">
                 <input className={inputCls()} value={driverForm.vendor} onChange={(e) => setDriverForm((p) => ({ ...p, vendor: e.target.value }))} />
               </Field>
@@ -1131,9 +1150,6 @@ export default function AdminCatalogPanel({
               <Field label="Rating">
                 <input className={inputCls()} value={driverForm.rating} onChange={(e) => setDriverForm((p) => ({ ...p, rating: e.target.value }))} placeholder="4.9" />
               </Field>
-              <Field label="Discount %">
-                <input type="number" min={0} max={99} className={inputCls()} value={driverForm.discountPercentage} onChange={(e) => setDriverForm((p) => ({ ...p, discountPercentage: Number(e.target.value) }))} />
-              </Field>
               <div className="sm:col-span-2">
                 <AdminProductImageField
                   label="Product image"
@@ -1146,14 +1162,14 @@ export default function AdminCatalogPanel({
                   alt={driverForm.name || "Driver preview"}
                 />
               </div>
-              <Field label="Status" hint="Active drivers appear on the website">
+              <Field label="Status" hint="Inactive drivers cannot be assigned to new bookings">
                 <select
                   className={inputCls()}
                   value={driverForm.status}
                   onChange={(e) => setDriverForm((p) => ({ ...p, status: e.target.value }))}
                 >
-                  <option value="active">Active — show on website</option>
-                  <option value="inactive">Inactive — admin only</option>
+                  <option value="active">Active — can be assigned</option>
+                  <option value="inactive">Inactive — do not assign</option>
                 </select>
               </Field>
               <Field label="City">
@@ -1161,6 +1177,24 @@ export default function AdminCatalogPanel({
               </Field>
               <Field label="Location">
                 <input className={inputCls()} value={driverForm.location} onChange={(e) => setDriverForm((p) => ({ ...p, location: e.target.value }))} placeholder="Koramangala, Whitefield, etc." />
+              </Field>
+              <Field label="Service areas">
+                <input className={inputCls()} value={driverForm.serviceAreas || ""} onChange={(e) => setDriverForm((p) => ({ ...p, serviceAreas: e.target.value }))} placeholder="Chennai, ECR, OMR" />
+              </Field>
+              <Field label="Availability">
+                <select className={inputCls()} value={driverForm.availabilityStatus || "available"} onChange={(e) => setDriverForm((p) => ({ ...p, availabilityStatus: e.target.value }))}>
+                  <option value="available">Available</option>
+                  <option value="assigned">Assigned</option>
+                  <option value="on_trip">On Trip</option>
+                  <option value="offline">Offline</option>
+                  <option value="inactive">Inactive</option>
+                </select>
+              </Field>
+              <Field label="Licence number">
+                <input className={inputCls()} value={driverForm.licenseNumber || ""} onChange={(e) => setDriverForm((p) => ({ ...p, licenseNumber: e.target.value }))} />
+              </Field>
+              <Field label="Licence expiry">
+                <input className={inputCls()} value={driverForm.licenseExpiry || ""} onChange={(e) => setDriverForm((p) => ({ ...p, licenseExpiry: e.target.value }))} placeholder="YYYY-MM-DD" />
               </Field>
               <div className="sm:col-span-2">
                 <AdminGalleryField
@@ -1246,8 +1280,7 @@ export default function AdminCatalogPanel({
             <div className="rounded-xl border border-blue-200 bg-blue-50/40 p-4">
               <p className="text-xs font-bold uppercase tracking-wide text-slate-700">Pricing & vehicles</p>
               <p className="mt-1 text-[11px] leading-relaxed text-slate-600">
-                <strong>Package price</strong> is the public fare (SEO + cards). Leave discount at <strong>0</strong> for no promo.
-                Enter a discount % only when you want an “% OFF” badge — then set MRP (struck-through) manually.
+                <strong>Package price</strong> is the public fare shown on cards, booking, and SEO. Discounts are disabled for all packages.
               </p>
               <div className="mt-3 grid gap-3 sm:grid-cols-2">
                 <Field label="Package price ₹ *" hint="Selling price shown on site & in Google (no auto discount)">
@@ -1256,46 +1289,6 @@ export default function AdminCatalogPanel({
                 <Field label="Included pickup hub" hint="Round-trip transport from this city is bundled in price">
                   <input className={inputCls()} value={tourPackageForm.pricingOriginCity || "Chennai"} onChange={(e) => setTourPackageForm((p) => ({ ...p, pricingOriginCity: e.target.value }))} placeholder="Chennai" />
                 </Field>
-              </div>
-              <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50/70 p-3">
-                <p className="text-[11px] font-bold uppercase tracking-wide text-amber-900">Optional discount (manual)</p>
-                <p className="mt-0.5 text-[11px] text-amber-800/90">
-                  Default is 0 — no badge, no “You save” line, no schema price range. Set both fields only for a real promo.
-                </p>
-                <div className="mt-2 grid gap-3 sm:grid-cols-2">
-                  <Field label="Online discount %" hint="0 = no discount (recommended)">
-                    <input
-                      type="number"
-                      min={0}
-                      max={99}
-                      className={inputCls()}
-                      value={tourPackageForm.discountPercentage}
-                      onChange={(e) => setTourPackageForm((p) => ({ ...p, discountPercentage: Number(e.target.value) }))}
-                    />
-                  </Field>
-                  <Field label="MRP / list price ₹" hint="Struck-through when discount &gt; 0">
-                    <input
-                      type="number"
-                      min={0}
-                      className={inputCls()}
-                      value={tourPackageForm.originalPrice}
-                      onChange={(e) => setTourPackageForm((p) => ({ ...p, originalPrice: Number(e.target.value) }))}
-                      disabled={!(Number(tourPackageForm.discountPercentage) > 0)}
-                    />
-                  </Field>
-                </div>
-                {Number(tourPackageForm.discountPercentage) > 0 && Number(tourPackageForm.originalPrice) > 0 ? (
-                  <p className="mt-2 text-[11px] font-medium text-amber-950">
-                    Preview: customer pays ≈ ₹
-                    {Math.round(
-                      Number(tourPackageForm.originalPrice) * (1 - Math.min(99, Number(tourPackageForm.discountPercentage)) / 100)
-                    ).toLocaleString("en-IN")}{" "}
-                    ({tourPackageForm.discountPercentage}% off MRP ₹{Number(tourPackageForm.originalPrice).toLocaleString("en-IN")}).
-                    Also update Package price to match if needed.
-                  </p>
-                ) : (
-                  <p className="mt-2 text-[11px] text-slate-600">No promo active — frontend & SEO use Package price only.</p>
-                )}
               </div>
               <div className="mt-3 grid gap-3 sm:grid-cols-2">
                 <Field label="Destination city" hint="Transport route ends here — e.g. Tirupati">
@@ -1389,8 +1382,20 @@ export default function AdminCatalogPanel({
               <Field label="Operator code">
                 <input className={inputCls()} value={busTripForm.operatorCode} onChange={(e) => setBusTripForm((p) => ({ ...p, operatorCode: e.target.value }))} placeholder="OT" />
               </Field>
+              <Field label="Vendor">
+                <input className={inputCls()} value={busTripForm.vendor} onChange={(e) => setBusTripForm((p) => ({ ...p, vendor: e.target.value }))} placeholder="Cabzii Partner" />
+              </Field>
+              <div className="sm:col-span-2">
+                <ImageUploadField
+                  label="Operator logo"
+                  value={busTripForm.operatorLogo}
+                  onChange={(url) => setBusTripForm((p) => ({ ...p, operatorLogo: url }))}
+                  authToken={token}
+                  alt={busTripForm.operator || "Bus operator"}
+                />
+              </div>
               <Field label="From city *">
-                <input className={inputCls()} value={busTripForm.fromCity} onChange={(e) => setBusTripForm((p) => ({ ...p, fromCity: e.target.value }))} />
+                <input className={inputCls()} value={busTripForm.fromCity} onChange={(e) => setBusTripForm((p) => ({ ...p, fromCity: e.target.value }))} placeholder="Chennai" />
               </Field>
               <Field label="To city *">
                 <input className={inputCls()} value={busTripForm.toCity} onChange={(e) => setBusTripForm((p) => ({ ...p, toCity: e.target.value }))} />
@@ -1403,6 +1408,15 @@ export default function AdminCatalogPanel({
               </Field>
               <Field label="Duration">
                 <input className={inputCls()} value={busTripForm.duration} onChange={(e) => setBusTripForm((p) => ({ ...p, duration: e.target.value }))} placeholder="8h" />
+              </Field>
+              <Field label="Duration (minutes)">
+                <input type="number" min={0} className={inputCls()} value={busTripForm.durationMin} onChange={(e) => setBusTripForm((p) => ({ ...p, durationMin: Number(e.target.value) }))} />
+              </Field>
+              <Field label="Rating">
+                <input type="number" min={0} max={5} step={0.1} className={inputCls()} value={busTripForm.rating} onChange={(e) => setBusTripForm((p) => ({ ...p, rating: Number(e.target.value) }))} />
+              </Field>
+              <Field label="Review count">
+                <input type="number" min={0} className={inputCls()} value={busTripForm.reviewCount} onChange={(e) => setBusTripForm((p) => ({ ...p, reviewCount: Number(e.target.value) }))} />
               </Field>
               <Field label="Bus type">
                 <select className={inputCls()} value={busTripForm.busType} onChange={(e) => setBusTripForm((p) => ({ ...p, busType: e.target.value }))}>
@@ -1429,9 +1443,61 @@ export default function AdminCatalogPanel({
                   <option value="inactive">Inactive</option>
                 </select>
               </Field>
-              <Field label="Booked seats" hint="Comma-separated seat IDs — e.g. L1A, U2B">
-                <input className={inputCls()} value={busTripForm.bookedSeats} onChange={(e) => setBusTripForm((p) => ({ ...p, bookedSeats: e.target.value }))} />
+              <Field label="Booked / sold seats" hint="Leave empty for sample sold seats. Type none to open every seat. Or list IDs: L1A, U2C">
+                <input className={inputCls()} value={busTripForm.bookedSeats} onChange={(e) => setBusTripForm((p) => ({ ...p, bookedSeats: e.target.value }))} placeholder="none  or  L1A, L1B, U2C" />
               </Field>
+              <Field label="Trip guarantee (₹ / passenger)">
+                <input type="number" min={0} className={inputCls()} value={busTripForm.tripGuaranteePrice} onChange={(e) => setBusTripForm((p) => ({ ...p, tripGuaranteePrice: Number(e.target.value) }))} />
+              </Field>
+              <Field label="Distance (km)">
+                <input type="number" min={0} className={inputCls()} value={busTripForm.distanceKm} onChange={(e) => setBusTripForm((p) => ({ ...p, distanceKm: Number(e.target.value) }))} />
+              </Field>
+              <Field label="On-time %">
+                <input type="number" min={0} max={100} className={inputCls()} value={busTripForm.onTimePercent} onChange={(e) => setBusTripForm((p) => ({ ...p, onTimePercent: Number(e.target.value) }))} />
+              </Field>
+              <Field label="Live tracking">
+                <select className={inputCls()} value={busTripForm.liveTrackingEnabled ? "on" : "off"} onChange={(e) => setBusTripForm((p) => ({ ...p, liveTrackingEnabled: e.target.value === "on" }))}>
+                  <option value="on">On — show map on booking</option>
+                  <option value="off">Off</option>
+                </select>
+              </Field>
+              <Field label="GPS latitude">
+                <input className={inputCls()} value={busTripForm.liveLat} onChange={(e) => setBusTripForm((p) => ({ ...p, liveLat: e.target.value }))} placeholder="13.0827" />
+              </Field>
+              <Field label="GPS longitude">
+                <input className={inputCls()} value={busTripForm.liveLng} onChange={(e) => setBusTripForm((p) => ({ ...p, liveLng: e.target.value }))} placeholder="80.2707" />
+              </Field>
+              <div className="sm:col-span-2">
+                <Field label="Cancellation policy" hint="One rule per line: hours_before | refund_percent  e.g. 8 | 85">
+                  <textarea rows={3} className={inputCls()} value={busTripForm.cancellationPolicyText} onChange={(e) => setBusTripForm((p) => ({ ...p, cancellationPolicyText: e.target.value }))} />
+                </Field>
+              </div>
+              <div className="sm:col-span-2">
+                <Field label="Rest stops" hint="One per line: Name | Time | Minutes | Feature, Feature">
+                  <textarea rows={2} className={inputCls()} value={busTripForm.restStopsText} onChange={(e) => setBusTripForm((p) => ({ ...p, restStopsText: e.target.value }))} />
+                </Field>
+              </div>
+              <div className="sm:col-span-2">
+                <Field label="Bus route stops" hint="Chennai → Villupuram → Salem → Coimbatore">
+                  <input className={inputCls()} value={busTripForm.routeStopsText} onChange={(e) => setBusTripForm((p) => ({ ...p, routeStopsText: e.target.value }))} />
+                </Field>
+              </div>
+              <div className="sm:col-span-2">
+                <Field label="Luggage policy">
+                  <input className={inputCls()} value={busTripForm.policyLuggage} onChange={(e) => setBusTripForm((p) => ({ ...p, policyLuggage: e.target.value }))} />
+                </Field>
+              </div>
+              <Field label="Pets policy">
+                <input className={inputCls()} value={busTripForm.policyPets} onChange={(e) => setBusTripForm((p) => ({ ...p, policyPets: e.target.value }))} />
+              </Field>
+              <Field label="Liquor policy">
+                <input className={inputCls()} value={busTripForm.policyLiquor} onChange={(e) => setBusTripForm((p) => ({ ...p, policyLiquor: e.target.value }))} />
+              </Field>
+              <div className="sm:col-span-2">
+                <Field label="Pickup time policy">
+                  <input className={inputCls()} value={busTripForm.policyPickup} onChange={(e) => setBusTripForm((p) => ({ ...p, policyPickup: e.target.value }))} />
+                </Field>
+              </div>
               <div className="sm:col-span-2">
                 <Field label="Boarding points" hint="One per line: Name | Time | Landmark">
                   <textarea rows={3} className={inputCls()} value={busTripForm.boardingPointsText} onChange={(e) => setBusTripForm((p) => ({ ...p, boardingPointsText: e.target.value }))} />
@@ -1448,7 +1514,7 @@ export default function AdminCatalogPanel({
                 </Field>
               </div>
             </div>
-            <AdminProductSeoSection form={busTripForm} onChange={setBusTripForm} pathPrefix="/buses/results" titleField="operator" cityField="fromCity" enterprise={false} />
+            <AdminProductSeoSection form={busTripForm} onChange={setBusTripForm} pathPrefix="/buses" titleField="operator" cityField="fromCity" productNameLabel="Operator" hideProductName enterprise authToken={token} />
             {tab.sample ? (
               <button type="button" onClick={insertSample} disabled={!canEdit} className="rounded-md border border-slate-300 px-3 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-100 disabled:opacity-50">
                 Load sample bus
@@ -1536,9 +1602,13 @@ export default function AdminCatalogPanel({
           <strong>Import to database</strong> to make all of them editable, or <strong>Edit</strong> on one row to save that page first.
         </div>
       ) : null}
-      {tabKey === "buses" && canEdit && !items.length && !loading ? (
-        <div className="mb-3 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-xs text-sky-900">
-          No bus trips in the database yet. Click <strong>Import sample buses</strong> or <strong>Create</strong> to add editable trips.
+      {tabKey === "buses" && canEdit ? (
+        <div className="mb-3 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-900">
+          All bus trips live in the database and are fully editable. Set status Active to sell a bus. For seats, leave Booked seats empty for a sample sold map, type none to open every seat, or list IDs such as L1A, U2C. GPS lat/lng powers Live tracking. Customer tickets are under{" "}
+          <button type="button" className="font-bold underline" onClick={() => navigateAdmin("/admin?tab=bookings")}>
+            Bookings → Bus
+          </button>
+          .
         </div>
       ) : null}
       <div className="mb-3 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-200 bg-slate-50 p-3">
@@ -1605,6 +1675,15 @@ export default function AdminCatalogPanel({
             </>
           ) : null}
         </select>
+        {tabKey === "bookings" ? (
+          <select className={inputCls()} value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}>
+            <option value="all">All types</option>
+            <option value="cab">Cab</option>
+            <option value="bus">Bus</option>
+            <option value="driver">Driver</option>
+            <option value="tour">Holiday</option>
+          </select>
+        ) : null}
         <select className={inputCls()} value={sortKey} onChange={(e) => setSortKey(e.target.value)}>
           <option value="latest">Latest first</option>
           <option value="name">Name A-Z</option>
@@ -1675,7 +1754,7 @@ export default function AdminCatalogPanel({
                           : item.status === "cancelled"
                             ? "bg-rose-100 text-rose-700"
                             : "bg-amber-100 text-amber-700"
-                      : tabKey === "cabs" || tabKey === "drivers" || tabKey === "packages"
+                      : tabKey === "cabs" || tabKey === "drivers" || tabKey === "packages" || tabKey === "buses"
                         ? item.status === "inactive" ? "bg-slate-200 text-slate-700" : "bg-emerald-100 text-emerald-700"
                         : isStatic
                           ? "bg-sky-100 text-sky-800"
@@ -1683,7 +1762,7 @@ export default function AdminCatalogPanel({
                   }`}>
                     {tabKey === "bookings"
                       ? item.status || "pending"
-                      : tabKey === "cabs" || tabKey === "drivers" || tabKey === "packages"
+                      : tabKey === "cabs" || tabKey === "drivers" || tabKey === "packages" || tabKey === "buses"
                         ? item.status === "inactive" ? "inactive" : "active"
                         : isStatic
                           ? "built-in"
@@ -1730,7 +1809,7 @@ export default function AdminCatalogPanel({
                       Live
                     </a>
                   ) : null}
-                  {tabKey === "packages" && !isStatic ? (
+                  {(tabKey === "packages" || tabKey === "buses") && !isStatic ? (
                     <button
                       type="button"
                       onClick={() => duplicateItem(id)}

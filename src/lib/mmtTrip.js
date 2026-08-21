@@ -1,4 +1,5 @@
 import { appendTripCoords, readTripCoords } from "./tripCoords";
+import { todayStr as istTodayStr } from "./istDate";
 
 /** Trip search params for cabzii.in cab booking flow. */
 
@@ -11,12 +12,15 @@ export const TRIP_TABS = [
 
 export const HOURLY_PACKAGES = [
   { hours: 4, label: "4 Hours / 40 km" },
+  { hours: 5, label: "5 Hours / 50 km" },
   { hours: 8, label: "8 Hours / 80 km" },
-  { hours: 12, label: "12 Hours / 120 km" }
+  { hours: 10, label: "10 Hours / 100 km" },
+  { hours: 12, label: "12 Hours / 120 km" },
+  { hours: 15, label: "15 Hours / 150 km" }
 ];
 
 export function todayStr() {
-  return new Date().toISOString().split("T")[0];
+  return istTodayStr();
 }
 
 export function cabPackageIdFromTrip(trip) {
@@ -26,7 +30,11 @@ export function cabPackageIdFromTrip(trip) {
   }
   if (trip?.tripType === "hourly") {
     const h = Number(trip.packageHours) || 8;
-    return h <= 4 ? "local_4hr" : "local_1day";
+    if (h > 12) return "local_15hr";
+    if (h > 7 && h !== 8) return "local_10hr";
+    if (h <= 4) return "local_4hr";
+    if (h === 5) return "local_5hr";
+    return "local_1day";
   }
   if (trip?.tripType === "airport" || trip?.tripType === "local") {
     return "local_4hr";

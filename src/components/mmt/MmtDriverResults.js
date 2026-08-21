@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from "react";
 import { buildDriverFareSlabs, num } from "../../lib/driverFare";
-import { packageYouPay } from "../../lib/cabFare";
 import { driverSlabForTrip, DRIVER_HERO_PACKAGES } from "../../lib/driverTrip";
 import MmtDriverResultCard from "./MmtDriverResultCard";
 import { CheckboxOption, RadioOption } from "../ui/RadioOption";
@@ -16,9 +15,7 @@ const SORTS = [
 function driverPrice(driver, trip) {
   const slabs = buildDriverFareSlabs(driver);
   const slab = driverSlabForTrip(slabs, trip);
-  const list = num(slab?.originalPrice) || num(slab?.list) || 0;
-  const discount = num(slab?.discountPercentage) || num(driver?.discountPercentage);
-  return num(slab?.price) > 0 ? num(slab.price) : packageYouPay(list || 1, discount);
+  return num(slab?.price) > 0 ? num(slab.price) : num(slab?.originalPrice) || num(slab?.list) || 0;
 }
 
 export default function MmtDriverResults({ drivers, trip }) {
