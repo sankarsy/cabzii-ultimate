@@ -109,6 +109,93 @@ export function bookingWhatsappMessage({
   return `Hi Cabzii, I want to book a cab in ${cityName}. Pickup: ___. Drop: ___. Date: ${dateQ}. Please share fare and availability.`;
 }
 
+export function whatsappQuoteMessage({
+  service = "Cab",
+  vehicleName = "",
+  pickup = "",
+  drop = "",
+  travelDate = "",
+  pickupTime = "",
+  passengers = "",
+  quoteRef = "",
+  estimatedFare = "",
+  distanceKm = "",
+  tripType = "",
+  packageLabel = "",
+  pdfUrl = "",
+  viewUrl = ""
+} = {}) {
+  const fare =
+    estimatedFare && Number(estimatedFare) > 0
+      ? `₹${Number(estimatedFare).toLocaleString("en-IN")}`
+      : "";
+  const lines = [
+    "Cabzii package quote",
+    "",
+    quoteRef ? `Quote ref: ${quoteRef}` : null,
+    `Vehicle: ${vehicleName || service || "Cab"}`,
+    tripType ? `Service: ${tripType}` : `Service: ${service}`,
+    packageLabel ? `Package: ${packageLabel}` : null,
+    pickup ? `Pickup: ${pickup}` : null,
+    drop ? `Drop: ${drop}` : null,
+    travelDate ? `Travel date: ${travelDate}` : null,
+    pickupTime ? `Pickup time: ${pickupTime}` : null,
+    distanceKm ? `Distance: ${distanceKm} km` : null,
+    passengers ? `Passengers: ${passengers}` : null,
+    fare ? `Quoted fare: ${fare}` : null,
+    "",
+    "--- Package details (text) ---",
+    "This is a trip package quote, not a confirmed booking.",
+    viewUrl ? `View quote: ${viewUrl}` : null,
+    pdfUrl ? `PDF copy: ${pdfUrl}` : null,
+    "",
+    "Please confirm on WhatsApp to book."
+  ];
+  return lines.filter((line) => line !== null).join("\n");
+}
+
+export function tripContextFromNextUrl(nextUrl = "") {
+  try {
+    const u = new URL(String(nextUrl || "/"), "https://cabzii.in");
+    const path = u.pathname.toLowerCase();
+    const q = u.searchParams;
+    let service = "Cab";
+    if (path.includes("call-driver") || path.includes("driver")) service = "Call Driver";
+    else if (path.includes("bus")) service = "Bus";
+    else if (path.includes("holiday") || path.includes("package")) service = "Holiday package";
+    const tripType = q.get("serviceTripType") || q.get("tripType") || "";
+    return {
+      service,
+      tripType,
+      pickup: q.get("from") || q.get("pickup") || "",
+      drop: q.get("to") || q.get("drop") || "",
+      travelDate: q.get("date") || "",
+      pickupTime: q.get("time") || q.get("pickupTime") || "",
+      passengers: q.get("passengers") || q.get("seats") || "",
+      vehicleName: q.get("vehicle") || q.get("cabName") || "",
+      vehicleId: q.get("cabId") || q.get("cab") || q.get("id") || q.get("itemId") || "",
+      distanceKm: q.get("distanceKm") || "",
+      estimatedFare: q.get("total") || q.get("baseFare") || "",
+      packageLabel: q.get("package") || q.get("packageId") || ""
+    };
+  } catch {
+    return {
+      service: "Cab",
+      tripType: "",
+      pickup: "",
+      drop: "",
+      travelDate: "",
+      pickupTime: "",
+      passengers: "",
+      vehicleName: "",
+      vehicleId: "",
+      distanceKm: "",
+      estimatedFare: "",
+      packageLabel: ""
+    };
+  }
+}
+
 /** Pre-filled WhatsApp message for booking intent (URL-encoded). */
 export function whatsappBookingUrl({
   message,

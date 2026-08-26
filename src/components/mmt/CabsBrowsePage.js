@@ -61,6 +61,12 @@ export default function CabsBrowsePage() {
           { name: "Cabs", path: "/cabs" }
         ]}
       >
+        <p className="mb-3 text-sm text-slate-600">
+          Current rates: Swift Dzire from ₹1,200 · Innova Crysta from ₹2,200 · Tempo Traveller from ₹3,000.{" "}
+          <Link href="/tariff" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
+            View full cab tariff
+          </Link>
+        </p>
         <div className="rounded-xl border border-slate-200 bg-slate-50 p-2.5 sm:rounded-2xl sm:p-3.5">
           <MmtCabSearchWidget defaultCity={displayCity} compact />
         </div>

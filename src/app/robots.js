@@ -10,6 +10,7 @@ const DISALLOW = [
   "/payment",
   "/booking",
   "/my-bookings",
+  "/quote",
   "/login",
   "/signin",
   "/search",

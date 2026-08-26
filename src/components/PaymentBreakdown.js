@@ -15,7 +15,8 @@ export default function PaymentBreakdown({
   proceedLabel = "Proceed to Payment",
   compact = false,
   showExtrasNote = true,
-  footerNote
+  footerNote,
+  onProceed
 }) {
   const product = item ?? (cab ? { title: cab.title, type: cab.type, vendor: cab.vendor } : null);
   const baseFare = selection?.baseFare ?? selection?.fare ?? 0;
@@ -158,6 +159,7 @@ export default function PaymentBreakdown({
       {payHref ? (
         <Link
           href={payHref}
+          onClick={onProceed}
           className={`mt-4 inline-flex w-full items-center justify-center rounded-xl bg-[#0056D2] font-bold text-white transition hover:bg-[#0047b3] ${
             compact ? "px-3 py-2 text-xs" : "px-4 py-3 text-sm"
           }`}

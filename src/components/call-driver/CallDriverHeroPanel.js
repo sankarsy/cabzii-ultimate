@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { EmtHeroPriceHint } from "../emt/EmtHeroPills";
 import {
   CALL_DRIVER_SERVICES,
   callDriverBookHref,
@@ -53,7 +52,12 @@ export default function CallDriverHeroPanel() {
             </button>
           ))}
         </div>
-        <EmtHeroPriceHint>Book a Driver</EmtHeroPriceHint>
+        <Link
+          href={callDriverBookHref(selected?.id || "local")}
+          className="emt-hero-price-hint cabzii-tap hidden sm:inline-flex items-center hover:underline"
+        >
+          Book a Driver
+        </Link>
       </div>
 
       <div className="emt-hero-search-card emt-cab-search-card">
@@ -70,7 +74,7 @@ export default function CallDriverHeroPanel() {
               <span className="text-xs text-slate-400">Professional driver assigned after booking</span>
             </div>
           </div>
-          <Link href={callDriverBookHref(selected?.id)} className="emt-search-submit cabzii-tap">
+          <Link href={callDriverBookHref(selected?.id || "local")} className="emt-search-submit cabzii-tap">
             {selected?.quoteOnly ? "QUOTE" : "BOOK"}
           </Link>
         </div>

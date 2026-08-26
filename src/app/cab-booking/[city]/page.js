@@ -20,6 +20,7 @@ import { getCityLandingBody } from "../../../lib/seo/landingContent";
 import { fetchSeoCityPage } from "../../../lib/serverCatalog";
 import { fetchSiteReviewStats } from "../../../lib/serverReviewStats";
 import { formatSerpPrice } from "../../../lib/seo/serpRichData";
+import { resolveMediaUrl } from "../../../lib/media";
 
 export const revalidate = 600;
 
@@ -42,11 +43,13 @@ export async function generateMetadata({ params }) {
   const keywords = cms?.seo
     ? cms.seo.split(",").map((k) => k.trim()).filter(Boolean)
     : tunedCabBookingKeywords(city);
+  const cmsImage = resolveMediaUrl(cms?.image || cms?.banner || "");
   return buildPageMetadata({
     title: cms?.seoTitle || tunedCabBookingTitle(city),
     description: cms?.seoDescription || tunedCabBookingDescription(city),
     path,
-    keywords
+    keywords,
+    ...(cmsImage ? { image: cmsImage, imageAlt: `Cab booking in ${city.name}` } : {})
   });
 }
 

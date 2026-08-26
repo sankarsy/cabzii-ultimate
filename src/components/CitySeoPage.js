@@ -6,6 +6,7 @@ import BookingCtaBar from "./seo/BookingCtaBar";
 import RelatedSeoLinks from "./seo/RelatedSeoLinks";
 import { peerCitiesForHub, isTamilNaduCity } from "../lib/seo";
 import { getCityFaqs } from "../lib/seo/content";
+import { cityHasCommercialAirport } from "../lib/seo/airports";
 import { formatSerpPrice } from "../lib/seo/serpRichData";
 import {
   tunedCabBookingDescription,
@@ -16,6 +17,7 @@ import { servicesForCityHub } from "../lib/seo/programmaticMeta";
 import { routeToCabSearchHref } from "../lib/routeTrip";
 import { routesForCity } from "../lib/seo/routes";
 import { servicePath } from "../lib/seo/services";
+import PopularFleetSeo from "./seo/PopularFleetSeo";
 
 export default function CitySeoPage({
   city,
@@ -40,11 +42,19 @@ export default function CitySeoPage({
   return (
     <article className="section-shell cabzii-seo-landing">
         <Breadcrumbs
-          items={[
-            { name: "Home", path: "/" },
-            { name: "Locations", path: "/locations" },
-            { name: city.name, path: hubPath }
-          ]}
+          items={
+            isCab
+              ? [
+                  { name: "Home", path: "/" },
+                  { name: "Cabs", path: "/cabs" },
+                  { name: city.name, path: hubPath }
+                ]
+              : [
+                  { name: "Home", path: "/" },
+                  { name: "Call Driver", path: "/call-driver" },
+                  { name: `Acting driver ${city.name}`, path: hubPath }
+                ]
+          }
         />
 
         <p className="cabzii-seo-kicker">
@@ -63,9 +73,9 @@ export default function CitySeoPage({
           <SerpRichBar
             ratingValue={reviewStats?.ratingValue}
             reviewCount={reviewStats?.reviewCount}
-            priceLabel={formatSerpPrice(priceFrom || 999)}
+            priceLabel={formatSerpPrice(priceFrom || 1200)}
             badges={[
-              { label: "Vehicles: Dzire, Etios, Innova, Crysta" },
+              { label: "Vehicles: Dzire, Amaze, Ertiga, Innova Crysta" },
               { label: "Service: 24×7 Available" },
               { label: `City: ${city.name}` }
             ]}
@@ -103,6 +113,8 @@ export default function CitySeoPage({
             </p>
           </section>
         ) : null}
+
+        {isCab ? <PopularFleetSeo cityName={city.name} citySlug={city.slug} /> : null}
 
         {isCab ? (
           <section className="cabzii-seo-block rounded-xl border border-slate-200 bg-slate-50 p-3 sm:p-4">
@@ -190,7 +202,11 @@ export default function CitySeoPage({
           <ul className="mt-1.5 list-disc space-y-1 pl-4 text-[11px] text-slate-700 sm:text-xs">
             <li>Instant online booking with clear fare breakdown</li>
             <li>Verified vendors and professional drivers in {city.name}</li>
-            <li>Outstation, airport, local and tour options in one place</li>
+            <li>
+              {cityHasCommercialAirport(city.slug)
+                ? "Outstation, airport, local and tour options in one place"
+                : "Outstation, local, one-way and acting-driver options in one place"}
+            </li>
             <li>Support on WhatsApp for quick trip changes</li>
           </ul>
         </section>
@@ -199,7 +215,8 @@ export default function CitySeoPage({
 
         <RelatedSeoLinks
           page={isCab ? "cabs" : "drivers"}
-          title={isCab ? `Related cab services near ${city.name}` : `Related driver services near ${city.name}`}
+          citySlug={city.slug}
+          title={isCab ? `Related cab services in ${city.name}` : `Related driver services in ${city.name}`}
         />
 
         <section className="cabzii-seo-block">

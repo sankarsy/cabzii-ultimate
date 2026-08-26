@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { CalendarIcon, ChevronDownIcon, TwoWayIcon } from "../icons";
 import { todayStr } from "../../lib/mmtTrip";
 import { airportByCode } from "../../lib/mock-data/airports";
-import { formatDayName, formatEmtDate } from "../../lib/emt/heroDates";
+import { formatDayName, formatEmtDate, openNativePicker } from "../../lib/emt/heroDates";
 import EmtAirportInput from "./EmtAirportInput";
 import EmtFlightSpecialFares from "./EmtFlightSpecialFares";
 import EmtHeroPills, { EmtHeroPriceHint } from "./EmtHeroPills";
@@ -183,7 +183,8 @@ export default function EmtFlightSearchForm({ emtHero = false }) {
                   min={todayStr()}
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
-                  className="emt-date-input absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                  onClick={openNativePicker}
+                  className="emt-date-input absolute inset-0 z-10 h-full w-full cursor-pointer"
                   aria-label="Departure date"
                 />
               </div>
@@ -203,7 +204,8 @@ export default function EmtFlightSearchForm({ emtHero = false }) {
                     min={date || todayStr()}
                     value={returnDate}
                     onChange={(e) => setReturnDate(e.target.value)}
-                    className="emt-date-input absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                    onClick={openNativePicker}
+                    className="emt-date-input absolute inset-0 z-10 h-full w-full cursor-pointer"
                     aria-label="Return date"
                   />
                 </div>

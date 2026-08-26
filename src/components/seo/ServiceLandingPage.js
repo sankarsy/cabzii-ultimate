@@ -6,11 +6,13 @@ import SerpRichBar from "./SerpRichBar";
 import SeoPackageBookingSection from "./SeoPackageBookingSection";
 import SeoTripBookingSection from "./SeoTripBookingSection";
 import { cityAreas } from "../../lib/seo/content";
+import { airportDropHint } from "../../lib/seo/airports";
 import { serviceSearchHref, tunedServiceDescription, tunedServiceH1 } from "../../lib/seo/metadataTuning";
 import { formatSerpPrice, serviceSerpBadges } from "../../lib/seo/serpRichData";
 import { servicePath } from "../../lib/seo/services";
 import { routesForCity } from "../../lib/seo/routes";
 import { todayStr } from "../../lib/mmtTrip";
+import RelatedSeoLinks from "./RelatedSeoLinks";
 
 /** Map SEO service slug → search widget trip type so the right tab is pre-selected */
 const SERVICE_TRIP_TYPES = {
@@ -61,7 +63,7 @@ export default function ServiceLandingPage({
   const driverSearchHref = "/call-driver";
   const dropHint =
     tripType === "airport"
-      ? `${city.name} Airport`
+      ? airportDropHint(city)
       : tripType === "outstation"
         ? "Choose drop city"
         : `${city.name} local drop`;
@@ -204,6 +206,12 @@ export default function ServiceLandingPage({
       ) : null}
 
       <FaqSection title={`${service.name} in ${city.name} — FAQ`} faqs={faqs} />
+
+      <RelatedSeoLinks
+        page={DRIVER_FOCUS_SLUGS.has(service.slug) ? "drivers" : "cabs"}
+        citySlug={city.slug}
+        title={`More ${city.name} pages`}
+      />
 
       <section className="cabzii-seo-block rounded-xl bg-[var(--cabzii-brand)] p-3.5 text-white sm:p-4">
         <h2 className="!text-white text-sm font-bold sm:text-base">Ready to book {service.name.toLowerCase()}?</h2>

@@ -1,9 +1,9 @@
 export const CALL_DRIVER_SERVICES = [
   {
     id: "local",
-    title: "Local Chennai Driver",
+    title: "Local Driver",
     shortTitle: "Local",
-    blurb: "Driver for your own car within Chennai.",
+    blurb: "Driver for your own car for local city trips.",
     cta: "Book Now",
     quoteOnly: false
   },

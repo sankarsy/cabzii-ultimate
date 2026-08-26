@@ -2,13 +2,19 @@ import { SITE_URL } from "./seo/constants";
 
 export const SEO_KEYWORD_SUGGESTIONS = [
   "tempo traveller",
-  "17 seater",
+  "18 seater",
   "chennai",
   "airport taxi",
   "cab rental",
+  "car rental",
+  "cab booking",
   "outstation cab",
   "local taxi",
-  "corporate travel",
+  "tour s",
+  "dzire",
+  "dezire",
+  "wagon r",
+  "bolero",
   "innova crysta",
   "sedan taxi"
 ];
@@ -111,10 +117,10 @@ export function applySeoTemplate(template, form) {
 }
 
 export const SEO_TEMPLATES = {
-  title: "Book {{vehicle}} Rental in {{city}}, {{state}} | Cabzii",
+  title: "{{vehicle}} Taxi Booking & Car Rental in {{city}} | Cabzii",
   description:
-    "Book {{vehicle}} rental in {{city}}, {{state}} starting from {{price}}. Airport transfer, local, outstation and corporate travel with Cabzii.",
-  h1: "{{vehicle}} Rental in {{city}}",
+    "Book {{vehicle}} taxi booking and car rental in {{city}}, {{state}} from {{price}}. Airport, local, outstation and cab hire with Cabzii.",
+  h1: "{{vehicle}} Taxi Booking & Rental in {{city}}",
   slug: "{{vehicle}} {{seats}} seater {{city}}"
 };
 

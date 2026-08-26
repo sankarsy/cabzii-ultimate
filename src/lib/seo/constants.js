@@ -52,8 +52,8 @@ export const SITE_REVIEW_STATS = {
 };
 
 /** Typical fare ranges (INR) for city landing rich snippets. */
-export const CITY_CAB_PRICE_RANGE = { low: 999, high: 6500 };
-export const CITY_DRIVER_PRICE_RANGE = { low: 899, high: 4200 };
+export const CITY_CAB_PRICE_RANGE = { low: 1200, high: 16500 };
+export const CITY_DRIVER_PRICE_RANGE = { low: 500, high: 1300 };
 
 export const DEFAULT_KEYWORDS = [
   "cabzii",
@@ -65,6 +65,11 @@ export const DEFAULT_KEYWORDS = [
   "cab booking in coimbatore",
   "cab booking trichy",
   "cab booking kodaikanal",
+  "cab booking kanchipuram",
+  "cab booking tirupati",
+  "airport taxi thoothukudi",
+  "airport taxi trichy",
+  "cab booking kanyakumari",
   "taxi booking India",
   "cab booking Chennai",
   "cab booking in chennai",
@@ -75,6 +80,8 @@ export const DEFAULT_KEYWORDS = [
   "driver on hire Chennai",
   "acting driver Chennai",
   "cab rental Chennai",
+  "cab rental tariff Chennai",
+  "tempo traveller rental Chennai",
   "car rental Bangalore",
   "car rental in bangalore",
   "car rental in coimbatore",
@@ -167,8 +174,7 @@ export function buildPageMetadata({
 }) {
   const canonicalPath = normalizePath(path);
   const pageUrl = absoluteUrl(url || canonicalPath);
-  const ogImage = resolveOgImage(image);
-  const twitterImage = image ? ogImage : DEFAULT_TWITTER_IMAGE;
+  const ogImage = image ? resolveOgImage(image) : null;
 
   return {
     title: titleMetadata(title),
@@ -198,13 +204,15 @@ export function buildPageMetadata({
       siteName: SITE_NAME,
       locale: "en_IN",
       type,
-      images: [{ url: ogImage, alt: imageAlt || title, width: imageWidth, height: imageHeight }]
+      ...(ogImage
+        ? { images: [{ url: ogImage, alt: imageAlt || title, width: imageWidth, height: imageHeight }] }
+        : {})
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: [twitterImage]
+      ...(ogImage ? { images: [ogImage] } : {})
     },
     ...(buildVerification(verification) ? { verification: buildVerification(verification) } : {}),
     other: {

@@ -19,12 +19,14 @@ export default function CatalogVehicleCard({
   features,
   priceBlockProps,
   ctaLabel = "Select",
-  imageObjectPosition
+  imageObjectPosition,
+  onNavigate
 }) {
   return (
     <article className="group overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[var(--emt-shadow-card)] transition-all duration-200 hover:-translate-y-1 hover:shadow-[var(--emt-shadow-hover)] flex h-full min-w-0 flex-col">
       <Link
         href={href}
+        onClick={onNavigate}
         className="flex h-full min-w-0 flex-col focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cabzii-brand)] focus-visible:ring-offset-2"
       >
         {/* Banner — vehicle / driver photo, same height as the offer cards */}

@@ -1,3 +1,4 @@
+import { isLiveApiHostProtected } from "./liveApiHostGuard";
 import { getBackendUrl } from "./seo";
 
 const FETCH_CACHE_MS = 60 * 1000;
@@ -5,6 +6,7 @@ const fetchCache = new Map();
 const fetchInflight = new Map();
 
 async function fetchJson(path, revalidate = 300) {
+  if (isLiveApiHostProtected()) return null;
   const cached = fetchCache.get(path);
   if (cached && Date.now() - cached.at < FETCH_CACHE_MS) return cached.value;
   if (fetchInflight.has(path)) return fetchInflight.get(path);

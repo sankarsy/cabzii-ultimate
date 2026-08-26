@@ -6,6 +6,7 @@ import { clearSitePageSeo, deleteSeoSnippet, saveSeoSnippet } from "../../lib/ad
 import { buildCatalogListUrl } from "../../lib/adminCatalogConfig";
 import { buildSeoPageIndex, seoIndexStats } from "../../lib/seo/seoPageIndexBuilder";
 import AdminSeoSnippetEditor from "./AdminSeoSnippetEditor";
+import AdminSeoSop from "./AdminSeoSop";
 
 const TYPE_FILTERS = [
   { id: "all", label: "All" },
@@ -166,10 +167,9 @@ export default function AdminSeoPagesIndex({ token = "" }) {
     <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-[var(--cabzii-shadow-card)] sm:p-6">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
         <div>
-          <h2 className="text-lg font-bold text-slate-900">Google & Meta Ads — SEO dashboard</h2>
+          <h2 className="text-lg font-bold text-slate-900">Google SEO pages</h2>
           <p className="mt-1 max-w-3xl text-sm text-slate-600">
-            Manage every page that appears in Google search and ad campaigns. Create, update or delete meta title,
-            description and keywords — the same fields shown in your Google snippet.
+            This is where you edit the pages Google shows — not under Operations or Cabs list alone. Super admin only.
           </p>
           {!loading && rows.length ? (
             <div className="mt-3 flex flex-wrap gap-2 text-xs">
@@ -192,6 +192,26 @@ export default function AdminSeoPagesIndex({ token = "" }) {
           </Link>
         </div>
       </div>
+
+      <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">
+        <p className="font-semibold">How Cabzii Google pages work (you cannot create a random URL here)</p>
+        <ul className="mt-2 list-disc space-y-1 pl-5 text-xs sm:text-sm text-amber-900">
+          <li>
+            <strong>/cabs</strong> — cab listing. This is the page Google ranked #2 for “tour s taxi booking”. Edit it here: filter <em>Home &amp; listings</em>, row <em>Cabs listing</em>.
+          </li>
+          <li>
+            <strong>/cab-booking/chennai</strong> — city landing for “cab booking chennai” and “tour s taxi booking chennai”. Create/edit under <em>City landing pages</em> (page type Cab booking + city slug <code>chennai</code>).
+          </li>
+          <li>
+            <strong>/cabs/your-vehicle-slug</strong> — one car (e.g. Dzire Tour S). Create the vehicle in <em>Catalog → Cabs</em>, then fill the SEO tab (title must include “Tour S taxi booking Chennai”).
+          </li>
+          <li>
+            <strong>/services/airport-taxi/chennai</strong> — service × city. Use <em>Service landing pages</em>. Do not invent a new path like /tour-s-taxi — it will not rank until it exists in this system.
+          </li>
+        </ul>
+      </div>
+
+      <AdminSeoSop />
 
       <div className="mt-4 flex flex-col gap-3 xl:flex-row xl:items-center">
         <input

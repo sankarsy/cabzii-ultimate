@@ -601,8 +601,8 @@ export default function AdminCatalogPanel({
       setUploadError("Only jpg, jpeg, png, and webp are allowed.");
       return;
     }
-    if (selectedImage.size > 5 * 1024 * 1024) {
-      setUploadError("Image must be less than 5MB.");
+    if (selectedImage.size > 1 * 1024 * 1024) {
+      setUploadError("Image is oversized. Maximum allowed size is 1 MB.");
       return;
     }
 
@@ -964,8 +964,8 @@ export default function AdminCatalogPanel({
       {!canEdit ? (
         <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">
           <span className="font-semibold">View only.</span>{" "}
-          {tabKey === "seoServices" || tabKey === "seoRoutes"
-            ? "Services and Routes can only be created or edited by super admin. Use Admin Login (not Travel Partner)."
+          {tabKey === "seoServices" || tabKey === "seoRoutes" || tabKey === "seoCityPages"
+            ? "SEO landing pages can only be created or edited by super admin. Use Admin Login (not Travel Partner). Open Content → Google SEO pages to see every live URL."
             : "Blogs and testimonials can only be edited by super admin. Log in with Admin login, not Travel Partner."}
         </div>
       ) : null}
@@ -1600,6 +1600,18 @@ export default function AdminCatalogPanel({
         <div className="mb-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
           <span className="font-semibold">Built-in pages still listed.</span> Click{" "}
           <strong>Import to database</strong> to make all of them editable, or <strong>Edit</strong> on one row to save that page first.
+        </div>
+      ) : null}
+      {tabKey === "seoCityPages" && canEdit ? (
+        <div className="mb-3 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-xs text-sky-950">
+          <p className="font-semibold">These are the city pages Google ranks — not the Cabs catalog.</p>
+          <p className="mt-1">
+            Click <strong>Create</strong>, choose <em>Cab booking city</em>, city slug <code>chennai</code>. That publishes{" "}
+            <a className="font-semibold underline" href="/cab-booking/chennai" target="_blank" rel="noreferrer">
+              /cab-booking/chennai
+            </a>
+            . For a Dzire Tour S product page, use Catalog → Cabs instead.
+          </p>
         </div>
       ) : null}
       {tabKey === "buses" && canEdit ? (

@@ -16,9 +16,12 @@ import { resolveCabImage } from "../../../lib/vehicleImages";
 import {
   getCabDisplaySubtitle,
   getCabDisplayTitle,
-  getCabPackageLine
+  getCabPackageLine,
+  getCabVehicleName
 } from "../../../lib/catalogDisplay";
 import { cabSlabForTrip, parseTripSearchParams, tripToSearchQuery } from "../../../lib/mmtTrip";
+import { trackEvent } from "../../../lib/analytics";
+import { inputBaseClass } from "../../../lib/typography";
 
 function formatINR(n) {
   return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(
@@ -72,8 +75,16 @@ function PassengerContent() {
     fetch(`/api/cabs/${cabId}`)
       .then((r) => r.json())
       .then((json) => {
-        if (json?.data) setCab(json.data);
-        else setError("Cab not found");
+        if (json?.data) {
+          setCab(json.data);
+          trackEvent("passenger_details_started", {
+            service_type: "cab",
+            vehicle_id: cabId,
+            vehicle_name: getCabVehicleName(json.data),
+            city: tripParsed.from || json.data.city || "",
+            source_page: "/cabs/passenger"
+          });
+        } else setError("Cab not found");
       })
       .catch(() => setError("Could not load cab"))
       .finally(() => setLoading(false));
@@ -98,7 +109,22 @@ function PassengerContent() {
       email: email.trim(),
       pickup: trip.from,
       drop: trip.to || "",
-      date: trip.date
+      date: trip.date,
+      time: trip.time,
+      cabId,
+      vehicleName: cab ? getCabDisplayTitle(cab, trip) : "",
+      total,
+      distanceKm: fare.distanceKm || trip.distanceKm || "",
+      packageLine: cab ? getCabPackageLine(cab, trip, { slab, fare }) : "",
+      tripType: trip.tripType
+    });
+    trackEvent("booking_started", {
+      service_type: "cab",
+      vehicle_id: cabId,
+      vehicle_name: cab ? getCabVehicleName(cab) : "",
+      city: trip.from || "",
+      route: [trip.from, trip.to].filter(Boolean).join(" → "),
+      cta_location: "passenger_details"
     });
     if (!isLoggedIn()) {
       saveCheckoutDraft({ pendingResume: true });
@@ -158,36 +184,44 @@ function PassengerContent() {
       <div className="section-shell">
         <TripRoutePanel trip={trip} compact />
       </div>
-      <div className="section-shell grid w-full grid-cols-1 gap-6 px-4 py-6 lg:grid-cols-[1fr_320px]">
-        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div className="section-shell grid w-full grid-cols-1 items-start gap-6 px-4 py-6 lg:grid-cols-[minmax(0,36rem)_20rem]">
+        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
           <h2 className="text-lg font-bold text-slate-900">Traveller details</h2>
           <p className="mt-1 text-sm text-slate-600">Enter details for the primary passenger</p>
-          <div className="mt-4 space-y-4">
-            <div>
-              <label className="mmt-search-label">Full name</label>
+          <div className="mt-5 grid max-w-xl gap-4 sm:grid-cols-2">
+            <div className="sm:col-span-2">
+              <label className="mmt-search-label" htmlFor="traveller-name">Full name</label>
               <input
+                id="traveller-name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm"
+                autoComplete="name"
+                className={`mt-1 ${inputBaseClass}`}
                 placeholder="As on ID"
               />
             </div>
             <div>
-              <label className="mmt-search-label">Mobile number</label>
+              <label className="mmt-search-label" htmlFor="traveller-phone">Mobile number</label>
               <input
+                id="traveller-phone"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm"
+                inputMode="numeric"
+                autoComplete="tel"
+                className={`mt-1 ${inputBaseClass}`}
                 placeholder="10-digit mobile"
               />
             </div>
             <div>
-              <label className="mmt-search-label">Email (optional)</label>
+              <label className="mmt-search-label" htmlFor="traveller-email">Email (optional)</label>
               <input
+                id="traveller-email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm"
+                autoComplete="email"
+                className={`mt-1 ${inputBaseClass}`}
+                placeholder="name@email.com"
               />
             </div>
           </div>
@@ -196,7 +230,7 @@ function PassengerContent() {
             type="button"
             disabled={submitting}
             onClick={handleContinue}
-            className="mt-6 w-full rounded-full bg-[var(--cabzii-brand)] py-3 text-base font-bold text-white hover:bg-[var(--cabzii-brand-hover)] disabled:opacity-60"
+            className="cabzii-btn cabzii-btn-primary cabzii-btn-lg cabzii-tap mt-6 w-full max-w-xs sm:w-auto sm:min-w-54"
           >
             {submitting ? "Processing…" : "Continue to payment"}
           </button>

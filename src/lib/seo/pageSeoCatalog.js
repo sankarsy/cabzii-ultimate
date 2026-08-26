@@ -13,7 +13,7 @@ export const STATIC_PAGE_SEO_LIST = [
     seoDescription:
       "Book cabs from Chennai and across Tamil Nadu with Cabzii — airport taxi, local packages, outstation and one-way trips. Transparent fares and OTP booking.",
     seoKeywords:
-      "cab booking chennai, taxi service chennai, airport taxi chennai, outstation cab chennai, cab booking tamil nadu, cabzii, cabzii.in"
+      "cab booking chennai, taxi service chennai, airport taxi chennai, outstation cab chennai, cab rental tariff chennai, cab booking tamil nadu, cabzii, cabzii.in"
   },
   {
     id: "site:cabs",
@@ -23,9 +23,53 @@ export const STATIC_PAGE_SEO_LIST = [
     productName: "Book Cabs Online",
     seoTitle: formatSerpTitle("Cab Booking Chennai", "Airport Taxi, Local & Outstation Cabs"),
     seoDescription:
-      "Book Maruti Dzire, Ertiga, Toyota Innova and tempo traveller with transparent fares. Outstation, airport and local cab booking on cabzii.in.",
+      "Book Swift Dzire, Honda Amaze, Ertiga, Toyota Innova Crysta and Tempo Traveller with the Cabzii tariff. Outstation, airport and local cab booking on cabzii.in.",
     seoKeywords:
-      "cab booking chennai, airport taxi, outstation cab, Maruti Dzire cab, Innova taxi, cabzii cabs"
+      "cab booking chennai, tour s taxi booking, dzire taxi, dezire taxi, wagon r taxi, wegon r, bolero taxi, boliro, innova crysta rental, car rental chennai, cab rental chennai, airport taxi, cabzii cabs"
+  },
+  {
+    id: "site:drivers",
+    path: "/drivers",
+    type: "site",
+    typeLabel: "Drivers category",
+    productName: "Driver Hire",
+    seoTitle: "Driver Hire & Chauffeur Service | Acting Driver | Cabzii",
+    seoDescription:
+      "Book acting driver, chauffeur and driver-on-hire on Cabzii. You book a service — Cabzii assigns a professional driver after confirmation.",
+    seoKeywords: "driver hire, acting driver, chauffeur service, call driver, cabzii drivers"
+  },
+  {
+    id: "site:acting-driver",
+    path: "/acting-driver",
+    type: "site",
+    typeLabel: "Acting driver hub",
+    productName: "Acting Driver",
+    seoTitle: "Acting Driver — Chauffeur on Hire for Your Car | Cabzii",
+    seoDescription:
+      "Acting driver cities on Cabzii — chauffeur for your own car. Hourly, daily and outstation packages. Driver assigned after you book.",
+    seoKeywords: "acting driver, chauffeur on hire, driver for own car, cabzii acting driver"
+  },
+  {
+    id: "site:services",
+    path: "/services",
+    type: "site",
+    typeLabel: "Services hub",
+    productName: "Services",
+    seoTitle: "Cab & Driver Services by City | Cabzii",
+    seoDescription:
+      "Cab rental, car rental, airport taxi, outstation and one-way services by city on Cabzii. Open the city you travel from.",
+    seoKeywords: "cab rental, airport taxi, outstation cab, car rental, cabzii services"
+  },
+  {
+    id: "site:routes",
+    path: "/routes",
+    type: "site",
+    typeLabel: "Routes hub",
+    productName: "Routes",
+    seoTitle: "Popular Cab Routes — One-Way & Outstation | Cabzii",
+    seoDescription:
+      "High-value cab routes such as Chennai–Tirupati and Chennai–Trichy with distance, fare context and OTP booking on Cabzii.",
+    seoKeywords: "chennai to tirupati cab, one way cab, outstation routes, cabzii routes"
   },
   {
     id: "site:call-driver",
@@ -114,6 +158,18 @@ export const STATIC_PAGE_SEO_LIST = [
     seoDescription:
       "Read verified Cabzii customer reviews for cab booking, airport taxi, outstation trips and acting drivers across South India.",
     seoKeywords: "cabzii reviews, cab booking reviews, taxi service ratings"
+  },
+  {
+    id: "site:tariff",
+    path: "/tariff",
+    type: "site",
+    typeLabel: "Tariff page",
+    productName: "Cab Rental Tariff",
+    seoTitle: "Cab Rental Tariff in Chennai | Car, Tempo Traveller & Mini Bus Rates | Cabzii",
+    seoDescription:
+      "Cabzii Chennai cab rental tariff — Swift Dzire from ₹1,200, Innova Crysta from ₹2,200, Tempo Traveller from ₹3,000, mini bus from ₹8,500. Extra km, extra hour and driver batta.",
+    seoKeywords:
+      "cab rental tariff chennai, tempo traveller rental chennai price, innova crysta rental chennai, mini bus rental chennai, cabzii tariff"
   }
 ];
 

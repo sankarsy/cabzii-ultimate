@@ -11,6 +11,7 @@ import { packageBookingHref } from "../lib/holidayHome";
 import { HOLIDAY_CATEGORIES, categoryLabel } from "../lib/holidays";
 import { catalogPriorityParams, sortBySelectedCity } from "../lib/locationPriority";
 import { useSelectedCity } from "../lib/useSelectedCity";
+import { SEO_CITIES } from "../lib/seo/cities";
 
 export default function HolidaysListPage() {
   const router = useRouter();
@@ -191,7 +192,10 @@ export default function HolidaysListPage() {
           </>
         )}
         <div className="mt-5 sm:mt-6">
-          <RelatedSeoLinks page="packages" />
+          <RelatedSeoLinks
+            page="packages"
+            citySlug={SEO_CITIES.find((c) => c.name === selectedCity)?.slug || ""}
+          />
         </div>
         <p className="mt-4 text-center sm:mt-5">
           <Link href="/" className="text-xs font-semibold text-[var(--cabzii-brand)] sm:text-sm">

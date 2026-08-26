@@ -36,7 +36,7 @@ const PinIcon = MapPinIcon;
 const FALLBACK_DRIVER_IMAGE =
   "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=1200&q=80";
 
-export default function DriverBookingDetail({ driver, onSelectionChange, initialPackageId = "" }) {
+export default function DriverBookingDetail({ driver, onSelectionChange, initialPackageId = "", hideHeroImage = false }) {
   const chargeItems = useMemo(() => buildDriverChargeItems(driver), [driver]);
   const imageSrc = resolveMediaUrl(driver.image) || FALLBACK_DRIVER_IMAGE;
   const vehicles = Array.isArray(driver.supportedVehicles) ? driver.supportedVehicles : [];
@@ -108,14 +108,17 @@ export default function DriverBookingDetail({ driver, onSelectionChange, initial
   );
 
   return (
-    <article className="overflow-hidden rounded-[18px] border border-slate-200 bg-white shadow-lg">
-      <ProductImageFrame
-        src={imageSrc}
-        alt={displayName}
-        badges={imageBadges}
-        imageClassName="h-[200px] w-full object-cover object-top sm:h-[220px]"
-      />
+    <article className={`overflow-hidden border border-slate-200 bg-white ${hideHeroImage ? "rounded-xl shadow-sm" : "rounded-[18px] shadow-lg"}`}>
+      {!hideHeroImage ? (
+        <ProductImageFrame
+          src={imageSrc}
+          alt={displayName}
+          badges={imageBadges}
+          imageClassName="h-36 w-full object-cover object-top sm:h-40"
+        />
+      ) : null}
 
+      {!hideHeroImage ? (
       <ProductMetaBlock title={displayName} vendor={driver.vendor} vendorFallback="Cabzii Partner">
         {driver.city || driver.location ? (
           <MetaPill label={`${driver.city || "City"}${driver.location ? ` · ${driver.location}` : ""}`} />
@@ -127,18 +130,20 @@ export default function DriverBookingDetail({ driver, onSelectionChange, initial
         {languages[0] ? <MetaPill icon={<LangIcon className="h-2.5 w-2.5" />} label={languages[0]} /> : null}
         {dayHireLabel ? <MetaPill icon={<RupeeIcon className="h-2.5 w-2.5" />} label={dayHireLabel} /> : null}
       </ProductMetaBlock>
+      ) : null}
 
-      <div className="lg:grid lg:grid-cols-[1fr_300px] xl:grid-cols-[1fr_320px]">
-        <div className="border-t border-slate-100 p-3 sm:p-4 lg:border-r">
+      <div className={hideHeroImage ? "" : "lg:grid lg:grid-cols-[1fr_300px] xl:grid-cols-[1fr_320px]"}>
+        <div className={`border-t border-slate-100 ${hideHeroImage ? "p-2.5 sm:p-3" : "p-3 sm:p-4 lg:border-r"}`}>
           <ServiceToggle serviceTab={serviceTab} setServiceTab={handleServiceTab} />
           <PackageSection
             visiblePackages={visiblePackages}
             selectedPackageId={selectedPackageId}
             onSelectPackage={handleSelectPackage}
           />
-          <AdditionalChargesGrid items={chargeItems} />
+          <AdditionalChargesGrid items={chargeItems} compact={hideHeroImage} />
         </div>
 
+        {hideHeroImage ? null : (
         <aside className="flex flex-col border-t border-slate-100 bg-slate-50/60 p-3 sm:p-4 lg:border-t-0">
           <VendorBox vendor={driver.vendor || driver.name} />
           <TrustGrid />
@@ -147,6 +152,7 @@ export default function DriverBookingDetail({ driver, onSelectionChange, initial
             100% Safe & Secure Payments
           </p>
         </aside>
+        )}
       </div>
     </article>
   );

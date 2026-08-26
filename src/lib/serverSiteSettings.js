@@ -1,8 +1,10 @@
+import { isLiveApiHostProtected } from "./liveApiHostGuard";
 import { getBackendUrl } from "./seo";
 import { DEFAULT_SITE_SETTINGS } from "./siteSettingsDefaults";
 import { fetchSeoMenuLinks } from "./serverCatalog";
 
 export async function fetchSiteSettings() {
+  if (isLiveApiHostProtected()) return DEFAULT_SITE_SETTINGS;
   const backend = getBackendUrl();
   try {
     const [settingsRes, seoMenuLinks] = await Promise.all([

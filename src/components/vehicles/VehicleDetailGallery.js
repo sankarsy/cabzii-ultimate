@@ -3,11 +3,11 @@
 import { useMemo, useState } from "react";
 import { resolveMediaUrl } from "../../lib/media";
 import { optimizeImageUrl } from "../../lib/imageOptimize";
-import { getCabVehicleName } from "../../lib/catalogDisplay";
+import { vehiclePhotoAlt } from "../../lib/catalogDisplay";
 import { resolveCabImage } from "../../lib/vehicleImages";
 
 function galleryImages(cab) {
-  const shortAlt = getCabVehicleName(cab) || cab?.title || "Cab photo";
+  const shortAlt = vehiclePhotoAlt(cab);
   const fallback = resolveCabImage(cab);
   const seen = new Set();
   const out = [];
@@ -39,20 +39,26 @@ export default function VehicleDetailGallery({ cab }) {
   const [active, setActive] = useState(0);
   const [broken, setBroken] = useState({});
   const fallbackSrc = resolveCabImage(cab);
-  const shortAlt = getCabVehicleName(cab) || cab?.title || "Cab photo";
+  const shortAlt = vehiclePhotoAlt(cab);
 
   const current = images[active] || images[0];
   const rawSrc = current?.url || fallbackSrc;
   const src =
     broken[rawSrc] && fallbackSrc && fallbackSrc !== rawSrc
-      ? optimizeImageUrl(fallbackSrc, 960)
-      : optimizeImageUrl(rawSrc, 960);
+      ? optimizeImageUrl(fallbackSrc, 640)
+      : optimizeImageUrl(rawSrc, 640);
 
-  if (!src) return null;
+  if (!src) {
+    return (
+      <div className="flex h-40 items-center justify-center rounded-xl border border-slate-200 bg-slate-100 text-center text-[11px] text-slate-500 sm:h-44">
+        {shortAlt}
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-2">
-      <div className="relative overflow-hidden rounded-xl border border-slate-200 bg-slate-100 sm:rounded-2xl">
+      <div className="relative overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
         <img
           key={src}
           loading="eager"
@@ -60,13 +66,13 @@ export default function VehicleDetailGallery({ cab }) {
           decoding="async"
           src={src}
           alt={shortAlt}
-          width={960}
-          height={480}
+          width={640}
+          height={400}
           onError={() => {
             if (!rawSrc) return;
             setBroken((prev) => (prev[rawSrc] ? prev : { ...prev, [rawSrc]: true }));
           }}
-          className="aspect-[16/9] max-h-48 w-full object-cover sm:aspect-[2/1] sm:max-h-[20rem]"
+          className="h-40 w-full object-cover object-center sm:h-44 lg:h-48"
         />
         {images.length > 1 ? (
           <div className="absolute bottom-2 right-2 rounded-full bg-black/60 px-2 py-0.5 text-[10px] font-semibold text-white sm:bottom-3 sm:right-3 sm:px-2.5 sm:py-1 sm:text-[11px]">

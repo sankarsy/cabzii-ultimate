@@ -28,6 +28,20 @@ export function getCabVehicleName(cab = {}) {
   return type || "Cab";
 }
 
+/** Descriptive alt for real vehicle photos — no filename, no keyword stuffing. */
+export function vehiclePhotoAlt(cab = {}) {
+  const name = getCabVehicleName(cab);
+  const city = String(cab.city || "")
+    .replace(/\bAll India\b/gi, "Chennai")
+    .trim() || "Chennai";
+  const seats = Number(cab.seats);
+  if (/urbania/i.test(name)) return `${name} luxury van rental in ${city}`;
+  if (/traveller/i.test(name) && Number.isFinite(seats) && seats >= 10) {
+    return `${name} ${seats} seater rental in ${city}`;
+  }
+  return `${name} rental in ${city}`;
+}
+
 function tripServiceLabel(trip) {
   if (!trip) return "";
   if (trip.tripType === "outstation") {

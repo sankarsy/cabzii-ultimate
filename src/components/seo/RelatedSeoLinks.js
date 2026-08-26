@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { relatedLinksForPage } from "../../lib/seo/internalLinks";
 
-export default function RelatedSeoLinks({ page = "cabs", title = "Related pages" }) {
-  const links = relatedLinksForPage(page);
+export default function RelatedSeoLinks({ page = "cabs", citySlug = "", title = "Related pages" }) {
+  const links = relatedLinksForPage(page, citySlug);
 
   return (
     <section className="mt-10 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:p-6">

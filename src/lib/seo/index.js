@@ -11,3 +11,4 @@ export * from "./programmaticMeta";
 export * from "./urlAliases";
 export * from "./landingContent";
 export * from "./routeCatalog";
+export * from "./internalLinks";

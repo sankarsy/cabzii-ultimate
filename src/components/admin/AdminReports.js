@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Download } from "lucide-react";
 import { BarChart, DonutChart, LineChart, formatINR, formatNumber } from "./charts";
+import AdminQuoteLeads from "./AdminQuoteLeads";
 
 const RANGES = [
   { days: 7, label: "7 days" },
@@ -55,8 +56,8 @@ export default function AdminReports({ token, isSuperAdmin }) {
   }, [days, token]);
 
   useEffect(() => {
-    if (isSuperAdmin) load();
-  }, [isSuperAdmin, load]);
+    if (token) load();
+  }, [token, load]);
 
   const exportAnalyticsCsv = () => {
     if (!data) return;
@@ -91,11 +92,11 @@ export default function AdminReports({ token, isSuperAdmin }) {
     }
   };
 
-  if (!isSuperAdmin) {
+  if (!token) {
     return (
       <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
         <h2 className="text-lg font-bold text-slate-900">Reports</h2>
-        <p className="mt-2 text-sm text-slate-600">Only a super admin can view reports.</p>
+        <p className="mt-2 text-sm text-slate-600">Sign in to view reports.</p>
       </div>
     );
   }
@@ -121,7 +122,9 @@ export default function AdminReports({ token, isSuperAdmin }) {
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white p-3 shadow-sm sm:p-4">
         <div>
           <h2 className="text-lg font-bold text-slate-900">Reports &amp; Analytics</h2>
-          <p className="text-sm text-slate-500">Bookings, revenue and customer growth at a glance.</p>
+          <p className="text-sm text-slate-500">
+            {isSuperAdmin ? "Bookings, revenue and customer growth at a glance." : "Your bookings, trip status and WhatsApp quote leads."}
+          </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <div className="flex gap-1 rounded-lg border border-slate-200 p-1">
@@ -146,6 +149,7 @@ export default function AdminReports({ token, isSuperAdmin }) {
           >
             <Download className="h-3.5 w-3.5 text-slate-400" strokeWidth={2} aria-hidden /> Analytics CSV
           </button>
+          {isSuperAdmin ? (
           <button
             type="button"
             onClick={exportBookingsCsv}
@@ -153,6 +157,7 @@ export default function AdminReports({ token, isSuperAdmin }) {
           >
             <Download className="h-3.5 w-3.5 text-slate-400" strokeWidth={2} aria-hidden /> Bookings CSV
           </button>
+          ) : null}
         </div>
       </div>
 
@@ -167,12 +172,33 @@ export default function AdminReports({ token, isSuperAdmin }) {
       ) : kpis ? (
         <>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
-            <KpiCard label="Total customers" value={formatNumber(kpis.totalCustomers)} accent="text-sky-600" />
-            <KpiCard label={`New (${days}d)`} value={formatNumber(kpis.newCustomers)} accent="text-emerald-600" />
+            {isSuperAdmin ? <KpiCard label="Total customers" value={formatNumber(kpis.totalCustomers)} accent="text-sky-600" /> : null}
+            {isSuperAdmin ? <KpiCard label={`New (${days}d)`} value={formatNumber(kpis.newCustomers)} accent="text-emerald-600" /> : null}
             <KpiCard label="Total bookings" value={formatNumber(kpis.totalBookings)} accent="text-violet-600" />
             <KpiCard label={`Bookings (${days}d)`} value={formatNumber(kpis.bookingsInRange)} accent="text-blue-600" />
             <KpiCard label={`Revenue (${days}d)`} value={formatINR(kpis.revenueInRange)} accent="text-amber-600" />
             <KpiCard label="Total revenue" value={formatINR(kpis.totalRevenue)} accent="text-rose-600" />
+          </div>
+
+          <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm sm:p-4">
+            <h3 className="mb-2 text-xs font-bold text-slate-800">Operational funnel ({days}d)</h3>
+            <p className="mb-2 text-[11px] text-slate-500">
+              Internal counts only — not a Google Analytics recreation. WhatsApp quotes are lead clicks, not confirmed bookings.
+            </p>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+              <KpiCard label="WhatsApp quotes" value={formatNumber(kpis.whatsappQuotesInRange || 0)} accent="text-emerald-700" />
+              <KpiCard label="Booking starts" value={formatNumber(kpis.bookingsInRange)} accent="text-violet-700" />
+              <KpiCard label="Completed trips" value={formatNumber(kpis.completedInRange || 0)} accent="text-sky-700" />
+              <KpiCard
+                label="Completion rate"
+                value={
+                  kpis.bookingsInRange
+                    ? `${Math.round(((kpis.completedInRange || 0) / kpis.bookingsInRange) * 100)}%`
+                    : "—"
+                }
+                accent="text-slate-800"
+              />
+            </div>
           </div>
 
           <div className="grid gap-3 lg:grid-cols-2">
@@ -211,6 +237,7 @@ export default function AdminReports({ token, isSuperAdmin }) {
             </div>
           </div>
 
+          {isSuperAdmin ? (
           <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm sm:p-4">
             <h3 className="mb-2 text-xs font-bold text-slate-800">Top customers by spend</h3>
             <div className="overflow-x-auto">
@@ -247,8 +274,13 @@ export default function AdminReports({ token, isSuperAdmin }) {
               </table>
             </div>
           </div>
+          ) : null}
+
+          <AdminQuoteLeads token={token} />
         </>
-      ) : null}
+      ) : (
+        <AdminQuoteLeads token={token} />
+      )}
     </div>
   );
 }

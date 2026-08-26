@@ -17,6 +17,8 @@ import {
 } from "../../../lib/seo";
 
 import { fetchSeoCityPage } from "../../../lib/serverCatalog";
+import { getCityLandingBody } from "../../../lib/seo/landingContent";
+import { resolveMediaUrl } from "../../../lib/media";
 
 export const revalidate = 600;
 
@@ -39,11 +41,13 @@ export async function generateMetadata({ params }) {
   const keywords = cms?.seo
     ? cms.seo.split(",").map((k) => k.trim()).filter(Boolean)
     : tunedActingDriverKeywords(city);
+  const cmsImage = resolveMediaUrl(cms?.image || cms?.banner || "");
   return buildPageMetadata({
     title: cms?.seoTitle || tunedActingDriverTitle(city),
     description: cms?.seoDescription || tunedActingDriverDescription(city),
     path,
-    keywords
+    keywords,
+    ...(cmsImage ? { image: cmsImage, imageAlt: `Acting driver in ${city.name}` } : {})
   });
 }
 
@@ -71,10 +75,19 @@ export default async function ActingDriverCityPage({ params }) {
     faqFromPairs(faqs)
   ];
 
+  const extraBody = (() => {
+    const generated = getCityLandingBody(city, "driver") || "";
+    const cmsBody = typeof cms?.body === "string" ? cms.body.trim() : "";
+    if (city.slug === "vellore") return cmsBody;
+    if (cmsBody.length > 400) return cmsBody;
+    if (cmsBody && generated) return `${cmsBody}${generated}`;
+    return cmsBody || generated;
+  })();
+
   return (
     <>
       <JsonLd data={jsonLd} />
-      <CitySeoPage city={city} variant="driver" extraBody={cms?.body || ""} headingOverride={cms?.h1 || ""} />
+      <CitySeoPage city={city} variant="driver" extraBody={extraBody} headingOverride={cms?.h1 || ""} />
     </>
   );
 }

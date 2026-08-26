@@ -6,7 +6,6 @@ import { useSearchParams } from "next/navigation";
 import EmtHeroSearch from "../emt/EmtHeroSearch";
 import EmtWhyChooseUs from "../emt/EmtWhyChooseUs";
 import MmtLayout from "./MmtLayout";
-import InternalLinksHub from "../seo/InternalLinksHub";
 import TrustStrip from "../ui/TrustStrip";
 import MmtCabResultCard from "./MmtCabResultCard";
 import MmtHomeCatalogSection, { MmtHomeCatalogScroll, MmtHomeCatalogScrollItem } from "./MmtHomeCatalogSection";
@@ -22,12 +21,9 @@ import { DEFAULT_HQ_CITY } from "../../lib/vehicleAdminConfig";
 import { isValidDriverTripSearch, parseDriverTripSearchParams } from "../../lib/driverTrip";
 import { isValidTripSearch, parseTripSearchParams } from "../../lib/mmtTrip";
 import { extractCabList, fetchJson } from "../../lib/apiClient";
+import HomeSeoDiscover from "../seo/HomeSeoDiscover";
 
-const EmtHolidayExplore = dynamic(() => import("../emt/EmtHolidayExplore"), { ssr: false });
-const EmtOffersCarousel = dynamic(() => import("../emt/EmtOffersCarousel"), { ssr: false });
-const PopularRoutesStrip = dynamic(() => import("../home/PopularRoutesStrip"), { ssr: false });
-const PilgrimagePackagesSection = dynamic(() => import("../home/PilgrimagePackagesSection"), { ssr: false });
-const MmtPopularServices = dynamic(() => import("./MmtPopularServices"), { ssr: false });
+const HomeShowcaseCarousel = dynamic(() => import("../home/HomeShowcaseCarousel"), { ssr: false });
 const HomeBlogTeasers = dynamic(() => import("../home/HomeBlogTeasers"), { ssr: false });
 
 const HOME_CABS_LIMIT = 8;
@@ -74,14 +70,12 @@ function HomePageBody({
         <SocialProofTicker />
         <TrustStrip />
 
-        {/* 2. Deals — hook visitors with offers while intent is highest */}
-        <EmtOffersCarousel />
+        {/* Photo cards — Exclusive Offers, city services, popular routes */}
+        <HomeShowcaseCarousel section="offers" />
+        <HomeShowcaseCarousel section="services" />
+        <HomeShowcaseCarousel section="routes" />
 
-        {/* 3. Core product — what we do and where, then the routes people book most */}
-        <MmtPopularServices />
-        <PopularRoutesStrip />
-
-        {/* 4. Live inventory — actual cabs & drivers to pick from */}
+        {/* Live inventory — actual cabs & drivers to pick from */}
         {cabsError ? (
           <p className="section-shell text-sm text-rose-700">{cabsError}</p>
         ) : null}
@@ -108,17 +102,13 @@ function HomePageBody({
 
         <CallDriverHomeSection />
 
-        {/* 5. Cross-sell — temple tours & holiday packages */}
-        <PilgrimagePackagesSection />
-        <EmtHolidayExplore />
-
-        {/* 6. Why us — proof & credibility before the final push */}
+        {/* Why us — proof & credibility before the final push */}
         <EmtWhyChooseUs />
 
-        {/* 7. Content & SEO — blog, internal links, FAQ */}
+        {/* Content — blog and FAQ */}
         <HomeBlogTeasers />
 
-        <InternalLinksHub title="Explore cab booking, routes & services across South India" />
+        <HomeSeoDiscover />
 
         <section className="border-t border-slate-200 bg-white py-8 sm:py-10">
           <div className="section-shell">

@@ -19,6 +19,7 @@ import {
   tunedServiceTitle
 } from "../../../../lib/seo";
 import { serviceSerpBadges } from "../../../../lib/seo/serpRichData";
+import { resolveMediaUrl } from "../../../../lib/media";
 
 export const revalidate = 600;
 
@@ -49,7 +50,14 @@ export async function generateMetadata({ params }) {
     ? cmsMeta.seo.split(",").map((k) => k.trim()).filter(Boolean)
     : tunedServiceKeywords(serviceRow, city);
 
-  return buildPageMetadata({ title, description, path, keywords });
+  const cmsImage = resolveMediaUrl(cmsMeta?.image || "");
+  return buildPageMetadata({
+    title,
+    description,
+    path,
+    keywords,
+    ...(cmsImage ? { image: cmsImage, imageAlt: `${serviceRow.name} in ${city.name}` } : {})
+  });
 }
 
 export default async function ServiceCityPage({ params }) {

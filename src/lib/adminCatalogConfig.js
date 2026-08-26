@@ -761,10 +761,10 @@ export const CATALOG_TABS = {
     required: ["title", "vendor", "type", "price"]
   },
   drivers: {
-    label: "Drivers",
+    label: "Driver catalog",
     base: "/api/drivers",
     form: "driver",
-    superAdminOnly: false,
+    superAdminOnly: true,
     sample: {
       name: "Maruti Dzire",
       vendor: "Your Vendor Name",
@@ -922,7 +922,7 @@ export const CATALOG_TABS = {
     form: "testimonial"
   },
   seoServices: {
-    label: "Services",
+    label: "Service landing pages",
     base: "/api/seo-services",
     adminList: true,
     superAdminOnly: true,
@@ -940,7 +940,7 @@ export const CATALOG_TABS = {
     required: ["seoTitle"]
   },
   seoRoutes: {
-    label: "Routes",
+    label: "Route landing pages",
     base: "/api/seo-routes",
     adminList: true,
     superAdminOnly: true,
@@ -959,7 +959,7 @@ export const CATALOG_TABS = {
     required: ["seoTitle", "fromCitySlug", "toCitySlug"]
   },
   seoCityPages: {
-    label: "City Pages",
+    label: "City landing pages",
     base: "/api/seo-city-pages",
     adminList: true,
     superAdminOnly: true,

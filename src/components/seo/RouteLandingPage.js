@@ -102,7 +102,7 @@ export default function RouteLandingPage({ route, faqs, extraBody = "", cabs = [
           <table className="w-full text-left text-[11px] sm:text-xs">
             <tbody>
               <tr className="border-b border-slate-100 bg-white">
-                <th className="px-3 py-2 font-semibold text-slate-700">Sedan (Dzire / Etios)</th>
+                <th className="px-3 py-2 font-semibold text-slate-700">Sedan (Dzire / Amaze)</th>
                 <td className="px-3 py-2 font-bold text-slate-900">from ₹{sedanFrom.toLocaleString("en-IN")}</td>
               </tr>
               <tr className="bg-white">

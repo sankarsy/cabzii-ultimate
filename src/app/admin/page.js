@@ -19,7 +19,10 @@ import AdminSiteSettings from "../../components/admin/AdminSiteSettings";
 import CabziiLogo from "../../components/brand/CabziiLogo";
 import { BRAND } from "../../lib/brand";
 import { CATALOG_TAB_KEYS, CATALOG_TABS } from "../../lib/adminCatalogConfig";
+import { MASTER_SECTION_KEYS } from "../../lib/adminMasterConfig";
 import { clearSession, getToken } from "../../lib/auth";
+
+const VENDOR_ALLOWED_TABS = new Set(["ops", "cabs", "bookings", "packages", "buses", "master", "reports"]);
 
 export default function AdminPage() {
   const router = useRouter();
@@ -70,7 +73,7 @@ export default function AdminPage() {
     const entSection = searchParams.get("section");
     if (entSection && tab === "enterprise") setEnterpriseSection(entSection);
     const createVendor = searchParams.get("createVendor");
-    if (section && ["vendors", "cities", "locations"].includes(section)) {
+    if (section && MASTER_SECTION_KEYS.includes(section)) {
       setMasterSection(section);
       setActiveTab("master");
     }
@@ -115,6 +118,19 @@ export default function AdminPage() {
 
   const isSuperAdmin = user?.role === "super_admin";
 
+  useEffect(() => {
+    if (!user || user.role === "super_admin") return;
+    if (!VENDOR_ALLOWED_TABS.has(activeTab)) {
+      setActiveTab("ops");
+      router.replace("/admin?tab=ops");
+      return;
+    }
+    if (activeTab === "master" && masterSection !== "drivers") {
+      setMasterSection("drivers");
+      router.replace("/admin?tab=master&section=drivers");
+    }
+  }, [user, activeTab, masterSection, router]);
+
   const logout = async () => {
     clearSession();
     await fetch("/api/auth/session", { method: "DELETE" });
@@ -128,7 +144,7 @@ export default function AdminPage() {
       label: "Ops",
       items: [
         { key: "ops", label: "Operations" },
-        { key: "reports", label: "Reports", superAdminOnly: true },
+        { key: "reports", label: "Reports" },
         { key: "crm", label: "CRM", superAdminOnly: true },
         { key: "aiChat", label: "AI chat list", superAdminOnly: true },
         { key: "customers", label: "Customers", superAdminOnly: true },
@@ -140,27 +156,36 @@ export default function AdminPage() {
       items: CATALOG_TAB_KEYS.filter((tab) => ["cabs", "drivers", "buses", "packages", "bookings"].includes(tab)).map(
         (tab) => ({
           key: tab,
-          label: tab === "packages" ? "Holidays" : tab === "buses" ? "Buses" : CATALOG_TABS[tab].label
+          label: tab === "packages" ? "Holidays" : tab === "buses" ? "Buses" : CATALOG_TABS[tab].label,
+          superAdminOnly: Boolean(CATALOG_TABS[tab].superAdminOnly)
         })
       )
     },
     {
       label: "Content",
       items: [
+        { key: "seoPagesHub", label: "Google SEO pages", superAdminOnly: true },
         ...CATALOG_TAB_KEYS.filter((tab) => !["cabs", "drivers", "buses", "packages", "bookings"].includes(tab)).map(
-          (tab) => ({ key: tab, label: CATALOG_TABS[tab].label })
+          (tab) => ({
+            key: tab,
+            label: CATALOG_TABS[tab].label,
+            superAdminOnly: CATALOG_TABS[tab].superAdminOnly !== false
+          })
         ),
         { key: "enterprise", label: "CMS", superAdminOnly: true },
-        { key: "settings", label: "Settings", superAdminOnly: true },
-        { key: "seoPagesHub", label: "SEO & ads", superAdminOnly: true }
+        { key: "settings", label: "Settings", superAdminOnly: true }
       ]
     },
     {
       label: "Master",
       items: [
-        { key: "vendors", label: "Vendors", tab: "master", section: "vendors" },
-        { key: "cities", label: "Cities", tab: "master", section: "cities" },
-        { key: "locations", label: "Locations", tab: "master", section: "locations" }
+        { key: "vendors", label: "Vendors", tab: "master", section: "vendors", superAdminOnly: true },
+        { key: "driverAccounts", label: "Drivers", tab: "master", section: "drivers" },
+        { key: "cities", label: "Cities", tab: "master", section: "cities", superAdminOnly: true },
+        { key: "locations", label: "Locations", tab: "master", section: "locations", superAdminOnly: true },
+        { key: "offers", label: "Exclusive Offers", tab: "master", section: "offers", superAdminOnly: true },
+        { key: "cityServices", label: "Cab services", tab: "master", section: "services", superAdminOnly: true },
+        { key: "popularRoutes", label: "Popular routes", tab: "master", section: "routes", superAdminOnly: true }
       ]
     }
   ];
@@ -229,7 +254,9 @@ export default function AdminPage() {
             })}
           </aside>
           <div className="min-w-0">
-            {activeTab === "ops" ? (
+            {!isSuperAdmin && !VENDOR_ALLOWED_TABS.has(activeTab) ? (
+              <AdminOpsDashboard token={token} isSuperAdmin={false} />
+            ) : activeTab === "ops" ? (
               <AdminOpsDashboard token={token} isSuperAdmin={isSuperAdmin} />
             ) : activeTab === "reports" ? (
               <AdminReports token={token} isSuperAdmin={isSuperAdmin} />

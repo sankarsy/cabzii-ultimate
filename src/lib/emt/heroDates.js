@@ -36,3 +36,14 @@ export function formatTime12(time24) {
 export function addDays(iso, days) {
   return addIstDays(iso || todayStr(), days);
 }
+
+/** Open the native date/time picker from a fake overlay input (Chrome ignores most of the click otherwise). */
+export function openNativePicker(event) {
+  const el = event?.currentTarget;
+  if (!el || typeof el.showPicker !== "function") return;
+  try {
+    el.showPicker();
+  } catch {
+    /* NotAllowedError if the picker is already open */
+  }
+}

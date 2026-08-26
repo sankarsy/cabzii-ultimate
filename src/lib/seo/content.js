@@ -1,4 +1,5 @@
 import { SEO_SERVICES } from "./services";
+import { airportInfoForCity, cityHasCommercialAirport } from "./airports";
 
 /** Homepage visible FAQs — must match faqJsonLd() for rich results. */
 export const HOME_PAGE_FAQS = [
@@ -8,7 +9,7 @@ export const HOME_PAGE_FAQS = [
   ],
   [
     "Can I book a cab near me in Chennai, Madurai or Coimbatore?",
-    "Yes. Search your pickup locality on Cabzii — we show verified taxis near you in Chennai, Madurai, Coimbatore, Trichy and 20+ cities with upfront package fares."
+    "Yes. Search your pickup locality on Cabzii — we show verified taxis near you in Chennai, Madurai, Coimbatore, Trichy, Kanchipuram, Tirupati, Kanyakumari and 30+ cities with upfront package fares."
   ],
   [
     "How do I book car rental near me on Cabzii?",
@@ -40,7 +41,7 @@ export const HOME_PAGE_FAQS = [
   ],
   [
     "Which vehicles are available?",
-    "Sedan (Dzire, Etios), SUV (Ertiga), Innova and Tempo Traveller options from verified partners across South India."
+    "Sedan (Swift Dzire, Honda Amaze), Ertiga, Innova Crysta and Tempo Traveller (12 / 13 / 18 seater) from Cabzii in South India."
   ],
   [
     "Do you offer one-way cabs (e.g. Chennai to Tirupati)?",
@@ -56,7 +57,7 @@ export const HOME_PAGE_FAQS = [
   ],
   [
     "Is Cabzii available outside Chennai?",
-    "Cabzii serves Chennai, Bengaluru, Hyderabad, Coimbatore, Madurai, Tirupati and more cities — check Locations for service areas."
+    "Cabzii serves Chennai, Coimbatore, Madurai, Trichy, Kanchipuram, Tirupati, Kanyakumari, Thoothukudi, Bengaluru, Hyderabad and more — check Locations and city cab-booking pages."
   ],
   [
     "What payment methods are accepted?",
@@ -79,9 +80,44 @@ export function getCityFaqs(city, variant = "cab") {
     ];
   }
 
+  const chennaiCabFaqs =
+    city.slug === "chennai"
+      ? [
+          [
+            "Can I book a Dzire Tour S taxi in Chennai?",
+            "Yes. Tour S taxi booking in Chennai is available on Cabzii — choose a Swift Dzire / Tour S sedan for local packages, airport drops and outstation trips with fares shown before you pay."
+          ],
+          [
+            "What is Tour S taxi booking?",
+            "Tour S is Maruti Suzuki’s commercial Dzire taxi used by cab operators. On Cabzii you book it like any sedan in Chennai — 4-hour / 8-hour local hire or one-way outstation."
+          ],
+          [
+            "Can I book Wagon R, Bolero or Innova in Chennai?",
+            "Yes. Cab booking and car rental in Chennai on Cabzii includes Swift Dzire / Tour S, Wagon R, Bolero, Ertiga, Innova Crysta and Tempo Traveller. Compare packages and confirm with OTP."
+          ]
+        ]
+      : [];
+
+  const airportFaq = cityHasCommercialAirport(city.slug)
+    ? [
+        [
+          `Can I book airport taxi in ${name}?`,
+          `Yes. Pre-book airport pickup or drop in ${name} with terminal details, flight buffer time and a fixed fare quote on Cabzii.`
+        ]
+      ]
+    : [
+        [
+          `Does ${name} have an airport taxi?`,
+          airportInfoForCity(city.slug)?.note
+            ? `${airportInfoForCity(city.slug).note} Book the transfer on Cabzii with an upfront fare.`
+            : `${name} airport transfers are booked as a cab to the nearest commercial airport. Cabzii shows the fare before you pay.`
+        ]
+      ];
+
   return [
+    ...chennaiCabFaqs,
     [`How much does cab booking cost in ${name}?`, `Cab fares in ${name} vary by trip type, vehicle and distance. Local packages and outstation per-km rates are displayed on Cabzii before payment.`],
-    [`Can I book airport taxi in ${name}?`, `Yes. Pre-book airport pickup or drop in ${name} with terminal details, flight buffer time and fixed fare quote on Cabzii.`],
+    ...airportFaq,
     [`Is Cabzii available for outstation trips from ${name}?`, `Yes. Book one way or round trip outstation cabs from ${name} to nearby cities with sedan, SUV, Innova and tempo options.`],
     [`How do I book a cab on Cabzii in ${name}?`, `Enter pickup in ${name}, choose destination, compare vendors, login with mobile OTP and confirm — driver details follow by SMS/WhatsApp.`]
   ];
@@ -99,8 +135,28 @@ export function getServiceFaqs(service, city) {
 
   const bySlug = {
     "airport-taxi": [
-      [`How early should I book airport taxi in ${name}?`, `Book at least 2–4 hours before pickup; for early morning flights, book the previous evening for guaranteed availability.`],
-      [`Do you cover both airport terminals in ${name}?`, `Specify domestic or international terminal and pickup gate in booking notes. Cabzii shares driver contact before arrival.`]
+      ...(cityHasCommercialAirport(city.slug)
+        ? [
+            [
+              `How early should I book airport taxi in ${name}?`,
+              `Book at least 2–4 hours before pickup; for early morning flights, book the previous evening for guaranteed availability.`
+            ],
+            [
+              `Do you cover airport terminals in ${name}?`,
+              `Specify domestic or international terminal and pickup gate in booking notes. Cabzii shares driver contact before arrival.`
+            ]
+          ]
+        : [
+            [
+              `Is there an airport in ${name}?`,
+              airportInfoForCity(city.slug)?.note ||
+                `${name} does not have a commercial passenger airport. Book a Cabzii cab to the nearest airport.`
+            ],
+            [
+              `How do I book an airport transfer from ${name}?`,
+              `Open airport taxi for ${name} on Cabzii, set pickup in ${name} and drop at the nearest airport shown on the page, then confirm with OTP.`
+            ]
+          ])
     ],
     "outstation-cab": [
       [`What is included in outstation cab fare from ${name}?`, `Base km, driver allowance, and night charges (if applicable) are shown in the package. Tolls and parking may be listed separately.`],
@@ -115,7 +171,7 @@ export function getServiceFaqs(service, city) {
       [`What documents does the driver carry?`, `Professional drivers carry valid licence and ID. Vendor verification details are available through Cabzii support.`]
     ],
     "tempo-traveller": [
-      [`How many seats in tempo traveller from ${name}?`, `12, 14 and 17 seater AC tempo travellers are common for group travel, tours and pilgrimage trips from ${name}.`],
+      [`How many seats in tempo traveller from ${name}?`, `12, 13, 14, 16 and 18 seater AC tempo travellers are available for group travel, tours and pilgrimage trips from ${name}.`],
       [`Is tempo traveller good for ${name} to Tirupati or Pondicherry?`, `Yes. Tempo is popular for family and group pilgrimage or weekend trips from ${name}. Book early on peak weekends.`]
     ],
     "hourly-rental": [
@@ -152,7 +208,7 @@ export function getRouteFaqs(route) {
     "chennai-to-tirupati-cab": [
       [
         "How much is Chennai to Tirupati cab fare?",
-        `Chennai to Tirupati one-way cab fares start around ₹${sedanFrom.toLocaleString("en-IN")} for sedan (Swift Dzire / Etios) and from ₹${suvFrom.toLocaleString("en-IN")} for SUV or Innova. Exact fare is shown on Cabzii before booking.`
+        `Chennai to Tirupati one-way cab fares start around ₹${sedanFrom.toLocaleString("en-IN")} for sedan (Swift Dzire / Honda Amaze) and from ₹${suvFrom.toLocaleString("en-IN")} for Ertiga or Innova. Exact fare is shown on Cabzii before booking.`
       ],
       [
         "What is the Chennai to Tirupati distance by car?",
@@ -164,7 +220,7 @@ export function getRouteFaqs(route) {
       ],
       [
         "Which cars are available for Chennai to Tirupati cab?",
-        "Swift Dzire, Toyota Etios, Honda Amaze (sedan), Ertiga (SUV) and Toyota Innova Crysta are popular on this route. Select your vehicle while booking on Cabzii."
+        "Swift Dzire, Honda Amaze (sedan), Ertiga and Toyota Innova Crysta are popular on this route. Select your vehicle while booking on Cabzii."
       ],
       [
         "Is toll included in Chennai to Tirupati taxi fare?",
@@ -202,7 +258,7 @@ export function getRouteFaqs(route) {
       ],
       [
         "How much is Chennai to Trichy one way taxi fare?",
-        `Chennai to Trichy one-way taxi fares start around ₹${sedanFrom.toLocaleString("en-IN")} for sedan (Dzire/Etios) and from ₹${suvFrom.toLocaleString("en-IN")} for SUV/Innova. Exact fare is shown on Cabzii before booking.`
+        `Chennai to Trichy one-way taxi fares start around ₹${sedanFrom.toLocaleString("en-IN")} for sedan (Dzire/Amaze) and from ₹${suvFrom.toLocaleString("en-IN")} for Ertiga/Innova. Exact fare is shown on Cabzii before booking.`
       ],
       [
         "Is Chennai to Trichy cab service available online?",
@@ -275,8 +331,48 @@ export function cityAreas(citySlug) {
     chennai: ["T. Nagar", "OMR", "Anna Nagar", "Velachery", "Tambaram", "Adyar", "Porur", "Guindy"],
     bengaluru: ["Whitefield", "Electronic City", "Koramangala", "Indiranagar", "Hebbal", "Marathahalli", "Jayanagar"],
     hyderabad: ["Gachibowli", "HITEC City", "Secunderabad", "Madhapur", "Kukatpally", "LB Nagar"],
-    coimbatore: ["RS Puram", "Peelamedu", "Gandhipuram", "Saibaba Colony"],
-    madurai: ["Anna Nagar", "KK Nagar", "Simmakkal", "Tallakulam"]
+    coimbatore: ["RS Puram", "Peelamedu", "Gandhipuram", "Saibaba Colony", "Sitra", "Singanallur"],
+    madurai: ["Anna Nagar", "KK Nagar", "Simmakkal", "Tallakulam", "Mattuthavani", "Goripalayam"],
+    vellore: ["CMC / Scudder Road", "Katpadi", "Sathuvachari", "Gandhi Nagar", "Bagayam", "Sripuram"],
+    trichy: ["Srirangam", "Cantonment", "Thillai Nagar", "Woraiyur", "K. K. Nagar", "Thuvakudi"],
+    salem: ["Fairlands", "Hasthampatti", "New Bus Stand", "Suramangalam", "Steel Plant", "Yercaud Road"],
+    erode: ["Powerhouse Road", "Collectorate", "Brough Road", "Perundurai Road", "Solar", "Bhavani"],
+    hosur: ["SIPCOT", "Bagalur Road", "Bus Stand", "Rayakottai Road", "Mathigiri", "Electronic City Road"],
+    pondicherry: ["White Town", "Auroville", "Lawspet", "Villianur", "Promenade", "ECR"],
+    tirupati: ["Alipiri", "Renigunta", "Kapila Theertham", "Tiruchanur", "Chandragiri", "Airport Road"],
+    tirunelveli: ["Junction", "Palayamkottai", "Vannarpettai", "Melapalayam", "Maharaja Nagar", "Pettai"],
+    rameswaram: ["Ramanathaswamy Temple", "Agni Theertham", "Pamban", "Thangachi Madam", "Kunthukal"],
+    ooty: ["Charing Cross", "Botanical Garden", "Commercial Road", "Coonoor", "Lovedale", "Ketti"],
+    kodaikanal: ["Lake Road", "Coaker's Walk", "Seven Roads", "Anna Salai", "Kodai Road approach"],
+    kanchipuram: ["Kamakshi Temple", "Ekambareswarar", "Varadaraja Perumal", "Silk streets", "Kanchi Mutt", "Bus stand"],
+    tiruvannamalai: ["Arunachaleswarar Temple", "Girivalam Road", "Ramana Ashram", "Pradakshina", "Bus stand"],
+    thanjavur: ["Brihadeeswarar Temple", "Palace", "Bus stand", "Medical College Road", "Vallam"],
+    kumbakonam: ["Sarangapani", "Adi Kumbeswarar", "Mahamaham tank", "Bus stand", "Thirunageswaram"],
+    palani: ["Temple base", "Winch station", "Adivaram", "Bus stand", "Ayyampalayam Road"],
+    chidambaram: ["Nataraja Temple", "East Car Street", "Bus stand", "Pichavaram Road", "Annamalai Nagar"],
+    kanyakumari: ["Sunrise viewpoint", "Ferry jetty", "Kumari Amman", "Suchindram", "Railway"],
+    velankanni: ["Basilica", "Beach Road", "Bus stand", "Nagore Road", "Vailankanni station"],
+    thoothukudi: ["TCR Airport", "Harbour", "Palayamkottai Road", "Bryant Nagar", "Spit"],
+    tiruppur: ["Avinashi Road", "Bus stand", "Export cluster", "Kangeyam Road", "CJB approach"],
+    nagercoil: ["Town centre", "Railway", "Nagaraja Temple", "Suchindram Road", "Court"],
+    dindigul: ["Bus stand", "Fort Road", "Palani Road", "Collectorate", "Kodai Road"],
+    karur: ["Pasupatheeswarar", "Bus stand", "NH44", "Vengamedu", "LNS Puram"],
+    villupuram: ["Junction", "Bus stand", "Gingee Road", "East Pondy Road", "Collectorate"],
+    karaikudi: ["Town hotels", "Kanadukathan", "Athangudi", "Bus stand", "Sekkalai"],
+    theni: ["Bus stand", "Cumbum Road", "Periyakulam Road", "Suruli approach", "Allinagaram"],
+    nagapattinam: ["Beach Road", "Bus stand", "Velankanni Road", "Harbour", "Nagore"],
+    thiruchendur: ["Temple east gopuram", "Beach lodges", "Station", "Kayalpattinam Road", "Manapad Road"],
+    mysore: ["Mysore Palace", "Chamundi Hill", "KRS", "Vijayanagar", "Railway Station"],
+    mumbai: ["Andheri", "Bandra", "BKC", "Powai", "Navi Mumbai", "Airport (BOM)"],
+    delhi: ["Aerocity", "Connaught Place", "Gurgaon", "Noida", "Dwarka", "IGI"],
+    pune: ["Hinjawadi", "Koregaon Park", "Viman Nagar", "Hadapsar", "PNQ Airport"],
+    kolkata: ["Park Street", "Salt Lake", "Howrah", "New Town", "CCU Airport"],
+    kochi: ["MG Road", "Marine Drive", "Kakkanad", "Fort Kochi", "COK Airport"],
+    visakhapatnam: ["Beach Road", "RTC Complex", "Gajuwaka", "Madhurawada", "VTZ Airport"],
+    goa: ["Panaji", "Calangute", "Margao", "Mapusa", "Airport"],
+    jaipur: ["MI Road", "C-Scheme", "Malviya Nagar", "Amber", "JAI Airport"],
+    ahmedabad: ["SG Highway", "Navrangpura", "Maninagar", "Gandhinagar Road", "AMD Airport"],
+    chandigarh: ["Sector 17", "Elante", "Panchkula", "Mohali", "IXC Airport"]
   };
   return areas[citySlug] || [];
 }

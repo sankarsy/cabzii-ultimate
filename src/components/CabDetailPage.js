@@ -17,6 +17,7 @@ import { buildFareSlabs, buildPaymentSearchParams, selectionFromPackage } from "
 import { getCabVehicleName } from "../lib/catalogDisplay";
 import { formatInrCurrency } from "../lib/formatInr";
 import { withPublicEnterpriseSeo } from "../lib/vehicleEnterpriseSeo";
+import { trackEvent } from "../lib/analytics";
 
 function firstParam(value) {
   if (Array.isArray(value)) return String(value[0] ?? "").trim();
@@ -117,6 +118,28 @@ export default function CabDetailPage({ cabId, initialCab = null }) {
   const crumbs = cab ? parseBreadcrumb(cab) : [];
   const totalFare = selection?.total ?? selection?.baseFare ?? 0;
 
+  useEffect(() => {
+    if (!cabPk || !cab) return;
+    trackEvent("vehicle_view", {
+      service_type: "cab",
+      vehicle_id: cabPk,
+      vehicle_name: getCabVehicleName(cab),
+      city: cab.city || "",
+      route: ""
+    });
+  }, [cabPk]);
+
+  const fireBookingStarted = () => {
+    trackEvent("booking_started", {
+      service_type: "cab",
+      vehicle_id: cabPk,
+      vehicle_name: vehicleName,
+      city: cab?.city || "",
+      route: "",
+      cta_location: "cab_detail"
+    });
+  };
+
   return (
     <section className="bg-cabzii-page pb-[calc(4.25rem+env(safe-area-inset-bottom,0px))] md:pb-10">
       <div className="section-shell">
@@ -214,12 +237,12 @@ export default function CabDetailPage({ cabId, initialCab = null }) {
               ))}
             </nav>
 
-            <div className="grid grid-cols-1 gap-3 lg:grid-cols-3 lg:gap-5">
-              <div className="space-y-3 lg:col-span-2 sm:space-y-4">
-                <section id="gallery" className="scroll-mt-24">
-                  <VehicleDetailGallery cab={cab} />
-                </section>
+            <div className="grid grid-cols-1 items-start gap-3 lg:grid-cols-[minmax(0,15rem)_minmax(0,1fr)_minmax(17rem,20rem)] lg:gap-4">
+              <section id="gallery" className="scroll-mt-24 lg:sticky lg:top-24">
+                <VehicleDetailGallery cab={cab} />
+              </section>
 
+              <div className="min-w-0 space-y-3 sm:space-y-4">
                 <section id="packages" className="scroll-mt-24">
                   <h2 className="mb-1 text-xs font-semibold text-slate-900 sm:mb-1.5 sm:text-sm">Available packages</h2>
                   <CabBookingDetail cab={cab} onSelectionChange={setSelection} hideHeroImage />
@@ -227,6 +250,11 @@ export default function CabDetailPage({ cabId, initialCab = null }) {
 
                 <VehicleDetailExtras cab={cab} showPageContent={false} />
                 <CabProductSpecs cab={cab} />
+                <p className="mt-2 text-xs">
+                  <Link href="/tariff" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
+                    View full Cabzii tariff
+                  </Link>
+                </p>
                 <TariffTerms compact />
 
                 <div id="reviews" className="scroll-mt-24">
@@ -240,9 +268,14 @@ export default function CabDetailPage({ cabId, initialCab = null }) {
                 <VehiclePageContent cab={cab} />
               </div>
 
-              <aside className="hidden lg:col-span-1 lg:block">
+              <aside className="hidden lg:block">
                 <div className="sticky top-24 space-y-3">
-                  <PaymentBreakdown cab={cab} selection={selection} payHref={payHref} proceedLabel="Book now" showExtrasNote compact />
+                  <PaymentBreakdown cab={cab} selection={selection} payHref={payHref} proceedLabel="Book now" showExtrasNote compact onProceed={fireBookingStarted} />
+                  <div className="rounded-xl border border-slate-200 bg-white p-3 text-[11px] text-slate-600 shadow-sm">
+                    <p className="font-semibold text-slate-900">{selection?.packageLabel || "Selected package"}</p>
+                    <p className="mt-1 capitalize">{selection?.serviceTab || "local"} · {cab.vendor || "Cabzii Partner"}</p>
+                    <p className="mt-2 text-[10px] text-slate-500">Toll, parking and extra km/hr are billed as per the package card.</p>
+                  </div>
                   <p className="text-center text-[10px] text-slate-500">Secure payment · Verified drivers · 24/7 support</p>
                 </div>
               </aside>
@@ -259,7 +292,7 @@ export default function CabDetailPage({ cabId, initialCab = null }) {
               <p className="text-base font-extrabold leading-tight text-slate-900">{formatInrCurrency(totalFare)}</p>
               <p className="truncate text-[10px] text-slate-600">{selection?.packageLabel || "Package fare"}</p>
             </div>
-            <Link href={payHref} className="cabzii-btn cabzii-btn-primary cabzii-btn-sm shrink-0 px-4 py-2 text-xs font-bold">
+            <Link href={payHref} onClick={fireBookingStarted} className="cabzii-btn cabzii-btn-primary cabzii-btn-sm shrink-0 px-4 py-2 text-xs font-bold">
               Book now
             </Link>
           </div>

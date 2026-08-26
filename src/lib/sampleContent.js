@@ -83,7 +83,7 @@ export const SAMPLE_BLOGS = [
     slug: "",
     title: "Tempo Traveller Booking Guide: Seating, Rates & Group Trip Planning",
     excerpt:
-      "12-seater or 17-seater? AC pushback or standard? Everything to know before booking a Tempo Traveller for your family function or office outing.",
+      "12-seater, 13-seater or 18-seater? AC pushback or standard? Everything to know before booking a Tempo Traveller for your family function or office outing.",
     category: "Booking Guide",
     date: "May 2026",
     readMinutes: 7

@@ -22,6 +22,7 @@ import {
   getCabDisplayTitle,
   getDriverDisplayTitle
 } from "../../lib/catalogDisplay";
+import { trackEvent } from "../../lib/analytics";
 
 function firstParam(value) {
   if (Array.isArray(value)) return String(value[0] ?? "").trim();
@@ -90,6 +91,22 @@ export default function PaymentPage({ searchParams }) {
     if (saved.drop) setDrop(saved.drop);
     if (saved.date) setDate(saved.date);
   }, [router]);
+
+  useEffect(() => {
+    trackEvent("booking_started", {
+      service_type: type === "tour" ? "tour" : type === "driver" ? "driver" : type === "bus" ? "bus" : "cab",
+      vehicle_id: itemId,
+      city: pickup,
+      route: [pickup, drop].filter(Boolean).join(" → "),
+      source_page: "/payment",
+      cta_location: "payment"
+    });
+    trackEvent("passenger_details_started", {
+      service_type: type === "tour" ? "tour" : type === "driver" ? "driver" : type === "bus" ? "bus" : "cab",
+      vehicle_id: itemId,
+      source_page: "/payment"
+    });
+  }, []);
 
   useEffect(() => {
     if (!itemId || callDriverFlag) return;
@@ -246,6 +263,13 @@ export default function PaymentPage({ searchParams }) {
       const serverAmount = Number(data?.data?.finalAmount ?? data?.data?.amount);
       setConfirmedAmount(Number.isFinite(serverAmount) ? serverAmount : null);
       clearCheckoutDraft();
+      trackEvent("booking_completed", {
+        service_type: bookingType,
+        vehicle_id: itemId,
+        city: pickup,
+        route: [pickup, drop].filter(Boolean).join(" → "),
+        source_page: "/payment"
+      });
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : "Booking failed");
     } finally {

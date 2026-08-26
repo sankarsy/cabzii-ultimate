@@ -1,5 +1,6 @@
 import { CITY_SEO_KEYWORD_ALIASES } from "./citySeoAliases";
 import { SEO_ROUTES } from "./routes";
+import { VEHICLE_KEYWORD_ALIASES } from "./vehicleKeywordMap";
 
 /** Short URL prefixes → canonical /services/{service}/{city} */
 export const SERVICE_URL_PREFIXES = new Set([
@@ -24,7 +25,16 @@ export const TRAVELS_URL_PREFIXES = new Set(["travels", "travel", "travel-agency
 const CITY_SLUG_ALIASES = {
   bangalore: "bengaluru",
   bengaluru: "bengaluru",
-  maduravoyal: "chennai"
+  maduravoyal: "chennai",
+  kancheepuram: "kanchipuram",
+  kanchepuram: "kanchipuram",
+  tuticorin: "thoothukudi",
+  tirupur: "tiruppur",
+  tiruchi: "trichy",
+  tiruchirappalli: "trichy",
+  tanjore: "thanjavur",
+  kanniyakumari: "kanyakumari",
+  thiruvannamalai: "tiruvannamalai"
 };
 
 function resolveCitySlug(raw) {
@@ -97,9 +107,14 @@ export function resolveSeoAliasPath(pathname) {
       "bangalore-airport-pickup": "/services/airport-taxi/bengaluru",
       "bengaluru-airport-taxi": "/services/airport-taxi/bengaluru",
       "bangalore-airport-pickup-12-hour-package": "/services/hourly-rental/bengaluru",
-      "bangalore-12-hour-cab-package": "/services/hourly-rental/bengaluru"
+      "bangalore-12-hour-cab-package": "/services/hourly-rental/bengaluru",
+      "tour-s-taxi-booking-chennai": "/cab-booking/chennai",
+      "tours-taxi-booking-chennai": "/cab-booking/chennai",
+      "tour-s-taxi-chennai": "/cab-booking/chennai",
+      "dzire-tour-s-taxi-chennai": "/cab-booking/chennai",
+      "dzire-tour-s-taxi-booking-chennai": "/cab-booking/chennai"
     };
-    const keywordAliases = { ...CITY_SEO_KEYWORD_ALIASES, ...manualKeywordAliases };
+    const keywordAliases = { ...CITY_SEO_KEYWORD_ALIASES, ...VEHICLE_KEYWORD_ALIASES, ...manualKeywordAliases };
     if (keywordAliases[slug]) return keywordAliases[slug];
 
     const cabBookingIn = slug.match(/^cab-booking-in-(.+)$/i);

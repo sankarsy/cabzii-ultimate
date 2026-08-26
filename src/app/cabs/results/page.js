@@ -11,6 +11,7 @@ import { parseTripSearchParams, isValidTripSearch } from "../../../lib/mmtTrip";
 import { useSelectedCity } from "../../../lib/useSelectedCity";
 import { useTripRoute } from "../../../lib/useTripRoute";
 import { extractCabList } from "../../../lib/apiClient";
+import { trackEvent } from "../../../lib/analytics";
 
 function ResultsContent() {
   const router = useRouter();
@@ -52,7 +53,14 @@ function ResultsContent() {
           setCabs([]);
           return;
         }
-        setCabs(extractCabList(json));
+        const list = extractCabList(json);
+        setCabs(list);
+        trackEvent("search_results_viewed", {
+          service_type: "cab",
+          city,
+          route: [trip.from, trip.to].filter(Boolean).join(" → "),
+          result_count: list.length
+        });
       })
       .catch(() => {
         if (!cancelled) {

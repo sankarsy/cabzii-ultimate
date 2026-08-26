@@ -5,6 +5,9 @@
 
 import { SEO_SERVICES } from "./services";
 import { todayStr } from "../mmtTrip";
+import { AIRPORT_BY_CITY, airportInfoForCity, cityHasCommercialAirport } from "./airports";
+
+export { AIRPORT_BY_CITY } from "./airports";
 
 export const META_TITLE_MAX = 60;
 export const META_DESC_MIN = 120;
@@ -244,30 +247,6 @@ const SERVICE_META_OVERRIDES = {
   }
 };
 
-/** IATA airports for programmatic airport-taxi meta (all SEO cities with commercial airports). */
-export const AIRPORT_BY_CITY = {
-  chennai: { code: "MAA", name: "Chennai International Airport" },
-  bengaluru: { code: "BLR", name: "Kempegowda International Airport", label: "Bangalore" },
-  hyderabad: { code: "HYD", name: "Rajiv Gandhi International Airport" },
-  coimbatore: { code: "CJB", name: "Coimbatore International Airport" },
-  madurai: { code: "IXM", name: "Madurai Airport" },
-  trichy: { code: "TRZ", name: "Tiruchirappalli International Airport" },
-  kochi: { code: "COK", name: "Cochin International Airport" },
-  goa: { code: "GOI", name: "Goa International Airport" },
-  mumbai: { code: "BOM", name: "Chhatrapati Shivaji Maharaj International Airport" },
-  delhi: { code: "DEL", name: "Indira Gandhi International Airport" },
-  pune: { code: "PNQ", name: "Pune Airport" },
-  kolkata: { code: "CCU", name: "Netaji Subhash Chandra Bose International Airport" },
-  visakhapatnam: { code: "VTZ", name: "Visakhapatnam Airport" },
-  ahmedabad: { code: "AMD", name: "Sardar Vallabhbhai Patel International Airport" },
-  jaipur: { code: "JAI", name: "Jaipur International Airport" },
-  chandigarh: { code: "IXC", name: "Chandigarh International Airport" },
-  tirupati: { code: "TIR", name: "Tirupati Airport" },
-  mysore: { code: "MYQ", name: "Mysore Airport" },
-  pondicherry: { code: "PNY", name: "Pondicherry Airport" },
-  salem: { code: "SXV", name: "Salem Airport" }
-};
-
 /** Cab hub /cab-booking/{city} */
 const CAB_BOOKING_META = {
   chennai: {
@@ -283,9 +262,9 @@ const CAB_BOOKING_META = {
     )
   },
   vellore: {
-    title: formatSerpTitle("Cab Booking Vellore", "Airport & Outstation"),
+    title: formatSerpTitle("Cab Booking Vellore", "Outstation & Local Taxi"),
     description: clampDescription(
-      "Book cabs in Vellore with Cabzii — Chennai trips, temple travel and local hire. Sedan, SUV and Innova with upfront fares. Book online 24/7."
+      "Book cabs in Vellore with Cabzii — Chennai trips, CMC/VIT transfers and local hire. Sedan, SUV and Innova with upfront fares. Book online 24/7."
     )
   },
   erode: {
@@ -360,13 +339,13 @@ const ROUTE_META_OVERRIDES = {
   "chennai-to-tirupati-cab": {
     title: formatSerpTitle("Chennai to Tirupati Cab Booking", "From ₹3,200"),
     description: clampDescription(
-      "Chennai to Tirupati cab booking on Cabzii — sedan from ₹3,200, SUV from ₹4,200. Swift Dzire, Etios & Innova. 135 km, 3–4 hrs. Book online 24/7 with instant quote."
+      "Chennai to Tirupati cab booking on Cabzii — sedan from ₹3,250, Ertiga from ₹4,500. Swift Dzire, Honda Amaze & Innova. 135 km, 3–4 hrs. Book online 24/7 with instant quote."
     )
   },
   "chennai-to-rameswaram-cab": {
     title: formatSerpTitle("Chennai to Rameswaram Cab Booking", "From ₹5,200"),
     description: clampDescription(
-      "Chennai to Rameswaram cab on Cabzii — pilgrimage taxi from ₹5,200 sedan. Pamban bridge route, 560 km, 8–9 hrs. Book Dzire, Etios or Innova online 24/7."
+      "Chennai to Rameswaram cab on Cabzii — pilgrimage taxi from ₹3,250 sedan (250 km min + extra km). Pamban bridge route, 560 km, 8–9 hrs. Book Dzire, Amaze or Innova online 24/7."
     )
   },
   "madurai-to-rameswaram-cab": {
@@ -461,14 +440,22 @@ export function getServiceMeta(service, city) {
   }
 
   if (service.slug === "airport-taxi") {
-    const airport = AIRPORT_BY_CITY[city.slug];
-    if (airport) {
+    const airport = airportInfoForCity(city.slug);
+    const priceFrom = service.priceFrom || 699;
+    if (airport?.type === "local") {
       const label = airport.label || city.name;
-      const priceFrom = service.priceFrom || 699;
       return {
         title: formatSerpTitle(`Airport Taxi from ${label} Airport`, "Book Now"),
         description: clampDescription(
           `Starting from ₹${priceFrom.toLocaleString("en-IN")}. Book reliable airport taxi in ${label} with professional drivers, 24×7 ${airport.code} service, and instant confirmation on Cabzii.in.`
+        )
+      };
+    }
+    if (airport?.type === "nearest") {
+      return {
+        title: formatSerpTitle(`Airport Taxi from ${city.name}`, `${airport.code} Transfer`),
+        description: clampDescription(
+          `${airport.note} Cab to ${airport.name} from ${city.name} on Cabzii — upfront fare, OTP booking.`
         )
       };
     }
@@ -503,26 +490,48 @@ function inr(n) {
 export function getCabBookingMeta(city) {
   if (CAB_BOOKING_META[city.slug]) return CAB_BOOKING_META[city.slug];
 
-  const variants = [
-    {
-      title: formatSerpTitle(`${city.name} Cab Booking`, "24/7 Taxi & Packages"),
-      description: clampDescription(
-        `Book affordable cabs in ${city.name} with Cabzii.in. Outstation, airport taxi and local hire. Clean fleets, transparent fares and expert drivers 24/7.`
-      )
-    },
-    {
-      title: formatSerpTitle(`Cab Booking ${city.name}`, "Online Taxi Service"),
-      description: clampDescription(
-        `Cab booking in ${city.name} made easy — compare outstation, airport and hourly packages on Cabzii.in. Professional drivers, upfront fares, instant OTP booking.`
-      )
-    },
-    {
-      title: formatSerpTitle(`Taxi in ${city.name}`, "Book Cabs Online"),
-      description: clampDescription(
-        `Need a taxi in ${city.name}? Book local, airport and outstation cabs on Cabzii.in with transparent fares, clean cars and 24/7 customer support.`
-      )
-    }
-  ];
+  const hasAirport = cityHasCommercialAirport(city.slug);
+  const variants = hasAirport
+    ? [
+        {
+          title: formatSerpTitle(`${city.name} Cab Booking`, "24/7 Taxi & Packages"),
+          description: clampDescription(
+            `Book affordable cabs in ${city.name} with Cabzii.in. Outstation, airport taxi and local hire. Clean fleets, transparent fares and expert drivers 24/7.`
+          )
+        },
+        {
+          title: formatSerpTitle(`Cab Booking ${city.name}`, "Online Taxi Service"),
+          description: clampDescription(
+            `Cab booking in ${city.name} made easy — compare outstation, airport and hourly packages on Cabzii.in. Professional drivers, upfront fares, instant OTP booking.`
+          )
+        },
+        {
+          title: formatSerpTitle(`Taxi in ${city.name}`, "Book Cabs Online"),
+          description: clampDescription(
+            `Need a taxi in ${city.name}? Book local, airport and outstation cabs on Cabzii.in with transparent fares, clean cars and 24/7 customer support.`
+          )
+        }
+      ]
+    : [
+        {
+          title: formatSerpTitle(`${city.name} Cab Booking`, "Outstation & Local Taxi"),
+          description: clampDescription(
+            `Book cabs in ${city.name} with Cabzii.in — local packages, outstation and one-way trips. Transparent fares, OTP booking and WhatsApp support.`
+          )
+        },
+        {
+          title: formatSerpTitle(`Cab Booking ${city.name}`, "Online Taxi Service"),
+          description: clampDescription(
+            `Cab booking in ${city.name} — compare local hourly and outstation packages on Cabzii.in. Professional drivers, upfront fares, instant OTP booking.`
+          )
+        },
+        {
+          title: formatSerpTitle(`Taxi in ${city.name}`, "Book Cabs Online"),
+          description: clampDescription(
+            `Need a taxi in ${city.name}? Book local and outstation cabs on Cabzii.in with transparent fares, clean cars and 24/7 customer support.`
+          )
+        }
+      ];
   return variants[hashSlug(city.slug) % variants.length];
 }
 
@@ -589,12 +598,19 @@ export function getServiceH1(service, city) {
   if (service.slug === "cab-rental") {
     return `Cab Rental in ${city.name} — Hourly & Full-Day Packages`;
   }
-  if (service.slug === "airport-taxi" && AIRPORT_BY_CITY[city.slug]) {
-    const label = AIRPORT_BY_CITY[city.slug].label || city.name;
-    return `${label} Airport Taxi — Pickup & Drop 24/7`;
+  if (service.slug === "airport-taxi") {
+    const airport = airportInfoForCity(city.slug);
+    if (airport?.type === "local") {
+      const label = airport.label || city.name;
+      return `${label} Airport Taxi — Pickup & Drop 24/7`;
+    }
+    if (airport?.type === "nearest") {
+      return `Airport Taxi from ${city.name} — ${airport.name}`;
+    }
+    return `Airport Transfer Cabs from ${city.name}`;
   }
   const templateId = SERVICE_TEMPLATE[service.slug] || "outstation";
-  if (templateId === "airport") return `24/7 Airport Taxi in ${city.name}`;
+  if (templateId === "airport") return `Airport Transfer Cabs from ${city.name}`;
   if (templateId === "local_rental") {
     if (service.slug === "cab-rental") return `Cab Rental in ${city.name}`;
     if (service.slug === "driver-on-hire") return `Driver on Hire in ${city.name}`;
@@ -739,6 +755,23 @@ export function cabBookingMetaKeywords(city) {
     city.slug === "bengaluru"
       ? ["cab booking bangalore", "bangalore cab booking", "cab services bangalore"]
       : [];
+  const chennaiExtras =
+    city.slug === "chennai"
+      ? [
+          "tour s taxi booking chennai",
+          "dzire tour s taxi chennai",
+          "swift dzire taxi booking chennai",
+          "dezire taxi booking chennai",
+          "wagon r taxi booking chennai",
+          "wegon r taxi chennai",
+          "bolero taxi booking chennai",
+          "boliro taxi chennai",
+          "innova crysta taxi chennai",
+          "car rental chennai",
+          "cab rental chennai",
+          "tour s taxi booking"
+        ]
+      : [];
   return [
     `cab booking in ${cityLower}`,
     `cab booking ${cityLower}`,
@@ -763,6 +796,7 @@ export function cabBookingMetaKeywords(city) {
     `outstation cab ${cityLower}`,
     `airport taxi ${cityLower}`,
     ...bangaloreExtras,
+    ...chennaiExtras,
     "cabzii"
   ];
 }

@@ -7,7 +7,7 @@ import PlaceAutocomplete from "../PlaceAutocomplete";
 import { CalendarIcon, ClockIcon, SearchIcon, TwoWayIcon } from "../icons";
 import { SEARCH_FIELD_ICON_CHIPS, SEARCH_FIELD_ICONS } from "../icons/heroIcons";
 import { EmtHeroPriceHint } from "../emt/EmtHeroPills";
-import { formatEmtDate, formatTime12 } from "../../lib/emt/heroDates";
+import { formatEmtDate, formatTime12, openNativePicker } from "../../lib/emt/heroDates";
 import {
   DRIVER_HOURLY_PACKAGES,
   DRIVER_TRIP_TABS,
@@ -181,25 +181,32 @@ export default function MmtDriverSearchWidget({
     router.push(`/drivers/results?${driverTripToSearchQuery(trip).toString()}`);
   }
 
+  function handlePickupDate(next) {
+    setDate(next);
+    if (returnDate && next && returnDate < next) setReturnDate(next);
+  }
+
   const dateTimeCell = heroMode ? (
     <div className="cabzii-search-cell">
-      <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Pick-up Date &amp; Time</span>
-      <div className="relative">
-        <p className="truncate text-base font-bold text-slate-900 sm:text-xl">{formatEmtDate(date)}</p>
-        <p className="text-sm font-medium text-slate-500">{formatTime12(time)}</p>
+      <span className="pointer-events-none text-xs font-semibold uppercase tracking-wide text-slate-500">Pick-up Date &amp; Time</span>
+      <div className="relative min-h-[2.75rem]">
+        <p className="pointer-events-none truncate text-base font-bold text-slate-900 sm:text-xl">{formatEmtDate(date)}</p>
+        <p className="pointer-events-none text-sm font-medium text-slate-500">{formatTime12(time)}</p>
         <input
           type="date"
           min={todayStr()}
           value={date}
-          onChange={(e) => setDate(e.target.value)}
-          className="emt-date-input absolute inset-x-0 top-0 h-1/2 cursor-pointer opacity-0"
+          onChange={(e) => handlePickupDate(e.target.value)}
+          onClick={openNativePicker}
+          className="emt-date-input absolute inset-x-0 top-0 z-10 h-1/2 w-full cursor-pointer"
           aria-label="Pickup date"
         />
         <input
           type="time"
           value={time}
           onChange={(e) => setTime(e.target.value)}
-          className="emt-date-input absolute inset-x-0 bottom-0 h-1/2 cursor-pointer opacity-0"
+          onClick={openNativePicker}
+          className="emt-date-input absolute inset-x-0 bottom-0 z-10 h-1/2 w-full cursor-pointer"
           aria-label="Pickup time"
         />
       </div>
@@ -214,7 +221,8 @@ export default function MmtDriverSearchWidget({
             type="date"
             min={todayStr()}
             value={date}
-            onChange={(e) => setDate(e.target.value)}
+            onChange={(e) => handlePickupDate(e.target.value)}
+            onClick={openNativePicker}
             className="w-full border-0 bg-transparent pl-7 text-lg font-bold text-slate-900 focus:outline-none"
           />
         </div>
@@ -227,6 +235,7 @@ export default function MmtDriverSearchWidget({
             type="time"
             value={time}
             onChange={(e) => setTime(e.target.value)}
+            onClick={openNativePicker}
             className="w-full border-0 bg-transparent pl-7 text-lg font-bold text-slate-900 focus:outline-none"
           />
         </div>
@@ -274,23 +283,24 @@ export default function MmtDriverSearchWidget({
       <div className="cabzii-search-cell relative">
         <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Return Date &amp; Time</span>
         {roundTrip ? (
-          <div className="relative">
-            <p className="truncate text-base font-bold text-slate-900 sm:text-xl">
+          <div className="relative min-h-[2.75rem]">
+            <p className="pointer-events-none truncate text-base font-bold text-slate-900 sm:text-xl">
               {formatEmtDate(returnDate || nextDayStr(date))}
             </p>
-            <p className="text-sm font-medium text-slate-500">Select Time</p>
+            <p className="pointer-events-none text-sm font-medium text-slate-500">Select Time</p>
             <input
               type="date"
               min={date}
               value={returnDate || nextDayStr(date)}
               onChange={(e) => setReturnDate(e.target.value)}
-              className="emt-date-input absolute inset-0 cursor-pointer opacity-0"
+              onClick={openNativePicker}
+              className="emt-date-input absolute inset-0 z-10 cursor-pointer"
               aria-label="Return date"
             />
             <button
               type="button"
               onClick={() => setDriverMode("oneway")}
-              className="absolute -right-1 -top-6 flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition hover:bg-slate-200 hover:text-slate-700 sm:-top-7"
+              className="absolute -right-1 -top-6 z-20 flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition hover:bg-slate-200 hover:text-slate-700 sm:-top-7"
               aria-label="Remove return trip"
             >
               <X className="h-3.5 w-3.5" strokeWidth={2.5} />
@@ -300,7 +310,7 @@ export default function MmtDriverSearchWidget({
           <button
             type="button"
             onClick={() => setDriverMode("roundtrip")}
-            className="text-left text-sm font-semibold leading-snug text-[var(--cabzii-brand)] hover:underline"
+            className="mt-0.5 min-h-[2.75rem] w-full text-left text-sm font-semibold leading-snug text-[var(--cabzii-brand)] hover:underline"
           >
             Book a round trip
             <br />

@@ -2,7 +2,9 @@
   "name": "cabzii-ultimate",
   "private": true,
   "scripts": {
+    "predev": "node scripts/guardLiveApiHost.js",
     "dev": "next dev",
+    "prebuild": "node scripts/guardLiveApiHost.js",
     "build": "next build",
     "start": "next start"
   },

@@ -6,7 +6,14 @@ import { SEO_CITIES } from "./cities";
 
 /** Alternate URL tokens (e.g. bangalore → bengaluru canonical slug). */
 const CITY_URL_TOKENS = {
-  bengaluru: ["bengaluru", "bangalore"]
+  bengaluru: ["bengaluru", "bangalore"],
+  kanchipuram: ["kanchipuram", "kancheepuram", "kanchepuram"],
+  thoothukudi: ["thoothukudi", "tuticorin"],
+  tiruppur: ["tiruppur", "tirupur"],
+  trichy: ["trichy", "tiruchi", "tiruchirappalli"],
+  kanyakumari: ["kanyakumari", "kanniyakumari"],
+  tiruvannamalai: ["tiruvannamalai", "thiruvannamalai"],
+  thanjavur: ["thanjavur", "tanjore"]
 };
 
 function tokensForCity(city) {

@@ -21,6 +21,24 @@ const CITY_DISTANCE_FROM_CHENNAI = {
   tirunelveli: { km: 625, duration: "9–10 hours", sedan: 7800, suv: 9800 },
   rameswaram: { km: 560, duration: "8–9 hours", sedan: 5200, suv: 6800 },
   ooty: { km: 555, duration: "9–10 hours", sedan: 6800, suv: 8800 },
+  kanchipuram: { km: 75, duration: "2 hours", sedan: 1800, suv: 2600 },
+  tiruvannamalai: { km: 185, duration: "4 hours", sedan: 3000, suv: 4200 },
+  thanjavur: { km: 320, duration: "5–6 hours", sedan: 4200, suv: 5800 },
+  kumbakonam: { km: 280, duration: "5–6 hours", sedan: 3800, suv: 5200 },
+  palani: { km: 490, duration: "8 hours", sedan: 6200, suv: 8200 },
+  chidambaram: { km: 215, duration: "4 hours", sedan: 3200, suv: 4400 },
+  kanyakumari: { km: 700, duration: "11–12 hours", sedan: 8500, suv: 11000 },
+  velankanni: { km: 300, duration: "6 hours", sedan: 4000, suv: 5500 },
+  thoothukudi: { km: 590, duration: "9–10 hours", sedan: 7500, suv: 9500 },
+  tiruppur: { km: 450, duration: "7–8 hours", sedan: 5800, suv: 7800 },
+  nagercoil: { km: 680, duration: "11 hours", sedan: 8200, suv: 10500 },
+  dindigul: { km: 420, duration: "7 hours", sedan: 5400, suv: 7400 },
+  karur: { km: 380, duration: "6–7 hours", sedan: 4800, suv: 6600 },
+  villupuram: { km: 160, duration: "3 hours", sedan: 2600, suv: 3600 },
+  karaikudi: { km: 400, duration: "7 hours", sedan: 5200, suv: 7200 },
+  theni: { km: 500, duration: "8–9 hours", sedan: 6400, suv: 8400 },
+  nagapattinam: { km: 300, duration: "6 hours", sedan: 4000, suv: 5500 },
+  thiruchendur: { km: 620, duration: "10 hours", sedan: 7800, suv: 9800 },
   mumbai: { km: 1330, duration: "18–20 hours", sedan: 14500, suv: 18500 },
   delhi: { km: 2200, duration: "30+ hours", sedan: 22000, suv: 28000 },
   pune: { km: 1150, duration: "16–18 hours", sedan: 12800, suv: 16500 },
@@ -57,7 +75,10 @@ const CITY_DISTANCE_FROM_COIMBATORE = {
   salem: { km: 165, duration: "3–4 hours", sedan: 2800, suv: 3800 },
   trichy: { km: 195, duration: "4 hours", sedan: 3000, suv: 4200 },
   ooty: { km: 85, duration: "3 hours", sedan: 2200, suv: 3200 },
-  rameswaram: { km: 240, duration: "4–5 hours", sedan: 3800, suv: 5200 }
+  rameswaram: { km: 240, duration: "4–5 hours", sedan: 3800, suv: 5200 },
+  tiruppur: { km: 55, duration: "1–2 hours", sedan: 1400, suv: 2000 },
+  palani: { km: 110, duration: "2–3 hours", sedan: 2200, suv: 3200 },
+  karur: { km: 125, duration: "2–3 hours", sedan: 2400, suv: 3400 }
 };
 
 const CITY_DISTANCE_FROM_HYDERABAD = {
@@ -76,7 +97,14 @@ const CITY_DISTANCE_FROM_MADURAI = {
   kodaikanal: { km: 120, duration: "3–4 hours", sedan: 2800, suv: 3800 },
   tirunelveli: { km: 160, duration: "3 hours", sedan: 2600, suv: 3600 },
   coimbatore: { km: 215, duration: "4–5 hours", sedan: 3200, suv: 4400 },
-  rameswaram: { km: 170, duration: "3–4 hours", sedan: 2800, suv: 3800 }
+  rameswaram: { km: 170, duration: "3–4 hours", sedan: 2800, suv: 3800 },
+  kanyakumari: { km: 245, duration: "5 hours", sedan: 3800, suv: 5200 },
+  thoothukudi: { km: 150, duration: "3 hours", sedan: 2600, suv: 3600 },
+  dindigul: { km: 65, duration: "1–2 hours", sedan: 1600, suv: 2200 },
+  palani: { km: 120, duration: "2–3 hours", sedan: 2400, suv: 3400 },
+  thiruchendur: { km: 175, duration: "3–4 hours", sedan: 2800, suv: 3800 },
+  theni: { km: 75, duration: "2 hours", sedan: 1800, suv: 2600 },
+  karaikudi: { km: 80, duration: "2 hours", sedan: 1800, suv: 2600 }
 };
 
 function estimateFromKm(km) {
@@ -156,7 +184,17 @@ function regionalRoutes() {
     ["vellore", "bengaluru", { km: 215, duration: "4 hours", sedan: 3200, suv: 4400 }],
     ["hosur", "chennai", { km: 320, duration: "5–6 hours", sedan: 4200, suv: 5800 }],
     ["madurai", "rameswaram", { km: 170, duration: "3–4 hours", sedan: 2800, suv: 3800 }],
-    ["coimbatore", "ooty", { km: 85, duration: "3 hours", sedan: 2200, suv: 3200 }]
+    ["coimbatore", "ooty", { km: 85, duration: "3 hours", sedan: 2200, suv: 3200 }],
+    ["trichy", "thanjavur", { km: 55, duration: "1–2 hours", sedan: 1400, suv: 2000 }],
+    ["trichy", "kumbakonam", { km: 95, duration: "2 hours", sedan: 1800, suv: 2600 }],
+    ["trichy", "velankanni", { km: 145, duration: "3 hours", sedan: 2400, suv: 3400 }],
+    ["chennai", "kanchipuram", { km: 75, duration: "2 hours", sedan: 1800, suv: 2600 }],
+    ["chennai", "tiruvannamalai", { km: 185, duration: "4 hours", sedan: 3000, suv: 4200 }],
+    ["pondicherry", "chidambaram", { km: 65, duration: "1–2 hours", sedan: 1600, suv: 2200 }],
+    ["madurai", "kanyakumari", { km: 245, duration: "5 hours", sedan: 3800, suv: 5200 }],
+    ["madurai", "thoothukudi", { km: 150, duration: "3 hours", sedan: 2600, suv: 3600 }],
+    ["nagercoil", "kanyakumari", { km: 20, duration: "45 minutes", sedan: 900, suv: 1300 }],
+    ["thoothukudi", "thiruchendur", { km: 40, duration: "1 hour", sedan: 1100, suv: 1600 }]
   ];
 
   const routes = [];

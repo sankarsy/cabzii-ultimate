@@ -169,11 +169,12 @@ export function AdminSeoCityPageForm({ form, onChange }) {
   return (
     <div className="mt-3 space-y-4">
       <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-900">
-        <p className="font-semibold">City page SEO</p>
+        <p className="font-semibold">City landing pages — this is the Google result for “cab booking Chennai”</p>
         <ul className="mt-1 list-inside list-disc space-y-0.5 text-emerald-800">
-          <li>Controls meta for /cab-booking/&#123;city&#125; or /acting-driver/&#123;city&#125;</li>
+          <li>Live URL is always /cab-booking/&#123;city&#125; or /acting-driver/&#123;city&#125; — city must already exist on the site</li>
+          <li>Click <strong>Create</strong>, set page type + city slug (chennai), then save SEO title and body</li>
           <li>Leave a field empty to keep the website&apos;s auto-generated copy</li>
-          <li>One entry per page type + city (e.g. cab-booking + chennai)</li>
+          <li>One entry per page type + city. Super admin only (Admin Login, not Travel Partner)</li>
         </ul>
       </div>
       <div className="rounded-xl border border-slate-200 bg-slate-50/80 p-4">

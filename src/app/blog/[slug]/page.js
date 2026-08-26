@@ -13,6 +13,7 @@ import {
 } from "../../../lib/seo";
 import { formatBlogAuthor, formatBlogDate } from "../../../lib/seo/serpRichData";
 import { resolveMediaUrl } from "../../../lib/media";
+import BlogCommercialLinks from "../../../components/seo/BlogCommercialLinks";
 
 const CHENNAI_GUIDE_FAQS = [
   [
@@ -168,38 +169,7 @@ export default async function BlogPostPage({ params }) {
           </section>
         ) : null}
 
-        <div className="mt-10 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-          <p className="text-sm font-semibold text-slate-900">Book on Cabzii</p>
-          <p className="mt-1 text-sm text-slate-600">
-            Cab booking in Chennai, acting drivers, airport taxi and Tirupati routes — transparent fares online.
-          </p>
-          <div className="mt-4 flex flex-wrap gap-3">
-            <Link
-              href="/cab-booking/chennai"
-              className="rounded-lg bg-[#0056D2] px-4 py-2 text-sm font-semibold text-white hover:bg-[#0047b3]"
-            >
-              Cab booking Chennai
-            </Link>
-            <Link
-              href="/acting-driver/chennai"
-              className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-800 hover:bg-slate-50"
-            >
-              Acting driver Chennai
-            </Link>
-            <Link
-              href="/routes/chennai-to-tirupati-cab"
-              className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-800 hover:bg-slate-50"
-            >
-              Tirupati taxi Chennai
-            </Link>
-            <Link
-              href="/cabs"
-              className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-800 hover:bg-slate-50"
-            >
-              Browse all cabs
-            </Link>
-          </div>
-        </div>
+        <BlogCommercialLinks title={post.title} slug={slug} excerpt={post.excerpt || post.seoDescription || ""} />
       </article>
       <Footer />
     </main>

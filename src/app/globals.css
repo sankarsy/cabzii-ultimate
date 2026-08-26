@@ -293,6 +293,11 @@ main h3,
   @apply text-slate-900;
 }
 
+/* Photo-card titles sit on images — keep them light even inside .section-shell */
+.section-shell h3.home-showcase-title {
+  color: #fff;
+}
+
 .bg-mmt-header h1,
 .bg-mmt-header h2,
 .bg-mmt-header h3,
@@ -659,13 +664,19 @@ main h3,
 }
 .emt-date-input {
   color-scheme: light;
+  cursor: pointer;
+  /* Fully transparent inputs are ignored by Chrome's showPicker() */
+  opacity: 0.01;
 }
+/* Stretch the native picker hit-target across the whole overlay, not a 1.5rem strip on the right. */
 .emt-date-input::-webkit-calendar-picker-indicator {
-  opacity: 0;
   position: absolute;
-  right: 0;
-  width: 1.5rem;
+  inset: 0;
+  width: 100%;
   height: 100%;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
   cursor: pointer;
 }
 .emt-search-swap-cell {

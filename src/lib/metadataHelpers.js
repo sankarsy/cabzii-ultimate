@@ -123,7 +123,8 @@ export function cabDetailMetadata(cab, id) {
     .map((s) => s.trim())
     .filter(Boolean);
   const path = detailPath(enriched, "/cabs", id);
-  const noindex = robotsIsNoindex(enriched.robots);
+  const unpublished = String(enriched.status || "active") !== "active";
+  const noindex = robotsIsNoindex(enriched.robots) || unpublished;
 
   const metadata = applyEnterpriseMetaOverrides(
     buildPageMetadata({

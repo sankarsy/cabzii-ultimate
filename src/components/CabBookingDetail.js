@@ -121,8 +121,8 @@ export default function CabBookingDetail({ cab, onSelectionChange, hideHeroImage
         </ProductMetaBlock>
       ) : null}
 
-      <div className="lg:grid lg:grid-cols-[1fr_300px] xl:grid-cols-[1fr_320px]">
-        <div className={`border-t border-slate-100 lg:border-r ${hideHeroImage ? "p-2.5 sm:p-3" : "p-3 sm:p-4"}`}>
+      <div className={hideHeroImage ? "" : "lg:grid lg:grid-cols-[1fr_300px] xl:grid-cols-[1fr_320px]"}>
+        <div className={`border-t border-slate-100 ${hideHeroImage ? "p-2.5 sm:p-3" : "p-3 sm:p-4 lg:border-r"}`}>
           <ServiceToggle serviceTab={serviceTab} setServiceTab={handleServiceTab} />
           <PackageSection
             visiblePackages={visiblePackages}
@@ -132,14 +132,16 @@ export default function CabBookingDetail({ cab, onSelectionChange, hideHeroImage
           <ChargesGrid items={chargeItems} compact />
         </div>
 
-        <aside className={`flex flex-col border-t border-slate-100 bg-slate-50/60 lg:border-t-0 ${hideHeroImage ? "p-2.5 sm:p-3" : "p-3 sm:p-4"}`}>
-          <VendorBox vendor={cab.vendor} compact={hideHeroImage} />
-          <TrustGrid compact={hideHeroImage} />
-          <p className="mt-auto flex items-center justify-center gap-1 pt-2 text-[9px] text-slate-500 sm:pt-3 sm:text-[10px]">
-            <LockIcon className="h-3 w-3 text-slate-400 sm:h-3.5 sm:w-3.5" />
-            100% Safe & Secure Payments
-          </p>
-        </aside>
+        {hideHeroImage ? null : (
+          <aside className="flex flex-col border-t border-slate-100 bg-slate-50/60 p-3 sm:p-4 lg:border-t-0">
+            <VendorBox vendor={cab.vendor} />
+            <TrustGrid />
+            <p className="mt-auto flex items-center justify-center gap-1 pt-2 text-[9px] text-slate-500 sm:pt-3 sm:text-[10px]">
+              <LockIcon className="h-3 w-3 text-slate-400 sm:h-3.5 sm:w-3.5" />
+              100% Safe & Secure Payments
+            </p>
+          </aside>
+        )}
       </div>
     </article>
   );

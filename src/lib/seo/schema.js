@@ -456,9 +456,9 @@ export function cabsCatalogJsonLd() {
   return {
     "@context": "https://schema.org",
     "@type": "Product",
-    name: "Book Cabs & Taxis Online — Dzire, Ertiga, Innova, Tempo",
+    name: "Book Cabs & Taxis Online — Dzire Tour S, Wagon R, Bolero, Innova",
     description:
-      "Book Maruti Dzire, Ertiga, Toyota Innova Crysta and Tempo Traveller with transparent fares. Outstation, airport and local packages on cabzii.in.",
+      "Book Swift Dzire Tour S, Wagon R, Bolero, Ertiga, Toyota Innova Crysta and Tempo Traveller. Cab booking, car rental and taxi hire with published fares on cabzii.in.",
     url,
     image: DEFAULT_OG_IMAGE,
     brand: { "@type": "Brand", name: SITE_NAME },

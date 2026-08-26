@@ -9,6 +9,8 @@ import DriverProductSpecs from "./DriverProductSpecs";
 import PaymentBreakdown from "./PaymentBreakdown";
 import SimilarDrivers from "./SimilarDrivers";
 import ReviewsSection from "./reviews/ReviewsSection";
+import { ProductImageFrame } from "./productCardShared";
+import { resolveMediaUrl } from "../lib/media";
 import {
   buildDriverFareSlabs,
   buildDriverPaymentSearchParams,
@@ -164,14 +166,25 @@ export default function DriverDetailPage({ driverId, initialDriver = null }) {
                 ))}
               </nav>
 
-              <div className="grid grid-cols-1 gap-3 lg:grid-cols-3 lg:gap-5">
-                <div className="space-y-3 sm:space-y-4 lg:col-span-2">
+              <div className="grid grid-cols-1 items-start gap-3 lg:grid-cols-[minmax(0,15rem)_minmax(0,1fr)_minmax(17rem,20rem)] lg:gap-4">
+                <section className="lg:sticky lg:top-24">
+                  <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+                    <ProductImageFrame
+                      src={resolveMediaUrl(driver.image)}
+                      alt={driver.name || "Acting driver"}
+                      imageClassName="h-40 w-full object-cover object-top sm:h-44 lg:h-48"
+                    />
+                  </div>
+                </section>
+
+                <div className="min-w-0 space-y-3 sm:space-y-4">
                   <section id="packages" className="scroll-mt-24">
                     <h2 className="mb-1 text-xs font-semibold text-slate-900 sm:mb-1.5 sm:text-sm">Choose your package</h2>
                     <DriverBookingDetail
                       driver={driver}
                       initialPackageId={packageFromUrl}
                       onSelectionChange={setSelection}
+                      hideHeroImage
                     />
                   </section>
 
@@ -214,16 +227,20 @@ export default function DriverDetailPage({ driverId, initialDriver = null }) {
                   </article>
                 </div>
 
-                <aside className="lg:col-span-1">
-                  <div className="sticky top-24 space-y-4">
+                <aside>
+                  <div className="sticky top-24 space-y-3">
                     <PaymentBreakdown
                       item={paymentItem}
                       selection={selection}
                       payHref={payHref}
-                      proceedLabel="Continue to payment"
+                      proceedLabel="Book now"
                       showExtrasNote
                       compact
                     />
+                    <div className="rounded-xl border border-slate-200 bg-white p-3 text-[11px] text-slate-600 shadow-sm">
+                      <p className="font-semibold text-slate-900">{selection?.packageLabel || "Selected package"}</p>
+                      <p className="mt-1 capitalize">{selection?.serviceTab || "local"} · {driver.vendor || "Cabzii Partner"}</p>
+                    </div>
                     <p className="text-center text-[10px] text-slate-500">
                       Need help? Call our 24/7 support line from the website header.
                     </p>

@@ -337,20 +337,17 @@ export default function TourBookingPage({ searchParams, initialPackage = null })
                 ))}
               </nav>
 
-              <div className="grid grid-cols-1 gap-3 lg:grid-cols-3 lg:gap-5">
-                <div className="space-y-3 sm:space-y-4 lg:col-span-2">
-                  <article className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-                    <div className="flex items-stretch">
-                      {/* True 1:1 square media */}
-                      <div className="relative aspect-square w-[6.75rem] shrink-0 overflow-hidden bg-slate-100 sm:w-[8.5rem]">
+              <div className="grid grid-cols-1 items-start gap-3 lg:grid-cols-[minmax(0,15rem)_minmax(0,1fr)_minmax(17rem,20rem)] lg:gap-4">
+                <article className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm lg:sticky lg:top-24">
+                    <div className="relative h-40 overflow-hidden bg-slate-100 sm:h-44 lg:h-48">
                         <img
-                          src={optimizeImageUrl(imageSrc, 400)}
+                          src={optimizeImageUrl(imageSrc, 640)}
                           alt={pkg.name || "Holiday package"}
-                          width={340}
-                          height={340}
+                          width={640}
+                          height={400}
                           loading="eager"
                           decoding="async"
-                          className="absolute inset-0 h-full w-full object-cover object-center"
+                          className="h-full w-full object-cover object-center"
                           onError={(e) => {
                             if (e.currentTarget.src !== FALLBACK_TOUR_IMAGE) {
                               e.currentTarget.src = FALLBACK_TOUR_IMAGE;
@@ -367,8 +364,8 @@ export default function TourBookingPage({ searchParams, initialPackage = null })
                             {tagLabel}
                           </span>
                         </div>
-                      </div>
-                      <div className="flex min-w-0 flex-1 flex-col justify-center px-2.5 py-2 sm:px-3.5 sm:py-2.5">
+                    </div>
+                    <div className="px-2.5 py-2 sm:px-3">
                         <h2 className="line-clamp-2 text-[13px] font-bold leading-snug text-slate-900 sm:text-sm">
                           {pkg.name}
                         </h2>
@@ -382,9 +379,10 @@ export default function TourBookingPage({ searchParams, initialPackage = null })
                           {pkg.city ? <MetaPill icon={<MapPinIcon className="h-2.5 w-2.5" />} label={pkg.city} /> : null}
                           <MetaPill label="Toll, permit & driver bata extra" />
                         </div>
-                      </div>
                     </div>
-                  </article>
+                </article>
+
+                <div className="min-w-0 space-y-3 sm:space-y-4">
 
                   <section
                     id="booking-details"
@@ -496,8 +494,8 @@ export default function TourBookingPage({ searchParams, initialPackage = null })
                   />
                 </div>
 
-                <aside className="lg:col-span-1">
-                  <div className="sticky top-24 space-y-4">
+                <aside>
+                  <div className="sticky top-24 space-y-3">
                     <TourPriceBreakdown
                       item={{
                         title: pkg.name,
@@ -507,7 +505,11 @@ export default function TourBookingPage({ searchParams, initialPackage = null })
                       selection={selection}
                       compact
                     />
-                    <button type="button" onClick={handleProceed} className={CARD_BOOK_BTN_CLASS}>
+                    <div className="rounded-xl border border-slate-200 bg-white p-3 text-[11px] text-slate-600 shadow-sm">
+                      <p className="font-semibold text-slate-900">{cabTypes.find((c) => c.id === cabTypeId)?.label || "Selected cab"}</p>
+                      <p className="mt-1">{persons} travellers{pickup ? ` · ${pickup}` : ""}</p>
+                    </div>
+                    <button type="button" onClick={handleProceed} className={`${CARD_BOOK_BTN_CLASS} w-full`}>
                       Continue to payment
                     </button>
                   </div>

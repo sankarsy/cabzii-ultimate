@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { CalendarIcon, TwoWayIcon } from "../icons";
 import { todayStr } from "../../lib/mmtTrip";
-import { addDays, formatDayName, formatEmtDate, formatEmtDateShort } from "../../lib/emt/heroDates";
+import { addDays, formatDayName, formatEmtDate, formatEmtDateShort, openNativePicker } from "../../lib/emt/heroDates";
 import EmtHeroPills, { EmtHeroPriceHint } from "./EmtHeroPills";
 
 const TRAIN_MODES = [
@@ -99,7 +99,8 @@ export default function EmtTrainSearchForm({ emtHero = false }) {
                     min={todayStr()}
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
-                    className="emt-date-input absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                    onClick={openNativePicker}
+                    className="emt-date-input absolute inset-0 z-10 h-full w-full cursor-pointer"
                     aria-label="Departure date"
                   />
                 </div>

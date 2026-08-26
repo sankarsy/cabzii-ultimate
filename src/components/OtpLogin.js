@@ -9,7 +9,10 @@ import {
   sanitizeOtpInput,
   setSession
 } from "../lib/auth";
+import { loadCheckoutDraft } from "../lib/checkoutStorage";
 import { PhoneIcon } from "./icons";
+import { tripContextFromNextUrl, whatsappBookingUrl, whatsappQuoteMessage } from "../lib/conversion";
+import { trackEvent, utmFromSearch } from "../lib/analytics";
 
 const RESEND_SECONDS = 30;
 
@@ -28,11 +31,13 @@ export default function OtpLogin({
   onBack,
   loginAs,
   title = "Customer Login",
-  subtitle = "Book cabs, tours & drivers with your 6-digit mobile OTP."
+  subtitle = "Book cabs, tours & drivers with your 6-digit mobile OTP.",
+  showWhatsAppQuote = true
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const nextUrl = nextUrlProp || searchParams.get("next") || "/";
+  const allowQuote = showWhatsAppQuote && loginAs !== "driver";
 
   const [mobile, setMobile] = useState("");
   const [otpDigits, setOtpDigits] = useState(["", "", "", "", "", ""]);
@@ -41,7 +46,14 @@ export default function OtpLogin({
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [resendIn, setResendIn] = useState(0);
+  const [otpFailed, setOtpFailed] = useState(false);
   const inputRefs = useRef([]);
+
+  useEffect(() => {
+    const saved = loadCheckoutDraft();
+    const savedPhone = normalizeMobileInput(saved.phone || saved.mobile || "");
+    if (savedPhone) setMobile(savedPhone);
+  }, []);
 
   useEffect(() => {
     if (resendIn <= 0) return undefined;
@@ -54,6 +66,7 @@ export default function OtpLogin({
   const sendOtp = async () => {
     setError("");
     setMessage("");
+    setOtpFailed(false);
     const mobileNumber = normalizeMobileInput(mobile);
     if (mobileNumber.length !== 10) {
       setError("Enter a valid 10-digit mobile number.");
@@ -68,11 +81,20 @@ export default function OtpLogin({
       });
       const data = await parseJsonResponse(res);
       if (!res.ok || data?.success === false) {
-        throw new Error(data?.message || "Failed to send OTP");
+        const unavailable = data?.otpUnavailable || res.status >= 500;
+        setOtpFailed(true);
+        throw new Error(
+          unavailable
+            ? data?.message ||
+                "SMS OTP could not be sent. Send this package to WhatsApp as PDF and text."
+            : data?.message || "Failed to send OTP"
+        );
       }
       setStep("otp");
       setResendIn(RESEND_SECONDS);
       setOtpDigits(["", "", "", "", "", ""]);
+      trackEvent("otp_requested", { source_page: nextUrl, cta_location: "otp_login" });
+      trackEvent("otp_screen_viewed", { source_page: nextUrl });
       if (data?.debugOtp) {
         setMessage(`Development OTP: ${data.debugOtp}`);
       } else {
@@ -81,6 +103,7 @@ export default function OtpLogin({
       setTimeout(() => inputRefs.current[0]?.focus(), 50);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to send OTP");
+      trackEvent("otp_failed", { source_page: nextUrl, cta_location: "otp_login" });
     } finally {
       setLoading(false);
     }
@@ -160,6 +183,101 @@ export default function OtpLogin({
 
   const displayMobile = normalizeMobileInput(mobile) || sanitizeMobileInput(mobile);
 
+  function tripForQuote() {
+    const fromUrl = tripContextFromNextUrl(nextUrl);
+    const draft = loadCheckoutDraft();
+    return {
+      ...fromUrl,
+      pickup: fromUrl.pickup || draft.pickup || "",
+      drop: fromUrl.drop || draft.drop || "",
+      travelDate: fromUrl.travelDate || draft.date || "",
+      pickupTime: fromUrl.pickupTime || draft.time || "",
+      vehicleName: fromUrl.vehicleName || draft.vehicleName || "",
+      vehicleId: fromUrl.vehicleId || draft.cabId || "",
+      estimatedFare: fromUrl.estimatedFare || draft.total || "",
+      distanceKm: fromUrl.distanceKm || draft.distanceKm || "",
+      packageLabel: fromUrl.packageLabel || draft.packageLine || "",
+      name: draft.customerName || ""
+    };
+  }
+
+  const openWhatsAppQuote = async () => {
+    const mobileNumber = normalizeMobileInput(mobile);
+    if (mobileNumber.length !== 10) {
+      setError("Enter a valid 10-digit mobile number so we can send the package on WhatsApp.");
+      return;
+    }
+    const trip = tripForQuote();
+    const utm = utmFromSearch(typeof window !== "undefined" ? window.location.search : "");
+    setLoading(true);
+    setError("");
+    try {
+      const origin = window.location.origin;
+      const res = await fetch("/api/quote-leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mobile: mobileNumber,
+          name: trip.name || "",
+          service: trip.service === "Call Driver" ? "driver" : trip.service === "Bus" ? "bus" : trip.service === "Holiday package" ? "tour" : "cab",
+          vehicleId: trip.vehicleId,
+          vehicleName: trip.vehicleName,
+          pickup: trip.pickup,
+          drop: trip.drop,
+          travelDate: trip.travelDate,
+          pickupTime: trip.pickupTime,
+          passengerCount: trip.passengers,
+          estimatedFare: Number(trip.estimatedFare) || 0,
+          distanceKm: Number(trip.distanceKm) || 0,
+          tripType: trip.tripType || trip.service,
+          packageLabel: trip.packageLabel,
+          sourcePage: nextUrl,
+          ctaLocation: "otp_login",
+          utmSource: utm.utm_source,
+          utmMedium: utm.utm_medium,
+          utmCampaign: utm.utm_campaign
+        })
+      });
+      const data = await parseJsonResponse(res);
+      if (!res.ok) throw new Error(data?.message || "Could not save quote request");
+      const quoteRef = data?.data?.quoteRef || "";
+      const pdfUrl = `${origin}/api/quote-leads/public/${encodeURIComponent(quoteRef)}/pdf`;
+      const viewUrl = `${origin}/quote/${encodeURIComponent(quoteRef)}`;
+      const apiTrip = data?.data?.trip || {};
+      const message = whatsappQuoteMessage({
+        ...trip,
+        ...apiTrip,
+        quoteRef,
+        pdfUrl,
+        viewUrl,
+        passengers: trip.passengers || apiTrip.passengerCount
+      });
+      trackEvent("whatsapp_quote_clicked", {
+        service_type: trip.service,
+        vehicle_name: trip.vehicleName,
+        pickup_city: trip.pickup,
+        drop_city: trip.drop,
+        travel_date: trip.travelDate,
+        source_page: nextUrl,
+        cta_location: "otp_login"
+      });
+      trackEvent("quote_request_submitted", { source_page: nextUrl, cta_location: "otp_login" });
+      const pdfLink = document.createElement("a");
+      pdfLink.href = pdfUrl;
+      pdfLink.download = `cabzii-quote-${quoteRef}.pdf`;
+      pdfLink.rel = "noopener";
+      document.body.appendChild(pdfLink);
+      pdfLink.click();
+      pdfLink.remove();
+      window.open(whatsappBookingUrl({ message, phone: `91${mobileNumber}` }), "_blank", "noopener,noreferrer");
+      setMessage("Package PDF downloaded. WhatsApp opened with the text details for +91 " + mobileNumber + ".");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not send WhatsApp package");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="mx-auto w-full max-w-md px-4">
       <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-lg sm:p-8">
@@ -176,12 +294,12 @@ export default function OtpLogin({
           <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-sky-50 text-sky-400">
             <PhoneIcon className="h-6 w-6" />
           </span>
-          <h1 className="mt-3 text-xl font-bold text-slate-900">{title}</h1>
+          <h1 className="mt-3 text-xl font-bold text-slate-900">{allowQuote ? "Continue Booking" : title}</h1>
           <p className="mt-1 text-sm text-slate-600">{subtitle}</p>
         </div>
 
         {step === "mobile" ? (
-          <div className="space-y-4">
+          <div className="mx-auto max-w-sm space-y-4">
             <div>
               <label htmlFor="login-mobile" className="mb-1.5 block text-xs font-semibold text-slate-600">
                 Mobile number
@@ -199,7 +317,7 @@ export default function OtpLogin({
                   onKeyDown={(e) => e.key === "Enter" && sendOtp()}
                   placeholder="10-digit number"
                   disabled={loading}
-                  className="h-12 flex-1 px-3 text-sm text-slate-900 outline-none disabled:opacity-60"
+                  className="h-11 flex-1 px-3 text-sm text-slate-900 outline-none disabled:opacity-60"
                 />
               </div>
             </div>
@@ -207,10 +325,28 @@ export default function OtpLogin({
               type="button"
               disabled={loading || sanitizeMobileInput(mobile).length !== 10}
               onClick={sendOtp}
-              className="h-12 w-full rounded-xl bg-[#0056D2] text-sm font-bold text-white transition hover:bg-[#0047b3] disabled:opacity-60"
+              className="h-11 w-full rounded-xl bg-[#0056D2] text-sm font-bold text-white transition hover:bg-[#0047b3] disabled:opacity-60"
             >
               {loading ? "Sending…" : "Send OTP"}
             </button>
+            {allowQuote ? (
+              <div className={`pt-1 ${otpFailed ? "rounded-xl border border-emerald-200 bg-emerald-50/80 p-3" : ""}`}>
+                <p className="mb-2 text-center text-xs font-medium text-slate-600">
+                  {otpFailed ? "OTP SMS is not available. Send the package on WhatsApp." : "OTP not working?"}
+                </p>
+                <button
+                  type="button"
+                  disabled={loading || sanitizeMobileInput(mobile).length !== 10}
+                  onClick={openWhatsAppQuote}
+                  className="h-11 w-full max-w-xs rounded-xl border border-emerald-400 bg-emerald-50 text-sm font-bold text-emerald-800 transition hover:bg-emerald-100 disabled:opacity-60 sm:mx-auto sm:flex sm:items-center sm:justify-center"
+                >
+                  {loading ? "Preparing PDF…" : "Send package on WhatsApp (PDF + text)"}
+                </button>
+                <p className="mt-2 text-center text-[11px] text-slate-500">
+                  Downloads a PDF, then opens WhatsApp to this number with the same package details in text. Not a confirmed booking.
+                </p>
+              </div>
+            ) : null}
           </div>
         ) : (
           <div className="space-y-4">
@@ -267,6 +403,24 @@ export default function OtpLogin({
                 {resendIn > 0 ? `Resend in ${resendIn}s` : "Resend OTP"}
               </button>
             </div>
+            {allowQuote ? (
+              <div className={`pt-1 ${otpFailed ? "rounded-xl border border-emerald-200 bg-emerald-50/80 p-3" : ""}`}>
+                <p className="mb-2 text-center text-xs font-medium text-slate-600">
+                  {otpFailed ? "OTP SMS is not available. Send the package on WhatsApp." : "OTP not working?"}
+                </p>
+                <button
+                  type="button"
+                  disabled={loading || sanitizeMobileInput(mobile).length !== 10}
+                  onClick={openWhatsAppQuote}
+                  className="h-11 w-full max-w-xs rounded-xl border border-emerald-400 bg-emerald-50 text-sm font-bold text-emerald-800 transition hover:bg-emerald-100 disabled:opacity-60 sm:mx-auto sm:flex sm:items-center sm:justify-center"
+                >
+                  {loading ? "Preparing PDF…" : "Send package on WhatsApp (PDF + text)"}
+                </button>
+                <p className="mt-2 text-center text-[11px] text-slate-500">
+                  Downloads a PDF, then opens WhatsApp to this number with the same package details in text. Not a confirmed booking.
+                </p>
+              </div>
+            ) : null}
           </div>
         )}
 

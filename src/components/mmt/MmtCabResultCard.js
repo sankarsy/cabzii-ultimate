@@ -10,7 +10,8 @@ import {
   getCabDisplaySubtitle,
   getCabDisplayTitle,
   getCabVehicleName,
-  getCatalogPerKmFare
+  getCatalogPerKmFare,
+  vehiclePhotoAlt
 } from "../../lib/catalogDisplay";
 import { formatCabSeatLabel, inferPassengerSeats } from "../../lib/cabSeats";
 import { resolveCabImage } from "../../lib/vehicleImages";
@@ -18,6 +19,7 @@ import { cabSlabForTrip, tripToSearchQuery } from "../../lib/mmtTrip";
 import { FuelIcon, LuggageIcon, PersonIcon, SnowflakeIcon } from "../icons";
 import CatalogCardImage from "./CatalogCardImage";
 import CatalogVehicleCard, { FeatureChip } from "../ui/CatalogVehicleCard";
+import { trackEvent } from "../../lib/analytics";
 
 function formatINR(n) {
   return `₹${Number(n || 0).toLocaleString("en-IN")}`;
@@ -36,7 +38,7 @@ export default function MmtCabResultCard({ cab, trip, layout = "row", catalogMod
   const bags = cab.bags ?? (passengerSeats >= 6 ? 3 : 2);
   const imageSrc = resolveCabImage(cab);
   const vehicleName = getCabVehicleName(cab);
-  const imageAlt = cab.imageAlt || vehicleName;
+  const imageAlt = cab.imageAlt || vehiclePhotoAlt(cab);
   const ratingText = formatRating(cab);
   const reviewCountRaw = cab.reviewCount ?? cab.reviews;
   const reviewCount =
@@ -49,6 +51,16 @@ export default function MmtCabResultCard({ cab, trip, layout = "row", catalogMod
         detailParams.set("cabId", id);
         return detailParams.toString();
       })()}`;
+
+  const trackSelect = () => {
+    trackEvent("vehicle_selected", {
+      service_type: "cab",
+      vehicle_id: id,
+      vehicle_name: vehicleName,
+      city: displayCity || cab.city || trip?.from || "",
+      route: [trip?.from, trip?.to].filter(Boolean).join(" → ")
+    });
+  };
 
   const title = catalogMode ? vehicleName : getCabDisplayTitle(cab, trip);
   const subtitle = catalogMode ? getCabCatalogSubtitle(cab, displayCity) : getCabDisplaySubtitle(cab, trip);
@@ -73,6 +85,7 @@ export default function MmtCabResultCard({ cab, trip, layout = "row", catalogMod
         imageProduct={cab}
         title={title}
         subtitle={subtitle}
+        onNavigate={trackSelect}
         features={
           <>
             <FeatureChip icon={PersonIcon}>{seatLabel} seats</FeatureChip>
@@ -154,6 +167,7 @@ export default function MmtCabResultCard({ cab, trip, layout = "row", catalogMod
           )}
           <Link
             href={href}
+            onClick={trackSelect}
             className="rounded-lg bg-[#d84e55] px-4 py-2 text-center text-sm font-bold text-white hover:bg-[#c03940]"
           >
             {catalogMode ? "View Cab" : "Select Cab"}

@@ -1,6 +1,8 @@
 import { cityAreas } from "./content";
 import { routesForCity } from "./routes";
 import { servicePath, SEO_SERVICES } from "./services";
+import { airportInfoForCity } from "./airports";
+import { cityHubContext, driverCityContext } from "./cityHubCopy";
 
 function link(href, label) {
   return `<a href="${href}">${label}</a>`;
@@ -20,23 +22,6 @@ function benefitsList(items) {
   return `<ul>${items.map((item) => `<li>${item}</li>`).join("")}</ul>`;
 }
 
-const LOCAL_CITIES = new Set([
-  "chennai",
-  "coimbatore",
-  "madurai",
-  "trichy",
-  "salem",
-  "vellore",
-  "erode",
-  "hosur",
-  "tirunelveli",
-  "rameswaram",
-  "ooty",
-  "kodaikanal",
-  "pondicherry",
-  "bengaluru"
-]);
-
 /** Chennai-origin and top reverse routes get long-form content. */
 function shouldGenerateRouteBody(route) {
   if (!route?.slug) return false;
@@ -49,7 +34,9 @@ const PRIORITY_SERVICES = new Set([
   "airport-taxi",
   "local-taxi",
   "outstation-cab",
-  "one-way-cab"
+  "one-way-cab",
+  "cab-rental",
+  "car-rental"
 ]);
 
 function cityServiceLinks(city) {
@@ -72,84 +59,98 @@ function cityRouteLinks(citySlug, limit = 6) {
   return unique.map((r) => link(`/routes/${r.slug}`, `${r.fromCity.name} to ${r.toCity.name} cab`)).join(", ");
 }
 
+function airportBodyBits(city) {
+  const info = airportInfoForCity(city.slug);
+  if (info?.type === "local") {
+    return {
+      listItem: `<strong>Airport taxi ${city.name}</strong> — pickup and drop at ${info.name} (${info.code}) with flight buffer time`,
+      pickupNote: `For ${info.name} trips, specify terminal and preferred pickup gate in booking notes.`,
+      hubPara: `<h2>Airport transfers in ${city.name}</h2>
+<p>${city.name} is served by <strong>${info.name} (${info.code})</strong>. Pre-book airport pickup or drop on Cabzii with a fare shown before payment. Share flight time so the driver can plan buffer.</p>`
+    };
+  }
+  if (info?.type === "nearest") {
+    return {
+      listItem: `<strong>Airport transfer from ${city.name}</strong> — cab to ${info.name} (${info.code})${info.also ? ` or ${info.also}` : ""} (no passenger airport in ${city.name})`,
+      pickupNote: info.note,
+      hubPara: `<h2>Airport transfers from ${city.name}</h2>
+<p>${info.note} Cabzii lists this as an airport-transfer booking from ${city.name} — not a claim that ${city.name} has its own commercial terminal.</p>`
+    };
+  }
+  return {
+    listItem: `<strong>Airport transfer from ${city.name}</strong> — cab to the nearest commercial airport`,
+    pickupNote: `Enter the airport name as your drop or pickup landmark.`,
+    hubPara: ""
+  };
+}
+
 function buildCityCabBody(city) {
   const name = city.name;
   const areas = cityAreas(city.slug);
   const areaText = areas.length ? areas.join(", ") : `central ${name} and nearby suburbs`;
   const services = cityServiceLinks(city);
   const routes = cityRouteLinks(city.slug);
+  const context = cityHubContext(city.slug);
+  const airport = airportBodyBits(city);
 
   return `
-<h2>Cab booking in ${name} — complete guide</h2>
-<p>Looking for reliable <strong>cab booking in ${name}</strong>? Cabzii connects you with verified taxi partners for airport transfers, local hourly packages, outstation trips and one-way inter-city travel. Whether you need a sedan for a business meeting, an Innova for a family airport drop, or a tempo traveller for a group pilgrimage, you can compare fares upfront and confirm your ride with mobile OTP — no app download required.</p>
-<p>${name} is one of South India's busiest travel hubs. Riders search for <strong>taxi service ${name}</strong> at all hours: early-morning airport runs, hospital visits, wedding logistics, factory transfers and weekend getaways. Cabzii is built for these real-world needs — transparent package pricing, professional drivers and WhatsApp support when plans change.</p>
+<h2>Cab booking in ${name} — local guide</h2>
+<p>${context?.travel || `Cabzii connects ${name} riders with verified taxi partners for local hourly packages, outstation trips and one-way inter-city travel.`}</p>
+<p>${context?.useCases || `Enter your pickup in ${name}, compare sedan, SUV, Innova or tempo fares, and confirm with mobile OTP.`}</p>
 
-<h2>Types of cab services available in ${name}</h2>
-<p>Cabzii covers every major taxi category riders search for in ${name}:</p>
+<h2>Types of cab services in ${name}</h2>
+<p>Cabzii covers the taxi categories riders actually book in ${name}:</p>
 ${benefitsList([
-  `<strong>Airport taxi ${name}</strong> — fixed-fare pickup and drop with terminal details and flight buffer time`,
+  airport.listItem,
   `<strong>Local taxi ${name}</strong> — point-to-point city rides and hourly packages (4hr/8hr slabs)`,
   `<strong>Outstation cab ${name}</strong> — round-trip and multi-day highway packages with per-km clarity`,
   `<strong>One way taxi ${name}</strong> — inter-city drops without paying confusing return empty charges`,
-  `<strong>Car rental ${name}</strong> — full-day hire for weddings, corporate events and sightseeing`,
-  `<strong>Tempo traveller ${name}</strong> — 12–17 seater AC options for groups and pilgrimage circuits`
+  `<strong>Car rental ${name}</strong> — chauffeur-driven full-day hire for weddings, events and sightseeing`,
+  `<strong>Cab rental ${name}</strong> — local day packages with extra km rates listed before payment`,
+  `<strong>Tempo traveller ${name}</strong> — 12, 13, 14, 16 and 18 seater AC options for groups`
 ])}
 <p>Explore dedicated service pages: ${services}.</p>
 
 <h2>How to book a cab online in ${name}</h2>
 <p>Booking on cabzii.in takes under two minutes:</p>
 <ol>
-<li>Enter your pickup location in ${name} (or airport / outstation destination)</li>
+<li>Enter your pickup location in ${name}</li>
 <li>Select date, time and vehicle type — Dzire, Ertiga, Innova or Tempo</li>
-<li>Compare vendor packages with upfront fare breakdown</li>
+<li>Compare packages with upfront fare breakdown</li>
 <li>Login with your 10-digit mobile number and OTP to confirm</li>
 <li>Receive driver contact details on SMS / WhatsApp before pickup</li>
 </ol>
-<p>This flow works on mobile and desktop. For repeat riders, <strong>online cab booking ${name}</strong> is faster because your number is already verified.</p>
 
 <h2>Popular pickup areas in ${name}</h2>
-<p>Cabzii serves ${areaText}. Enter your exact locality during search — including society name, hotel, hospital or IT park — so the nearest available cab can reach you quickly. For airport trips, specify domestic (T1/T2/T3 where applicable) or international terminal and preferred pickup gate in booking notes.</p>
+<p>Cabzii serves ${areaText}. Enter your exact locality during search — society, hotel, hospital or campus — so the nearest available cab can reach you. ${airport.pickupNote}</p>
+${airport.hubPara}
 
 <h2>Indicative cab fares in ${name}</h2>
 <p>Fares depend on distance, vehicle, time of day and trip type. Cabzii always shows the package amount before payment. Typical starting ranges:</p>
 ${pricingTable([
-  ["Sedan (Dzire / Etios)", "₹999 – ₹1,800", "Airport drops, short local trips"],
-  ["SUV (Ertiga)", "₹1,400 – ₹2,400", "Family airport transfer, 4hr local package"],
-  ["Innova Crysta", "₹2,200 – ₹3,800", "Premium outstation, 8hr wedding hire"],
-  ["Tempo Traveller 12–17 seater", "₹3,200 – ₹6,500", "Group tours, temple trips, corporate"]
+  ["Swift Dzire", "From ₹1,200 (4 Hrs / 40 Km)", "Short local trips and inter-city sedan legs"],
+  ["Maruti Ertiga", "From ₹1,800 (4 Hrs / 40 Km)", "Family transfer, extra luggage"],
+  ["Innova Crysta 6+1 / 7+1", "From ₹2,200 (4 Hrs / 40 Km)", "Premium highway and 8hr hire"],
+  ["Tempo Traveller 12 Seater", "From ₹3,000 (5 Hrs / 50 Km)", "Group tours and temple trips"]
 ])}
-<p>Exact quotes appear on the booking page. Outstation and one-way trips include base km, driver allowance and night charges (if applicable) in the breakdown.</p>
+<p>Exact quotes appear on the booking page. See the <a href="/tariff">Cabzii tariff</a> for extra km, extra hour and driver batta.</p>
 
 <h2>Popular outstation routes from ${name}</h2>
-<p>Inter-city travel is a core strength on Cabzii. Riders from ${name} frequently book: ${routes || "nearby city pairs shown on our routes hub"}. Each route page includes distance, travel time, sedan/SUV starting fares and FAQs — so you know what to expect before booking.</p>
+<p>Riders from ${name} frequently book: ${routes || "nearby city pairs shown on our routes hub"}. Each route page includes distance, travel time and sedan/SUV starting fares.</p>
 
-<h2>Why choose Cabzii for taxi service in ${name}?</h2>
+<h2>Why choose Cabzii in ${name}?</h2>
 ${benefitsList([
   "Upfront fares — no surprise meter disputes at the end of the trip",
-  "Verified vendor network with professional, highway-experienced drivers",
-  "Airport, local, outstation and acting driver options in one platform",
-  "OTP-secured booking and WhatsApp support for trip changes",
-  "Sedan to tempo fleet for solo travellers, families and large groups",
-  "Transparent inclusions — tolls, parking and state taxes listed where applicable"
+  "Verified vendor network with professional drivers",
+  "Local, outstation, one-way and acting-driver options in one platform",
+  "OTP-secured booking and WhatsApp support for trip changes"
 ])}
 
-<h2>Cab service coverage in ${name}</h2>
-<p>Cabzii is based in Chennai and connects riders across ${name}, ${city.state} with verified taxi partners. Our ${name} landing pages, service pages and route guides are updated with fare guidance, travel tips and booking instructions. For businesses, hospitals, hotels and wedding planners in ${name}, Cabzii offers repeatable booking with clear package pricing — ideal for guest transfers and staff commute packages.</p>
-
-<h2>Acting driver and chauffeur options in ${name}</h2>
-<p>Need a driver for your own car? Visit ${link(`/acting-driver/${city.slug}`, `acting driver ${name}`)} for hourly, daily and outstation chauffeur packages. This is popular for owners who prefer their vehicle but want a professional driver for long highway stretches or city congestion.</p>
-
-<h2>Common travel scenarios in ${name}</h2>
-<p>Riders in ${name} book cabs for diverse real-world needs. <strong>Airport transfers</strong> dominate early-morning and late-night slots — specify terminal and flight time for smooth pickup. <strong>Hospital and clinic visits</strong> often need round-trip local packages with waiting time — choose 4-hour or 8-hour slabs. <strong>Wedding and event logistics</strong> require multi-stop hourly hire across ${areaText}. <strong>Corporate travel</strong> benefits from upfront invoicing-friendly packages and professional drivers. <strong>Pilgrimage and temple circuits</strong> frequently combine outstation legs with early-start sedan or Innova bookings.</p>
-
-<h2>Seasonal booking tips for ${name}</h2>
-<p>During monsoon months, add 30–45 minutes buffer for highway outstation trips. Festival seasons (Pongal, Diwali, long weekends) fill airport and pilgrimage routes fast — book 24–48 hours ahead. Summer hill-station departures from ${name} should start before 6 AM to avoid city heat and traffic. Corporate Monday mornings and Friday evenings see higher local taxi demand — off-peak hours often have better vehicle availability.</p>
-
-<h2>Vehicle selection guide for ${name} trips</h2>
-<p><strong>Maruti Dzire / Toyota Etios (sedan):</strong> Best value for 1–3 passengers, airport drops and short outstation legs. <strong>Maruti Ertiga (SUV):</strong> Ideal for families with child seats and extra luggage. <strong>Toyota Innova Crysta:</strong> Premium choice for long highway journeys and executive travel. <strong>Tempo Traveller 12–17 seater:</strong> Perfect for group temple tours, college trips and corporate outings. Vehicle availability is shown live during Cabzii search — compare before you confirm.</p>
+<h2>Acting driver in ${name}</h2>
+<p>Need a driver for your own car? Visit ${link(`/acting-driver/${city.slug}`, `acting driver ${name}`)} for hourly, daily and outstation chauffeur packages. Cabzii assigns a professional driver after you book — this is not a public driver directory.</p>
 
 <h2>Book your ${name} cab now</h2>
-<p>Ready to travel? Use the search widget above or browse ${link(`/cab-booking/${city.slug}`, `cab booking ${name}`)}, ${link("/cabs", "all cabs")} and ${link("/blogs", "travel guides")} for route-specific tips. For urgent airport pickups or same-day outstation departures, book early — peak hours and festival weekends fill quickly. Need help choosing a package? WhatsApp our support team from the website footer with your pickup, destination and preferred vehicle — we will guide you to the right ${name} cab option.</p>
+<p>Use the search widget above or browse ${link(`/cab-booking/${city.slug}`, `cab booking ${name}`)}, ${link("/cabs", "all cabs")} and ${link("/blogs", "travel guides")}. For same-day outstation departures, book early on festival weekends.</p>
 `;
 }
 
@@ -160,43 +161,52 @@ function buildServiceBody(service, city) {
   const areas = cityAreas(city.slug);
   const areaText = areas.length ? areas.join(", ") : `popular neighbourhoods across ${name}`;
   const routes = cityRouteLinks(city.slug);
-  const priceFrom = service.priceFrom ? `₹${service.priceFrom.toLocaleString("en-IN")}` : "₹999";
+  const priceFrom = service.priceFrom ? `₹${service.priceFrom.toLocaleString("en-IN")}` : "₹1,200";
+
+  const airport = airportInfoForCity(city.slug);
+  const airportIntro =
+    airport?.type === "local"
+      ? `<p><strong>Airport taxi ${name}</strong> is a pre-booked pickup or drop at <strong>${airport.name} (${airport.code})</strong>. Cabzii shows the fare before payment. Choose sedan, SUV or Innova based on luggage. Driver contact is shared before arrival so you can coordinate at the gate.</p>`
+      : airport?.type === "nearest"
+        ? `<p>${airport.note} This page is for <strong>airport transfer cabs from ${name}</strong> to ${airport.name} (${airport.code})${airport.also ? ` or ${airport.also}` : ""} — not a local passenger terminal in ${name}.</p>`
+        : `<p>Book an airport-transfer cab from ${name} on Cabzii with an upfront fare. Enter the airport name as pickup or drop.</p>`;
 
   const intros = {
-    "airport-taxi": `<p><strong>Airport taxi ${name}</strong> is one of the most searched travel services in the city. Whether you are catching an early-morning flight, receiving international guests, or returning home after a long trip, a pre-booked airport cab removes stress from the last mile. Cabzii offers fixed-fare airport pickup and drop in ${name} with professional drivers, flight buffer time and terminal-specific instructions.</p>
-<p>Unlike random street-hail taxis, Cabzii shows your <strong>${name} airport transfer</strong> fare before payment. You choose sedan, SUV or Innova based on luggage and passengers. Driver contact is shared before arrival so you can coordinate at the pickup gate.</p>`,
-    "local-taxi": `<p><strong>Local taxi ${name}</strong> covers point-to-point city rides and hourly packages for errands that do not fit a single drop. From hospital visits and shopping runs to wedding logistics and corporate multi-stop meetings, a local cab on Cabzii gives you predictable pricing without haggling.</p>
-<p>Riders search <strong>taxi service ${name}</strong> when they need immediate availability across ${areaText}. Cabzii surfaces verified vendors with 4-hour, 8-hour and 12-hour slabs — extra km and hour rates are listed upfront.</p>`,
-    "outstation-cab": `<p><strong>Outstation cab ${name}</strong> is the right choice when your trip crosses city limits — family visits, temple pilgrimages, factory audits, hill station weekends and multi-day tours. Cabzii packages include base km, driver allowance and clear rules for night charges so you are not surprised on the highway.</p>
-<p>From ${name}, popular outstation searches include routes to nearby cities and pilgrimage centres. Compare sedan, SUV, Innova and tempo options for group size and luggage before you confirm.</p>`,
-    "one-way-cab": `<p><strong>One way taxi ${name}</strong> lets you travel to another city without paying for the cab's return empty journey. This is ideal for relocations, one-direction airport connections, temple visits and business transfers where you do not need the same vehicle back.</p>
-<p>Cabzii lists dedicated one-way fares on route pages — ${routes}. Each shows distance, travel time and starting sedan/SUV prices so you can budget accurately.</p>`
+    "airport-taxi": airportIntro,
+    "local-taxi": `<p><strong>Local taxi ${name}</strong> covers point-to-point city rides and hourly packages for errands that do not fit a single drop — hospital visits, shopping, wedding logistics and multi-stop meetings across ${areaText}.</p>
+<p>Cabzii surfaces 4-hour, 8-hour and 12-hour slabs with extra km and hour rates listed upfront.</p>`,
+    "outstation-cab": `<p><strong>Outstation cab ${name}</strong> is for trips that leave city limits — family visits, temple pilgrimages, factory audits and multi-day tours. Packages include base km and driver allowance rules so highway pricing is clear before you pay.</p>`,
+    "one-way-cab": `<p><strong>One way taxi ${name}</strong> drops you in another city without paying for an empty return. Use it for relocations, temple visits and business transfers. Route pages: ${routes || "see Cabzii routes"}.</p>`,
+    "cab-rental": `<p><strong>Cab rental in ${name}</strong> is chauffeur-driven local hire — 4hr/40km and 8hr/80km slabs — not a self-drive desk. You book a Cabzii cab with driver for weddings, city tours and corporate days across ${areaText}.</p>
+<p>Compare this with ${link(servicePath(SEO_SERVICES.find((s) => s.slug === "car-rental") || { slug: "car-rental" }, city), `car rental ${name}`)} when you want the same hourly model described as car hire, and with ${link(`/cab-booking/${city.slug}`, `cab booking ${name}`)} for airport or outstation tabs.</p>`,
+    "car-rental": `<p><strong>Car rental in ${name}</strong> on Cabzii is a driver-included car for local packages. It is not a vendor-branded self-drive fleet page. Search hourly or full-day Innova, Dzire, Wagon R or Ertiga packages, then confirm with OTP.</p>
+<p>For taxi-style city packages see ${link(servicePath(SEO_SERVICES.find((s) => s.slug === "cab-rental") || { slug: "cab-rental" }, city), `cab rental ${name}`)}. For outstation, use ${link(`/services/outstation-cab/${city.slug}`, `outstation cab ${name}`)}.</p>`
   };
 
   const pricing = {
     "airport-taxi": [
-      ["Sedan airport drop", `${priceFrom} – ₹1,600`, "1–3 passengers, 2 bags"],
-      ["SUV airport transfer", "₹1,400 – ₹2,200", "Family, extra luggage"],
-      ["Innova airport cab", "₹2,000 – ₹3,200", "Premium, 6–7 passengers"],
+      ["Sedan airport drop", "From ₹1,200 (4 Hrs / 40 Km)", "Swift Dzire, 1–3 passengers"],
+      ["Ertiga airport transfer", "From ₹1,800 (4 Hrs / 40 Km)", "Family, extra luggage"],
+      ["Innova Crysta airport cab", "From ₹2,200 (4 Hrs / 40 Km)", "Premium, 6–7 passengers"],
       ["Early morning surcharge", "Shown upfront", "Book night before for 4–6 AM flights"]
     ],
     "local-taxi": [
-      ["Point-to-point local ride", `${priceFrom} – ₹900`, "Short city trips"],
-      ["4 hours / 40 km package", "₹1,200 – ₹1,800", "Meetings, shopping, hospital"],
-      ["8 hours / 80 km package", "₹1,800 – ₹2,800", "Weddings, multi-stop tours"],
-      ["12 hours package", "₹2,400 – ₹3,600", "Full wedding day logistics"]
+      ["4 hours / 40 km package", "From ₹1,200", "Dzire — meetings, shopping, hospital"],
+      ["8 hours / 80 km package", "From ₹2,400", "Dzire — weddings, multi-stop tours"],
+      ["Ertiga 4 Hrs / 40 Km", "From ₹1,800", "Family local hire"],
+      ["Innova Crysta 4 Hrs / 40 Km", "From ₹2,200", "Premium local hire"]
     ],
     "outstation-cab": [
-      ["Sedan outstation (per day)", "₹1,400 – ₹2,200 base + km", "Couples, solo travellers"],
-      ["SUV outstation", "₹2,200 – ₹3,500 base + km", "Family highway trips"],
-      ["Innova outstation", "₹3,000 – ₹4,500 base + km", "Premium long distance"],
-      ["Tempo 12–17 seater", "₹3,200 – ₹6,500", "Group pilgrimage, tours"]
+      ["Swift Dzire outstation (250 km min)", "From ₹3,250", "Couples, solo travellers"],
+      ["Maruti Ertiga outstation", "From ₹4,500", "Family highway trips"],
+      ["Innova Crysta outstation", "From ₹5,000", "Premium long distance"],
+      ["Tempo Traveller 12 seater", "From ₹6,600 (300 km min)", "Group pilgrimage, tours"]
     ],
     "one-way-cab": [
-      ["Sedan one way", "Route-based from ₹2,600", "Budget inter-city drop"],
-      ["SUV one way", "Route-based from ₹3,600", "Family with luggage"],
-      ["Innova one way", "Route-based from ₹4,800", "Premium inter-city"],
-      ["Tolls & state tax", "Listed in fare breakdown", "Varies by highway and state"]
+      ["Sedan one way (250 km min)", "From ₹3,250", "Swift Dzire / Honda Amaze"],
+      ["Ertiga one way", "From ₹4,500", "Family with luggage"],
+      ["Innova Crysta one way", "From ₹5,000", "Premium inter-city"],
+      ["Tolls & parking", "Extra as listed", "See Cabzii tariff terms"]
     ]
   };
 
@@ -214,12 +224,14 @@ ${benefitsList(service.highlights.length ? service.highlights : [
 ])}
 
 <h2>${svc} pricing in ${name}</h2>
-<p>Indicative fares below help you plan. Exact package price is always shown on Cabzii before you pay:</p>
+<p>Packages start from ${priceFrom}. Exact package price is always shown on Cabzii before you pay. Full rate card: <a href="/tariff">Cabzii tariff</a>.</p>
 ${pricingTable(pricing[slug] || pricing["local-taxi"])}
 <p><em>Fares vary by date, vehicle availability and trip details. Festival weekends and peak hours may affect pricing — book early for guaranteed availability.</em></p>
 
 <h2>Areas we serve for ${svc.toLowerCase()} in ${name}</h2>
-<p>Pickup and drop available across ${areaText}. For airport trips, mention terminal and gate. For outstation and one-way bookings, enter exact pickup address including landmark for faster driver assignment.</p>
+<p>Pickup and drop available across ${areaText}. ${
+    slug === "airport-taxi" ? airportBodyBits(city).pickupNote : "Enter an exact pickup landmark for faster assignment."
+  }</p>
 
 <h2>How ${svc.toLowerCase()} booking works</h2>
 <ol>
@@ -231,7 +243,7 @@ ${pricingTable(pricing[slug] || pricing["local-taxi"])}
 </ol>
 
 <h2>Vehicle options for ${svc.toLowerCase()} in ${name}</h2>
-<p><strong>Sedan (Dzire / Etios):</strong> Best value for 1–3 passengers and standard luggage. <strong>SUV (Ertiga):</strong> Comfortable for families. <strong>Innova Crysta:</strong> Premium seating for long highway legs. <strong>Tempo Traveller:</strong> Ideal for group temple trips and corporate outings. Vehicle availability is shown during search.</p>
+<p><strong>Sedan (Dzire / Amaze):</strong> Best value for 1–3 passengers and standard luggage. <strong>Ertiga:</strong> Comfortable for families. <strong>Innova Crysta 6+1 / 7+1:</strong> Premium seating for long highway legs. <strong>Tempo Traveller:</strong> 12, 13 or 18 seater for group temple trips and corporate outings. Vehicle availability is shown during search. Full rates: <a href="/tariff">Cabzii tariff</a>.</p>
 
 <h2>Related services and routes from ${name}</h2>
 <p>Combine your trip planning with related Cabzii pages: ${cityServiceLinks(city)}. Popular routes: ${routes || "see our routes hub"}.</p>
@@ -293,7 +305,7 @@ function buildRouteBody(route) {
 ${pricingTable([
   ["Road distance", distance, "Approximate highway km"],
   ["Travel time", duration, "Excluding long meal breaks"],
-  ["Sedan one way from", sedan, "Dzire / Etios — 1–3 passengers"],
+  ["Sedan one way from", sedan, "Dzire / Amaze — 1–3 passengers"],
   ["SUV / Innova from", suv, "Family, extra luggage, groups"]
 ])}
 <p>Tolls, state permits and parking (if any) are shown in the Cabzii fare breakdown before payment. Night departures may include driver allowance — always review inclusions on the booking screen.</p>
@@ -313,7 +325,7 @@ ${benefitsList([
 <p>Early morning (5–7 AM) departures help you avoid city congestion in ${from}. Weekday mid-morning runs are smoother on highways; Friday evenings and long weekends see heavier traffic. For temple destinations, plan arrival before peak darshan hours. Monsoon months may add 30–60 minutes — build buffer into your schedule.</p>
 
 <h2>Vehicle guide for ${from} to ${to}</h2>
-<p><strong>Sedan:</strong> Most economical for 1–3 riders with standard luggage. <strong>SUV (Ertiga):</strong> Better for families and child seats. <strong>Innova Crysta:</strong> Premium comfort on ${duration} drives. <strong>Tempo Traveller:</strong> Choose 12–17 seater for group pilgrimage or corporate outings. Select vehicle based on passengers, bags and comfort preference for the ${distance} journey.</p>
+<p><strong>Sedan:</strong> Most economical for 1–3 riders with standard luggage. <strong>Ertiga:</strong> Better for families and extra bags. <strong>Innova Crysta:</strong> Premium comfort on ${duration} drives. <strong>Tempo Traveller:</strong> Choose 12, 13 or 18 seater for group pilgrimage or corporate outings. Select vehicle based on passengers, bags and comfort preference for the ${distance} journey.</p>
 
 <h2>Pickup and drop flexibility</h2>
 <p>Pickup anywhere in ${from} — enter society, hotel, airport or hospital name. Drop anywhere in ${to} including hotels, temples, industrial estates and residential areas. For airport-connected legs, specify terminal in notes. Cabzii shares driver contact before pickup so you can coordinate gate or security pass requirements.</p>
@@ -335,17 +347,47 @@ ${benefitsList([
 `;
 }
 
+function buildCityDriverBody(city) {
+  if (city.slug === "vellore") return "";
+  const name = city.name;
+  const areas = cityAreas(city.slug);
+  const areaText = areas.length ? areas.join(", ") : `${name} and nearby localities`;
+  const context = driverCityContext(city.slug);
+  const airport = airportBodyBits(city);
+
+  return `
+<h2>Acting driver in ${name} — chauffeur for your own car</h2>
+<p>${context?.travel || `Book an acting driver in ${name} when you want a professional chauffeur in your vehicle. Cabzii assigns the driver after you book — this is not a public list of vendor drivers.`}</p>
+<p>${context?.useCases || `Typical uses: local hourly hire, outstation highway driving, and chauffeur-only airport runs.`}</p>
+
+<h2>How acting driver booking works in ${name}</h2>
+<ol>
+<li>Open ${link(`/acting-driver/${city.slug}`, `acting driver ${name}`)} or ${link("/call-driver", "Call Driver")}</li>
+<li>Choose local, outstation or chauffeur package and enter date, time and pickup</li>
+<li>Add your vehicle details where asked</li>
+<li>Confirm with mobile OTP — Cabzii assigns an available driver</li>
+</ol>
+
+<h2>Where we pick up in ${name}</h2>
+<p>Drivers reach you across ${areaText}. ${airport.pickupNote}</p>
+
+<h2>Related ${name} travel</h2>
+<p>Need a Cabzii cab instead of your own car? Use ${link(`/cab-booking/${city.slug}`, `cab booking ${name}`)}, ${link(`/services/cab-rental/${city.slug}`, `cab rental ${name}`)} or ${link(`/services/outstation-cab/${city.slug}`, `outstation cab ${name}`)}.</p>
+`;
+}
+
 export function getCityLandingBody(city, variant = "cab") {
-  if (variant !== "cab" || !LOCAL_CITIES.has(city.slug)) return "";
+  if (variant === "driver") {
+    if (city.slug === "vellore") return "";
+    return buildCityDriverBody(city);
+  }
+  if (variant !== "cab") return "";
   return buildCityCabBody(city);
 }
 
 export function getServiceLandingBody(service, city) {
   if (!PRIORITY_SERVICES.has(service.slug)) return "";
-  if (city.slug === "chennai" || LOCAL_CITIES.has(city.slug)) {
-    return buildServiceBody(service, city);
-  }
-  return "";
+  return buildServiceBody(service, city);
 }
 
 export function getRouteLandingBody(route) {

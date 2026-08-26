@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import CabziiLogo from "../brand/CabziiLogo";
+import FooterSeoHub from "../seo/FooterSeoHub";
 import SocialLinks from "../ui/SocialLinks";
 import { getTrustIcon, TRUST_ICON_STYLES } from "../icons/heroIcons";
 import { BRAND } from "../../lib/brand";
@@ -23,7 +26,8 @@ const COLUMNS = [
       { label: "Bus tickets", href: "/buses" },
       { label: "Call Driver", href: "/call-driver" },
       { label: "Holiday Packages", href: "/holidays" },
-      { label: "Cab Booking Chennai", href: "/cab-booking/chennai" }
+      { label: "Cab Booking Chennai", href: "/cab-booking/chennai" },
+      { label: "Cab rental tariff", href: "/tariff" }
     ]
   },
   {
@@ -61,7 +65,7 @@ export default function MmtFooter() {
   return (
     <footer className="border-t border-slate-200 bg-[var(--cabzii-bg-subtle)] pb-[4.5rem] sm:pb-0">
       <div className="section-shell py-6 sm:py-10">
-        <div className="mb-5 flex flex-col gap-3 border-b border-slate-200/80 pb-5 sm:mb-8 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:pb-8">
+        <div className="mb-5 flex flex-col gap-3 sm:mb-6 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
           <div>
             <CabziiLogo className="text-lg sm:text-2xl" showTagline />
             <p className="mt-1.5 max-w-sm text-[11px] leading-relaxed text-slate-600 sm:mt-2 sm:text-sm">
@@ -88,7 +92,9 @@ export default function MmtFooter() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-x-4 gap-y-5 sm:gap-8 md:grid-cols-4">
+        <FooterSeoHub />
+
+        <div className="mt-6 grid grid-cols-2 gap-x-4 gap-y-5 border-t border-slate-200/80 pt-5 sm:mt-8 sm:gap-8 sm:pt-8 md:grid-cols-4">
           {COLUMNS.map((col) => (
             <div key={col.title}>
               <h3 className="mb-1.5 text-[10px] font-bold uppercase tracking-wide text-slate-800 sm:mb-3 sm:text-xs sm:tracking-wider sm:text-slate-900">
@@ -110,7 +116,7 @@ export default function MmtFooter() {
           ))}
         </div>
 
-        <div className="mt-6 flex flex-col items-center justify-between gap-2 border-t border-slate-200/80 pt-4 text-center sm:mt-10 sm:flex-row sm:gap-3 sm:pt-6 sm:text-left">
+        <div className="mt-6 flex flex-col items-center justify-between gap-2 border-t border-slate-200/80 pt-4 text-center sm:mt-8 sm:flex-row sm:gap-3 sm:pt-6 sm:text-left">
           <p className="text-[10px] text-slate-500 sm:text-xs">
             © {new Date().getFullYear()} {BRAND.name} · {BRAND.domain}
           </p>

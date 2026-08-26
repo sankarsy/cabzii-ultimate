@@ -3,10 +3,10 @@ import { formatCabSeatLabel } from "../cabSeats";
 import { packageDisplayPrice } from "../tourPackagePricing";
 
 /** Default fleet shown on service landing pages (matches Google rich-result attribute rows). */
-export const DEFAULT_SERVICE_FLEET = ["Dzire", "Etios", "Innova", "Crysta"];
+export const DEFAULT_SERVICE_FLEET = ["Swift Dzire Tour S", "Wagon R", "Bolero", "Ertiga", "Innova Crysta"];
 
 export const SERVICE_FLEET_BY_SLUG = {
-  "tempo-traveller": ["Tempo Traveller 12 Seater", "Tempo Traveller 17 Seater", "Innova Crysta"],
+  "tempo-traveller": ["Tempo Traveller 12 Seater", "Tempo Traveller 18 Seater", "Luxury Tempo 14 Seater"],
   "airport-taxi": DEFAULT_SERVICE_FLEET,
   "outstation-cab": DEFAULT_SERVICE_FLEET,
   "one-way-cab": DEFAULT_SERVICE_FLEET
@@ -14,11 +14,11 @@ export const SERVICE_FLEET_BY_SLUG = {
 
 export const SITE_SITELINKS = [
   { name: "Cab Booking", path: "/cab-booking/chennai" },
-  { name: "Outstation Cabs", path: "/services/outstation-cab/chennai" },
+  { name: "Car Rental", path: "/services/car-rental/chennai" },
+  { name: "Cab Rental", path: "/services/cab-rental/chennai" },
   { name: "Airport Taxi", path: "/services/airport-taxi/chennai" },
-  { name: "One-Way Cabs", path: "/services/one-way-cab/chennai" },
-  { name: "Innova Rental", path: "/cabs/mpv-toyota-innova-crysta" },
-  { name: "Holiday Packages", path: "/holidays" }
+  { name: "Innova Crysta", path: "/cabs/mpv-toyota-innova-crysta" },
+  { name: "All Cabs", path: "/cabs" }
 ];
 
 export function formatSerpPrice(amount, { prefix = "From" } = {}) {

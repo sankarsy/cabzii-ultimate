@@ -6,6 +6,7 @@ import { authHeaders, buildLoginHref, formatMobileDisplay, getUser, isLoggedIn }
 import { useRouter } from "next/navigation";
 import BookingReviewForm from "../../components/reviews/BookingReviewForm";
 import { shouldShowTrackTrip } from "../../lib/customerTrackingUi";
+import { trackEvent } from "../../lib/analytics";
 
 import { DRIVER_OPS_STATUS_LABELS } from "../../lib/callDriver";
 
@@ -253,6 +254,7 @@ function BookingCard({ booking, onFinish, finishing }) {
           {shouldShowTrackTrip(booking) ? (
             <Link
               href={`/my-bookings/${booking._id}/track`}
+              onClick={() => trackEvent("track_trip_clicked", { service_type: booking.type || "cab", source_page: "/my-bookings", cta_location: "my_bookings" })}
               className="rounded-lg bg-sky-700 px-4 py-2 text-xs font-semibold text-white hover:bg-sky-800"
             >
               Track Trip
@@ -275,6 +277,7 @@ function BookingCard({ booking, onFinish, finishing }) {
           {shouldShowTrackTrip(booking) ? (
             <Link
               href={`/my-bookings/${booking._id}/track`}
+              onClick={() => trackEvent("track_trip_clicked", { service_type: booking.type || "cab", source_page: "/my-bookings", cta_location: "my_bookings_finished" })}
               className="mt-4 inline-flex rounded-lg border border-slate-300 px-4 py-2 text-xs font-semibold text-slate-800 hover:bg-slate-50"
             >
               Track Trip

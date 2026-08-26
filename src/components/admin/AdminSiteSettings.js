@@ -747,7 +747,7 @@ export default function AdminSiteSettings({ token, isSuperAdmin }) {
               These rates power Call Driver fare calculation on the backend. Customers never pick an individual driver.
             </p>
             {[
-              ["local", "Local Chennai", ["minHours", "standard", "premium", "extraHourStandard", "extraHourPremium", "nightCharge"]],
+              ["local", "Local Driver", ["minHours", "standard", "premium", "extraHourStandard", "extraHourPremium", "nightCharge"]],
               ["outstation", "Outstation", ["perDayStandard", "perDayPremium", "longKmThreshold", "perDayLongStandard", "perDayLongPremium", "extraHourStandard", "extraHourPremium", "nightCharge"]],
               ["airport", "Airport driver-only", ["minHours", "standard", "premium", "extraHourStandard", "extraHourPremium", "nightCharge"]],
               ["valet", "Valet", ["driverRate", "minHours", "extraHour", "supervisorRate", "driversPerSupervisor"]]

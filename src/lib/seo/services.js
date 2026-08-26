@@ -5,7 +5,7 @@ export const SEO_SERVICES = [
     name: "Airport Taxi",
     primaryKeyword: "airport taxi",
     searchQuery: "airport taxi",
-    priceFrom: 699,
+    priceFrom: 1200,
     highlights: ["MAA/BLR/HYD terminal pickup", "Flight buffer time", "Fixed fare quote"]
   },
   {
@@ -13,7 +13,7 @@ export const SEO_SERVICES = [
     name: "Outstation Cab",
     primaryKeyword: "outstation cab",
     searchQuery: "outstation cab",
-    priceFrom: 1499,
+    priceFrom: 3250,
     highlights: ["Round trip & one way", "Per km fare shown upfront", "Highway-experienced drivers"]
   },
   {
@@ -21,7 +21,7 @@ export const SEO_SERVICES = [
     name: "One Way Cab",
     primaryKeyword: "one way cab",
     searchQuery: "one way cab",
-    priceFrom: 4999,
+    priceFrom: 3250,
     highlights: ["Inter-city one way drops", "Sedan, SUV & Innova", "No return charge confusion"]
   },
   {
@@ -29,7 +29,7 @@ export const SEO_SERVICES = [
     name: "Driver on Hire",
     primaryKeyword: "driver on hire",
     searchQuery: "driver on hire",
-    priceFrom: 499,
+    priceFrom: 500,
     highlights: ["Use your own car", "Hourly & daily packages", "Verified chauffeurs"]
   },
   {
@@ -37,7 +37,7 @@ export const SEO_SERVICES = [
     name: "Chauffeur Service",
     primaryKeyword: "chauffeur service",
     searchQuery: "chauffeur service",
-    priceFrom: 599,
+    priceFrom: 500,
     highlights: ["Corporate & wedding travel", "Professional presentation", "Multi-stop city runs"]
   },
   {
@@ -45,15 +45,15 @@ export const SEO_SERVICES = [
     name: "Tempo Traveller",
     primaryKeyword: "tempo traveller rental",
     searchQuery: "tempo traveller",
-    priceFrom: 3499,
-    highlights: ["12 to 17 seater options", "Group & family trips", "AC tempo for outstation"]
+    priceFrom: 3000,
+    highlights: ["12, 13, 14, 16 & 18 seater options", "Group & family trips", "AC tempo for outstation"]
   },
   {
     slug: "car-rental",
     name: "Car Rental",
     primaryKeyword: "car rental",
     searchQuery: "car rental",
-    priceFrom: 1299,
+    priceFrom: 1200,
     highlights: ["Self-drive alternatives via cab", "Sedan & SUV fleet", "Daily rental slabs"]
   },
   {
@@ -61,7 +61,7 @@ export const SEO_SERVICES = [
     name: "Cab Rental",
     primaryKeyword: "cab rental",
     searchQuery: "cab rental",
-    priceFrom: 1499,
+    priceFrom: 1200,
     highlights: ["Local day packages", "Extra km rates listed", "Vendor comparison"]
   },
   {
@@ -69,7 +69,7 @@ export const SEO_SERVICES = [
     name: "Local Taxi",
     primaryKeyword: "local taxi service",
     searchQuery: "local taxi",
-    priceFrom: 399,
+    priceFrom: 1200,
     highlights: ["City point-to-point rides", "Hourly city packages", "Near-me pickup search"]
   },
   {
@@ -77,8 +77,8 @@ export const SEO_SERVICES = [
     name: "Hourly Rental Taxi",
     primaryKeyword: "hourly cab rental",
     searchQuery: "hourly cab",
-    priceFrom: 349,
-    highlights: ["4hr / 8hr / 12hr slabs", "Ideal for errands & meetings", "Transparent extra hour rate"]
+    priceFrom: 1200,
+    highlights: ["4hr / 8hr local packages", "Ideal for errands & meetings", "Transparent extra hour rate"]
   },
   {
     slug: "tour-packages",
@@ -86,7 +86,7 @@ export const SEO_SERVICES = [
     primaryKeyword: "holiday packages",
     searchQuery: "holiday package",
     priceFrom: 6999,
-    highlights: ["Pilgrimage circuits", "Beach & hill getaways", "Tirupati & Rameswaram tours"]
+    highlights: ["Pilgrimage circuits", "Beach & hill getaways", "Tirupati, Kanchipuram & Rameswaram tours"]
   }
 ];
 

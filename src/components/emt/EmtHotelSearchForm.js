@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { CalendarIcon, ChevronDownIcon } from "../icons";
 import { todayStr } from "../../lib/mmtTrip";
-import { addDays, formatDayName, formatEmtDate } from "../../lib/emt/heroDates";
+import { addDays, formatDayName, formatEmtDate, openNativePicker } from "../../lib/emt/heroDates";
 import { EmtHeroPriceHint } from "./EmtHeroPills";
 
 export default function EmtHotelSearchForm({ emtHero = false }) {
@@ -62,7 +62,8 @@ export default function EmtHotelSearchForm({ emtHero = false }) {
                     value={checkIn}
                     min={todayStr()}
                     onChange={(e) => setCheckIn(e.target.value)}
-                    className="emt-date-input absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                    onClick={openNativePicker}
+                    className="emt-date-input absolute inset-0 z-10 h-full w-full cursor-pointer"
                     aria-label="Check-in date"
                   />
                 </div>
@@ -79,7 +80,8 @@ export default function EmtHotelSearchForm({ emtHero = false }) {
                     value={checkOut}
                     min={checkIn || todayStr()}
                     onChange={(e) => setCheckOut(e.target.value)}
-                    className="emt-date-input absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                    onClick={openNativePicker}
+                    className="emt-date-input absolute inset-0 z-10 h-full w-full cursor-pointer"
                     aria-label="Check-out date"
                   />
                 </div>

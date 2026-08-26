@@ -1,8 +1,23 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
+import AdminHomeCards from "./AdminHomeCards";
+import AdminDriverAccounts from "./AdminDriverAccounts";
+import { MASTER_HOME_CARD_SECTIONS, MASTER_SECTION_KEYS, MASTER_SECTION_LABELS } from "../../lib/adminMasterConfig";
 
-const emptyVendor = { name: "", contactPhone: "", contactEmail: "", adminPhone: "", adminPassword: "", isActive: true };
+const emptyVendor = {
+  name: "",
+  contactPhone: "",
+  contactEmail: "",
+  adminPhone: "",
+  adminPassword: "",
+  adminPasswordConfirm: "",
+  city: "",
+  location: "",
+  driverPhone: "",
+  isActive: true
+};
 const emptyCity = {
   name: "",
   slug: "",
@@ -21,7 +36,7 @@ const emptyCity = {
   popularRoutes: "",
   popularPackages: ""
 };
-const emptyLocation = { city: "", name: "", address: "", pincode: "", isActive: true };
+const emptyLocation = { city: "", cityInput: "", name: "", address: "", pincode: "", isActive: true };
 
 function Field({ label, children }) {
   return (
@@ -34,6 +49,38 @@ function Field({ label, children }) {
 
 function inputCls() {
   return "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 outline-none focus:border-sky-600";
+}
+
+function PasswordField({ label, value, onChange, placeholder }) {
+  const [show, setShow] = useState(false);
+  return (
+    <Field label={label}>
+      <div className="relative">
+        <input
+          type={show ? "text" : "password"}
+          className={`${inputCls()} pr-10`}
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder}
+          autoComplete="new-password"
+        />
+        <button
+          type="button"
+          onClick={() => setShow((s) => !s)}
+          className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-slate-500 hover:text-slate-800"
+          aria-label={show ? "Hide password" : "Show password"}
+        >
+          {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+        </button>
+      </div>
+    </Field>
+  );
+}
+
+function locationCityId(loc) {
+  if (!loc?.city) return "";
+  if (typeof loc.city === "object") return String(loc.city._id || loc.city.id || "");
+  return String(loc.city);
 }
 
 export default function AdminMasterData({ token, isSuperAdmin, initialSection = "vendors", focusCreateVendor = false }) {
@@ -82,10 +129,10 @@ export default function AdminMasterData({ token, isSuperAdmin, initialSection = 
   }, [loadAll]);
 
   useEffect(() => {
-    if (initialSection && ["vendors", "cities", "locations"].includes(initialSection)) {
-      setSection(initialSection);
+    if (initialSection && MASTER_SECTION_KEYS.includes(initialSection)) {
+      setSection(isSuperAdmin ? initialSection : "drivers");
     }
-  }, [initialSection]);
+  }, [initialSection, isSuperAdmin]);
 
   useEffect(() => {
     if (focusCreateVendor && isSuperAdmin) {
@@ -96,9 +143,34 @@ export default function AdminMasterData({ token, isSuperAdmin, initialSection = 
   }, [focusCreateVendor, isSuperAdmin]);
 
   const saveVendor = async () => {
+    if (!vendorForm.name.trim()) {
+      setMessage("Vendor name is required.");
+      return;
+    }
+    if (!vendorForm.adminPhone.trim()) {
+      setMessage("Admin phone is required for partner login.");
+      return;
+    }
+    if (!editVendorId && !vendorForm.adminPassword) {
+      setMessage("Set a login password for the vendor admin.");
+      return;
+    }
+    if (vendorForm.adminPassword && vendorForm.adminPassword.length < 6) {
+      setMessage("Password must be at least 6 characters.");
+      return;
+    }
+    if (vendorForm.adminPassword && vendorForm.adminPassword !== vendorForm.adminPasswordConfirm) {
+      setMessage("Password and re-enter password do not match.");
+      return;
+    }
+    if (vendorForm.driverPhone && vendorForm.driverPhone.replace(/\D/g, "") === vendorForm.adminPhone.replace(/\D/g, "")) {
+      setMessage("Driver login phone must be different from the vendor admin phone.");
+      return;
+    }
     const url = editVendorId ? `/api/vendors/${editVendorId}` : "/api/vendors";
     const method = editVendorId ? "PUT" : "POST";
     const payload = { ...vendorForm };
+    delete payload.adminPasswordConfirm;
     if (editVendorId && !payload.adminPassword) delete payload.adminPassword;
     const res = await fetch(url, { method, headers, body: JSON.stringify(payload) });
     const data = await res.json();
@@ -169,7 +241,7 @@ export default function AdminMasterData({ token, isSuperAdmin, initialSection = 
     await loadAll();
   };
   const filteredVendors = useMemo(
-    () => vendors.filter((v) => `${v.name} ${v.adminPhone} ${v.contactPhone}`.toLowerCase().includes(search.toLowerCase())),
+    () => vendors.filter((v) => `${v.name} ${v.adminPhone} ${v.contactPhone} ${v.city} ${v.location}`.toLowerCase().includes(search.toLowerCase())),
     [vendors, search]
   );
   const filteredCities = useMemo(
@@ -183,22 +255,12 @@ export default function AdminMasterData({ token, isSuperAdmin, initialSection = 
 
   if (!isSuperAdmin) {
     return (
-      <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
-        <p className="font-semibold">Locations directory</p>
-        <p className="mt-1">Only super admin can create vendors and cities. You can view service locations below.</p>
-        {loading ? (
-          <p className="mt-3 text-slate-600">Loading…</p>
-        ) : (
-          <ul className="mt-3 max-h-64 space-y-1 overflow-y-auto text-xs">
-            {locations.map((loc) => (
-              <li key={loc._id} className="rounded border border-amber-100 bg-white px-2 py-1.5">
-                <span className="font-medium">{loc.name}</span> — {loc.cityName}
-                {loc.address ? ` · ${loc.address}` : ""}
-              </li>
-            ))}
-            {!locations.length && <li className="text-slate-500">No locations configured yet.</li>}
-          </ul>
-        )}
+      <div className="space-y-3">
+        <div>
+          <p className="text-sm font-bold text-slate-900">Drivers</p>
+          <p className="text-xs text-slate-600">Create and update drivers for your vendor. Super-admin master data is restricted.</p>
+        </div>
+        <AdminDriverAccounts token={token} isSuperAdmin={false} cities={cities} />
       </div>
     );
   }
@@ -206,16 +268,16 @@ export default function AdminMasterData({ token, isSuperAdmin, initialSection = 
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-2">
-        {["vendors", "cities", "locations"].map((tab) => (
+        {MASTER_SECTION_KEYS.map((tab) => (
           <button
             key={tab}
             type="button"
             onClick={() => setSection(tab)}
-            className={`rounded-lg px-4 py-2 text-sm font-semibold capitalize ${
+            className={`rounded-lg px-4 py-2 text-sm font-semibold ${
               section === tab ? "bg-sky-600 text-white" : "border border-slate-300 bg-white text-slate-700"
             }`}
           >
-            {tab === "vendors" ? "Vendor admins" : tab}
+            {MASTER_SECTION_LABELS[tab] || tab}
           </button>
         ))}
         {section === "vendors" ? (
@@ -232,7 +294,9 @@ export default function AdminMasterData({ token, isSuperAdmin, initialSection = 
           </button>
         ) : null}
       </div>
-      <input className={inputCls()} value={search} onChange={(e) => setSearch(e.target.value)} placeholder={`Search ${section}...`} />
+      {!MASTER_HOME_CARD_SECTIONS.includes(section) && section !== "drivers" ? (
+        <input className={inputCls()} value={search} onChange={(e) => setSearch(e.target.value)} placeholder={`Search ${section}...`} />
+      ) : null}
 
       {message ? <p className="text-sm text-slate-700">{message}</p> : null}
       {loading ? <p className="text-sm text-slate-500">Loading…</p> : null}
@@ -242,8 +306,9 @@ export default function AdminMasterData({ token, isSuperAdmin, initialSection = 
           <div id="vendor-admin-form" className="rounded-lg border border-slate-200 bg-slate-50 p-4">
             <p className="text-sm font-bold text-slate-800">{editVendorId ? "Edit vendor admin" : "Create vendor admin"}</p>
             <p className="mt-1 text-xs text-slate-600">
-              Sets vendor name, admin mobile login and password. Partner signs in at{" "}
-              <span className="font-mono text-sky-800">/login?role=partner</span>.
+              Sets vendor name, city/location, admin mobile login and password. Partner signs in at{" "}
+              <span className="font-mono text-sky-800">/login?role=partner</span>. Optional driver login is{" "}
+              <span className="font-mono text-sky-800">/driver/login</span> (use a different mobile).
             </p>
             <div className="mt-3 grid gap-3 sm:grid-cols-2">
               <Field label="Vendor name *">
@@ -252,15 +317,37 @@ export default function AdminMasterData({ token, isSuperAdmin, initialSection = 
               <Field label="Admin phone (vendor login) *">
                 <input className={inputCls()} value={vendorForm.adminPhone} onChange={(e) => setVendorForm((p) => ({ ...p, adminPhone: e.target.value }))} placeholder="10-digit mobile (not your super admin phone)" />
               </Field>
-              <Field label={editVendorId ? "New login password (optional)" : "Admin login password *"}>
+              <PasswordField
+                label={editVendorId ? "New login password (optional)" : "Admin login password *"}
+                value={vendorForm.adminPassword}
+                onChange={(e) => setVendorForm((p) => ({ ...p, adminPassword: e.target.value }))}
+                placeholder={editVendorId ? "Leave blank to keep current" : "Min 6 characters"}
+              />
+              <PasswordField
+                label="Re-enter password"
+                value={vendorForm.adminPasswordConfirm}
+                onChange={(e) => setVendorForm((p) => ({ ...p, adminPasswordConfirm: e.target.value }))}
+                placeholder={editVendorId ? "Required only if changing password" : "Type password again"}
+              />
+              <Field label="City / base location">
                 <input
-                  type="password"
                   className={inputCls()}
-                  value={vendorForm.adminPassword}
-                  onChange={(e) => setVendorForm((p) => ({ ...p, adminPassword: e.target.value }))}
-                  placeholder={editVendorId ? "Leave blank to keep current" : "Min 6 characters"}
-                  autoComplete="new-password"
+                  list="vendor-city-options"
+                  value={vendorForm.city}
+                  onChange={(e) => setVendorForm((p) => ({ ...p, city: e.target.value }))}
+                  placeholder="Type city e.g. Chennai"
                 />
+                <datalist id="vendor-city-options">
+                  {cities.map((c) => (
+                    <option key={c._id} value={c.name} />
+                  ))}
+                </datalist>
+              </Field>
+              <Field label="Location / address">
+                <input className={inputCls()} value={vendorForm.location} onChange={(e) => setVendorForm((p) => ({ ...p, location: e.target.value }))} placeholder="Office, landmark or area" />
+              </Field>
+              <Field label="Driver login phone (optional)">
+                <input className={inputCls()} value={vendorForm.driverPhone} onChange={(e) => setVendorForm((p) => ({ ...p, driverPhone: e.target.value }))} placeholder="Different 10-digit mobile for /driver/login" />
               </Field>
               <Field label="Contact phone">
                 <input className={inputCls()} value={vendorForm.contactPhone} onChange={(e) => setVendorForm((p) => ({ ...p, contactPhone: e.target.value }))} />
@@ -285,19 +372,20 @@ export default function AdminMasterData({ token, isSuperAdmin, initialSection = 
           <div className="overflow-auto rounded-lg border border-slate-200 bg-white">
             <table className="min-w-full text-sm">
               <thead className="sticky top-0 bg-slate-100 text-xs uppercase text-slate-600">
-                <tr><th className="px-3 py-2 text-left">Vendor</th><th className="px-3 py-2 text-left">Phone</th><th className="px-3 py-2 text-left">Status</th><th className="px-3 py-2 text-left">Actions</th></tr>
+                <tr><th className="px-3 py-2 text-left">Vendor</th><th className="px-3 py-2 text-left">Phone</th><th className="px-3 py-2 text-left">City</th><th className="px-3 py-2 text-left">Status</th><th className="px-3 py-2 text-left">Actions</th></tr>
               </thead>
               <tbody>
             {filteredVendors.map((v) => (
               <tr key={v._id} className="border-t border-slate-100 hover:bg-slate-50">
                 <td className="px-3 py-2 font-semibold">{v.name}</td>
                 <td className="px-3 py-2 text-xs text-slate-600">{v.adminPhone || v.contactPhone || "—"}</td>
+                <td className="px-3 py-2 text-xs text-slate-600">{v.city || "—"}</td>
                 <td className="px-3 py-2">
                   <span className={`rounded-full px-2 py-1 text-[11px] font-semibold ${v.isActive ? "bg-emerald-100 text-emerald-700" : "bg-slate-200 text-slate-700"}`}>{v.isActive ? "Active" : "Inactive"}</span>
                 </td>
                 <td className="px-3 py-2">
                   <div className="flex gap-2">
-                  <button type="button" className="text-xs font-semibold text-sky-700" onClick={() => { setEditVendorId(v._id); setVendorForm({ name: v.name, contactPhone: v.contactPhone || "", contactEmail: v.contactEmail || "", adminPhone: v.adminPhone || "", adminPassword: "", isActive: v.isActive !== false }); }}>Edit</button>
+                  <button type="button" className="text-xs font-semibold text-sky-700" onClick={() => { setEditVendorId(v._id); setVendorForm({ name: v.name, contactPhone: v.contactPhone || "", contactEmail: v.contactEmail || "", adminPhone: v.adminPhone || "", adminPassword: "", adminPasswordConfirm: "", city: v.city || "", location: v.location || "", driverPhone: v.driverPhone || "", isActive: v.isActive !== false }); }}>Edit</button>
                   <button type="button" className="text-xs font-semibold text-rose-700" onClick={() => deleteEntity("vendors", v._id)}>Delete</button>
                   </div>
                 </td>
@@ -388,12 +476,24 @@ export default function AdminMasterData({ token, isSuperAdmin, initialSection = 
             <p className="text-sm font-bold text-slate-800">{editLocationId ? "Edit location" : "Create location"}</p>
             <div className="mt-3 grid gap-3">
               <Field label="City *">
-                <select className={inputCls()} value={locationForm.city} onChange={(e) => setLocationForm((p) => ({ ...p, city: e.target.value }))}>
-                  <option value="">Select city</option>
+                <input
+                  className={inputCls()}
+                  list="location-city-options"
+                  value={locationForm.cityInput || ""}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    const match = cities.find(
+                      (c) => c.name === val || `${c.name}${c.state ? `, ${c.state}` : ""}` === val
+                    );
+                    setLocationForm((p) => ({ ...p, city: match?._id || val, cityInput: val }));
+                  }}
+                  placeholder="Type or pick a city"
+                />
+                <datalist id="location-city-options">
                   {cities.map((c) => (
-                    <option key={c._id} value={c._id}>{c.name}{c.state ? `, ${c.state}` : ""}</option>
+                    <option key={c._id} value={c.state ? `${c.name}, ${c.state}` : c.name} />
                   ))}
-                </select>
+                </datalist>
               </Field>
               <Field label="Location name *">
                 <input className={inputCls()} value={locationForm.name} onChange={(e) => setLocationForm((p) => ({ ...p, name: e.target.value }))} placeholder="e.g. Kempegowda Airport T1" />
@@ -427,7 +527,7 @@ export default function AdminMasterData({ token, isSuperAdmin, initialSection = 
                 <td className="px-3 py-2 text-xs text-slate-600">{loc.address || "—"}</td>
                 <td className="px-3 py-2">
                   <div className="flex gap-2">
-                  <button type="button" className="text-xs font-semibold text-sky-700" onClick={() => { setEditLocationId(loc._id); setLocationForm({ city: String(loc.city), name: loc.name, address: loc.address || "", pincode: loc.pincode || "", isActive: loc.isActive !== false }); }}>Edit</button>
+                  <button type="button" className="text-xs font-semibold text-sky-700" onClick={() => { setEditLocationId(loc._id); setLocationForm({ city: locationCityId(loc), cityInput: loc.cityName || "", name: loc.name, address: loc.address || "", pincode: loc.pincode || "", isActive: loc.isActive !== false }); }}>Edit</button>
                   <button type="button" className="text-xs font-semibold text-rose-700" onClick={() => deleteEntity("locations", loc._id)}>Delete</button>
                   </div>
                 </td>
@@ -438,6 +538,9 @@ export default function AdminMasterData({ token, isSuperAdmin, initialSection = 
           </div>
         </div>
       )}
+
+      {MASTER_HOME_CARD_SECTIONS.includes(section) ? <AdminHomeCards token={token} section={section} /> : null}
+      {section === "drivers" && <AdminDriverAccounts token={token} isSuperAdmin cities={cities} />}
     </div>
   );
 }

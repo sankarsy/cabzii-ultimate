@@ -2,22 +2,10 @@
 
 import { useState } from "react";
 import { GripVertical } from "lucide-react";
-import { resolveMediaUrl } from "../../../lib/media";
+import ImageUploadField, { ImageUploadRequirements } from "../ImageUploadField";
+import { IMAGE_UPLOAD_RULES } from "../../../lib/imageUploadRules";
 
-function Field({ label, children }) {
-  return (
-    <label className="block text-xs font-semibold text-slate-600">
-      {label}
-      <div className="mt-1">{children}</div>
-    </label>
-  );
-}
-
-function inputCls() {
-  return "w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-sky-600";
-}
-
-export default function VehicleGalleryEditor({ images = [], onChange, disabled }) {
+export default function VehicleGalleryEditor({ images = [], onChange, disabled, authToken = "" }) {
   const [dragIndex, setDragIndex] = useState(null);
 
   const update = (index, patch) => {
@@ -42,12 +30,21 @@ export default function VehicleGalleryEditor({ images = [], onChange, disabled }
   };
   const onDragEnd = () => setDragIndex(null);
 
-  const add = () => onChange([...images, { url: "", type: "gallery", alt: "", sortOrder: images.length }]);
+  const add = () => {
+    if (images.length >= IMAGE_UPLOAD_RULES.maxGallery) return;
+    onChange([...images, { url: "", type: images.length ? "gallery" : "cover", alt: "", sortOrder: images.length }]);
+  };
 
   return (
     <div className="space-y-4">
-      <button type="button" disabled={disabled} onClick={add} className="rounded-lg bg-sky-600 px-3 py-2 text-xs font-semibold text-white">
-        + Add image URL
+      <ImageUploadRequirements maxGallery={IMAGE_UPLOAD_RULES.maxGallery} />
+      <button
+        type="button"
+        disabled={disabled || images.length >= IMAGE_UPLOAD_RULES.maxGallery}
+        onClick={add}
+        className="rounded-lg bg-sky-600 px-3 py-2 text-xs font-semibold text-white disabled:opacity-50"
+      >
+        + Add image
       </button>
       <div className="grid gap-3">
         {images.map((img, i) => (
@@ -63,12 +60,14 @@ export default function VehicleGalleryEditor({ images = [], onChange, disabled }
               <GripVertical className="h-5 w-5" />
             </div>
             <div className="min-w-0 flex-1 space-y-2">
-              <Field label="Image URL">
-                <input className={inputCls()} disabled={disabled} value={img.url || ""} onChange={(e) => update(i, { url: e.target.value })} />
-              </Field>
-              {img.url ? (
-                <img loading="lazy" src={resolveMediaUrl(img.url)} alt={img.alt || ""} className="h-28 w-full max-w-xs rounded-lg border object-cover" />
-              ) : null}
+              <ImageUploadField
+                label="Image"
+                value={img.url || ""}
+                onChange={(url) => update(i, { url })}
+                disabled={disabled}
+                authToken={authToken}
+                alt={img.alt || "Vehicle photo"}
+              />
               <div className="flex flex-wrap gap-2">
                 <button type="button" disabled={disabled} onClick={() => setCover(i)} className="rounded border px-2 py-1 text-xs">
                   {img.type === "cover" ? "Cover ✓" : "Set cover"}
@@ -81,7 +80,7 @@ export default function VehicleGalleryEditor({ images = [], onChange, disabled }
           </div>
         ))}
       </div>
-      <p className="text-xs text-slate-500">Drag rows to reorder. First cover image is used on cards and detail page.</p>
+      <p className="text-xs text-slate-500">Drag rows to reorder. First cover image is used on cards and the detail page. Maximum {IMAGE_UPLOAD_RULES.maxGallery} photos.</p>
     </div>
   );
 }

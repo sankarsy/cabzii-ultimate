@@ -1,5 +1,5 @@
 import JsonLd from "../../components/seo/JsonLd";
-import CallDriverLanding from "../../components/call-driver/CallDriverLanding";
+import DriversCategorySeo from "../../components/seo/DriversCategorySeo";
 import { breadcrumbJsonLd } from "../../lib/seo";
 import { SITE_URL } from "../../lib/seo/constants";
 
@@ -7,21 +7,24 @@ export default function DriversPage() {
   const jsonLd = [
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
-      { name: "Call Driver", path: "/call-driver" }
+      { name: "Drivers", path: "/drivers" }
     ]),
     {
       "@context": "https://schema.org",
       "@type": "Service",
-      name: "Call Driver in Chennai | Acting Driver Service",
-      url: `${SITE_URL}/call-driver`,
-      provider: { "@type": "Organization", name: "Cabzii" }
+      name: "Driver hire and chauffeur service",
+      serviceType: "Acting driver / chauffeur for own car",
+      provider: { "@type": "Organization", name: "Cabzii", url: SITE_URL },
+      url: `${SITE_URL}/drivers`,
+      description:
+        "Book acting driver, chauffeur and driver-on-hire services on Cabzii. A professional driver is assigned after booking."
     }
   ];
 
   return (
     <>
       <JsonLd data={jsonLd} />
-      <CallDriverLanding />
+      <DriversCategorySeo />
     </>
   );
 }
