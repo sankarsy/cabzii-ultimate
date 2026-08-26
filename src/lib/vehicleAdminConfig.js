@@ -19,6 +19,7 @@ export const PACKAGE_TYPES = [
 
 export const VEHICLE_TABS = [
   { id: "basic", label: "Basic Info" },
+  { id: "inventory", label: "Inventory" },
   { id: "specs", label: "Specifications" },
   { id: "pricing", label: "Pricing" },
   { id: "packages", label: "Packages" },
@@ -65,7 +66,7 @@ export const VEHICLE_CATEGORY_OPTIONS = [
   "Innova Crysta",
   "Ertiga",
   "Dzire",
-  "Etios",
+  "Honda Amaze",
   "Tempo Traveller",
   "Mini Bus",
   "Bus",
@@ -90,6 +91,58 @@ export const BRAND_OPTIONS = [
 ];
 
 export const DEFAULT_HQ_CITY = "Chennai";
+
+export const VEHICLE_STATUS_OPTIONS = [
+  { value: "draft", label: "Draft" },
+  { value: "active", label: "Active" },
+  { value: "inactive", label: "Inactive" },
+  { value: "under_verification", label: "Under verification" },
+  { value: "maintenance", label: "Maintenance" },
+  { value: "suspended", label: "Suspended", adminOnly: true }
+];
+
+export const AVAILABILITY_STATUS_OPTIONS = [
+  { value: "available", label: "Available" },
+  { value: "blocked", label: "Blocked" },
+  { value: "offline", label: "Offline" },
+  { value: "busy", label: "Busy", adminOnly: true }
+];
+
+export const VERIFICATION_STATUS_OPTIONS = [
+  { value: "pending", label: "Pending" },
+  { value: "approved", label: "Approved" },
+  { value: "rejected", label: "Rejected" }
+];
+
+export const VEHICLE_DOCUMENT_TYPES = [
+  { value: "rc", label: "RC" },
+  { value: "insurance", label: "Insurance" },
+  { value: "permit", label: "Permit" },
+  { value: "fitness", label: "Fitness" },
+  { value: "other", label: "Other" }
+];
+
+export const DOCUMENT_STATUS_OPTIONS = [
+  { value: "pending", label: "Pending" },
+  { value: "verified", label: "Verified" },
+  { value: "rejected", label: "Rejected" }
+];
+
+export function emptyVehicleDocument() {
+  return { docType: "rc", url: "", status: "pending", expiresAt: "", label: "" };
+}
+
+export function normalizeCatalogStatus(value, fallback = "draft") {
+  const s = String(value || "").toLowerCase();
+  if (VEHICLE_STATUS_OPTIONS.some((o) => o.value === s)) return s;
+  return fallback;
+}
+
+export function normalizeAvailabilityStatus(value, fallback = "available") {
+  const s = String(value || "").toLowerCase();
+  if (AVAILABILITY_STATUS_OPTIONS.some((o) => o.value === s)) return s;
+  return fallback;
+}
 
 function num(v, fallback = 0) {
   const n = Number(v);
@@ -128,7 +181,13 @@ export function emptyVehicleForm() {
     city: DEFAULT_HQ_CITY,
     location: "",
     pickupLocations: [],
-    status: "active",
+    serviceAreas: [],
+    status: "draft",
+    availabilityStatus: "available",
+    verificationStatus: "approved",
+    registrationNumber: "",
+    blockedDates: [],
+    vehicleDocuments: [],
     featured: false,
     recommended: false,
     bestseller: false,
@@ -218,7 +277,23 @@ export function vehicleFromApi(item) {
     city: item.city || "",
     location: item.location || "",
     pickupLocations: Array.isArray(item.pickupLocations) ? item.pickupLocations : [],
-    status: item.status === "inactive" ? "inactive" : "active",
+    serviceAreas: Array.isArray(item.serviceAreas) ? item.serviceAreas : [],
+    status: normalizeCatalogStatus(item.status, "active"),
+    availabilityStatus: normalizeAvailabilityStatus(item.availabilityStatus, "available"),
+    verificationStatus: ["pending", "approved", "rejected"].includes(String(item.verificationStatus || ""))
+      ? item.verificationStatus
+      : "approved",
+    registrationNumber: item.registrationNumber || "",
+    blockedDates: Array.isArray(item.blockedDates) ? item.blockedDates : [],
+    vehicleDocuments: Array.isArray(item.vehicleDocuments)
+      ? item.vehicleDocuments.map((d) => ({
+          docType: d.docType || "other",
+          url: d.url || "",
+          status: d.status || "pending",
+          expiresAt: d.expiresAt || "",
+          label: d.label || ""
+        }))
+      : [],
     featured: Boolean(item.featured),
     recommended: Boolean(item.recommended),
     bestseller: Boolean(item.bestseller),
@@ -321,7 +396,23 @@ export function vehicleToPayload(form) {
     city: form.city,
     location: form.location || "",
     pickupLocations: form.pickupLocations || [],
-    status: form.status === "inactive" ? "inactive" : "active",
+    serviceAreas: form.serviceAreas || [],
+    status: normalizeCatalogStatus(form.status, "draft"),
+    availabilityStatus: normalizeAvailabilityStatus(form.availabilityStatus, "available"),
+    verificationStatus: form.verificationStatus || "approved",
+    registrationNumber: String(form.registrationNumber || "").trim(),
+    blockedDates: Array.isArray(form.blockedDates)
+      ? form.blockedDates.filter((d) => /^\d{4}-\d{2}-\d{2}$/.test(String(d)))
+      : [],
+    vehicleDocuments: (form.vehicleDocuments || [])
+      .filter((d) => d && String(d.url || "").trim())
+      .map((d) => ({
+        docType: d.docType || "other",
+        url: String(d.url).trim(),
+        status: d.status || "pending",
+        expiresAt: String(d.expiresAt || "").trim(),
+        label: String(d.label || "").trim()
+      })),
     featured: Boolean(form.featured),
     recommended: Boolean(form.recommended),
     bestseller: Boolean(form.bestseller),

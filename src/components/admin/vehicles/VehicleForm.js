@@ -2,14 +2,21 @@
 
 import dynamic from "next/dynamic";
 import {
+  AVAILABILITY_STATUS_OPTIONS,
   BRAND_OPTIONS,
+  DOCUMENT_STATUS_OPTIONS,
   FEATURE_PRESETS,
   FUEL_TYPE_OPTIONS,
   TRANSMISSION_OPTIONS,
-  VEHICLE_CATEGORY_OPTIONS
+  VEHICLE_CATEGORY_OPTIONS,
+  VEHICLE_DOCUMENT_TYPES,
+  VEHICLE_STATUS_OPTIONS,
+  VERIFICATION_STATUS_OPTIONS,
+  emptyVehicleDocument
 } from "../../../lib/vehicleAdminConfig";
 import { useFormContext } from "react-hook-form";
 import AdminSearchSelect from "../AdminSearchSelect";
+import ImageUploadField from "../ImageUploadField";
 import VehiclePackageEditor from "./VehiclePackageEditor";
 import VehicleGalleryEditor from "./VehicleGalleryEditor";
 import VehicleSeoPreview from "./VehicleSeoPreview";
@@ -62,7 +69,8 @@ export default function VehicleForm({
   cityOptions = [],
   vendorOptions = [],
   categoryOptions = VEHICLE_CATEGORY_OPTIONS,
-  brandOptions = BRAND_OPTIONS
+  brandOptions = BRAND_OPTIONS,
+  isSuperAdmin = false
 }) {
   const { register, watch, setValue } = useFormContext();
   const form = watch();
@@ -85,6 +93,19 @@ export default function VehicleForm({
     patch({ pickupLocations: next });
   };
   const removePickup = (i) => patch({ pickupLocations: (form.pickupLocations || []).filter((_, idx) => idx !== i) });
+
+  const statusOptions = VEHICLE_STATUS_OPTIONS.filter((o) => isSuperAdmin || !o.adminOnly);
+  const availabilityOptions = AVAILABILITY_STATUS_OPTIONS.filter((o) => isSuperAdmin || !o.adminOnly);
+
+  const updateDocument = (i, updates) => {
+    const next = [...(form.vehicleDocuments || [])];
+    next[i] = { ...emptyVehicleDocument(), ...next[i], ...updates };
+    patch({ vehicleDocuments: next });
+  };
+  const addDocument = () => patch({ vehicleDocuments: [...(form.vehicleDocuments || []), emptyVehicleDocument()] });
+  const removeDocument = (i) => patch({ vehicleDocuments: (form.vehicleDocuments || []).filter((_, idx) => idx !== i) });
+
+  const blockedDatesText = (form.blockedDates || []).join(", ");
 
   return (
     <div>
@@ -136,9 +157,13 @@ export default function VehicleForm({
           <Field label="Product code"><input className={inputCls()} disabled={disabled} {...register("productCode")} hint="Auto-generated (CAB000001)" /></Field>
           <Field label="Status">
             <select className={inputCls()} disabled={disabled} {...register("status")}>
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
+              {statusOptions.map((o) => (
+                <option key={o.value} value={o.value}>{o.label}</option>
+              ))}
             </select>
+            <p className="mt-1 text-[11px] font-normal text-slate-500">
+              Active needs a name, seats, primary photo and pricing. Draft/Inactive stay off the public site and sitemap.
+            </p>
           </Field>
           <div className="flex flex-wrap gap-4 sm:col-span-2">
             <Checkbox label="Featured" checked={form.featured} onChange={(v) => patch({ featured: v })} disabled={disabled} />
@@ -150,7 +175,7 @@ export default function VehicleForm({
             <div>
               <p className="text-sm font-bold text-slate-900">Page content</p>
               <p className="mt-0.5 text-[11px] text-slate-600">
-                Shown on the public cab package page under Available packages. Also editable in the SEO tab.
+                Shown on the public cab package page. Write unique copy for this exact vehicle — do not reuse Force Traveller #1 text on #2 or Urbania.
               </p>
             </div>
             <Field label="Short description" hint="1–2 lines under the heading">
@@ -179,9 +204,139 @@ export default function VehicleForm({
                 onChange={(html) => patch({ longSeoContent: html })}
               />
               <p className="mt-1 text-[11px] text-slate-500">
-                Write package details, inclusions, tips — this appears on the live cab page after you Save.
+                Cover seating, local rental, outstation, and airport/corporate/pilgrimage only if this vehicle actually offers them. Do not invent specs.
               </p>
             </div>
+          </div>
+        </div>
+      )}
+
+      {activeTab === "inventory" && (
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Field label="Registration number" hint="TN01AB1234 — unique across Cabzii. Optional on existing vehicles.">
+            <input className={inputCls()} disabled={disabled} {...register("registrationNumber")} placeholder="TN01AB1234" />
+          </Field>
+          <Field label="Availability" hint="Busy is set by assignment, not occupancy. Blocked dates are stored here; matching comes later.">
+            <select className={inputCls()} disabled={disabled} {...register("availabilityStatus")}>
+              {availabilityOptions.map((o) => (
+                <option key={o.value} value={o.value}>{o.label}</option>
+              ))}
+            </select>
+          </Field>
+          {isSuperAdmin ? (
+            <Field label="Verification" hint="Vendors cannot change this.">
+              <select className={inputCls()} disabled={disabled} {...register("verificationStatus")}>
+                {VERIFICATION_STATUS_OPTIONS.map((o) => (
+                  <option key={o.value} value={o.value}>{o.label}</option>
+                ))}
+              </select>
+            </Field>
+          ) : (
+            <Field label="Verification">
+              <p className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700">
+                {form.verificationStatus || "approved"}
+              </p>
+            </Field>
+          )}
+          <Field label="Blocked dates" hint="YYYY-MM-DD, comma separated. Stored only — not used for matching yet.">
+            <input
+              className={inputCls()}
+              disabled={disabled}
+              value={form.blockedDatesInput ?? blockedDatesText}
+              onChange={(e) => patch({ blockedDatesInput: e.target.value })}
+              onBlur={(e) =>
+                patch({
+                  blockedDatesInput: undefined,
+                  blockedDates: e.target.value
+                    .split(/[,\s]+/)
+                    .map((s) => s.trim())
+                    .filter((d) => /^\d{4}-\d{2}-\d{2}$/.test(d))
+                })
+              }
+              placeholder="2026-09-01, 2026-09-02"
+            />
+          </Field>
+          <Field label="Service areas" hint="Defaults from city + pickup locations. Extra cities this vehicle serves.">
+            <input
+              className={inputCls()}
+              disabled={disabled}
+              value={(form.serviceAreas || []).join(", ")}
+              onChange={(e) =>
+                patch({
+                  serviceAreas: e.target.value
+                    .split(",")
+                    .map((s) => s.trim())
+                    .filter(Boolean)
+                })
+              }
+              placeholder="Chennai, Vellore"
+            />
+          </Field>
+          <div className="sm:col-span-2 space-y-3 rounded-xl border border-slate-200 bg-slate-50/60 p-3">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-bold text-slate-900">Vehicle documents</p>
+              <button type="button" disabled={disabled} onClick={addDocument} className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold hover:bg-white">
+                + Add document
+              </button>
+            </div>
+            {(form.vehicleDocuments || []).length === 0 ? (
+              <p className="text-xs text-slate-500">RC, insurance, permit, fitness. Upload a photo or paste a URL.</p>
+            ) : null}
+            {(form.vehicleDocuments || []).map((doc, i) => (
+              <div key={i} className="grid gap-2 rounded-lg border border-slate-200 bg-white p-3 sm:grid-cols-2">
+                <Field label="Type">
+                  <select
+                    className={inputCls()}
+                    disabled={disabled}
+                    value={doc.docType || "rc"}
+                    onChange={(e) => updateDocument(i, { docType: e.target.value })}
+                  >
+                    {VEHICLE_DOCUMENT_TYPES.map((o) => (
+                      <option key={o.value} value={o.value}>{o.label}</option>
+                    ))}
+                  </select>
+                </Field>
+                <Field label="Label">
+                  <input className={inputCls()} disabled={disabled} value={doc.label || ""} onChange={(e) => updateDocument(i, { label: e.target.value })} placeholder="RC front" />
+                </Field>
+                <Field label="Expires">
+                  <input type="date" className={inputCls()} disabled={disabled} value={doc.expiresAt || ""} onChange={(e) => updateDocument(i, { expiresAt: e.target.value })} />
+                </Field>
+                {isSuperAdmin ? (
+                  <Field label="Doc status">
+                    <select
+                      className={inputCls()}
+                      disabled={disabled}
+                      value={doc.status || "pending"}
+                      onChange={(e) => updateDocument(i, { status: e.target.value })}
+                    >
+                      {DOCUMENT_STATUS_OPTIONS.map((o) => (
+                        <option key={o.value} value={o.value}>{o.label}</option>
+                      ))}
+                    </select>
+                  </Field>
+                ) : (
+                  <Field label="Doc status">
+                    <p className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700">{doc.status || "pending"}</p>
+                  </Field>
+                )}
+                <div className="sm:col-span-2">
+                  <ImageUploadField
+                    label="Document image / URL"
+                    value={doc.url || ""}
+                    onChange={(url) => updateDocument(i, { url })}
+                    disabled={disabled}
+                    authToken={authToken}
+                    alt={doc.label || doc.docType || "Vehicle document"}
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <button type="button" disabled={disabled} onClick={() => removeDocument(i)} className="rounded-lg border border-rose-300 px-3 py-1.5 text-xs text-rose-700">
+                    Remove document
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}
@@ -282,7 +437,7 @@ export default function VehicleForm({
       )}
 
       {activeTab === "gallery" && (
-        <VehicleGalleryEditor images={form.images || []} onChange={(images) => patch({ images })} disabled={disabled} />
+        <VehicleGalleryEditor images={form.images || []} onChange={(images) => patch({ images })} disabled={disabled} authToken={authToken} />
       )}
 
       {activeTab === "seo" && (

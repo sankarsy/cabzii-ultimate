@@ -11,6 +11,8 @@ import {
   emptyVehicleForm,
   SORT_OPTIONS,
   VEHICLE_CATEGORY_OPTIONS,
+  VEHICLE_STATUS_OPTIONS,
+  AVAILABILITY_STATUS_OPTIONS,
   vehicleFromApi,
   vehicleToPayload,
   VEHICLE_TABS
@@ -58,6 +60,7 @@ export default function VehicleAdminPanel({
   const [brand, setBrand] = useState("");
   const [category, setCategory] = useState("");
   const [status, setStatus] = useState("");
+  const [availabilityStatus, setAvailabilityStatus] = useState("");
   const [featured, setFeatured] = useState(false);
   const [recommended, setRecommended] = useState(false);
   const [bestseller, setBestseller] = useState(false);
@@ -84,6 +87,7 @@ export default function VehicleAdminPanel({
         brand,
         category,
         status,
+        availabilityStatus,
         sort,
         featured: featured || undefined,
         recommended: recommended || undefined,
@@ -122,7 +126,7 @@ export default function VehicleAdminPanel({
     } finally {
       setLoading(false);
     }
-  }, [token, authHeaders, page, q, city, vendor, brand, category, status, sort, featured, recommended, bestseller]);
+  }, [token, authHeaders, page, q, city, vendor, brand, category, status, availabilityStatus, sort, featured, recommended, bestseller]);
 
   useEffect(() => {
     loadList();
@@ -213,8 +217,21 @@ export default function VehicleAdminPanel({
         return `Package "${p.packageName || p.packageType}" price cannot exceed original price`;
       }
     }
-    // Enterprise SEO required fields (skip hard block on silent autosave drafts that are incomplete)
-    if (!silent) {
+    if (form.status === "active") {
+      const cover =
+        String(form.image || "").trim() ||
+        (Array.isArray(form.images) && form.images.find((img) => img?.url)?.url) ||
+        "";
+      if (!cover) return "Primary image is required before setting Active";
+      const packs = form.farePackages && typeof form.farePackages === "object" ? form.farePackages : {};
+      const hasFare =
+        Number(form.price) > 0 ||
+        Number(form.startingPrice) > 0 ||
+        Object.values(packs).some((p) => Number(p?.price || p?.originalPrice || 0) > 0);
+      if (!hasFare) return "Pricing is required before setting Active";
+    }
+    // Enterprise SEO required fields (skip for drafts so vendors can save incomplete inventory)
+    if (!silent && form.status === "active") {
       if (!form.seoTitle?.trim()) return "SEO Title is required — open the SEO tab";
       if (!form.seoDescription?.trim()) return "Meta Description is required — open the SEO tab";
       if (!form.slug?.trim()) return "Slug is required — open the SEO tab";
@@ -338,15 +355,15 @@ export default function VehicleAdminPanel({
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-xl font-bold text-slate-900">Vehicle management</h1>
-          <p className="text-sm text-slate-600">
-            Edit fleet city under <strong>Basic Info</strong>. HQ default: {DEFAULT_HQ_CITY}. Path: Admin → Cabs.
+        <p className="text-sm text-slate-600">
+            {isSuperAdmin === false
+              ? "Add each physical vehicle separately. Force Traveller #1 and #2 must be two records. Draft stays off the public site until name, seats, photo and pricing are complete."
+              : `Edit fleet city under Basic Info. HQ default: ${DEFAULT_HQ_CITY}. Path: Admin → Cabs.`}
           </p>
         </div>
-        {isSuperAdmin !== false && (
           <button type="button" onClick={openCreate} className="rounded-lg bg-[var(--cabzii-brand)] px-4 py-2.5 text-sm font-semibold text-white hover:opacity-90">
             + Add vehicle
           </button>
-        )}
       </div>
 
       {!formOpen ? (
@@ -361,7 +378,7 @@ export default function VehicleAdminPanel({
 
       <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
         <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
-          <input className="rounded-lg border border-slate-300 px-3 py-2 text-sm" placeholder="Search name, brand, slug, code…" value={q} onChange={(e) => { setQ(e.target.value); setPage(1); }} />
+          <input className="rounded-lg border border-slate-300 px-3 py-2 text-sm" placeholder="Search name, plate, brand, slug, code…" value={q} onChange={(e) => { setQ(e.target.value); setPage(1); }} />
           <AdminSearchSelect
             value={city}
             options={cityOptions}
@@ -369,6 +386,7 @@ export default function VehicleAdminPanel({
             allowCustom
             onChange={(v) => { setCity(v); setPage(1); }}
           />
+          {isSuperAdmin !== false ? (
           <AdminSearchSelect
             value={vendor}
             options={vendorOptions}
@@ -376,6 +394,7 @@ export default function VehicleAdminPanel({
             allowCustom
             onChange={(v) => { setVendor(v); setPage(1); }}
           />
+          ) : null}
           <input className="rounded-lg border border-slate-300 px-3 py-2 text-sm" placeholder="Brand" value={brand} onChange={(e) => { setBrand(e.target.value); setPage(1); }} />
           <AdminSearchSelect
             value={category}
@@ -386,8 +405,15 @@ export default function VehicleAdminPanel({
           />
           <select className="rounded-lg border border-slate-300 px-3 py-2 text-sm" value={status} onChange={(e) => { setStatus(e.target.value); setPage(1); }}>
             <option value="">All status</option>
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
+            {VEHICLE_STATUS_OPTIONS.filter((o) => isSuperAdmin !== false || !o.adminOnly).map((o) => (
+              <option key={o.value} value={o.value}>{o.label}</option>
+            ))}
+          </select>
+          <select className="rounded-lg border border-slate-300 px-3 py-2 text-sm" value={availabilityStatus} onChange={(e) => { setAvailabilityStatus(e.target.value); setPage(1); }}>
+            <option value="">All availability</option>
+            {AVAILABILITY_STATUS_OPTIONS.filter((o) => isSuperAdmin !== false || !o.adminOnly).map((o) => (
+              <option key={o.value} value={o.value}>{o.label}</option>
+            ))}
           </select>
           <select className="rounded-lg border border-slate-300 px-3 py-2 text-sm" value={sort} onChange={(e) => setSort(e.target.value)}>
             {SORT_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
@@ -432,12 +458,11 @@ export default function VehicleAdminPanel({
               <thead className="border-b border-slate-200 bg-slate-50 text-xs uppercase text-slate-500">
                 <tr>
                   <th className="px-3 py-3">Vehicle</th>
-                  <th className="px-3 py-3">Brand</th>
+                  <th className="px-3 py-3">Number</th>
+                  <th className="px-3 py-3">Category</th>
                   <th className="px-3 py-3">City</th>
-                  <th className="px-3 py-3">Price</th>
-                  <th className="px-3 py-3">Rating</th>
                   <th className="px-3 py-3">Status</th>
-                  <th className="px-3 py-3">Bookings</th>
+                  <th className="px-3 py-3">Availability</th>
                   <th className="px-3 py-3">Actions</th>
                 </tr>
               </thead>
@@ -462,17 +487,17 @@ export default function VehicleAdminPanel({
                         </div>
                       </div>
                     </td>
-                    <td className="px-3 py-3">{item.brand || "—"}</td>
+                    <td className="px-3 py-3 font-mono text-xs">{item.registrationNumber || "—"}</td>
+                    <td className="px-3 py-3">{item.category || item.type || "—"}</td>
                     <td className="px-3 py-3">{item.city || "—"}</td>
                     <td className="px-3 py-3">
-                      <div className="font-semibold">₹{Number(item.startingPrice || item.price || 0).toLocaleString("en-IN")}</div>
-                      {item.pricePerKm > 0 ? <div className="text-xs text-slate-500">₹{item.pricePerKm}/km</div> : null}
+                      <Badge tone={item.status === "active" ? "emerald" : item.status === "draft" || item.status === "under_verification" ? "amber" : "rose"}>{item.status || "active"}</Badge>
                     </td>
-                    <td className="px-3 py-3">{item.rating ? `${item.rating}★` : "—"}</td>
                     <td className="px-3 py-3">
-                      <Badge tone={item.status === "active" ? "emerald" : "rose"}>{item.status || "active"}</Badge>
+                      <Badge tone={item.availabilityStatus === "available" || !item.availabilityStatus ? "emerald" : item.availabilityStatus === "busy" ? "sky" : "slate"}>
+                        {item.availabilityStatus || "available"}
+                      </Badge>
                     </td>
-                    <td className="px-3 py-3">{item.stats?.totalBookings ?? "—"}</td>
                     <td className="px-3 py-3">
                       <div className="flex flex-wrap gap-1">
                         <button type="button" onClick={() => openEdit(item)} className="rounded border px-2 py-1 text-xs hover:bg-white">Edit</button>
@@ -527,6 +552,7 @@ export default function VehicleAdminPanel({
                   cityOptions={cityOptions}
                   vendorOptions={vendorOptions}
                   categoryOptions={categoryOptions}
+                  isSuperAdmin={isSuperAdmin !== false}
                 />
               </FormProvider>
             </div>
