@@ -1,17 +1,39 @@
 import { getBackendUrl } from "./seo";
 
+const FETCH_CACHE_MS = 60 * 1000;
+const fetchCache = new Map();
+const fetchInflight = new Map();
+
 async function fetchJson(path, revalidate = 300) {
-  const backend = getBackendUrl();
-  try {
-    const res = await fetch(`${backend}/api/v1${path}`, {
-      next: { revalidate }
+  const cached = fetchCache.get(path);
+  if (cached && Date.now() - cached.at < FETCH_CACHE_MS) return cached.value;
+  if (fetchInflight.has(path)) return fetchInflight.get(path);
+
+  const pending = (async () => {
+    const backend = getBackendUrl();
+    try {
+      const res = await fetch(`${backend}/api/v1${path}`, {
+        next: { revalidate }
+      });
+      if (!res.ok) return null;
+      const json = await res.json();
+      return json?.data ?? null;
+    } catch {
+      return null;
+    }
+  })()
+    .then((value) => {
+      fetchCache.set(path, { at: Date.now(), value });
+      fetchInflight.delete(path);
+      return value;
+    })
+    .catch((err) => {
+      fetchInflight.delete(path);
+      throw err;
     });
-    if (!res.ok) return null;
-    const json = await res.json();
-    return json?.data ?? null;
-  } catch {
-    return null;
-  }
+
+  fetchInflight.set(path, pending);
+  return pending;
 }
 
 export async function fetchCabById(id) {
