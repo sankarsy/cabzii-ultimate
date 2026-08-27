@@ -18,6 +18,7 @@ import { getCabVehicleName } from "../lib/catalogDisplay";
 import { formatInrCurrency } from "../lib/formatInr";
 import { withPublicEnterpriseSeo } from "../lib/vehicleEnterpriseSeo";
 import { trackEvent } from "../lib/analytics";
+import { beaconSeoEvent } from "../lib/seoAttribution";
 
 function firstParam(value) {
   if (Array.isArray(value)) return String(value[0] ?? "").trim();
@@ -138,6 +139,7 @@ export default function CabDetailPage({ cabId, initialCab = null }) {
       route: "",
       cta_location: "cab_detail"
     });
+    beaconSeoEvent("booking_started", { city: cab?.city || "", pageType: "service" });
   };
 
   return (

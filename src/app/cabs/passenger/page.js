@@ -21,6 +21,7 @@ import {
 } from "../../../lib/catalogDisplay";
 import { cabSlabForTrip, parseTripSearchParams, tripToSearchQuery } from "../../../lib/mmtTrip";
 import { trackEvent } from "../../../lib/analytics";
+import { beaconSeoEvent } from "../../../lib/seoAttribution";
 import { inputBaseClass } from "../../../lib/typography";
 
 function formatINR(n) {
@@ -126,6 +127,7 @@ function PassengerContent() {
       route: [trip.from, trip.to].filter(Boolean).join(" → "),
       cta_location: "passenger_details"
     });
+    beaconSeoEvent("booking_started", { city: trip.from || "", route: [trip.from, trip.to].filter(Boolean).join(" → ") });
     if (!isLoggedIn()) {
       saveCheckoutDraft({ pendingResume: true });
       const next = `/cabs/passenger?${searchParams.toString()}`;

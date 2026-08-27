@@ -114,6 +114,16 @@ export default function AdminEnterprise({ token, initialSection = "dashboard" })
   });
 
   const [gscRows, setGscRows] = useState([]);
+  const [gscForm, setGscForm] = useState({
+    keyword: "",
+    clicks: 0,
+    impressions: 0,
+    ctr: 0,
+    position: 0,
+    landingPage: "",
+    snapshotDate: ""
+  });
+  const [editGscId, setEditGscId] = useState("");
   const [chatLeads, setChatLeads] = useState([]);
   const [auditLogs, setAuditLogs] = useState([]);
   const [bulkEntity, setBulkEntity] = useState("faqs");
@@ -237,6 +247,40 @@ export default function AdminEnterprise({ token, initialSection = "dashboard" })
     try {
       await enterpriseFetch("seo-templates", { token, method: "POST", body: templateForm });
       setMessage("SEO template saved.");
+      loadSection();
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
+  async function saveGscRow(e) {
+    e.preventDefault();
+    setMessage("");
+    setError("");
+    try {
+      const payload = {
+        ...gscForm,
+        clicks: Number(gscForm.clicks) || 0,
+        impressions: Number(gscForm.impressions) || 0,
+        ctr: Number(gscForm.ctr) || 0,
+        position: Number(gscForm.position) || 0
+      };
+      if (editGscId) await enterpriseFetch(`search-console/${editGscId}`, { token, method: "PUT", body: payload });
+      else await enterpriseFetch("search-console", { token, method: "POST", body: payload });
+      setMessage("Search Console snapshot saved. These are imported figures, not live API data.");
+      setEditGscId("");
+      setGscForm({ keyword: "", clicks: 0, impressions: 0, ctr: 0, position: 0, landingPage: "", snapshotDate: "" });
+      loadSection();
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
+  async function deleteGscRow(id) {
+    if (!window.confirm("Delete this Search Console snapshot row?")) return;
+    try {
+      await enterpriseFetch(`search-console/${id}`, { token, method: "DELETE" });
+      setMessage("Search Console row deleted.");
       loadSection();
     } catch (err) {
       setError(err.message);
@@ -534,21 +578,105 @@ export default function AdminEnterprise({ token, initialSection = "dashboard" })
       {section === "gsc" ? (
         <div className="rounded-xl border border-slate-200 bg-white p-4">
           <h3 className="font-bold">Search Console insights</h3>
-          <p className="mt-1 text-xs text-slate-500">Import via Bulk Operations as JSON rows, or connect GSC API later.</p>
+          <p className="mt-1 text-xs text-slate-500">
+            Live GSC API is not connected. Add, edit, or delete imported snapshot rows here, or import JSON via Bulk
+            Operations. Until rows exist: GSC DATA = NOT CONNECTED.
+          </p>
+          <form onSubmit={saveGscRow} className="mt-3 grid gap-2 sm:grid-cols-2">
+            <Field label="Keyword">
+              <input className={inputCls()} required value={gscForm.keyword} onChange={(e) => setGscForm((p) => ({ ...p, keyword: e.target.value }))} />
+            </Field>
+            <Field label="Canonical landing page">
+              <input className={inputCls()} placeholder="/services/airport-taxi/chennai" value={gscForm.landingPage} onChange={(e) => setGscForm((p) => ({ ...p, landingPage: e.target.value }))} />
+            </Field>
+            <Field label="Clicks">
+              <input className={inputCls()} type="number" value={gscForm.clicks} onChange={(e) => setGscForm((p) => ({ ...p, clicks: e.target.value }))} />
+            </Field>
+            <Field label="Impressions">
+              <input className={inputCls()} type="number" value={gscForm.impressions} onChange={(e) => setGscForm((p) => ({ ...p, impressions: e.target.value }))} />
+            </Field>
+            <Field label="CTR">
+              <input className={inputCls()} type="number" step="0.01" value={gscForm.ctr} onChange={(e) => setGscForm((p) => ({ ...p, ctr: e.target.value }))} />
+            </Field>
+            <Field label="Position">
+              <input className={inputCls()} type="number" step="0.1" value={gscForm.position} onChange={(e) => setGscForm((p) => ({ ...p, position: e.target.value }))} />
+            </Field>
+            <Field label="Snapshot date">
+              <input className={inputCls()} placeholder="YYYY-MM-DD" value={gscForm.snapshotDate} onChange={(e) => setGscForm((p) => ({ ...p, snapshotDate: e.target.value }))} />
+            </Field>
+            <div className="flex items-end gap-2">
+              <button type="submit" className="rounded-lg bg-[var(--cabzii-brand)] px-4 py-2 text-sm font-semibold text-white">
+                {editGscId ? "Update row" : "Add row"}
+              </button>
+              {editGscId ? (
+                <button
+                  type="button"
+                  className="text-xs"
+                  onClick={() => {
+                    setEditGscId("");
+                    setGscForm({ keyword: "", clicks: 0, impressions: 0, ctr: 0, position: 0, landingPage: "", snapshotDate: "" });
+                  }}
+                >
+                  Cancel
+                </button>
+              ) : null}
+            </div>
+          </form>
           <div className="mt-3 overflow-x-auto">
             <table className="min-w-full text-left text-xs">
-              <thead><tr className="border-b"><th className="py-2 pr-4">Keyword</th><th className="py-2 pr-4">Clicks</th><th className="py-2 pr-4">Impressions</th><th className="py-2 pr-4">CTR</th><th className="py-2 pr-4">Position</th><th className="py-2">Landing</th></tr></thead>
+              <thead>
+                <tr className="border-b">
+                  <th className="py-2 pr-4">Keyword</th>
+                  <th className="py-2 pr-4">Clicks</th>
+                  <th className="py-2 pr-4">Impressions</th>
+                  <th className="py-2 pr-4">CTR</th>
+                  <th className="py-2 pr-4">Position</th>
+                  <th className="py-2 pr-4">Landing</th>
+                  <th className="py-2">Actions</th>
+                </tr>
+              </thead>
               <tbody>
-                {gscRows.map((r) => (
-                  <tr key={r._id} className="border-b border-slate-100">
-                    <td className="py-2 pr-4">{r.keyword}</td>
-                    <td className="py-2 pr-4">{r.clicks}</td>
-                    <td className="py-2 pr-4">{r.impressions}</td>
-                    <td className="py-2 pr-4">{r.ctr}</td>
-                    <td className="py-2 pr-4">{r.position}</td>
-                    <td className="py-2 truncate max-w-[12rem]">{r.landingPage}</td>
+                {gscRows.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="py-6 text-center text-slate-400">
+                      GSC DATA = NOT CONNECTED
+                    </td>
                   </tr>
-                ))}
+                ) : (
+                  gscRows.map((r) => (
+                    <tr key={r._id} className="border-b border-slate-100">
+                      <td className="py-2 pr-4">{r.keyword}</td>
+                      <td className="py-2 pr-4">{r.clicks}</td>
+                      <td className="py-2 pr-4">{r.impressions}</td>
+                      <td className="py-2 pr-4">{r.ctr}</td>
+                      <td className="py-2 pr-4">{r.position}</td>
+                      <td className="py-2 pr-4 truncate max-w-[12rem]">{r.landingPage}</td>
+                      <td className="py-2">
+                        <button
+                          type="button"
+                          className="mr-2 text-sky-700"
+                          onClick={() => {
+                            setEditGscId(r._id);
+                            setGscForm({
+                              keyword: r.keyword || "",
+                              clicks: r.clicks || 0,
+                              impressions: r.impressions || 0,
+                              ctr: r.ctr || 0,
+                              position: r.position || 0,
+                              landingPage: r.landingPage || "",
+                              snapshotDate: r.snapshotDate || ""
+                            });
+                          }}
+                        >
+                          Edit
+                        </button>
+                        <button type="button" className="text-rose-600" onClick={() => deleteGscRow(r._id)}>
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>

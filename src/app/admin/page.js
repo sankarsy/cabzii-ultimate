@@ -12,6 +12,7 @@ import AdminAiChat from "../../components/admin/AdminAiChat";
 import AdminCustomers from "../../components/admin/AdminCustomers";
 import AdminMasterData from "../../components/admin/AdminMasterData";
 import AdminReports from "../../components/admin/AdminReports";
+import AdminSeoRevenue from "../../components/admin/AdminSeoRevenue";
 import AdminReviews from "../../components/admin/AdminReviews";
 import AdminEnterprise from "../../components/admin/enterprise/AdminEnterprise";
 import AdminShell from "../../components/admin/AdminShell";
@@ -64,6 +65,7 @@ export default function AdminPage() {
         tab === "aiChat" ||
         tab === "customers" ||
         tab === "reports" ||
+        tab === "seoRevenue" ||
         tab === "reviews" ||
         tab === "seoPagesHub" ||
         CATALOG_TAB_KEYS.includes(tab))
@@ -145,6 +147,7 @@ export default function AdminPage() {
       items: [
         { key: "ops", label: "Operations" },
         { key: "reports", label: "Reports" },
+        { key: "seoRevenue", label: "SEO revenue", superAdminOnly: true },
         { key: "crm", label: "CRM", superAdminOnly: true },
         { key: "aiChat", label: "AI chat list", superAdminOnly: true },
         { key: "customers", label: "Customers", superAdminOnly: true },
@@ -260,6 +263,8 @@ export default function AdminPage() {
               <AdminOpsDashboard token={token} isSuperAdmin={isSuperAdmin} />
             ) : activeTab === "reports" ? (
               <AdminReports token={token} isSuperAdmin={isSuperAdmin} />
+            ) : activeTab === "seoRevenue" ? (
+              <AdminSeoRevenue token={token} />
             ) : activeTab === "crm" ? (
               <AdminCrm token={token} isSuperAdmin={isSuperAdmin} />
             ) : activeTab === "aiChat" ? (

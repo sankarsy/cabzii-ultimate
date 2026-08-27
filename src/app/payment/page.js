@@ -23,6 +23,7 @@ import {
   getDriverDisplayTitle
 } from "../../lib/catalogDisplay";
 import { trackEvent } from "../../lib/analytics";
+import { beaconSeoEvent, readSeoAttribution } from "../../lib/seoAttribution";
 
 function firstParam(value) {
   if (Array.isArray(value)) return String(value[0] ?? "").trim();
@@ -101,6 +102,7 @@ export default function PaymentPage({ searchParams }) {
       source_page: "/payment",
       cta_location: "payment"
     });
+    if (type !== "bus") beaconSeoEvent("booking_started");
     trackEvent("passenger_details_started", {
       service_type: type === "tour" ? "tour" : type === "driver" ? "driver" : type === "bus" ? "bus" : "cab",
       vehicle_id: itemId,
@@ -253,7 +255,8 @@ export default function PaymentPage({ searchParams }) {
           dropLng: tripCoords.toLng ?? undefined,
           distanceKm: tripCoords.distanceKm ?? undefined,
           durationMin: tripCoords.durationMin ?? undefined,
-          ...(appliedCoupon ? { coupon: appliedCoupon } : {})
+          ...(appliedCoupon ? { coupon: appliedCoupon } : {}),
+          ...(bookingType !== "bus" && readSeoAttribution() ? { seoAttribution: readSeoAttribution() } : {})
         })
       });
       const data = await res.json();
@@ -270,6 +273,7 @@ export default function PaymentPage({ searchParams }) {
         route: [pickup, drop].filter(Boolean).join(" → "),
         source_page: "/payment"
       });
+      if (bookingType !== "bus") beaconSeoEvent("booking_completed");
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : "Booking failed");
     } finally {
