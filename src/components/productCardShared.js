@@ -24,7 +24,7 @@ export function MetaPill({ icon, label }) {
 
 const FALLBACK_PRODUCT_IMAGE = serviceFallbackPath("cab");
 
-export function ProductImageFrame({ src, alt, badges, imageClassName = "h-[120px] w-full object-cover sm:h-[140px] md:h-[130px]" }) {
+export function ProductImageFrame({ src, alt, badges, imageClassName = "h-[110px] w-full object-cover sm:h-[128px] md:h-[118px]" }) {
   const imageSrc = optimizeImageUrl(src || FALLBACK_PRODUCT_IMAGE, 640);
   return (
     <div className="relative p-1 sm:p-1.5">

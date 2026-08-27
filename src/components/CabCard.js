@@ -204,7 +204,7 @@ export default function CabCard({ cab, onBook, bookHref }) {
         src={imageSrc}
         alt={cab.title || "Cab"}
         badges={imageBadges}
-        imageClassName="h-[110px] w-full object-cover object-top p-0 sm:h-[130px] md:h-[120px]"
+        imageClassName="h-[100px] w-full object-cover object-top p-0 sm:h-[118px] md:h-[110px]"
       />
 
       <ProductMetaBlock title={cab.title} vendor={cab.vendor}>

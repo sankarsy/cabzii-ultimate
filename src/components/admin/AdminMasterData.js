@@ -109,7 +109,7 @@ export default function AdminMasterData({ token, isSuperAdmin, initialSection = 
     setMessage("");
     try {
       const [vRes, cRes, lRes] = await Promise.all([
-        fetch("/api/vendors", { headers: { authorization: headers.authorization }, cache: "no-store" }),
+        fetch("/api/vendors?active=0", { headers: { authorization: headers.authorization }, cache: "no-store" }),
         fetch("/api/cities?active=0", { cache: "no-store" }),
         fetch("/api/locations?active=0", { cache: "no-store" })
       ]);

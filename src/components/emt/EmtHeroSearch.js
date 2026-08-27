@@ -24,8 +24,7 @@ export default function EmtHeroSearch({
   };
 
   const isHoliday = active === "holidays";
-  const isBus = active === "buses";
-  const bodyClass = isHoliday ? "emt-hero-holidays" : isBus ? "rdb-hero-body" : "emt-hero-gradient";
+  const bodyClass = isHoliday ? "emt-hero-holidays" : "emt-hero-gradient";
 
   return (
     <section className="emt-hero-section">

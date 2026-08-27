@@ -1,31 +1,44 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
 import { useHeroSearch } from "./HeroSearchContext";
 
-/** Keeps ?tab= in sync when user switches hero category tabs. */
+const VALID_TABS = new Set(["cabs", "drivers", "buses", "holidays"]);
+
+/**
+ * Mirror the hero tab in the URL without a Next.js navigation.
+ * router.replace() remounts the homepage (Suspense + searchParams) and
+ * storms /manifest.webmanifest — use history.replaceState instead.
+ */
 export default function HeroTabUrlSync() {
   const hero = useHeroSearch();
-  const router = useRouter();
-  const searchParams = useSearchParams();
   const skipInitial = useRef(true);
 
   useEffect(() => {
     const tab = hero?.activeTab;
-    if (!tab) return;
+    if (!tab || !VALID_TABS.has(tab) || typeof window === "undefined") return;
 
     if (skipInitial.current) {
       skipInitial.current = false;
       return;
     }
 
-    const params = new URLSearchParams(searchParams?.toString() || "");
-    if (params.get("tab") === tab) return;
-    params.set("tab", tab);
-    const qs = params.toString();
-    router.replace(qs ? `/?${qs}` : "/", { scroll: false });
-  }, [hero?.activeTab, router, searchParams]);
+    const url = new URL(window.location.href);
+    const current = url.searchParams.get("tab");
+    if (tab === "cabs") {
+      if (!current) return;
+      url.searchParams.delete("tab");
+    } else if (current === tab) {
+      return;
+    } else {
+      url.searchParams.set("tab", tab);
+    }
+
+    const next = `${url.pathname}${url.search}${url.hash}`;
+    const now = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+    if (now === next) return;
+    window.history.replaceState(window.history.state, "", next);
+  }, [hero?.activeTab]);
 
   return null;
 }

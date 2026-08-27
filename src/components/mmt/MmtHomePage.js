@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import EmtHeroSearch from "../emt/EmtHeroSearch";
 import EmtWhyChooseUs from "../emt/EmtWhyChooseUs";
@@ -12,7 +12,7 @@ import MmtHomeCatalogSection, { MmtHomeCatalogScroll, MmtHomeCatalogScrollItem }
 import CallDriverHomeSection from "../home/CallDriverHomeSection";
 import FaqSection from "../seo/FaqSection";
 import SocialProofTicker from "../conversion/SocialProofTicker";
-import { HeroSearchProvider } from "../emt/HeroSearchContext";
+import { HeroSearchProvider, useHeroSearch } from "../emt/HeroSearchContext";
 import HeroTabUrlSync from "../emt/HeroTabUrlSync";
 import { HOME_PAGE_FAQS } from "../../lib/seo/content";
 import { sortBySelectedCity } from "../../lib/locationPriority";
@@ -45,103 +45,103 @@ function sortCabsForHome(list) {
   });
 }
 
+function ApplyLandingTab() {
+  const searchParams = useSearchParams();
+  const hero = useHeroSearch();
+  const applied = useRef(false);
+
+  useEffect(() => {
+    if (applied.current) return;
+    applied.current = true;
+    const tab = resolveHeroTab(searchParams.get("tab"));
+    if (tab !== "cabs") hero?.setActiveTab?.(tab);
+  }, [searchParams, hero]);
+
+  return null;
+}
+
 function HomePageBody({
   displayCity,
   cabs,
   loadingCabs,
   cabsError,
-  heroTab,
   initialCabTrip,
   initialDriverTrip
 }) {
   return (
-    <HeroSearchProvider defaultTab={heroTab}>
-      <Suspense fallback={null}>
-        <HeroTabUrlSync />
-      </Suspense>
-      <MmtLayout>
-        <EmtHeroSearch
-          defaultCity={displayCity}
-          defaultTab={heroTab}
-          initialCabTrip={initialCabTrip}
-          initialDriverTrip={initialDriverTrip}
-        />
-        {/* 1. Trust signals right under the search — reassure before anything else */}
-        <SocialProofTicker />
-        <TrustStrip />
+    <MmtLayout>
+      <EmtHeroSearch
+        defaultCity={displayCity}
+        initialCabTrip={initialCabTrip}
+        initialDriverTrip={initialDriverTrip}
+      />
+      <SocialProofTicker />
+      <TrustStrip />
 
-        {/* Photo cards — Exclusive Offers, city services, popular routes */}
-        <HomeShowcaseCarousel section="offers" />
-        <HomeShowcaseCarousel section="services" />
-        <HomeShowcaseCarousel section="routes" />
+      <HomeShowcaseCarousel section="offers" />
+      <HomeShowcaseCarousel section="services" />
+      <HomeShowcaseCarousel section="routes" />
 
-        {/* Live inventory — actual cabs & drivers to pick from */}
-        {cabsError ? (
-          <p className="section-shell text-sm text-rose-700">{cabsError}</p>
-        ) : null}
+      {cabsError ? (
+        <p className="section-shell text-sm text-rose-700">{cabsError}</p>
+      ) : null}
 
-        <MmtHomeCatalogSection
-          eyebrow="Our fleet"
-          title="Top cabs for you"
-          subtitle={`Dzire, Ertiga, Innova & Tempo taxi cars · ${DEFAULT_HQ_CITY}`}
-          viewAllHref="/cabs"
-          viewAllLabel="View all cabs"
-          loading={loadingCabs}
-          loadingLabel="Loading cabs…"
-          isEmpty={!loadingCabs && cabs.length === 0}
-          emptyMessage="No cabs yet. Start the backend and add listings in admin."
-        >
-          <MmtHomeCatalogScroll>
-            {cabs.map((cab) => (
-              <MmtHomeCatalogScrollItem key={String(cab._id ?? cab.id)}>
-                <MmtCabResultCard cab={cab} layout="card" catalogMode displayCity={cab.city || DEFAULT_HQ_CITY} />
-              </MmtHomeCatalogScrollItem>
-            ))}
-          </MmtHomeCatalogScroll>
-        </MmtHomeCatalogSection>
+      <MmtHomeCatalogSection
+        eyebrow="Our fleet"
+        title="Top cabs for you"
+        subtitle={`Dzire, Ertiga, Innova & Tempo taxi cars · ${DEFAULT_HQ_CITY}`}
+        viewAllHref="/cabs"
+        viewAllLabel="View all cabs"
+        loading={loadingCabs}
+        loadingLabel="Loading cabs…"
+        isEmpty={!loadingCabs && cabs.length === 0}
+        emptyMessage="No cabs yet. Start the backend and add listings in admin."
+      >
+        <MmtHomeCatalogScroll>
+          {cabs.map((cab) => (
+            <MmtHomeCatalogScrollItem key={String(cab._id ?? cab.id)}>
+              <MmtCabResultCard cab={cab} layout="card" catalogMode displayCity={cab.city || DEFAULT_HQ_CITY} />
+            </MmtHomeCatalogScrollItem>
+          ))}
+        </MmtHomeCatalogScroll>
+      </MmtHomeCatalogSection>
 
-        <CallDriverHomeSection />
+      <CallDriverHomeSection />
+      <EmtWhyChooseUs />
+      <HomeBlogTeasers />
+      <HomeSeoDiscover />
 
-        {/* Why us — proof & credibility before the final push */}
-        <EmtWhyChooseUs />
-
-        {/* Content — blog and FAQ */}
-        <HomeBlogTeasers />
-
-        <HomeSeoDiscover />
-
-        <section className="border-t border-slate-200 bg-white py-8 sm:py-10">
-          <div className="section-shell">
-            <FaqSection
-              eyebrow="Help"
-              title="Frequently asked questions"
-              subtitle="Quick answers about booking on cabzii.in."
-              faqs={HOME_PAGE_FAQS}
-              scrollable
-              scrollMaxClass="max-h-[min(18rem,48vh)] sm:max-h-[min(20rem,50vh)]"
-            />
-          </div>
-        </section>
-      </MmtLayout>
-    </HeroSearchProvider>
+      <section className="border-t border-slate-200 bg-white py-8 sm:py-10">
+        <div className="section-shell">
+          <FaqSection
+            eyebrow="Help"
+            title="Frequently asked questions"
+            subtitle="Quick answers about booking on cabzii.in."
+            faqs={HOME_PAGE_FAQS}
+            scrollable
+            scrollMaxClass="max-h-[min(18rem,48vh)] sm:max-h-[min(20rem,50vh)]"
+          />
+        </div>
+      </section>
+    </MmtLayout>
   );
 }
 
 function HomePageWithSearchParams(props) {
   const searchParams = useSearchParams();
-  const tabParam = searchParams.get("tab");
-  const heroTab = resolveHeroTab(tabParam);
   const hasFrom = Boolean(searchParams.get("from") || searchParams.get("pickup"));
   const cabTrip = parseTripSearchParams(searchParams);
   const driverTrip = parseDriverTripSearchParams(searchParams);
 
   return (
-    <HomePageBody
-      {...props}
-      heroTab={heroTab}
-      initialCabTrip={hasFrom && isValidTripSearch(cabTrip) ? cabTrip : null}
-      initialDriverTrip={hasFrom && isValidDriverTripSearch(driverTrip) ? driverTrip : null}
-    />
+    <>
+      <ApplyLandingTab />
+      <HomePageBody
+        {...props}
+        initialCabTrip={hasFrom && isValidTripSearch(cabTrip) ? cabTrip : null}
+        initialDriverTrip={hasFrom && isValidDriverTripSearch(driverTrip) ? driverTrip : null}
+      />
+    </>
   );
 }
 
@@ -166,7 +166,6 @@ export default function MmtHomePage() {
     const q = new URLSearchParams({
       limit: String(HOME_CABS_LIMIT),
       page: "1",
-      /* Cabzii HQ inventory first — Chennai */
       priorityCity: DEFAULT_HQ_CITY
     });
 
@@ -191,12 +190,15 @@ export default function MmtHomePage() {
   }, []);
 
   return (
-    <Suspense
-      fallback={
-        <HomePageBody {...sharedProps} heroTab="cabs" initialCabTrip={null} initialDriverTrip={null} />
-      }
-    >
-      <HomePageWithSearchParams {...sharedProps} />
-    </Suspense>
+    <HeroSearchProvider defaultTab="cabs">
+      <HeroTabUrlSync />
+      <Suspense
+        fallback={
+          <HomePageBody {...sharedProps} initialCabTrip={null} initialDriverTrip={null} />
+        }
+      >
+        <HomePageWithSearchParams {...sharedProps} />
+      </Suspense>
+    </HeroSearchProvider>
   );
 }

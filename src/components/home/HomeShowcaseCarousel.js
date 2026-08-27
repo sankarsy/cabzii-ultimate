@@ -81,7 +81,7 @@ export default function HomeShowcaseCarousel({ section = "offers" }) {
       <div className="relative">
         <div
           ref={trackRef}
-          className="offers-scroll flex gap-4 overflow-x-auto overscroll-x-contain pb-1 pt-1 snap-x snap-mandatory scroll-smooth"
+          className="offers-scroll cabzii-scroll-bleed flex gap-3 overflow-x-auto overscroll-x-contain snap-x snap-mandatory scroll-smooth sm:gap-4"
           role="region"
           aria-label={copy.ariaLabel}
           tabIndex={0}
@@ -93,9 +93,9 @@ export default function HomeShowcaseCarousel({ section = "offers" }) {
               <Link
                 key={o._id || `${section}-${o.tag}-${o.title}`}
                 href={o.href || "/cabs"}
-                className="group min-w-[min(280px,85vw)] max-w-[320px] shrink-0 snap-start overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[var(--emt-shadow-card)] transition-all duration-200 hover:-translate-y-1 hover:shadow-[var(--emt-shadow-hover)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cabzii-brand)] focus-visible:ring-offset-2 lg:min-w-[calc(25%-0.75rem)] lg:max-w-[calc(25%-0.75rem)]"
+                className="cabzii-hscroll-card group shrink-0 snap-start overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[var(--emt-shadow-card)] transition-all duration-200 sm:min-w-[16.25rem] sm:w-[16.25rem] sm:max-w-[18.75rem] sm:hover:-translate-y-1 sm:hover:shadow-[var(--emt-shadow-hover)] lg:min-w-[calc(25%-0.75rem)] lg:w-[calc(25%-0.75rem)] lg:max-w-[calc(25%-0.75rem)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cabzii-brand)] focus-visible:ring-offset-2"
               >
-                <div className={`relative flex min-h-[9.5rem] flex-col overflow-hidden bg-linear-to-br ${o.color || "from-[var(--cabzii-brand)] to-blue-500"} p-4 text-white`}>
+                <div className={`relative flex min-h-[8.5rem] flex-col overflow-hidden bg-linear-to-br ${o.color || "from-[var(--cabzii-brand)] to-blue-500"} p-4 text-white`}>
                   {o.image ? (
                     <>
                       <Image

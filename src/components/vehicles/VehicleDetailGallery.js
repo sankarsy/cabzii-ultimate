@@ -50,7 +50,7 @@ export default function VehicleDetailGallery({ cab }) {
 
   if (!src) {
     return (
-      <div className="flex h-40 items-center justify-center rounded-xl border border-slate-200 bg-slate-100 text-center text-[11px] text-slate-500 sm:h-44">
+      <div className="flex h-36 items-center justify-center rounded-xl border border-slate-200 bg-slate-100 text-center text-[11px] text-slate-500 sm:h-40">
         {shortAlt}
       </div>
     );
@@ -72,7 +72,7 @@ export default function VehicleDetailGallery({ cab }) {
             if (!rawSrc) return;
             setBroken((prev) => (prev[rawSrc] ? prev : { ...prev, [rawSrc]: true }));
           }}
-          className="h-40 w-full object-cover object-center sm:h-44 lg:h-48"
+          className="h-36 w-full object-contain object-center sm:h-40 lg:h-44"
         />
         {images.length > 1 ? (
           <div className="absolute bottom-2 right-2 rounded-full bg-black/60 px-2 py-0.5 text-[10px] font-semibold text-white sm:bottom-3 sm:right-3 sm:px-2.5 sm:py-1 sm:text-[11px]">

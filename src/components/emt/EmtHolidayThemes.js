@@ -39,7 +39,7 @@ function CategoryCard({ cat }) {
   return (
     <Link
       href={`/holidays?category=${cat.id}`}
-      className="group min-w-[min(240px,78vw)] max-w-[280px] shrink-0 snap-start overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cabzii-brand)] focus-visible:ring-offset-2 lg:min-w-[calc(25%-0.75rem)] lg:max-w-[calc(25%-0.75rem)]"
+      className="cabzii-hscroll-card group shrink-0 snap-start overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-all duration-200 sm:min-w-[16.25rem] sm:w-[16.25rem] sm:max-w-[18.75rem] sm:hover:-translate-y-0.5 sm:hover:shadow-md lg:min-w-[calc(25%-0.75rem)] lg:w-[calc(25%-0.75rem)] lg:max-w-[calc(25%-0.75rem)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cabzii-brand)] focus-visible:ring-offset-2"
     >
       <div className={`relative flex min-h-[7rem] flex-col justify-end overflow-hidden bg-linear-to-br ${color} p-3 text-white sm:min-h-[8rem] sm:p-3.5`}>
         {imageOk ? (
@@ -125,7 +125,7 @@ export default function EmtHolidayThemes() {
 
       <div
         ref={trackRef}
-        className="offers-scroll flex gap-3 overflow-x-auto overscroll-x-contain pb-1 pt-1 snap-x snap-mandatory scroll-smooth sm:gap-4"
+        className="offers-scroll cabzii-scroll-bleed flex gap-3 overflow-x-auto overscroll-x-contain snap-x snap-mandatory scroll-smooth sm:gap-4"
         role="region"
         aria-label="Tour package categories"
         tabIndex={0}

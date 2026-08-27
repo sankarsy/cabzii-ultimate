@@ -12,7 +12,7 @@ function BlogTile({ post }) {
   return (
     <Link
       href={href}
-      className="cabzii-tap group flex h-full w-[18rem] shrink-0 flex-col rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-[var(--cabzii-brand)]/30 hover:shadow-md sm:w-auto"
+      className="cabzii-hscroll-card cabzii-tap group flex h-full shrink-0 flex-col rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition sm:w-auto sm:hover:-translate-y-0.5 sm:hover:border-[var(--cabzii-brand)]/30 sm:hover:shadow-md"
     >
       <span className="inline-flex w-fit rounded-full bg-blue-50 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wide text-[var(--cabzii-brand)]">
         {post.category || "Travel guide"}

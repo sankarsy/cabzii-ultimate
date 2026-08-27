@@ -184,13 +184,13 @@ function PackageSection({ visiblePackages, selectedPackageId, onSelectPackage })
         className={
           few
             ? "grid grid-cols-2 gap-2 pt-2"
-            : "scroll-x-touch -mx-0.5 flex gap-2 overflow-x-auto pb-1.5 pt-2 [-ms-overflow-style:none] [scrollbar-width:none] sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-2.5 sm:overflow-visible sm:pb-0 sm:pt-1 [&::-webkit-scrollbar]:hidden"
+            : "scroll-x-touch -mx-1 flex gap-2 overflow-x-auto px-1 pb-1.5 pt-2 [-ms-overflow-style:none] [scrollbar-width:none] sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-2.5 sm:overflow-visible sm:px-0 sm:pb-0 sm:pt-1 [&::-webkit-scrollbar]:hidden"
         }
       >
         {visiblePackages.map((pkg) => (
           <div
             key={pkg.id}
-            className={few ? "min-w-0" : "flex w-[9.5rem] shrink-0 snap-start sm:w-auto sm:min-w-0"}
+            className={few ? "min-w-0" : "flex w-[min(9.5rem,calc(50%-0.35rem))] max-w-[9.5rem] shrink-0 snap-start sm:w-auto sm:max-w-none sm:min-w-0"}
           >
             <PackageOptionCard
               pkg={pkg}

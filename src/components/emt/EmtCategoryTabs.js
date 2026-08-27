@@ -4,6 +4,7 @@ import { HERO_TABS } from "../../lib/emt/constants";
 import { cn } from "../../lib/emt/cn";
 import { HOME_CATEGORY_ICON_STYLES } from "../icons";
 import { HERO_TAB_ICONS } from "../icons/heroIcons";
+import { useEffect, useRef } from "react";
 
 /* Light, colourful icon tones for the shell tabs (no dark slate icons) */
 const SHELL_ICON_TONES = {
@@ -23,9 +24,24 @@ export default function EmtCategoryTabs({
   variant = "shell"
 }) {
   const isShell = variant === "shell" || variant === "nav";
+  const scrollerRef = useRef(null);
+  const skipScroll = useRef(true);
+
+  useEffect(() => {
+    if (skipScroll.current) {
+      skipScroll.current = false;
+      return;
+    }
+    const root = scrollerRef.current;
+    if (!root) return;
+    const active = root.querySelector("[aria-pressed='true']");
+    if (!active || typeof active.scrollIntoView !== "function") return;
+    active.scrollIntoView({ inline: "nearest", block: "nearest", behavior: "smooth" });
+  }, [activeTab]);
 
   return (
     <div
+      ref={scrollerRef}
       className={`emt-category-scroll flex min-w-0 gap-0 overflow-x-auto px-1 sm:px-3 ${isShell ? "emt-shell-category-scroll" : ""} ${className}`}
     >
       {HERO_TABS.map((tab) => {
@@ -43,8 +59,9 @@ export default function EmtCategoryTabs({
             key={tab.id}
             type="button"
             onClick={(e) => {
+              e.preventDefault();
               e.stopPropagation();
-              setActiveTab(tab.id);
+              if (!isActive) setActiveTab(tab.id);
             }}
             aria-pressed={isActive}
             className={cn(

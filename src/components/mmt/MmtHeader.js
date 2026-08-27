@@ -10,6 +10,7 @@ import { clearSession, isLoggedIn } from "../../lib/auth";
 import { useScrollHeader } from "../../lib/useScrollHeader";
 import HeaderSearchBar from "./HeaderSearchBar";
 import MobileSideNav from "../layout/MobileSideNav";
+import { useHeroSearch } from "../emt/HeroSearchContext";
 
 function SiteHeader({ loggedIn, logout, menuOpen, setMenuOpen, pathname }) {
   const onLoginPage = pathname === "/login" || pathname.startsWith("/login/");
@@ -118,7 +119,8 @@ export default function MmtHeader() {
   };
 
   const showHeader = headerVisible || menuOpen;
-  const activeHeroTab = searchParams.get("tab") || "cabs";
+  const hero = useHeroSearch();
+  const activeHeroTab = hero?.activeTab || searchParams.get("tab") || "cabs";
   const onLoginPage = pathname === "/login" || pathname.startsWith("/login/");
 
   return (

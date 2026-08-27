@@ -23,19 +23,19 @@ export default function CatalogVehicleCard({
   onNavigate
 }) {
   return (
-    <article className="group overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[var(--emt-shadow-card)] transition-all duration-200 hover:-translate-y-1 hover:shadow-[var(--emt-shadow-hover)] flex h-full min-w-0 flex-col">
+    <article className="group flex h-full min-w-0 max-w-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[var(--emt-shadow-card)] transition-all duration-200 sm:hover:-translate-y-1 sm:hover:shadow-[var(--emt-shadow-hover)]">
       <Link
         href={href}
         onClick={onNavigate}
         className="flex h-full min-w-0 flex-col focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cabzii-brand)] focus-visible:ring-offset-2"
       >
         {/* Banner — vehicle / driver photo, same height as the offer cards */}
-        <div className="relative h-36 w-full shrink-0 overflow-hidden bg-slate-100 sm:h-40">
+        <div className="relative h-32 w-full shrink-0 overflow-hidden bg-slate-50 sm:h-36">
           <CatalogCardImage
             src={imageSrc}
             alt={imageAlt}
             product={imageProduct}
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            className="object-contain p-1.5 transition-transform duration-300 sm:group-hover:scale-105"
             objectPosition={imageObjectPosition || "center"}
             sizes="(max-width:640px) 100vw, (max-width:1024px) 50vw, 25vw"
           />

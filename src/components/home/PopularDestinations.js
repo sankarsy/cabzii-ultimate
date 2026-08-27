@@ -80,7 +80,7 @@ export default function PopularDestinations() {
             <Link
               key={d.name}
               href={d.href}
-              className="cabzii-tap group w-[16rem] shrink-0 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-[var(--cabzii-brand)]/30 hover:shadow-md sm:w-auto"
+              className="cabzii-hscroll-card cabzii-tap group shrink-0 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition sm:w-auto sm:hover:-translate-y-0.5 sm:hover:border-[var(--cabzii-brand)]/30 sm:hover:shadow-md"
             >
               <div className="relative h-32 overflow-hidden bg-slate-100 sm:h-36">
                 <img
