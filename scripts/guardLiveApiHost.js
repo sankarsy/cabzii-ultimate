@@ -19,14 +19,28 @@ if (fs.existsSync(envPath)) {
 }
 
 const protect = /^(1|true|yes)$/i.test(String(process.env.CABZII_PROTECT_LIVE_API || "").trim());
-if (protect) {
+const allowLocalUi = process.argv.includes("--allow-local-ui");
+const isBuild = String(process.env.npm_lifecycle_event || "").includes("build");
+
+if (protect && (isBuild || !allowLocalUi)) {
   console.error(
     [
       "Refusing next dev/build on the live Cabzii API host.",
       "This PC serves https://api.cabzii.in (port 8000).",
       "Frontend SSG belongs on Vercel / CI, not this machine.",
+      "For a local UI preview on this PC only: npm run dev:local",
       "Unset CABZII_PROTECT_LIVE_API only on a dedicated frontend machine."
     ].join("\n")
   );
   process.exit(1);
+}
+
+if (protect && allowLocalUi) {
+  console.warn(
+    [
+      "Local UI preview on the live API host.",
+      "CABZII_PROTECT_LIVE_API stays on — catalog SSG will not storm port 8000.",
+      "Do not run next build. Do not open /sitemap.xml. Open http://localhost:3000"
+    ].join("\n")
+  );
 }

@@ -3,11 +3,11 @@ import ActingDriverHubSeo from "../../components/seo/ActingDriverHubSeo";
 import { breadcrumbJsonLd, buildPageMetadata } from "../../lib/seo";
 
 export const metadata = buildPageMetadata({
-  title: "Acting Driver — Chauffeur on Hire for Your Car | Cabzii",
+  title: "Acting Driver | Hire a Driver for Your Own Car | Cabzii",
   description:
-    "Acting driver service on Cabzii — book a chauffeur for your own car by city. Hourly, daily and outstation packages. Cabzii assigns a driver after you book.",
+    "Acting driver and call driver service on Cabzii — a professional chauffeur for your own car. Hourly, daily, airport and outstation packages. Book Call Driver after you pick a city.",
   path: "/acting-driver",
-  keywords: ["acting driver", "call driver", "chauffeur on hire", "driver for own car", "cabzii"]
+  keywords: ["acting driver", "call driver", "driver on hire", "driver for own car", "cabzii"]
 });
 
 export default function ActingDriverIndexPage() {
@@ -16,7 +16,6 @@ export default function ActingDriverIndexPage() {
       <JsonLd
         data={breadcrumbJsonLd([
           { name: "Home", path: "/" },
-          { name: "Call Driver", path: "/call-driver" },
           { name: "Acting driver", path: "/acting-driver" }
         ])}
       />

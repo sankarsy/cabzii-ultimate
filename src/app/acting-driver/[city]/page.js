@@ -7,13 +7,14 @@ import {
   buildPageMetadata,
   cityBySlug,
   cityGeo,
-  cityDriverSearchJsonLd,
+  actingDriverServiceJsonLd,
   faqFromPairs,
   getCityFaqs,
   localBusinessJsonLd,
   tunedActingDriverDescription,
   tunedActingDriverTitle,
-  tunedActingDriverKeywords
+  tunedActingDriverKeywords,
+  classifyCityHub
 } from "../../../lib/seo";
 
 import { fetchSeoCityPage } from "../../../lib/serverCatalog";
@@ -33,7 +34,8 @@ export async function generateMetadata({ params }) {
       title: "Acting Driver",
       description: "Acting driver hire on Cabzii.",
       path: `/acting-driver/${params.city}`,
-      noindex: true
+      noindex: true,
+      follow: false
     });
   }
   const path = `/acting-driver/${city.slug}`;
@@ -42,11 +44,14 @@ export async function generateMetadata({ params }) {
     ? cms.seo.split(",").map((k) => k.trim()).filter(Boolean)
     : tunedActingDriverKeywords(city);
   const cmsImage = resolveMediaUrl(cms?.image || cms?.banner || "");
+  const indexPolicy = classifyCityHub(city.slug, "acting-driver");
   return buildPageMetadata({
     title: cms?.seoTitle || tunedActingDriverTitle(city),
     description: cms?.seoDescription || tunedActingDriverDescription(city),
     path,
     keywords,
+    noindex: !indexPolicy.indexable,
+    follow: indexPolicy.follow,
     ...(cmsImage ? { image: cmsImage, imageAlt: `Acting driver in ${city.name}` } : {})
   });
 }
@@ -57,21 +62,16 @@ export default async function ActingDriverCityPage({ params }) {
 
   const path = `/acting-driver/${city.slug}`;
   const cms = await fetchSeoCityPage("acting-driver", city.slug);
-  const title = cms?.seoTitle || tunedActingDriverTitle(city);
   const description = cms?.seoDescription || tunedActingDriverDescription(city);
   const faqs = getCityFaqs(city, "driver");
   const jsonLd = [
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
-      { name: "Call Driver", path: "/call-driver" },
-      { name: `Acting driver ${city.name}`, path }
+      { name: "Acting driver", path: "/acting-driver" },
+      { name: `Acting Driver in ${city.name}`, path }
     ]),
-    cityDriverSearchJsonLd(city, {
-      productName: title,
-      description,
-      urlPath: path
-    }),
-    localBusinessJsonLd(city.name, city.state, path, cityGeo(city.slug)),
+    actingDriverServiceJsonLd(city, { description, urlPath: path }),
+    ...(city.slug === "chennai" ? [localBusinessJsonLd(city.name, city.state, path, cityGeo(city.slug))] : []),
     faqFromPairs(faqs)
   ];
 

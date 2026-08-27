@@ -4,6 +4,8 @@ import { TariffTerms } from "../../components/TariffTerms";
 import { BusTariffTable, CarTariffTable, VanTariffTable } from "../../components/tariff/PublishedTariffTables";
 import { BUS_TARIFF, CAR_TARIFF, TARIFF_FAQS, VAN_TARIFF } from "../../lib/publishedTariff";
 import { faqFromPairs, productJsonLd } from "../../lib/seo";
+import ChennaiClusterLinks from "../../components/seo/ChennaiClusterLinks";
+import SeoPageView from "../../components/seo/SeoPageView";
 
 export const metadata = marketingMetadata({
   title: "Cab Rental Tariff in Chennai | Car, Tempo Traveller & Mini Bus Rates | Cabzii",
@@ -44,13 +46,16 @@ export default function TariffPage() {
       faqs={TARIFF_FAQS}
       jsonLdExtra={jsonLd}
     >
+      <SeoPageView pageType="tariff" city="chennai" />
       <p>
         Book with the published Cabzii rate card. Compare packages, then{" "}
         <Link href="/cabs">search live cabs</Link> or{" "}
         <Link href="/cab-booking/chennai">book a cab in Chennai</Link>. Vehicle model is subject to
         availability.
       </p>
-
+      <div className="not-prose my-6">
+        <ChennaiClusterLinks title="Book these Chennai services" excludeHref="/tariff" />
+      </div>
       <h2>Car rental tariff</h2>
       <p>
         Sedan, MUV and SUV packages for local Chennai and outstation trips. Outstation cars have a 250 km

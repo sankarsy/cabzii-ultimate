@@ -4,7 +4,11 @@ import FaqSection from "./seo/FaqSection";
 import SerpRichBar from "./seo/SerpRichBar";
 import BookingCtaBar from "./seo/BookingCtaBar";
 import RelatedSeoLinks from "./seo/RelatedSeoLinks";
-import { peerCitiesForHub, isTamilNaduCity } from "../lib/seo";
+import PopularFleetSeo from "./seo/PopularFleetSeo";
+import ChennaiClusterLinks from "./seo/ChennaiClusterLinks";
+import SeoPageView from "./seo/SeoPageView";
+import { peerCitiesForHub, isTamilNaduCity, isPrimaryFocusCity } from "../lib/seo";
+import { classifyRoute } from "../lib/seo/indexation";
 import { getCityFaqs } from "../lib/seo/content";
 import { cityHasCommercialAirport } from "../lib/seo/airports";
 import { formatSerpPrice } from "../lib/seo/serpRichData";
@@ -14,10 +18,8 @@ import {
   tunedActingDriverH1
 } from "../lib/seo/metadataTuning";
 import { servicesForCityHub } from "../lib/seo/programmaticMeta";
-import { routeToCabSearchHref } from "../lib/routeTrip";
 import { routesForCity } from "../lib/seo/routes";
 import { servicePath } from "../lib/seo/services";
-import PopularFleetSeo from "./seo/PopularFleetSeo";
 
 export default function CitySeoPage({
   city,
@@ -33,7 +35,10 @@ export default function CitySeoPage({
 
   const hubPath = isCab ? `/cab-booking/${city.slug}` : `/acting-driver/${city.slug}`;
   const faqs = getCityFaqs(city, isCab ? "cab" : "driver");
-  const cityRoutes = routesForCity(city.slug).slice(0, 8);
+  const cityRoutes = routesForCity(city.slug)
+    .filter((route) => classifyRoute(route).indexable)
+    .sort((a, b) => classifyRoute(b).commercialScore - classifyRoute(a).commercialScore)
+    .slice(0, 8);
   const topServices = isCab ? servicesForCityHub(city.slug, 8) : servicesForCityHub(city.slug, 4);
   const bookHref = isCab
     ? `/cabs?city=${encodeURIComponent(city.slug)}`
@@ -41,6 +46,10 @@ export default function CitySeoPage({
 
   return (
     <article className="section-shell cabzii-seo-landing">
+        <SeoPageView
+          pageType={isCab ? "cab-booking" : "acting-driver"}
+          city={city.slug}
+        />
         <Breadcrumbs
           items={
             isCab
@@ -51,8 +60,8 @@ export default function CitySeoPage({
                 ]
               : [
                   { name: "Home", path: "/" },
-                  { name: "Call Driver", path: "/call-driver" },
-                  { name: `Acting driver ${city.name}`, path: hubPath }
+                  { name: "Acting driver", path: "/acting-driver" },
+                  { name: `Acting Driver in ${city.name}`, path: hubPath }
                 ]
           }
         />
@@ -62,12 +71,24 @@ export default function CitySeoPage({
         </p>
         <h1>{title}</h1>
         <p className="cabzii-seo-lead">{lead}</p>
+        {!isPrimaryFocusCity(city) ? (
+          <p className="mt-2 text-[11px] text-slate-600 sm:text-xs">
+            Availability in {city.name} is confirmed when you search. Quotes depend on partner vehicles on your travel date.
+          </p>
+        ) : null}
 
         <BookingCtaBar
           variant="compact"
           bookHref={bookHref}
           bookLabel={isCab ? `Book cab in ${city.name}` : `Book a driver in ${city.name}`}
         />
+
+        {city.slug === "chennai" ? (
+          <ChennaiClusterLinks
+            title={isCab ? "All Cabzii services in Chennai" : "Chennai cabs, airport, routes and tariff"}
+            excludeHref={hubPath}
+          />
+        ) : null}
 
         {isCab ? (
           <SerpRichBar
@@ -76,7 +97,7 @@ export default function CitySeoPage({
             priceLabel={formatSerpPrice(priceFrom || 1200)}
             badges={[
               { label: "Vehicles: Dzire, Amaze, Ertiga, Innova Crysta" },
-              { label: "Service: 24×7 Available" },
+              { label: "OTP booking" },
               { label: `City: ${city.name}` }
             ]}
           />
@@ -184,7 +205,7 @@ export default function CitySeoPage({
               {cityRoutes.map((route) => (
                 <li key={route.slug}>
                   <Link
-                    href={routeToCabSearchHref(route)}
+                    href={`/routes/${route.slug}`}
                     className="inline-block rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:text-[var(--cabzii-brand)]"
                   >
                     {route.fromCity.name} → {route.toCity.name}
@@ -201,7 +222,7 @@ export default function CitySeoPage({
           </h2>
           <ul className="mt-1.5 list-disc space-y-1 pl-4 text-[11px] text-slate-700 sm:text-xs">
             <li>Instant online booking with clear fare breakdown</li>
-            <li>Verified vendors and professional drivers in {city.name}</li>
+            <li>Professional partner drivers in {city.name}</li>
             <li>
               {cityHasCommercialAirport(city.slug)
                 ? "Outstation, airport, local and tour options in one place"

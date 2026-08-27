@@ -14,7 +14,8 @@ import {
   tunedCabBookingDescription,
   tunedCabBookingKeywords,
   tunedCabBookingTitle,
-  CITY_CAB_PRICE_RANGE
+  CITY_CAB_PRICE_RANGE,
+  classifyCityHub
 } from "../../../lib/seo";
 import { getCityLandingBody } from "../../../lib/seo/landingContent";
 import { fetchSeoCityPage } from "../../../lib/serverCatalog";
@@ -35,7 +36,8 @@ export async function generateMetadata({ params }) {
       title: "Cab Booking",
       description: "City cab booking page on Cabzii.",
       path: `/cab-booking/${params.city}`,
-      noindex: true
+      noindex: true,
+      follow: false
     });
   }
   const path = `/cab-booking/${city.slug}`;
@@ -44,11 +46,14 @@ export async function generateMetadata({ params }) {
     ? cms.seo.split(",").map((k) => k.trim()).filter(Boolean)
     : tunedCabBookingKeywords(city);
   const cmsImage = resolveMediaUrl(cms?.image || cms?.banner || "");
+  const indexPolicy = classifyCityHub(city.slug, "cab-booking");
   return buildPageMetadata({
     title: cms?.seoTitle || tunedCabBookingTitle(city),
     description: cms?.seoDescription || tunedCabBookingDescription(city),
     path,
     keywords,
+    noindex: !indexPolicy.indexable,
+    follow: indexPolicy.follow,
     ...(cmsImage ? { image: cmsImage, imageAlt: `Cab booking in ${city.name}` } : {})
   });
 }
@@ -77,7 +82,7 @@ export default async function CabBookingCityPage({ params }) {
       priceHigh: CITY_CAB_PRICE_RANGE.high,
       reviewStats
     }),
-    localBusinessJsonLd(city.name, city.state, path, cityGeo(city.slug)),
+    ...(city.slug === "chennai" ? [localBusinessJsonLd(city.name, city.state, path, cityGeo(city.slug))] : []),
     faqFromPairs(faqs)
   ];
 

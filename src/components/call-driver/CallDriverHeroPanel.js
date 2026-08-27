@@ -82,7 +82,7 @@ export default function CallDriverHeroPanel() {
 
       <div className="mt-3 flex justify-end sm:mt-4">
         <p className="rounded-md border border-white/40 bg-white/10 px-3 py-1.5 text-xs font-bold text-white backdrop-blur-sm">
-          ✓ Trusted by 50K+ travellers
+          OTP booking · fare shown before you confirm
         </p>
       </div>
     </div>

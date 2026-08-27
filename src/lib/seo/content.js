@@ -1,5 +1,6 @@
 import { SEO_SERVICES } from "./services";
 import { airportInfoForCity, cityHasCommercialAirport } from "./airports";
+import { CHENNAI_CAB_FAQS, CHENNAI_DRIVER_FAQS } from "./chennaiCluster";
 
 /** Homepage visible FAQs — must match faqJsonLd() for rich results. */
 export const HOME_PAGE_FAQS = [
@@ -72,10 +73,10 @@ export const HOME_PAGE_FAQS = [
 export function getCityFaqs(city, variant = "cab") {
   const name = city.name;
   if (variant === "driver") {
+    if (city.slug === "chennai") return CHENNAI_DRIVER_FAQS;
     return [
       [`How much does an acting driver cost in ${name}?`, `Acting driver rates in ${name} depend on hours, day type and outstation allowance. Cabzii shows hourly and daily packages upfront before you confirm.`],
       [`Can I hire a driver for my own car in ${name}?`, `Yes. Driver on hire lets you use your vehicle with a professional chauffeur for local errands, weddings or outstation trips from ${name}.`],
-      [`Are acting drivers verified on Cabzii?`, `Cabzii partners with verified vendors. Driver details and package inclusions are shared after booking confirmation.`],
       [`Do you offer outstation acting drivers from ${name}?`, `Yes. Book daily or multi-day acting driver packages for trips leaving ${name} with clear allowance and night charge rules.`]
     ];
   }
@@ -83,6 +84,7 @@ export function getCityFaqs(city, variant = "cab") {
   const chennaiCabFaqs =
     city.slug === "chennai"
       ? [
+          ...CHENNAI_CAB_FAQS,
           [
             "Can I book a Dzire Tour S taxi in Chennai?",
             "Yes. Tour S taxi booking in Chennai is available on Cabzii — choose a Swift Dzire / Tour S sedan for local packages, airport drops and outstation trips with fares shown before you pay."
@@ -90,10 +92,6 @@ export function getCityFaqs(city, variant = "cab") {
           [
             "What is Tour S taxi booking?",
             "Tour S is Maruti Suzuki’s commercial Dzire taxi used by cab operators. On Cabzii you book it like any sedan in Chennai — 4-hour / 8-hour local hire or one-way outstation."
-          ],
-          [
-            "Can I book Wagon R, Bolero or Innova in Chennai?",
-            "Yes. Cab booking and car rental in Chennai on Cabzii includes Swift Dzire / Tour S, Wagon R, Bolero, Ertiga, Innova Crysta and Tempo Traveller. Compare packages and confirm with OTP."
           ]
         ]
       : [];

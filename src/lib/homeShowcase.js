@@ -53,7 +53,7 @@ export const DOMESTIC_OFFERS = [
   {
     tag: "TEMPLE TOURS",
     title: "Tirupati package from ₹4,999",
-    desc: "Darshan trips with verified drivers, pickup from home & flexible timings.",
+    desc: "Darshan trips with pickup from home and flexible timings.",
     iconKey: "holiday",
     color: "from-rose-500 to-pink-400",
     image: "/images/offers/offer-tirupati.webp",
@@ -86,7 +86,7 @@ export const DOMESTIC_OFFERS = [
   {
     tag: "AIRPORT",
     title: "Chennai airport taxi",
-    desc: "24×7 airport pickup & drop at fixed local fares with instant confirmation.",
+    desc: "Airport pickup and drop with local packages from the published Chennai tariff.",
     iconKey: "airport",
     color: "from-indigo-500 to-violet-400",
     image: "/images/offers/offer-airport-chennai.webp",
@@ -97,7 +97,7 @@ export const DOMESTIC_OFFERS = [
   {
     tag: "DRIVERS",
     title: "Acting driver from ₹900",
-    desc: "Hire verified acting drivers for local, outstation & corporate trips.",
+    desc: "Hire an acting driver for local, outstation and corporate trips in your car.",
     iconKey: "driver",
     color: "from-slate-700 to-slate-500",
     image: "/images/offers/offer-driver.webp",
@@ -119,9 +119,9 @@ export const DOMESTIC_OFFERS = [
 ];
 
 export const CITY_SERVICE_CARDS = [
-  { tag: "CHENNAI", title: "Cab services in Chennai", desc: "Airport taxi, local hire and outstation cabs with upfront fares.", iconKey: "car", color: "from-[var(--cabzii-brand)] to-blue-500", image: IMG.chennai, href: "/cab-booking/chennai", fare: "From ₹899" },
+  { tag: "CHENNAI", title: "Cab services in Chennai", desc: "Airport taxi, local hire and outstation cabs with upfront fares.", iconKey: "car", color: "from-[var(--cabzii-brand)] to-blue-500", image: IMG.chennai, href: "/cab-booking/chennai", fare: "From ₹1,200" },
   { tag: "BENGALURU", title: "Cab services in Bengaluru", desc: "Airport pickup, city taxi and outstation cabs across Bengaluru.", iconKey: "car", color: "from-indigo-500 to-violet-400", image: IMG.bengaluru, href: "/cab-booking/bengaluru", fare: "From ₹999" },
-  { tag: "HYDERABAD", title: "Cab services in Hyderabad", desc: "Airport, local and intercity cabs with verified drivers.", iconKey: "airport", color: "from-emerald-500 to-teal-400", image: IMG.airport, href: "/cab-booking/hyderabad", fare: "From ₹899" },
+  { tag: "HYDERABAD", title: "Cab services in Hyderabad", desc: "Airport, local and intercity cabs with fares shown before you confirm.", iconKey: "airport", color: "from-emerald-500 to-teal-400", image: IMG.airport, href: "/cab-booking/hyderabad", fare: "From ₹899" },
   { tag: "COIMBATORE", title: "Cab services in Coimbatore", desc: "Outstation and local taxi hire for Coimbatore and hill stations.", iconKey: "car", color: "from-amber-500 to-orange-400", image: IMG.outstation, href: "/cab-booking/coimbatore", fare: "From ₹799" },
   { tag: "MADURAI", title: "Cab services in Madurai", desc: "Temple tours, airport taxi and outstation cabs in Madurai.", iconKey: "holiday", color: "from-rose-500 to-pink-400", image: IMG.temple, href: "/cab-booking/madurai", fare: "From ₹799" },
   { tag: "TRICHY", title: "Cab services in Trichy", desc: "Airport drop, local taxi and one-way cabs from Trichy.", iconKey: "route", color: "from-slate-700 to-slate-500", image: IMG.route, href: "/cab-booking/trichy", fare: "From ₹749" },
@@ -137,12 +137,12 @@ export const CITY_SERVICE_CARDS = [
 ];
 
 export const ROUTE_CARDS = [
-  { tag: "ONE WAY", title: "Chennai → Tirupati", desc: "Darshan one-way cab with verified drivers and flexible pickup.", iconKey: "holiday", color: "from-rose-500 to-pink-400", image: IMG.temple, href: "/routes/chennai-to-tirupati-cab", fare: "From ₹3,500" },
+  { tag: "ONE WAY", title: "Chennai → Tirupati", desc: "Darshan one-way cab with flexible pickup.", iconKey: "holiday", color: "from-rose-500 to-pink-400", image: IMG.temple, href: "/routes/chennai-to-tirupati-cab", fare: "From ₹3,250" },
   { tag: "ONE WAY", title: "Chennai → Trichy", desc: "Comfortable intercity sedan and SUV one-way packages.", iconKey: "route", color: "from-emerald-500 to-teal-400", image: IMG.route, href: "/routes/chennai-to-trichy-cab", fare: "From ₹4,200" },
   { tag: "ONE WAY", title: "Chennai → Bangalore", desc: "Pay only for one side — transparent fares, no hidden charges.", iconKey: "route", color: "from-[var(--cabzii-brand)] to-blue-500", image: IMG.outstation, href: "/routes/chennai-to-bangalore-cab", fare: "From ₹4,500" },
   { tag: "TEMPLE", title: "Chennai → Rameswaram", desc: "Pilgrimage cab with planned halts and round-trip options.", iconKey: "holiday", color: "from-amber-500 to-orange-400", image: IMG.temple, href: "/routes/chennai-to-rameswaram-cab", fare: "From ₹5,200" },
   { tag: "ONE WAY", title: "Bangalore → Tirupati", desc: "Early-morning darshan pickups from Bengaluru and airport.", iconKey: "holiday", color: "from-rose-500 to-pink-400", image: IMG.bengaluru, href: "/routes/bengaluru-to-tirupati-cab", fare: "From ₹4,800" },
-  { tag: "AIRPORT", title: "Chennai Airport Taxi", desc: "24×7 airport pickup & drop at fixed local fares.", iconKey: "airport", color: "from-indigo-500 to-violet-400", image: IMG.airport, href: "/services/airport-taxi/chennai", fare: "From ₹899" },
+  { tag: "AIRPORT", title: "Chennai Airport Taxi", desc: "Airport pickup and drop — share terminal and flight time.", iconKey: "airport", color: "from-indigo-500 to-violet-400", image: IMG.airport, href: "/services/airport-taxi/chennai", fare: "From ₹1,200" },
   { tag: "AIRPORT", title: "Bangalore Airport · 12 hr", desc: "Kempegowda pickup with a 12 hour / 120 km full-day package.", iconKey: "airport", color: "from-indigo-500 to-violet-400", image: IMG.bengaluru, href: "/cabs/results?serviceTripType=hourly&from=Kempegowda+International+Airport%2C+Bengaluru&to=Bengaluru&city=Bengaluru&packageHours=12", fare: "From ₹1,400" },
   { tag: "TOUR", title: "Madurai Temple Tour", desc: "Meenakshi temple circuit with a comfortable cab and driver.", iconKey: "holiday", color: "from-amber-500 to-orange-400", image: IMG.temple, href: "/holidays?category=pilgrimage&q=madurai", fare: "From ₹3,999" },
   { tag: "ONE WAY", title: "Chennai → Pondicherry", desc: "Coastal one-way cab — sedan, Innova and Tempo Traveller.", iconKey: "route", color: "from-emerald-500 to-teal-400", image: IMG.chennai, href: "/routes/chennai-to-pondicherry-cab", fare: "From ₹2,800" },

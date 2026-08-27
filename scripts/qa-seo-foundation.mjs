@@ -5,10 +5,23 @@
 import { relatedLinksForPage } from "../src/lib/seo/internalLinks.js";
 import { cityAreas, getCityFaqs, getServiceFaqs } from "../src/lib/seo/content.js";
 import { cityHasCommercialAirport, airportInfoForCity } from "../src/lib/seo/airports.js";
-import { getServiceH1, getCabBookingMeta } from "../src/lib/seo/programmaticMeta.js";
+import { getServiceH1, getCabBookingMeta, clampDescription, getServiceMeta } from "../src/lib/seo/programmaticMeta.js";
 import { getCityLandingBody, getServiceLandingBody } from "../src/lib/seo/landingContent.js";
 import { SEO_SERVICES } from "../src/lib/seo/services.js";
-import { cityBySlug } from "../src/lib/seo/cities.js";
+import { cityBySlug, SEO_CITIES } from "../src/lib/seo/cities.js";
+import {
+  classifyCityHub,
+  classifyRoute,
+  classifyServiceCity,
+  summarizeIndexationPolicy
+} from "../src/lib/seo/indexation.js";
+import { SEO_ROUTES } from "../src/lib/seo/routes.js";
+import { FEATURED_ROUTE_SLUGS } from "../src/lib/seo/featuredRoutes.js";
+import { PUBLIC_ROUTE_REDIRECTS } from "../src/lib/routes/publicRoutes.js";
+import { SERVICE_URL_PREFIXES, TRAVELS_URL_PREFIXES } from "../src/lib/seo/urlAliases.js";
+import { isLiveApiHostProtected } from "../src/lib/liveApiHostGuard.js";
+import { DEFAULT_KEYWORDS } from "../src/lib/seo/constants.js";
+import { websiteJsonLd, localBusinessJsonLd } from "../src/lib/seo/schema.js";
 
 const failures = [];
 
@@ -78,6 +91,59 @@ assert(/chauffeur-driven/i.test(cabRentalBody + carRentalBody), "Rental copy sho
 const chennaiBody = getCityLandingBody(chennai, "cab");
 assert(/Chennai International Airport|MAA/i.test(chennaiBody), "Chennai hub may mention MAA");
 
+const chennaiCabMeta = getCabBookingMeta(chennai);
+assert(/Chennai Cab Booking/i.test(chennaiCabMeta.title), "Chennai hub title should lead with Chennai Cab Booking");
+assert(!/24\/7|Low Rates|Best Rates/i.test(chennaiCabMeta.title), "Chennai title must not use 24/7 or Low Rates");
+
+const padded = clampDescription("Short.");
+assert(!/24\/7 support/i.test(padded), "clampDescription must not append 24/7 support");
+
+assert(DEFAULT_KEYWORDS.length <= 16, "Homepage keywords must not be a stuffed list");
+assert(!DEFAULT_KEYWORDS.some((k) => /best cab|cheap taxi|near me/i.test(k)), "DEFAULT_KEYWORDS must not include stuffed bargain phrases");
+
+const siteSchema = JSON.stringify(websiteJsonLd());
+assert(!/Cab Booking Chennai \| Airport Taxi/i.test(siteSchema), "WebSite alternateName must not be a stuffed title");
+
+const lb = JSON.stringify(localBusinessJsonLd("Chennai", "Tamil Nadu", "/cab-booking/chennai"));
+assert(!/opens":"00:00"/i.test(lb), "LocalBusiness must not claim 24-hour opening hours");
+
+const chennaiAirport = getServiceMeta(airportTaxi, chennai);
+assert(/Pickup & Drop/i.test(chennaiAirport.title), "Chennai airport title should say pickup & drop");
+assert(!/24/.test(chennaiAirport.title), "Chennai airport title must not say 24/7");
+
+assert(classifyCityHub("chennai").indexable, "Chennai cab hub stays indexable");
+assert(classifyCityHub("chennai", "acting-driver").indexable, "Chennai acting-driver stays indexable");
+assert(classifyServiceCity("airport-taxi", "chennai").indexable, "Chennai airport taxi stays indexable");
+assert(classifyServiceCity("driver-on-hire", "chennai").indexable, "Do not noindex Chennai driver-on-hire without GSC");
+assert(classifyServiceCity("chauffeur-service", "madurai").indexable, "Do not mass-noindex chauffeur city pages");
+
+const tirupatiRoute = SEO_ROUTES.find((r) => r.slug === "chennai-to-tirupati-cab");
+assert(tirupatiRoute && classifyRoute(tirupatiRoute).indexable, "Chennai–Tirupati stays indexable");
+for (const slug of FEATURED_ROUTE_SLUGS) {
+  const route = SEO_ROUTES.find((r) => r.slug === slug);
+  assert(route && classifyRoute(route).indexable, `Featured route stays indexable: ${slug}`);
+}
+
+const delhiRoute = SEO_ROUTES.find((r) => r.slug === "chennai-to-delhi-cab");
+assert(delhiRoute && classifyRoute(delhiRoute).indexable === false, "Chennai–Delhi long-haul should be noindex,follow");
+
+assert(classifyServiceCity("tour-packages", "karur").indexable === false, "Thin tour-packages city pages are noindex");
+assert(classifyServiceCity("tour-packages", "chennai").indexable, "Chennai tour-packages stays indexable");
+
+const summary = summarizeIndexationPolicy();
+assert(summary.indexable > 500, "Most existing programmatic pages remain indexable");
+assert(summary.noindex > 0, "Phase 1 should noindex only weak pages");
+assert(summary.noindex < 80, "Do not mass-noindex the catalog");
+
+const preservedAliases =
+  Object.keys(PUBLIC_ROUTE_REDIRECTS).length +
+  SERVICE_URL_PREFIXES.size * SEO_CITIES.length +
+  TRAVELS_URL_PREFIXES.size * SEO_CITIES.length;
+assert(preservedAliases > 100, "Existing 301 alias patterns must remain in code");
+assert(PUBLIC_ROUTE_REDIRECTS["/airport-taxi"] === "/services/airport-taxi/chennai", "Bare /airport-taxi remains a 301");
+
+assert(typeof isLiveApiHostProtected === "function", "Live API guard must remain exported");
+
 if (failures.length) {
   console.error(`SEO foundation QA FAILED (${failures.length}):`);
   for (const f of failures) console.error(` - ${f}`);
@@ -85,3 +151,18 @@ if (failures.length) {
 }
 
 console.log("SEO foundation QA passed.");
+console.log(
+  JSON.stringify(
+    {
+      programmaticPages: summary.programmaticPages,
+      indexable: summary.indexable,
+      noindex: summary.noindex,
+      classA: summary.classA,
+      classB: summary.classB,
+      preservedAliasPatterns: preservedAliases,
+      noindexSample: summary.noindexSample
+    },
+    null,
+    2
+  )
+);

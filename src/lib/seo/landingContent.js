@@ -3,6 +3,7 @@ import { routesForCity } from "./routes";
 import { servicePath, SEO_SERVICES } from "./services";
 import { airportInfoForCity } from "./airports";
 import { cityHubContext, driverCityContext } from "./cityHubCopy";
+import { chennaiCabUniqueHtml, chennaiDriverUniqueHtml, chennaiServiceUniqueHtml } from "./chennaiCluster";
 
 function link(href, label) {
   return `<a href="${href}">${label}</a>`;
@@ -92,10 +93,11 @@ function buildCityCabBody(city) {
   const routes = cityRouteLinks(city.slug);
   const context = cityHubContext(city.slug);
   const airport = airportBodyBits(city);
+  const chennaiExtra = city.slug === "chennai" ? chennaiCabUniqueHtml() : "";
 
   return `
 <h2>Cab booking in ${name} — local guide</h2>
-<p>${context?.travel || `Cabzii connects ${name} riders with verified taxi partners for local hourly packages, outstation trips and one-way inter-city travel.`}</p>
+<p>${context?.travel || `Cabzii connects ${name} riders with taxi partners for local hourly packages, outstation trips and one-way inter-city travel.`}</p>
 <p>${context?.useCases || `Enter your pickup in ${name}, compare sedan, SUV, Innova or tempo fares, and confirm with mobile OTP.`}</p>
 
 <h2>Types of cab services in ${name}</h2>
@@ -140,8 +142,8 @@ ${pricingTable([
 
 <h2>Why choose Cabzii in ${name}?</h2>
 ${benefitsList([
-  "Upfront fares — no surprise meter disputes at the end of the trip",
-  "Verified vendor network with professional drivers",
+  "Upfront fares — package amount shown before you pay",
+  "Professional drivers assigned after booking confirmation",
   "Local, outstation, one-way and acting-driver options in one platform",
   "OTP-secured booking and WhatsApp support for trip changes"
 ])}
@@ -151,6 +153,7 @@ ${benefitsList([
 
 <h2>Book your ${name} cab now</h2>
 <p>Use the search widget above or browse ${link(`/cab-booking/${city.slug}`, `cab booking ${name}`)}, ${link("/cabs", "all cabs")} and ${link("/blogs", "travel guides")}. For same-day outstation departures, book early on festival weekends.</p>
+${chennaiExtra}
 `;
 }
 
@@ -212,12 +215,12 @@ function buildServiceBody(service, city) {
 
   return `
 <h2>${svc} in ${name} — book online on Cabzii</h2>
-${intros[slug] || `<p>Book <strong>${svc.toLowerCase()} in ${name}</strong> with transparent fares and verified drivers on Cabzii.in.</p>`}
+${intros[slug] || `<p>Book <strong>${svc.toLowerCase()} in ${name}</strong> with fares shown before you confirm on Cabzii.in.</p>`}
 
 <h2>Benefits of booking ${svc.toLowerCase()} on Cabzii</h2>
 ${benefitsList(service.highlights.length ? service.highlights : [
   `Upfront fare quote for ${svc.toLowerCase()} in ${name}`,
-  "Verified drivers with highway and city experience",
+  "Professional drivers assigned after booking",
   "Sedan, SUV, Innova and tempo options",
   "OTP booking and WhatsApp trip support",
   "No hidden charges — inclusions shown before payment"
@@ -252,7 +255,7 @@ ${pricingTable(pricing[slug] || pricing["local-taxi"])}
 <p>Book at least 2–4 hours ahead for airport pickups; 12–24 hours for outstation and one-way highway departures; and 1–2 days before wedding or event hourly packages. Early booking secures your preferred vehicle class and avoids last-minute surge on peak travel days.</p>
 
 <h2>Who should book ${svc.toLowerCase()} in ${name}?</h2>
-<p>Business travellers use ${svc.toLowerCase()} for predictable pricing and GST-friendly receipts. Families prefer upfront Innova and SUV quotes for luggage-heavy trips. Senior citizens value verified drivers and door-to-door assistance. Tourists benefit from English-speaking chauffeurs familiar with ${name} landmarks. Event planners rely on hourly packages for multi-stop wedding and corporate schedules.</p>
+<p>Business travellers use ${svc.toLowerCase()} for predictable pricing. Families prefer upfront Innova and SUV quotes for luggage-heavy trips. Tourists benefit from chauffeurs familiar with ${name} landmarks. Event planners rely on hourly packages for multi-stop wedding and corporate schedules.</p>
 
 <h2>Documents and checkpoints before your trip</h2>
 <p>Keep your booking confirmation and driver contact handy. For airport ${svc.toLowerCase()}, share flight number and terminal. For outstation legs, confirm toll and state tax inclusions in the fare breakdown. Carry valid ID for interstate highway checkpoints where applicable. For night departures, verify driver allowance and night charges in the package — Cabzii lists these before payment.</p>
@@ -378,6 +381,7 @@ function buildCityDriverBody(city) {
 
 export function getCityLandingBody(city, variant = "cab") {
   if (variant === "driver") {
+    if (city.slug === "chennai") return chennaiDriverUniqueHtml();
     if (city.slug === "vellore") return "";
     return buildCityDriverBody(city);
   }
@@ -386,6 +390,11 @@ export function getCityLandingBody(city, variant = "cab") {
 }
 
 export function getServiceLandingBody(service, city) {
+  if (city?.slug === "chennai") {
+    const generated = PRIORITY_SERVICES.has(service.slug) ? buildServiceBody(service, city) : "";
+    const extra = chennaiServiceUniqueHtml(service.slug);
+    return `${generated}${extra}`;
+  }
   if (!PRIORITY_SERVICES.has(service.slug)) return "";
   return buildServiceBody(service, city);
 }

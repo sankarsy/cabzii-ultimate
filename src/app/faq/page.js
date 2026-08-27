@@ -24,7 +24,7 @@ export default function FaqPage() {
         <a href="/contact" className="font-semibold text-sky-700 hover:underline">
           Contact us
         </a>{" "}
-        on WhatsApp or phone — we&apos;re available 24×7.
+        on WhatsApp or phone.
       </p>
     </MarketingPageShell>
   );

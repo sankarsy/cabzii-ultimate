@@ -1,21 +1,22 @@
 import JsonLd from "../../components/seo/JsonLd";
 import CallDriverLanding from "../../components/call-driver/CallDriverLanding";
+import SeoPageView from "../../components/seo/SeoPageView";
 import { breadcrumbJsonLd } from "../../lib/seo";
 import { SITE_URL } from "../../lib/seo/constants";
 
 export const metadata = {
-  title: "Call Driver in Chennai | Acting Driver Service | Cabzii",
+  title: "Book Call Driver | Driver for Your Own Car | Cabzii",
   description:
-    "Book a call driver in Chennai for your own car. Acting driver, outstation driver, airport call driver, monthly driver, corporate driver and valet parking — Cabzii assigns a professional driver after you book.",
+    "Book a Cabzii Call Driver for your own car — local, outstation, airport chauffeur, monthly quote, corporate and valet. A professional driver is assigned after you confirm.",
   alternates: { canonical: `${SITE_URL}/call-driver` },
   keywords: [
     "call driver Chennai",
-    "acting driver Chennai",
-    "driver for own car Chennai",
-    "outstation driver Chennai",
-    "airport call driver Chennai",
-    "monthly driver Chennai",
-    "corporate driver service Chennai"
+    "book acting driver",
+    "driver for own car",
+    "outstation driver",
+    "airport call driver",
+    "monthly driver",
+    "corporate driver"
   ]
 };
 
@@ -41,7 +42,8 @@ export default function CallDriverPage() {
   return (
     <>
       <JsonLd data={jsonLd} />
-      <CallDriverLanding showSeoCopy title="Call Driver Services" />
+      <SeoPageView pageType="call-driver" city="chennai" service="acting-driver" />
+      <CallDriverLanding showSeoCopy title="Book Call Driver" />
     </>
   );
 }

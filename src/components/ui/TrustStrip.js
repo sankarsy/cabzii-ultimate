@@ -3,10 +3,10 @@ import { getTrustIcon, TRUST_ICON_STYLES } from "../icons/heroIcons";
 
 const TRUST_ITEMS = [
   { label: "Customer reviews", iconKey: "rated", href: "/testimonials" },
-  { label: "Verified drivers", iconKey: "verified" },
+  { label: "Partner vehicles", iconKey: "verified" },
   { label: "Upfront fares", iconKey: "price" },
   { label: "OTP secure booking", iconKey: "secure" },
-  { label: "24/7 support", iconKey: "support" }
+  { label: "WhatsApp updates", iconKey: "support" }
 ];
 
 export default function TrustStrip({ className = "" }) {

@@ -30,7 +30,7 @@ export const SEO_SERVICES = [
     primaryKeyword: "driver on hire",
     searchQuery: "driver on hire",
     priceFrom: 500,
-    highlights: ["Use your own car", "Hourly & daily packages", "Verified chauffeurs"]
+    highlights: ["Use your own car", "Hourly & daily packages", "Driver assigned after booking"]
   },
   {
     slug: "chauffeur-service",

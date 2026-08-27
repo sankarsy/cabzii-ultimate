@@ -4,7 +4,7 @@ import { aboutPageJsonLd } from "../../lib/seo";
 export const metadata = marketingMetadata({
   title: "About Cabzii — Trusted Cab Booking Across India",
   description:
-    "Cabzii connects riders with verified cab partners for airport transfers, outstation trips, local rentals and acting drivers across Chennai, Bengaluru and 20+ cities.",
+    "Cabzii is a cab booking platform for airport taxi, outstation, local packages and acting driver from Chennai and Tamil Nadu corridors.",
   path: "/about",
   keywords: ["about cabzii", "cab booking company India", "cabzii.in about"]
 });
@@ -25,10 +25,10 @@ export default function AboutPage() {
       </p>
       <h2>What we stand for</h2>
       <ul>
-        <li>Verified drivers and transparent pricing before you pay</li>
-        <li>24×7 WhatsApp and phone support for every booking</li>
-        <li>OTP-secured checkout and instant booking confirmation</li>
-        <li>SEO-optimised city pages so you find the right service fast</li>
+        <li>Fares shown before you pay</li>
+        <li>WhatsApp and phone support for bookings</li>
+        <li>OTP checkout and booking confirmation</li>
+        <li>City, airport, route and acting-driver pages that match real Cabzii services</li>
       </ul>
       <h2>Book in seconds</h2>
       <p>

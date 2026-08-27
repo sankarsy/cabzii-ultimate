@@ -16,7 +16,8 @@ import {
   servicePath,
   tunedServiceDescription,
   tunedServiceKeywords,
-  tunedServiceTitle
+  tunedServiceTitle,
+  classifyServiceCity
 } from "../../../../lib/seo";
 import { serviceSerpBadges } from "../../../../lib/seo/serpRichData";
 import { resolveMediaUrl } from "../../../../lib/media";
@@ -39,7 +40,8 @@ export async function generateMetadata({ params }) {
       title: "Service Not Found",
       description: "This cab service page is not available on Cabzii.",
       path: `/services/${params.service}/${params.city}`,
-      noindex: true
+      noindex: true,
+      follow: false
     });
   }
 
@@ -51,11 +53,14 @@ export async function generateMetadata({ params }) {
     : tunedServiceKeywords(serviceRow, city);
 
   const cmsImage = resolveMediaUrl(cmsMeta?.image || "");
+  const indexPolicy = classifyServiceCity(serviceRow.slug, city.slug);
   return buildPageMetadata({
     title,
     description,
     path,
     keywords,
+    noindex: !indexPolicy.indexable,
+    follow: indexPolicy.follow,
     ...(cmsImage ? { image: cmsImage, imageAlt: `${serviceRow.name} in ${city.name}` } : {})
   });
 }

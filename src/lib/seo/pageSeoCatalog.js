@@ -44,9 +44,9 @@ export const STATIC_PAGE_SEO_LIST = [
     type: "site",
     typeLabel: "Acting driver hub",
     productName: "Acting Driver",
-    seoTitle: "Acting Driver — Chauffeur on Hire for Your Car | Cabzii",
+    seoTitle: "Acting Driver | Hire a Driver for Your Own Car | Cabzii",
     seoDescription:
-      "Acting driver cities on Cabzii — chauffeur for your own car. Hourly, daily and outstation packages. Driver assigned after you book.",
+      "Acting driver and call driver on Cabzii — chauffeur for your own car. Open a city page, then book Call Driver. A driver is assigned after you confirm.",
     seoKeywords: "acting driver, chauffeur on hire, driver for own car, cabzii acting driver"
   },
   {
@@ -77,9 +77,9 @@ export const STATIC_PAGE_SEO_LIST = [
     type: "site",
     typeLabel: "Call Driver",
     productName: "Call Driver Service",
-    seoTitle: "Call Driver in Chennai | Acting Driver Service | Cabzii",
+    seoTitle: "Book Call Driver | Driver for Your Own Car | Cabzii",
     seoDescription:
-      "Book a call driver in Chennai for your own car. Acting driver, outstation driver, airport call driver, monthly driver, corporate driver and valet parking on Cabzii.",
+      "Book a Cabzii Call Driver for your own car — local, outstation, airport chauffeur, monthly quote, corporate and valet. A driver is assigned after you confirm.",
     seoKeywords:
       "call driver Chennai, acting driver Chennai, driver for own car Chennai, outstation driver Chennai, airport call driver Chennai, monthly driver Chennai, corporate driver service Chennai"
   },
@@ -112,7 +112,7 @@ export const STATIC_PAGE_SEO_LIST = [
     productName: "About Cabzii",
     seoTitle: "About Cabzii — Trusted Cab Booking Across India",
     seoDescription:
-      "Cabzii connects riders with verified cab partners for airport transfers, outstation trips, local rentals and acting drivers across Chennai, Bengaluru and 20+ cities.",
+      "Cabzii is a cab booking platform for airport taxi, outstation, local packages and acting driver from Chennai and Tamil Nadu corridors.",
     seoKeywords: "about cabzii, cab booking company India, cabzii.in about"
   },
   {
@@ -121,9 +121,9 @@ export const STATIC_PAGE_SEO_LIST = [
     type: "site",
     typeLabel: "Contact page",
     productName: "Contact Cabzii",
-    seoTitle: "Contact Cabzii — Call, WhatsApp & Email Support 24×7",
+    seoTitle: "Contact Cabzii — Call, WhatsApp & Email",
     seoDescription:
-      "Reach Cabzii for cab quotes, booking help and support. Phone, WhatsApp and email — available 24×7 across India.",
+      "Reach Cabzii for cab quotes, booking help and support. Phone, WhatsApp and email.",
     seoKeywords: "contact cabzii, cab booking support, cabzii phone number"
   },
   {

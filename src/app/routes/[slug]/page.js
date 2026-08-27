@@ -14,6 +14,7 @@ import {
   tunedRouteKeywords,
   tunedRouteTitle
 } from "../../../lib/seo";
+import { classifyRoute } from "../../../lib/seo/indexation";
 
 export const revalidate = 600;
 
@@ -30,7 +31,8 @@ export async function generateMetadata({ params }) {
       title: "Route Not Found",
       description: "This cab route page is not available on Cabzii.",
       path: `/routes/${params.slug}`,
-      noindex: true
+      noindex: true,
+      follow: false
     });
   }
 
@@ -40,8 +42,16 @@ export async function generateMetadata({ params }) {
   const keywords = route.seo
     ? route.seo.split(",").map((k) => k.trim()).filter(Boolean)
     : tunedRouteKeywords(route);
+  const indexPolicy = classifyRoute(route, { source: route.source });
 
-  return buildPageMetadata({ title, description, path, keywords });
+  return buildPageMetadata({
+    title,
+    description,
+    path,
+    keywords,
+    noindex: !indexPolicy.indexable,
+    follow: indexPolicy.follow
+  });
 }
 
 export default async function RoutePage({ params }) {

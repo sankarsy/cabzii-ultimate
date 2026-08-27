@@ -1,16 +1,16 @@
 import { TRUST_COUNTERS, WHY_STATS } from "./marketingStats";
 
 const DEFAULT_WHY_FEATURES = [
-  { iconKey: "verified", title: "Verified partners", desc: "Background-checked drivers and trusted cab vendors across South India." },
-  { iconKey: "price", title: "Best price guarantee", desc: "Compare fares side-by-side before you pay — no hidden charges." },
-  { iconKey: "secure", title: "Secure checkout", desc: "OTP-verified booking with encrypted payment on cabzii.in." },
-  { iconKey: "support", title: "24×7 support", desc: "WhatsApp and phone support before, during, and after your trip." }
+  { iconKey: "secure", title: "OTP booking", desc: "Confirm with your mobile number. Fare is shown before you pay." },
+  { iconKey: "price", title: "Published Chennai tariff", desc: "Local, outstation and van packages are listed on the Cabzii tariff page." },
+  { iconKey: "verified", title: "Partner vehicles", desc: "Cabzii assigns a cab or acting driver after you confirm — not a public driver directory." },
+  { iconKey: "support", title: "WhatsApp and phone", desc: "Trip updates and booking help on WhatsApp and phone during operating hours." }
 ];
 
 const DEFAULT_WHY_SECTION = {
   eyebrow: "Why Cabzii",
-  title: "A premium cab booking experience",
-  subtitle: "Trusted by riders for airport transfers, outstation trips, and local hire across Chennai and 20+ cities."
+  title: "Cab booking with fares shown before you confirm",
+  subtitle: "Airport taxi, outstation, local packages and acting driver from Chennai and Tamil Nadu corridors."
 };
 
 const WHY_ICON_MAP = {

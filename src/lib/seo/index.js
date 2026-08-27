@@ -12,3 +12,4 @@ export * from "./urlAliases";
 export * from "./landingContent";
 export * from "./routeCatalog";
 export * from "./internalLinks";
+export * from "./indexation";

@@ -56,52 +56,16 @@ export const CITY_CAB_PRICE_RANGE = { low: 1200, high: 16500 };
 export const CITY_DRIVER_PRICE_RANGE = { low: 500, high: 1300 };
 
 export const DEFAULT_KEYWORDS = [
-  "cabzii",
-  "cabzii.in",
-  "cab booking online",
-  "cab booking near me",
-  "cab booking for outstation",
-  "cab booking madurai",
-  "cab booking in coimbatore",
-  "cab booking trichy",
-  "cab booking kodaikanal",
-  "cab booking kanchipuram",
-  "cab booking tirupati",
-  "airport taxi thoothukudi",
-  "airport taxi trichy",
-  "cab booking kanyakumari",
-  "taxi booking India",
-  "cab booking Chennai",
-  "cab booking in chennai",
-  "taxi booking near me",
-  "airport taxi Chennai",
-  "outstation cab Bangalore",
-  "one way cab Chennai to Bangalore",
-  "driver on hire Chennai",
-  "acting driver Chennai",
-  "cab rental Chennai",
-  "cab rental tariff Chennai",
-  "tempo traveller rental Chennai",
-  "car rental Bangalore",
-  "car rental in bangalore",
-  "car rental in coimbatore",
-  "car rental in madurai",
-  "car rental in goa",
-  "car rental in trichy",
-  "car rental delhi",
-  "car rental in delhi",
-  "car rental maduravoyal",
-  "tempo traveller rental",
-  "local taxi service",
-  "airport pickup service",
-  "chauffeur service Chennai",
-  "cheap taxi booking",
-  "best cab service in Chennai",
-  "car rental in chennai",
-  "car rental near me",
-  "travels in chennai",
-  "travels near me",
-  "tour packages South India"
+  "cab booking",
+  "airport taxi",
+  "outstation cab",
+  "one-way cab",
+  "acting driver",
+  "car rental",
+  "tempo traveller",
+  "tour packages",
+  "pilgrimage travel",
+  "cabzii"
 ];
 
 export function getBackendUrl() {
@@ -169,6 +133,7 @@ export function buildPageMetadata({
   url,
   type = "website",
   noindex = false,
+  follow = true,
   languages,
   verification
 }) {
@@ -195,7 +160,7 @@ export function buildPageMetadata({
       ...(languages ? { languages } : {})
     },
     robots: noindex
-      ? { index: false, follow: false, googleBot: { index: false, follow: false } }
+      ? { index: false, follow: Boolean(follow), googleBot: { index: false, follow: Boolean(follow) } }
       : { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large" } },
     openGraph: {
       title,
@@ -237,7 +202,7 @@ export function actingDriverTitle(cityName) {
 }
 
 export function actingDriverDescription(cityName, state) {
-  return `Hire acting drivers and chauffeurs in ${cityName}, ${state}. Hourly, daily and outstation driver service with verified partners on ${SITE_NAME}.`;
+  return `Hire an acting driver in ${cityName}, ${state} for your own car. Hourly, daily and outstation chauffeur packages on ${SITE_NAME} — a driver is assigned after you book.`;
 }
 
 export const homeMetadata = buildPageMetadata({
@@ -249,21 +214,12 @@ export const homeMetadata = buildPageMetadata({
   imageAlt: "Cabzii — Cab Booking Chennai & Tamil Nadu",
   keywords: [
     "cab booking chennai",
-    "taxi service chennai",
     "airport taxi chennai",
     "outstation cab chennai",
-    "one way taxi chennai",
-    "chennai to pondicherry cab",
-    "chennai to bangalore taxi",
-    "chennai airport transfer",
-  "online cab booking chennai",
-  "chennai airport taxi",
-  "chennai airport pickup taxi",
-  "chennai airport drop taxi",
-  "chennai to tirupati taxi",
-  "chennai to salem taxi",
-  "chennai to trichy taxi",
-  "cab booking tamil nadu",
-  ...DEFAULT_KEYWORDS
+    "one way cab chennai",
+    "acting driver chennai",
+    "car rental chennai",
+    "pilgrimage cab chennai",
+    ...DEFAULT_KEYWORDS
   ]
 });

@@ -19,11 +19,17 @@ export function buildSeoMetadata({
   robots,
   type = "website",
   noindex = false,
+  follow = true,
   languages,
   verification
 }) {
   const resolvedPath = canonical || path || "/";
   const noIndex = noindex || robots === "noindex,nofollow" || robots === "noindex, nofollow";
+  const noFollow =
+    follow === false ||
+    robots === "noindex,nofollow" ||
+    robots === "noindex, nofollow" ||
+    robots === "none";
 
   const meta = buildPageMetadata({
     title,
@@ -37,6 +43,7 @@ export function buildSeoMetadata({
     url: url || resolvedPath,
     type,
     noindex: noIndex,
+    follow: !noFollow,
     languages,
     verification
   });

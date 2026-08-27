@@ -3,12 +3,12 @@ import {
   SEO_ROUTES,
   SEO_SERVICES,
   SITE_URL,
-  FEATURED_ROUTE_SLUGS,
   getBackendUrl,
   servicePath
 } from "../lib/seo";
-import { isPrimaryFocusCity, isTamilNaduCity } from "../lib/seo/cities";
+import { classifyCityHub, classifyRoute, classifyServiceCity } from "../lib/seo/indexation";
 import { catalogPublicPath } from "../lib/catalogProduct";
+import { isLiveApiHostProtected } from "../lib/liveApiHostGuard";
 import { resolveProductImageSeo } from "../lib/dynamicImageSeo";
 import { dedupeSitemapEntries, isPublishedBlogPost, isPublishedCatalogItem } from "../lib/seo/sitemapUtils";
 
@@ -21,6 +21,7 @@ function sitemapImageFromProduct(item, kind) {
 }
 
 async function fetchAllIds(path, maxPages = 25) {
+  if (isLiveApiHostProtected()) return [];
   const backend = getBackendUrl();
   const all = [];
   for (let page = 1; page <= maxPages; page += 1) {
@@ -55,7 +56,6 @@ export default async function sitemap() {
     { url: `${base}/holidays`, lastModified: now, changeFrequency: "daily", priority: 0.92, images: [HERO_IMAGE] },
     { url: `${base}/services`, lastModified: now, changeFrequency: "weekly", priority: 0.88, images: [HERO_IMAGE] },
     { url: `${base}/routes`, lastModified: now, changeFrequency: "weekly", priority: 0.88, images: [HERO_IMAGE] },
-    { url: `${base}/buses`, lastModified: now, changeFrequency: "daily", priority: 0.9, images: [HERO_IMAGE] },
     { url: `${base}/blogs`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
     { url: `${base}/about`, lastModified: now, changeFrequency: "monthly", priority: 0.75 },
     { url: `${base}/contact`, lastModified: now, changeFrequency: "monthly", priority: 0.75 },
@@ -69,26 +69,26 @@ export default async function sitemap() {
   ];
 
   const cityRoutes = SEO_CITIES.flatMap((city) => {
-    const isChennai = city.slug === "chennai";
-    const isTirupati = city.slug === "tirupati";
-    const isTn = isTamilNaduCity(city);
-    const isFocus = isPrimaryFocusCity(city);
-    const hubPriority = isChennai ? 0.98 : isTn ? 0.94 : isFocus ? 0.9 : 0.72;
-    const driverPriority = isTirupati ? 0.96 : isChennai ? 0.94 : isTn ? 0.9 : isFocus ? 0.85 : 0.65;
-    return [
-      {
+    const cabPolicy = classifyCityHub(city.slug, "cab-booking");
+    const driverPolicy = classifyCityHub(city.slug, "acting-driver");
+    const rows = [];
+    if (cabPolicy.indexable) {
+      rows.push({
         url: `${base}/cab-booking/${city.slug}`,
         lastModified: now,
-        changeFrequency: isFocus ? "weekly" : "monthly",
-        priority: hubPriority
-      },
-      {
+        changeFrequency: cabPolicy.changeFrequency,
+        priority: cabPolicy.sitemapPriority
+      });
+    }
+    if (driverPolicy.indexable) {
+      rows.push({
         url: `${base}/acting-driver/${city.slug}`,
         lastModified: now,
-        changeFrequency: isFocus ? "weekly" : "monthly",
-        priority: driverPriority
-      }
-    ];
+        changeFrequency: driverPolicy.changeFrequency,
+        priority: driverPolicy.sitemapPriority
+      });
+    }
+    return rows;
   });
 
   const [cabs, packages, blogPosts, cmsServices, cmsRoutes] = await Promise.all([
@@ -103,20 +103,18 @@ export default async function sitemap() {
   const cmsRouteSlugs = new Set((cmsRoutes || []).filter((r) => r.slug && r.published !== false).map((r) => r.slug));
 
   const staticServiceRoutes = SEO_CITIES.flatMap((city) =>
-    SEO_SERVICES.filter((service) => !cmsServiceSlugs.has(service.slug)).map((service) => {
-      const chennaiCore =
-        city.slug === "chennai" &&
-        ["car-rental", "cab-rental", "airport-taxi", "outstation-cab", "one-way-cab", "local-taxi"].includes(
-          service.slug
-        );
-      const tnCore = isTamilNaduCity(city) && ["airport-taxi", "outstation-cab", "one-way-cab"].includes(service.slug);
-      return {
-        url: `${base}${servicePath(service, city)}`,
-        lastModified: now,
-        changeFrequency: isPrimaryFocusCity(city) ? "weekly" : "monthly",
-        priority: chennaiCore ? 0.92 : tnCore ? 0.88 : isPrimaryFocusCity(city) ? 0.82 : 0.65
-      };
-    })
+    SEO_SERVICES.filter((service) => !cmsServiceSlugs.has(service.slug))
+      .map((service) => {
+        const policy = classifyServiceCity(service.slug, city.slug);
+        if (!policy.indexable) return null;
+        return {
+          url: `${base}${servicePath(service, city)}`,
+          lastModified: now,
+          changeFrequency: policy.changeFrequency,
+          priority: policy.sitemapPriority
+        };
+      })
+      .filter(Boolean)
   );
 
   const cmsServiceRoutes = (cmsServices || [])
@@ -125,36 +123,54 @@ export default async function sitemap() {
       const cities = service.allCities !== false
         ? SEO_CITIES
         : SEO_CITIES.filter((city) => (service.citySlugs || []).includes(city.slug));
-      return cities.map((city) => ({
-        url: `${base}/services/${service.slug}/${city.slug}`,
-        lastModified: service.updatedAt ? new Date(service.updatedAt) : now,
-        changeFrequency: "weekly",
-        priority: 0.86
-      }));
+      return cities
+        .map((city) => {
+          const policy = classifyServiceCity(service.slug, city.slug);
+          if (!policy.indexable) return null;
+          return {
+            url: `${base}/services/${service.slug}/${city.slug}`,
+            lastModified: service.updatedAt ? new Date(service.updatedAt) : now,
+            changeFrequency: policy.changeFrequency,
+            priority: policy.sitemapPriority
+          };
+        })
+        .filter(Boolean);
     });
 
-  const staticRoutePages = SEO_ROUTES.filter((route) => !cmsRouteSlugs.has(route.slug)).map((route) => ({
-    url: `${base}/routes/${route.slug}`,
-    lastModified: now,
-    changeFrequency: "weekly",
-    priority:
-      route.slug === "chennai-to-tirupati-cab" || route.slug === "chennai-to-rameswaram-cab"
-        ? 0.98
-        : FEATURED_ROUTE_SLUGS.includes(route.slug)
-          ? 0.94
-          : route.slug.includes("tirupati") || route.slug.includes("chennai")
-            ? 0.9
-            : 0.87
-  }));
+  const staticRoutePages = SEO_ROUTES.filter((route) => !cmsRouteSlugs.has(route.slug))
+    .map((route) => {
+      const policy = classifyRoute(route);
+      if (!policy.indexable) return null;
+      return {
+        url: `${base}/routes/${route.slug}`,
+        lastModified: now,
+        changeFrequency: policy.changeFrequency,
+        priority: policy.sitemapPriority
+      };
+    })
+    .filter(Boolean);
 
   const cmsRoutePages = (cmsRoutes || [])
     .filter((route) => route.slug && route.published !== false)
-    .map((route) => ({
-      url: `${base}/routes/${route.slug}`,
-      lastModified: route.updatedAt ? new Date(route.updatedAt) : now,
-      changeFrequency: "weekly",
-      priority: 0.87
-    }));
+    .map((route) => {
+      const policy = classifyRoute(
+        {
+          slug: route.slug,
+          from: route.fromCitySlug,
+          to: route.toCitySlug,
+          distance: route.distance
+        },
+        { source: "cms" }
+      );
+      if (!policy.indexable) return null;
+      return {
+        url: `${base}/routes/${route.slug}`,
+        lastModified: route.updatedAt ? new Date(route.updatedAt) : now,
+        changeFrequency: policy.changeFrequency,
+        priority: policy.sitemapPriority
+      };
+    })
+    .filter(Boolean);
 
   const cabRoutes = cabs
     .filter(isPublishedCatalogItem)

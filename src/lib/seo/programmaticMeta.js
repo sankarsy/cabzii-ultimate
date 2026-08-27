@@ -76,7 +76,7 @@ export function clampDescription(desc, min = META_DESC_MIN, max = META_DESC_MAX)
     d = lastSpace > min ? `${cut.slice(0, lastSpace)}.` : `${cut}.`;
   }
   if (len(d) < min && len(d) > 0) {
-    d = `${d} Book online on Cabzii.in with transparent fares and 24/7 support.`;
+    d = `${d} Compare fares and book on Cabzii.in.`;
     if (len(d) > max) d = d.slice(0, max - 1).trimEnd() + ".";
   }
   return d;
@@ -90,17 +90,17 @@ export function outstationServiceTitle(cityName) {
 
 export function outstationServiceDescription(cityName) {
   return clampDescription(
-    `Book safe, affordable outstation and one-way cabs in ${cityName} with Cabzii.in. Clean cars, expert drivers, and zero hidden charges. Get a free quote!`
+    `Book outstation and one-way cabs in ${cityName} with Cabzii.in. Sedan, SUV and Innova packages with fares shown before you confirm.`
   );
 }
 
 export function airportServiceTitle(cityName) {
-  return formatSerpTitle(`Airport Taxi ${cityName}`, "24/7 Pickup & Drop");
+  return formatSerpTitle(`Airport Taxi ${cityName}`, "Pickup & Drop");
 }
 
 export function airportServiceDescription(cityName) {
   return clampDescription(
-    `Catch your flight without the stress. Reliable airport taxi service in ${cityName} by Cabzii.in. Fixed transparent fares, professional drivers, 24/7.`
+    `Airport taxi in ${cityName} on Cabzii.in — pickup and drop with a fare shown before payment. Share flight time so the driver can plan buffer.`
   );
 }
 
@@ -110,7 +110,7 @@ export function localRentalServiceTitle(cityName) {
 
 export function localRentalServiceDescription(cityName) {
   return clampDescription(
-    `Car rental in ${cityName} on Cabzii.in — hourly and full-day packages for local trips, weddings and sightseeing. Book online with transparent fares 24/7.`
+    `Car rental in ${cityName} on Cabzii.in — chauffeur-driven hourly and full-day packages for local trips, weddings and sightseeing. Fares shown before you confirm.`
   );
 }
 
@@ -138,9 +138,9 @@ function templateMeta(templateId, cityName) {
 /** Per city+service overrides when template copy needs a tweak */
 const SERVICE_META_OVERRIDES = {
   "chennai:airport-taxi": {
-    title: formatSerpTitle("Airport Taxi from Chennai Airport", "Book Now"),
+    title: formatSerpTitle("Chennai Airport Taxi", "Airport Pickup & Drop"),
     description: clampDescription(
-      "Starting from ₹899. Book reliable airport taxi in Chennai with professional drivers, 24×7 MAA pickup & drop, fixed fares and instant confirmation on Cabzii.in."
+      "Book Chennai airport taxi (MAA) pickup and drop on Cabzii. Share terminal and flight time. Swift Dzire local packages from ₹1,200 (4 Hrs / 40 Km) on the published tariff."
     )
   },
   "chennai:local-taxi": {
@@ -150,15 +150,21 @@ const SERVICE_META_OVERRIDES = {
     )
   },
   "chennai:outstation-cab": {
-    title: formatSerpTitle("Outstation Cab Chennai", "Round Trip Packages"),
+    title: formatSerpTitle("Chennai Outstation Cab", "One-Way & Round-Trip Taxi"),
     description: clampDescription(
-      "Outstation cab from Chennai on Cabzii — round-trip and multi-day highway packages with per-km clarity. Sedan, SUV, Innova and tempo. Book online 24/7."
+      "Outstation cab from Chennai on Cabzii — round-trip and multi-day highway packages. Sedan, SUV, Innova and tempo. Fares and km minimums on the published tariff."
     )
   },
   "chennai:one-way-cab": {
     title: formatSerpTitle("One Way Taxi Chennai", "Inter-City Drops"),
     description: clampDescription(
-      "One way taxi from Chennai on Cabzii — inter-city drops without return empty charges. Chennai to Bangalore, Pondicherry, Tirupati and more. Upfront fares."
+      "One way taxi from Chennai on Cabzii — inter-city drops without return empty charges. Tirupati, Pondicherry, Bengaluru and more. Starting fares on each route page."
+    )
+  },
+  "chennai:tempo-traveller": {
+    title: formatSerpTitle("Tempo Traveller Chennai", "12–18 Seater Hire"),
+    description: clampDescription(
+      "Tempo Traveller rental in Chennai — 12, 13, 14 and 18 seater. Local from ₹3,000 (5 Hrs / 50 Km) on the published van tariff. Group, wedding and pilgrimage hire."
     )
   },
   "bengaluru:airport-taxi": {
@@ -174,33 +180,33 @@ const SERVICE_META_OVERRIDES = {
     )
   },
   "chennai:car-rental": {
-    title: formatSerpTitle("Chennai Cabs", "Car Rental & 4–8 Hour Packages"),
+    title: formatSerpTitle("Car Rental in Chennai", "Driver-Included Packages"),
     description: clampDescription(
-      "Chennai cabs and car rental packages on Cabzii.in — 4 hours, 8 hours and full-day hire in Maduravoyal, OMR and across the city. Book online with upfront package fares."
+      "Car rental in Chennai on Cabzii is chauffeur-driven local hire — 4 hour and 8 hour packages. Not self-drive. Compare fares on the published tariff and book with OTP."
     )
   },
   "chennai:cab-rental": {
     title: formatSerpTitle("Cab Rental Chennai", "Hourly & Full-Day Packages"),
     description: clampDescription(
-      "Cab rental in Chennai on Cabzii.in — hourly and full-day packages for local trips, weddings and sightseeing. Book online with transparent fares 24/7."
+      "Cab rental in Chennai — hourly and full-day city packages for meetings, weddings and sightseeing. Driver included. Extra km and extra hour rates on the Cabzii tariff."
     )
   },
   "chennai:hourly-rental": {
-    title: formatSerpTitle("Full Day Taxi Chennai", "4/8/12 Hr Cab Packages"),
+    title: formatSerpTitle("Hourly Cab Rental Chennai", "4/8/12 Hour Packages"),
     description: clampDescription(
-      "Full day taxi and cab rental in Chennai — 4, 8 and 12 hour packages with upfront fares. Ideal for weddings, meetings and city tours. Book on Cabzii.in."
+      "Hourly and full-day taxi in Chennai — 4, 8 and 12 hour packages with extra km listed before you pay. Ideal for multi-stop city days. Book on Cabzii."
     )
   },
   "chennai:driver-on-hire": {
-    title: formatSerpTitle("Driver on Hire Chennai", "Acting Driver Service"),
+    title: formatSerpTitle("Driver on Hire Chennai", "Acting Driver Guide"),
     description: clampDescription(
-      "Hire a professional driver in Chennai for your own car — hourly, daily and outstation chauffeur packages on Cabzii. Book online with OTP confirmation."
+      "Driver on hire in Chennai is Cabzii acting driver — a chauffeur for your own car. Book local, airport or outstation on Call Driver. Full city guide on acting driver Chennai."
     )
   },
   "chennai:chauffeur-service": {
     title: formatSerpTitle("Chauffeur Service Chennai", "Driver for Your Car"),
     description: clampDescription(
-      "Book chauffeur service in Chennai with Cabzii — verified drivers for city, airport and highway trips in your vehicle. Transparent packages online."
+      "Chauffeur service in Chennai for city, airport and highway trips in your vehicle. Same Call Driver booking as acting driver. Packages shown before you confirm."
     )
   },
   "coimbatore:car-rental": {
@@ -224,7 +230,7 @@ const SERVICE_META_OVERRIDES = {
   "bengaluru:car-rental": {
     title: formatSerpTitle("Car Rental Bangalore", "Hourly Cabs & Packages"),
     description: clampDescription(
-      "Car rental in Bangalore (Bengaluru) on Cabzii.in — hourly local hire, airport drops and city packages. Clean fleets, expert drivers, book online 24/7."
+      "Car rental in Bangalore (Bengaluru) on Cabzii.in — hourly local hire, airport drops and city packages. Chauffeur-driven cabs with fares shown before you confirm."
     )
   },
   "trichy:car-rental": {
@@ -240,9 +246,9 @@ const SERVICE_META_OVERRIDES = {
     )
   },
   "bengaluru:cab-rental": {
-    title: formatSerpTitle("Cab Rental Bangalore", "24/7 Low Rates"),
+    title: formatSerpTitle("Cab Rental Bangalore", "Hourly & City Packages"),
     description: clampDescription(
-      "Cab rental in Bengaluru with Cabzii.in. Airport drops, outstation trips and local hourly hire. Clean fleets, zero hidden charges, OTP booking 24/7."
+      "Cab rental in Bengaluru with Cabzii.in. Airport drops, outstation trips and local hourly hire. OTP booking with fares shown before you confirm."
     )
   }
 };
@@ -250,9 +256,9 @@ const SERVICE_META_OVERRIDES = {
 /** Cab hub /cab-booking/{city} */
 const CAB_BOOKING_META = {
   chennai: {
-    title: formatSerpTitle("Cab Booking Chennai", "Airport & Outstation"),
+    title: formatSerpTitle("Chennai Cab Booking", "Local, Airport & Outstation"),
     description: clampDescription(
-      "Book cabs in Chennai with Cabzii — airport taxi, local packages, outstation and one-way trips. Upfront fares, OTP booking and WhatsApp support. Book online 24/7."
+      "Book cabs in Chennai with Cabzii — airport taxi, local packages, outstation and one-way trips. Upfront fares, OTP booking and WhatsApp support."
     )
   },
   salem: {
@@ -264,7 +270,7 @@ const CAB_BOOKING_META = {
   vellore: {
     title: formatSerpTitle("Cab Booking Vellore", "Outstation & Local Taxi"),
     description: clampDescription(
-      "Book cabs in Vellore with Cabzii — Chennai trips, CMC/VIT transfers and local hire. Sedan, SUV and Innova with upfront fares. Book online 24/7."
+      "Book cabs in Vellore with Cabzii — Chennai trips, CMC/VIT transfers and local hire. Sedan, SUV and Innova with fares shown before you confirm."
     )
   },
   erode: {
@@ -282,19 +288,19 @@ const CAB_BOOKING_META = {
   madurai: {
     title: formatSerpTitle("Cab Booking Madurai", "Online Taxi & Outstation"),
     description: clampDescription(
-      "Cab booking in Madurai on Cabzii.in — online taxi, one-way and outstation cabs to Trichy, Chennai and hill stations. Transparent fares, OTP booking 24/7."
+      "Cab booking in Madurai on Cabzii.in — online taxi, one-way and outstation cabs to Trichy, Chennai and hill stations. Transparent fares and OTP booking."
     )
   },
   bengaluru: {
-    title: formatSerpTitle("Bengaluru Cab Booking", "24/7 Taxi & Low Rates"),
+    title: formatSerpTitle("Bengaluru Cab Booking", "Airport Taxi & Outstation"),
     description: clampDescription(
-      "Book affordable cabs in Bengaluru with Cabzii.in. Airport drops, outstation trips and local hire. Clean fleets, zero hidden charges, OTP booking 24/7."
+      "Book cabs in Bengaluru with Cabzii.in. Airport drops, outstation trips and local hire. OTP booking with fares shown before you confirm."
     )
   },
   hyderabad: {
     title: formatSerpTitle("Hyderabad Cab Booking", "Airport & Outstation"),
     description: clampDescription(
-      "Book cabs in Hyderabad with Cabzii.in. Reliable airport taxi, outstation and one-way trips. Fixed fares, clean cars and professional drivers — 24/7."
+      "Book cabs in Hyderabad with Cabzii.in. Airport taxi, outstation and one-way trips. Fares shown before you confirm — OTP booking online."
     )
   },
   coimbatore: {
@@ -306,7 +312,7 @@ const CAB_BOOKING_META = {
   trichy: {
     title: formatSerpTitle("Cab Booking Trichy", "Online Taxi & Rental"),
     description: clampDescription(
-      "Cab booking in Trichy on Cabzii.in — local hourly rental, outstation and one-way cabs to Chennai and Madurai. Compare fares and book online 24/7."
+      "Cab booking in Trichy on Cabzii.in — local hourly rental, outstation and one-way cabs to Chennai and Madurai. Compare fares and book online."
     )
   },
   kodaikanal: {
@@ -319,39 +325,39 @@ const CAB_BOOKING_META = {
 
 const ROUTE_META_OVERRIDES = {
   "chennai-to-pondicherry-cab": {
-    title: formatSerpTitle("Chennai to Pondicherry Cab", "One-Way Best Rates"),
+    title: formatSerpTitle("Chennai to Pondicherry Cab", "One-Way Taxi"),
     description: clampDescription(
       "Chennai to Pondicherry cab on Cabzii — one-way taxi from ₹2,800 sedan. ECR highway, 160 km, 3–4 hours. Book online with upfront fare."
     )
   },
   "chennai-to-bangalore-cab": {
-    title: formatSerpTitle("Chennai to Bangalore Taxi", "One-Way Best Rates"),
+    title: formatSerpTitle("Chennai to Bangalore Taxi", "One-Way Cab"),
     description: clampDescription(
       "Chennai to Bangalore taxi on Cabzii — one-way cab from ₹4,500 sedan. NH48 route, 350 km, 6–7 hours. Compare sedan, SUV and Innova fares online."
     )
   },
   "chennai-to-bengaluru-cab": {
-    title: formatSerpTitle("Chennai to Bangalore Taxi", "One-Way Best Rates"),
+    title: formatSerpTitle("Chennai to Bangalore Taxi", "One-Way Cab"),
     description: clampDescription(
       "Chennai to Bangalore taxi on Cabzii — one-way cab from ₹4,500 sedan. NH48 route, 350 km, 6–7 hours. Compare sedan, SUV and Innova fares online."
     )
   },
   "chennai-to-tirupati-cab": {
-    title: formatSerpTitle("Chennai to Tirupati Cab Booking", "From ₹3,200"),
+    title: formatSerpTitle("Chennai to Tirupati Cab", "One-Way & Round Trip Taxi"),
     description: clampDescription(
-      "Chennai to Tirupati cab booking on Cabzii — sedan from ₹3,250, Ertiga from ₹4,500. Swift Dzire, Honda Amaze & Innova. 135 km, 3–4 hrs. Book online 24/7 with instant quote."
+      "Chennai to Tirupati cab on Cabzii — sedan from ₹3,250, Ertiga from ₹4,500. Swift Dzire, Honda Amaze and Innova. 135 km, 3–4 hrs. Fare shown before you confirm."
     )
   },
   "chennai-to-rameswaram-cab": {
     title: formatSerpTitle("Chennai to Rameswaram Cab Booking", "From ₹5,200"),
     description: clampDescription(
-      "Chennai to Rameswaram cab on Cabzii — pilgrimage taxi from ₹3,250 sedan (250 km min + extra km). Pamban bridge route, 560 km, 8–9 hrs. Book Dzire, Amaze or Innova online 24/7."
+      "Chennai to Rameswaram cab on Cabzii — pilgrimage taxi from ₹3,250 sedan (250 km min + extra km). Pamban bridge route, 560 km, 8–9 hrs. Book Dzire, Amaze or Innova online."
     )
   },
   "madurai-to-rameswaram-cab": {
     title: formatSerpTitle("Madurai to Rameswaram Cab", "Temple Day Trip"),
     description: clampDescription(
-      "Madurai to Rameswaram cab on Cabzii — temple day trip from ₹2,800 sedan. 170 km, 3–4 hrs via Pamban. Book online with instant quote and verified drivers."
+      "Madurai to Rameswaram cab on Cabzii — temple day trip from ₹2,800 sedan. 170 km, 3–4 hrs via Pamban. Book online with a fare shown before you confirm."
     )
   },
   "coimbatore-to-ooty-cab": {
@@ -361,25 +367,25 @@ const ROUTE_META_OVERRIDES = {
     )
   },
   "chennai-to-vellore-cab": {
-    title: formatSerpTitle("Chennai to Vellore Cab", "One-Way Best Rates"),
+    title: formatSerpTitle("Chennai to Vellore Cab", "One-Way Taxi"),
     description: clampDescription(
       "Chennai to Vellore cab on Cabzii — one-way taxi from ₹2,600 sedan. 140 km, 3 hours. Medical, education and city travel with upfront fares."
     )
   },
   "chennai-to-coimbatore-cab": {
-    title: formatSerpTitle("Chennai to Coimbatore Cab", "One-Way Best Rates"),
+    title: formatSerpTitle("Chennai to Coimbatore Cab", "One-Way Taxi"),
     description: clampDescription(
       "Chennai to Coimbatore cab on Cabzii — one-way from ₹6,500 sedan. 505 km highway trip, 8–9 hours. Book sedan, SUV or Innova online."
     )
   },
   "chennai-to-madurai-cab": {
-    title: formatSerpTitle("Chennai to Madurai Taxi", "One-Way Best Rates"),
+    title: formatSerpTitle("Chennai to Madurai Taxi", "One-Way Cab"),
     description: clampDescription(
       "Chennai to Madurai taxi on Cabzii — one-way cab from ₹6,000 sedan. 460 km, 7–8 hours. Temple and family travel with transparent pricing."
     )
   },
   "chennai-to-salem-cab": {
-    title: formatSerpTitle("Chennai to Salem Taxi", "One-Way Best Rates"),
+    title: formatSerpTitle("Chennai to Salem Taxi", "One-Way Cab"),
     description: clampDescription(
       "Chennai to Salem taxi on Cabzii — one-way cab from ₹4,300 sedan. 340 km, 5–6 hours. Book online with upfront fare and instant confirmation."
     )
@@ -391,9 +397,9 @@ const ROUTE_META_OVERRIDES = {
     )
   },
   "bengaluru-to-tirupati-cab": {
-    title: formatSerpTitle("Bengaluru to Tirupati Cab", "One-Way Best Rates"),
+    title: formatSerpTitle("Bengaluru to Tirupati Cab", "One-Way Taxi"),
     description: clampDescription(
-      "Book safe, affordable one-way cab from Bengaluru to Tirupati with Cabzii.in. Clean cars, expert drivers, and zero hidden charges. Get a free quote!"
+      "Bengaluru to Tirupati one-way cab on Cabzii.in — sedan and SUV options with distance and starting fare on the route page. Book online with OTP."
     )
   }
 };
@@ -416,7 +422,7 @@ export function getServiceMeta(service, city) {
     return {
       title: formatSerpTitle(`Cab Rental ${city.name}`, "Hourly & Full-Day Packages"),
       description: clampDescription(
-        `Cab rental in ${city.name} on Cabzii.in — hourly and full-day packages for local trips, weddings and sightseeing. Book online with transparent fares 24/7.`
+        `Cab rental in ${city.name} on Cabzii.in — hourly and full-day packages for local trips, weddings and sightseeing. Fares shown before you confirm.`
       )
     };
   }
@@ -434,7 +440,7 @@ export function getServiceMeta(service, city) {
     return {
       title: formatSerpTitle(`Chauffeur Service ${city.name}`, "Driver for Your Car"),
       description: clampDescription(
-        `Book chauffeur service in ${city.name} with Cabzii — verified drivers for city and highway trips in your vehicle. Transparent packages online.`
+        `Book chauffeur service in ${city.name} with Cabzii — a driver for your own car on city and highway trips. Packages shown before you confirm.`
       )
     };
   }
@@ -447,7 +453,7 @@ export function getServiceMeta(service, city) {
       return {
         title: formatSerpTitle(`Airport Taxi from ${label} Airport`, "Book Now"),
         description: clampDescription(
-          `Starting from ₹${priceFrom.toLocaleString("en-IN")}. Book reliable airport taxi in ${label} with professional drivers, 24×7 ${airport.code} service, and instant confirmation on Cabzii.in.`
+          `Starting from ₹${priceFrom.toLocaleString("en-IN")}. Book airport taxi in ${label} (${airport.code}) on Cabzii.in — share terminal and flight time. Fare shown before you confirm.`
         )
       };
     }
@@ -465,7 +471,7 @@ export function getServiceMeta(service, city) {
     return {
       title: formatSerpTitle(`Outstation Cab ${city.name}`, "Round Trip Packages"),
       description: clampDescription(
-        `Outstation cab from ${city.name} on Cabzii — round-trip and multi-day highway packages with per-km clarity. Book sedan, SUV or Innova online 24/7.`
+        `Outstation cab from ${city.name} on Cabzii — round-trip and multi-day highway packages with per-km clarity. Book sedan, SUV or Innova online.`
       )
     };
   }
@@ -494,9 +500,9 @@ export function getCabBookingMeta(city) {
   const variants = hasAirport
     ? [
         {
-          title: formatSerpTitle(`${city.name} Cab Booking`, "24/7 Taxi & Packages"),
+          title: formatSerpTitle(`${city.name} Cab Booking`, "Airport Taxi & Packages"),
           description: clampDescription(
-            `Book affordable cabs in ${city.name} with Cabzii.in. Outstation, airport taxi and local hire. Clean fleets, transparent fares and expert drivers 24/7.`
+            `Book cabs in ${city.name} with Cabzii.in. Outstation, airport taxi and local hire. Transparent fares and OTP booking.`
           )
         },
         {
@@ -508,7 +514,7 @@ export function getCabBookingMeta(city) {
         {
           title: formatSerpTitle(`Taxi in ${city.name}`, "Book Cabs Online"),
           description: clampDescription(
-            `Need a taxi in ${city.name}? Book local, airport and outstation cabs on Cabzii.in with transparent fares, clean cars and 24/7 customer support.`
+            `Need a taxi in ${city.name}? Book local, airport and outstation cabs on Cabzii.in with transparent fares and OTP booking.`
           )
         }
       ]
@@ -528,7 +534,7 @@ export function getCabBookingMeta(city) {
         {
           title: formatSerpTitle(`Taxi in ${city.name}`, "Book Cabs Online"),
           description: clampDescription(
-            `Need a taxi in ${city.name}? Book local and outstation cabs on Cabzii.in with transparent fares, clean cars and 24/7 customer support.`
+            `Need a taxi in ${city.name}? Book local and outstation cabs on Cabzii.in with transparent fares and OTP booking.`
           )
         }
       ];
@@ -552,8 +558,8 @@ export function getRouteMeta(route) {
     title: formatSerpTitle(`${from} to ${to} Cab`, "Book One-Way Taxi Online"),
     description: clampDescription(
       hasTrip
-        ? `Book ${from} to ${to} one-way cab online — ${distance}, around ${duration}. Verified drivers, fixed fare and instant confirmation on Cabzii.in.`
-        : `Book ${from} to ${to} one-way cab online with Cabzii.in. Verified drivers, fixed fares, door pickup and instant confirmation. Reserve your taxi 24/7.`
+        ? `Book ${from} to ${to} one-way cab online — ${distance}, around ${duration}. Fare shown before payment on Cabzii.in.`
+        : `Book ${from} to ${to} one-way cab online with Cabzii.in. Door pickup, fare shown before payment, and OTP confirmation.`
     )
   });
 
@@ -570,7 +576,7 @@ export function getRouteMeta(route) {
     variants.push({
       title: formatSerpTitle(`${from} to ${to} Cab`, `${distance} in ${duration}`),
       description: clampDescription(
-        `Travelling from ${from} to ${to}? It's ${distance} by road, around ${duration}. Get a clean cab, expert driver and upfront fare on Cabzii.in. Book online 24/7.`
+        `Travelling from ${from} to ${to}? It's ${distance} by road, around ${duration}. Book a cab on Cabzii.in with the fare shown before you confirm.`
       )
     });
   }
@@ -578,7 +584,7 @@ export function getRouteMeta(route) {
   variants.push({
     title: formatSerpTitle(`One Way Cab ${from} to ${to}`, "Fixed Fare"),
     description: clampDescription(
-      `Reliable ${from} to ${to} cab service on Cabzii.in — door pickup, GPS-tracked rides and 24/7 support. One-way drops with transparent, upfront pricing.`
+      `One-way ${from} to ${to} cab on Cabzii.in — door pickup and fare shown before you pay. Sedan, SUV and Innova options where listed.`
     )
   });
 
@@ -590,10 +596,10 @@ export function getServiceH1(service, city) {
     return `Full Day Taxi in ${city.name} — 4/8/12 Hour Packages`;
   }
   if (city.slug === "chennai" && service.slug === "car-rental") {
-    return "Chennai Cabs — Car Rental Packages & Hourly Hire";
+    return "Car Rental in Chennai — Driver-Included 4 & 8 Hour Packages";
   }
   if (city.slug === "chennai" && service.slug === "cab-rental") {
-    return "Chennai Cabs — Cab Rental Packages & Hourly Hire";
+    return "Cab Rental in Chennai — Hourly & Full-Day City Hire";
   }
   if (service.slug === "cab-rental") {
     return `Cab Rental in ${city.name} — Hourly & Full-Day Packages`;
@@ -602,7 +608,7 @@ export function getServiceH1(service, city) {
     const airport = airportInfoForCity(city.slug);
     if (airport?.type === "local") {
       const label = airport.label || city.name;
-      return `${label} Airport Taxi — Pickup & Drop 24/7`;
+      return `${label} Airport Taxi — Pickup & Drop`;
     }
     if (airport?.type === "nearest") {
       return `Airport Taxi from ${city.name} — ${airport.name}`;

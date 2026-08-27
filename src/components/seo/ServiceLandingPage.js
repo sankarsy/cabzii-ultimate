@@ -11,8 +11,11 @@ import { serviceSearchHref, tunedServiceDescription, tunedServiceH1 } from "../.
 import { formatSerpPrice, serviceSerpBadges } from "../../lib/seo/serpRichData";
 import { servicePath } from "../../lib/seo/services";
 import { routesForCity } from "../../lib/seo/routes";
+import { classifyRoute } from "../../lib/seo/indexation";
 import { todayStr } from "../../lib/mmtTrip";
 import RelatedSeoLinks from "./RelatedSeoLinks";
+import ChennaiClusterLinks from "./ChennaiClusterLinks";
+import SeoPageView from "./SeoPageView";
 
 /** Map SEO service slug → search widget trip type so the right tab is pre-selected */
 const SERVICE_TRIP_TYPES = {
@@ -24,7 +27,7 @@ const SERVICE_TRIP_TYPES = {
   "chauffeur-service": "hourly"
 };
 
-const DRIVER_FOCUS_SLUGS = new Set(["chauffeur-service", "acting-driver"]);
+const DRIVER_FOCUS_SLUGS = new Set(["chauffeur-service", "acting-driver", "driver-on-hire"]);
 
 export default function ServiceLandingPage({
   city,
@@ -42,11 +45,14 @@ export default function ServiceLandingPage({
   const seenRouteSlugs = new Set();
   const cityRoutes = isTourPackages
     ? []
-    : routesForCity(city.slug).filter((route) => {
-        if (seenRouteSlugs.has(route.slug)) return false;
-        seenRouteSlugs.add(route.slug);
-        return true;
-      });
+    : routesForCity(city.slug)
+        .filter((route) => {
+          if (seenRouteSlugs.has(route.slug)) return false;
+          seenRouteSlugs.add(route.slug);
+          return classifyRoute(route).indexable;
+        })
+        .sort((a, b) => classifyRoute(b).commercialScore - classifyRoute(a).commercialScore)
+        .slice(0, 8);
   const searchHref = serviceSearchHref(service, city);
   const h1 = tunedServiceH1(service, city);
   const lead = tunedServiceDescription(service, city);
@@ -70,6 +76,11 @@ export default function ServiceLandingPage({
 
   return (
     <article className="section-shell cabzii-seo-landing">
+      <SeoPageView
+        pageType="service"
+        city={city.slug}
+        service={service.slug}
+      />
       <Breadcrumbs
         items={[
           { name: "Home", path: "/" },
@@ -83,6 +94,24 @@ export default function ServiceLandingPage({
       </p>
       <h1>{h1}</h1>
       <p className="cabzii-seo-lead">{lead}</p>
+
+      {city.slug === "chennai" && DRIVER_FOCUS_SLUGS.has(service.slug) ? (
+        <p className="mt-3 text-sm text-slate-700">
+          The main Chennai page for chauffeur / driver-on-hire is{" "}
+          <Link href="/acting-driver/chennai" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
+            acting driver in Chennai
+          </Link>
+          . Book from{" "}
+          <Link href="/call-driver" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
+            Call Driver
+          </Link>
+          .
+        </p>
+      ) : null}
+
+      {city.slug === "chennai" ? (
+        <ChennaiClusterLinks title="Related Chennai services" excludeHref={path} />
+      ) : null}
 
       <SerpRichBar
         ratingValue={reviewStats?.ratingValue}

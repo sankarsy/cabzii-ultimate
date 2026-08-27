@@ -4,6 +4,8 @@
   "scripts": {
     "predev": "node scripts/guardLiveApiHost.js",
     "dev": "next dev",
+    "dev:local": "node scripts/guardLiveApiHost.js --allow-local-ui && next dev -p 3000",
+    "qa:seo": "node --import ./scripts/register-js-ext.mjs scripts/qa-seo-foundation.mjs",
     "prebuild": "node scripts/guardLiveApiHost.js",
     "build": "next build",
     "start": "next start"

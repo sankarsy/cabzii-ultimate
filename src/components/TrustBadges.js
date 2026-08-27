@@ -3,11 +3,10 @@
 import { getTrustIcon, TRUST_ICON_STYLES } from "./icons/heroIcons";
 
 const FALLBACK_TRUST_BADGES = [
-  { label: "Verified Drivers", iconKey: "verified" },
-  { label: "Best Price", iconKey: "price" },
-  { label: "24/7 Support", iconKey: "support" },
-  { label: "Secure", iconKey: "secure" },
-  { label: "Free Cancellation", iconKey: "cancel" }
+  { label: "OTP booking", iconKey: "secure" },
+  { label: "Upfront fares", iconKey: "price" },
+  { label: "Partner vehicles", iconKey: "verified" },
+  { label: "WhatsApp updates", iconKey: "support" }
 ];
 
 const LABEL_ICON_MAP = {

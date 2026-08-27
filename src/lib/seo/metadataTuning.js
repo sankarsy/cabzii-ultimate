@@ -36,22 +36,23 @@ export function tunedActingDriverTitle(city) {
     return formatSerpTitle("Acting Driver Tirupati", "Chauffeur on Hire");
   }
   if (city.slug === "chennai") {
-    return formatSerpTitle("Acting Driver Chennai", "Call Driver & Chauffeur");
+    return formatSerpTitle("Acting Driver in Chennai", "Driver on Hire");
   }
   return formatSerpTitle(`Acting Driver ${city.name}`, "Driver on Hire");
 }
 
 export function tunedActingDriverDescription(city) {
   if (city.slug === "chennai") {
-    return "Acting driver in Chennai — call driver & chauffeur on hire for your car. Hourly, daily and outstation packages with allowance included. Book on Cabzii.in.";
+    return "Book an acting driver in Chennai for your own car. Hire professional drivers for local, airport, daily, hourly and outstation trips through Cabzii. A driver is assigned after you book.";
   }
   if (city.slug === "tirupati") {
-    return "Acting driver in Tirupati for temple trips and outstation runs. Verified chauffeurs, daily packages and transparent fares on Cabzii.in — book online 24/7.";
+    return "Acting driver in Tirupati for temple trips and outstation runs. Daily packages and transparent fares on Cabzii.in — book Call Driver after you choose the package.";
   }
-  return `Acting driver in ${city.name}, ${city.state} — verified chauffeurs for your car. Hourly, daily & outstation packages with allowance included. Book on Cabzii.in.`;
+  return `Acting driver in ${city.name}, ${city.state} — chauffeur for your own car. Hourly, daily and outstation packages. Book on Cabzii.in.`;
 }
 
 export function tunedActingDriverH1(city) {
+  if (city.slug === "chennai") return "Acting Driver in Chennai";
   return `Acting Driver in ${city.name} — Chauffeur on Hire`;
 }
 

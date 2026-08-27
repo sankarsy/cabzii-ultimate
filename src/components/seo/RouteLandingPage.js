@@ -7,6 +7,8 @@ import SeoTripBookingSection from "./SeoTripBookingSection";
 import { tunedRouteDescription, tunedRouteH1 } from "../../lib/seo/metadataTuning";
 import { servicePath, SEO_SERVICES } from "../../lib/seo/services";
 import { formatSerpPrice } from "../../lib/seo/serpRichData";
+import ChennaiClusterLinks from "./ChennaiClusterLinks";
+import SeoPageView from "./SeoPageView";
 
 export default function RouteLandingPage({ route, faqs, extraBody = "", cabs = [] }) {
   const { fromCity, toCity, distance, duration, sedanFrom, suvFrom, slug } = route;
@@ -21,6 +23,13 @@ export default function RouteLandingPage({ route, faqs, extraBody = "", cabs = [
 
   return (
     <article className="section-shell cabzii-seo-landing">
+      <SeoPageView
+        pageType="route"
+        city={fromCity.slug}
+        origin={fromCity.slug}
+        destination={toCity.slug}
+        route={slug}
+      />
       <Breadcrumbs
         items={[
           { name: "Home", path: "/" },
@@ -160,6 +169,21 @@ export default function RouteLandingPage({ route, faqs, extraBody = "", cabs = [
               </Link>
             </li>
           ) : null}
+          <li>
+            <Link href={`/services/one-way-cab/${fromCity.slug}`} className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:text-[var(--cabzii-brand)]">
+              One-way cab {fromCity.name}
+            </Link>
+          </li>
+          <li>
+            <Link href={`/cab-booking/${toCity.slug}`} className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:text-[var(--cabzii-brand)]">
+              Cabs in {toCity.name}
+            </Link>
+          </li>
+          <li>
+            <Link href="/cabs" className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:text-[var(--cabzii-brand)]">
+              Vehicle options
+            </Link>
+          </li>
           {fromCity.slug === "chennai" && airportSvc ? (
             <li>
               <Link href={servicePath(airportSvc, fromCity)} className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:text-[var(--cabzii-brand)]">
@@ -177,15 +201,26 @@ export default function RouteLandingPage({ route, faqs, extraBody = "", cabs = [
               Acting driver · same route
             </Link>
           </li>
+          {fromCity.slug === "chennai" ? (
+            <li>
+              <Link href="/tariff" className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:text-[var(--cabzii-brand)]">
+                Chennai cab tariff
+              </Link>
+            </li>
+          ) : null}
         </ul>
       </section>
 
       <FaqSection title={`${fromCity.name} to ${toCity.name} cab — FAQ`} faqs={faqs} />
 
+      {fromCity.slug === "chennai" ? (
+        <ChennaiClusterLinks title="More Chennai services" excludeHref={path} />
+      ) : null}
+
       <section className="cabzii-seo-block rounded-xl bg-[var(--cabzii-brand)] p-3.5 text-white sm:p-4">
         <h2 className="!text-white text-sm font-bold sm:text-base">Book {fromCity.name} to {toCity.name} cab now</h2>
         <p className="mt-1 text-[11px] text-blue-100 sm:text-xs">
-          Instant online quote · Professional drivers · 24/7 WhatsApp &amp; phone support
+          Instant online quote · Professional drivers · WhatsApp and phone support
         </p>
         <div className="mt-2.5 flex flex-wrap gap-1.5">
           <Link

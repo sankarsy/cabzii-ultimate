@@ -56,7 +56,7 @@ export default function CallDriverLanding({
             <p className="mt-2">
               Cabzii’s call driver and acting driver service in Chennai is for customers who already have a car and need
               a professional driver. Book a local city driver, an outstation driver, or an airport call driver without
-              browsing a public driver list. Cabzii assigns a verified driver after you confirm the booking.
+              browsing a public driver list. Cabzii assigns a professional driver after you confirm the booking.
             </p>
           </section>
           <section>

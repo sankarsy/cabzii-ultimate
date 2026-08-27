@@ -14,6 +14,7 @@ export default function HomeSeoDiscover() {
             { href: "/drivers", label: "Driver hire" },
             { href: "/call-driver", label: "Call Driver" },
             { href: "/acting-driver", label: "Acting driver" },
+            { href: "/tariff", label: "Chennai tariff" },
             { href: "/holidays", label: "Tours" },
             { href: "/routes", label: "Routes" },
             { href: "/services", label: "Services" },
@@ -43,7 +44,7 @@ export default function HomeSeoDiscover() {
           ))}
         </ul>
         <ul className="mt-2 flex flex-wrap gap-2">
-          {actingDriverLinks(6).map((item) => (
+          {actingDriverLinks(8).map((item) => (
             <li key={item.href}>
               <Link
                 href={item.href}
