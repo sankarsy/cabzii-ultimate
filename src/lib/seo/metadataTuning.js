@@ -43,7 +43,7 @@ export function tunedActingDriverTitle(city) {
 
 export function tunedActingDriverDescription(city) {
   if (city.slug === "chennai") {
-    return "Book an acting driver in Chennai for your own car. Hire professional drivers for local, airport, daily, hourly and outstation trips through Cabzii. A driver is assigned after you book.";
+    return "Book an acting driver in Chennai for your own car — local, airport chauffeur and outstation highway days. Book on Call Driver; a professional is assigned after you confirm. Not a Cabzii taxi and not self-drive.";
   }
   if (city.slug === "tirupati") {
     return "Acting driver in Tirupati for temple trips and outstation runs. Daily packages and transparent fares on Cabzii.in — book Call Driver after you choose the package.";
@@ -52,7 +52,7 @@ export function tunedActingDriverDescription(city) {
 }
 
 export function tunedActingDriverH1(city) {
-  if (city.slug === "chennai") return "Acting Driver in Chennai";
+  if (city.slug === "chennai") return "Acting Driver in Chennai — Driver for Your Own Car";
   return `Acting Driver in ${city.name} — Chauffeur on Hire`;
 }
 

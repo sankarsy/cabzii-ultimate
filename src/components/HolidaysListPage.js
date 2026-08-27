@@ -7,6 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import CabziiBrowseHeader from "./mmt/CabziiBrowseHeader";
 import PackageCard from "./PackageCard";
 import RelatedSeoLinks from "./seo/RelatedSeoLinks";
+import SeoPageView from "./seo/SeoPageView";
 import { packageBookingHref } from "../lib/holidayHome";
 import { HOLIDAY_CATEGORIES, categoryLabel } from "../lib/holidays";
 import { catalogPriorityParams, sortBySelectedCity } from "../lib/locationPriority";
@@ -83,6 +84,7 @@ export default function HolidaysListPage() {
 
   return (
     <>
+      <SeoPageView pageType="holidays" city={SEO_CITIES.find((c) => c.name === selectedCity)?.slug || "chennai"} />
       <CabziiBrowseHeader
         title="Holiday packages"
         subtitle="Pilgrimage, beach, hill & heritage trips — flat package fare, toll & permit extra"
@@ -144,6 +146,43 @@ export default function HolidaysListPage() {
       </CabziiBrowseHeader>
 
       <div className="section-shell py-3 sm:py-4 md:py-5">
+        {category === "pilgrimage" ? (
+          <div className="mb-4 rounded-xl border border-slate-200 bg-white p-3 text-[13px] leading-relaxed text-slate-700 sm:p-4 sm:text-sm">
+            <h2 className="text-base font-bold text-slate-900">Pilgrimage packages from Chennai</h2>
+            <p className="mt-2">
+              These are Cabzii holiday packages with a pilgrimage category — not a separate temple URL tree. Cab-only
+              temple runs stay on existing routes:{" "}
+              <Link href="/routes/chennai-to-tirupati-cab" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
+                Chennai to Tirupati
+              </Link>
+              ,{" "}
+              <Link href="/routes/chennai-to-rameswaram-cab" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
+                Chennai to Rameswaram
+              </Link>
+              ,{" "}
+              <Link href="/routes/chennai-to-kanchipuram-cab" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
+                Kanchipuram
+              </Link>
+              ,{" "}
+              <Link href="/routes/chennai-to-tiruvannamalai-cab" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
+                Tiruvannamalai
+              </Link>
+              ,{" "}
+              <Link href="/routes/madurai-to-rameswaram-cab" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
+                Madurai to Rameswaram
+              </Link>{" "}
+              and{" "}
+              <Link href="/routes/chennai-to-kanyakumari-cab" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
+                Kanyakumari
+              </Link>
+              . Group vehicle:{" "}
+              <Link href="/services/tempo-traveller/chennai" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
+                Tempo Traveller Chennai
+              </Link>
+              .
+            </p>
+          </div>
+        ) : null}
         {loading ? (
           <div className="rounded-xl border border-dashed border-slate-200 bg-white p-6 text-center text-xs text-slate-500 sm:p-8 sm:text-sm">
             Loading holiday packages…

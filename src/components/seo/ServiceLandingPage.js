@@ -179,7 +179,13 @@ export default function ServiceLandingPage({
 
       <BookingCtaBar
         bookHref={searchHref}
-        bookLabel={isTourPackages ? `Browse packages in ${city.name}` : `Book ${service.name} in ${city.name}`}
+        bookLabel={
+          service.slug === "airport-taxi"
+            ? `Book ${city.name} airport pickup or drop`
+            : isTourPackages
+              ? `Browse packages in ${city.name}`
+              : `Book ${service.name} in ${city.name}`
+        }
         quoteLabel="WhatsApp instant quote"
         airportDirection={service.slug === "airport-taxi" ? "pickup" : undefined}
         variant="compact"

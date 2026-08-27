@@ -13,3 +13,4 @@ export * from "./landingContent";
 export * from "./routeCatalog";
 export * from "./internalLinks";
 export * from "./indexation";
+export * from "./revenueAudit";

@@ -2,7 +2,7 @@ import { cityBySlug } from "../../../lib/seo/cities";
 import { cabziiOgImage, OG_CONTENT_TYPE, OG_SIZE } from "../../../lib/seo/cabziiOgImage";
 
 export const runtime = "edge";
-export const alt = "Acting driver on Cabzii";
+export const alt = "Acting driver for your own car on Cabzii";
 export const size = OG_SIZE;
 export const contentType = OG_CONTENT_TYPE;
 

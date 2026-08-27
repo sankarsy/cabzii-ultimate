@@ -10,7 +10,7 @@ export const HOME_PAGE_FAQS = [
   ],
   [
     "Can I book a cab near me in Chennai, Madurai or Coimbatore?",
-    "Yes. Search your pickup locality on Cabzii — we show verified taxis near you in Chennai, Madurai, Coimbatore, Trichy, Kanchipuram, Tirupati, Kanyakumari and 30+ cities with upfront package fares."
+    "Yes. Search your pickup locality on Cabzii — we show available cabs near you in Chennai, Madurai, Coimbatore, Trichy, Kanchipuram, Tirupati, Kanyakumari and 30+ cities with package fares shown before you pay."
   ],
   [
     "How do I book car rental near me on Cabzii?",
@@ -131,13 +131,79 @@ export function getServiceFaqs(service, city) {
     [`Which vehicles are available for ${svc} in ${name}?`, `Sedan, SUV, Innova and tempo traveller options depend on service type. Available fleet is shown during search.`]
   ];
 
+  const chennaiAirportFaqs =
+    city.slug === "chennai" && service.slug === "airport-taxi"
+      ? [
+          [
+            "How do I book Chennai airport taxi pickup or drop?",
+            "Open this page or Cabs, choose the Airport tab, set MAA as pickup or drop, add terminal and flight time in notes, then confirm with OTP. Driver details follow by SMS or WhatsApp."
+          ],
+          [
+            "What is the Chennai airport cab fare?",
+            "Airport trips usually use a local Chennai package. Swift Dzire starts at ₹1,200 for 4 Hrs / 40 Km on the published tariff. Extra km, extra hour, tolls and parking are listed on the tariff and on your live quote — they are not assumed included."
+          ],
+          [
+            "Does this page cover Chennai airport to the city and nearby towns?",
+            "Yes. City drops (T. Nagar, OMR, Anna Nagar, Tambaram and similar) stay on this airport page. Longer one-way trips use existing route pages such as Chennai to Tirupati or Chennai to Pondicherry — not a second airport URL."
+          ],
+          [
+            "Is Chennai airport taxi a self-drive car?",
+            "No. It is a chauffeur-driven cab. For a driver in your own car to MAA, book Call Driver / acting driver instead."
+          ]
+        ]
+      : [];
+
+  const chennaiOutstationFaqs =
+    city.slug === "chennai" && service.slug === "outstation-cab"
+      ? [
+          [
+            "What is the outstation km minimum from Chennai?",
+            "On the published tariff, cars have a 250 km outstation minimum and vans have a 300 km minimum. Extra km and driver batta are listed before you pay."
+          ],
+          [
+            "Should I book one-way or round trip from Chennai?",
+            "Book one-way for a single drop (see one-way cab Chennai and the route page). Book this outstation page when the same cab should wait or return. There is no separate round-trip URL."
+          ]
+        ]
+      : [];
+
+  const chennaiOneWayFaqs =
+    city.slug === "chennai" && service.slug === "one-way-cab"
+      ? [
+          [
+            "Where are Chennai one-way fares listed?",
+            "Indicative sedan and SUV starting fares are on each route page (Tirupati, Pondicherry, Bengaluru, Madurai and others). Confirm the live quote before payment."
+          ]
+        ]
+      : [];
+
+  const chennaiTempoFaqs =
+    city.slug === "chennai" && service.slug === "tempo-traveller"
+      ? [
+          [
+            "Is Tempo Traveller booking the same as bus tickets?",
+            "No. This is chauffeur-driven van hire (12–18 seater), not a scheduled bus seat. Mini bus hire on the tariff is also vehicle hire, not bus ticketing."
+          ]
+        ]
+      : [];
+
+  const chennaiRentalFaqs =
+    city.slug === "chennai" && (service.slug === "car-rental" || service.slug === "cab-rental")
+      ? [
+          [
+            "Does Cabzii offer self-drive car rental in Chennai?",
+            "No. Car rental and cab rental on Cabzii are chauffeur-driven packages. For a driver in your own car, use acting driver / Call Driver."
+          ]
+        ]
+      : [];
+
   const bySlug = {
     "airport-taxi": [
       ...(cityHasCommercialAirport(city.slug)
         ? [
             [
               `How early should I book airport taxi in ${name}?`,
-              `Book at least 2–4 hours before pickup; for early morning flights, book the previous evening for guaranteed availability.`
+              `Book at least 2–4 hours before pickup when you can; for early morning flights, book the previous evening. Availability depends on a partner cab being free — Cabzii does not guarantee last-minute dispatch.`
             ],
             [
               `Do you cover airport terminals in ${name}?`,
@@ -166,7 +232,7 @@ export function getServiceFaqs(service, city) {
     ],
     "driver-on-hire": [
       [`Can I hire a driver for my car in ${name}?`, `Yes. Driver on hire packages cover local hourly, full-day and outstation trips with your own vehicle.`],
-      [`What documents does the driver carry?`, `Professional drivers carry valid licence and ID. Vendor verification details are available through Cabzii support.`]
+      [`What documents does the driver carry?`, `Drivers assigned after booking carry a valid licence. For questions about a specific trip, contact Cabzii support with your booking ID.`]
     ],
     "tempo-traveller": [
       [`How many seats in tempo traveller from ${name}?`, `12, 13, 14, 16 and 18 seater AC tempo travellers are available for group travel, tours and pilgrimage trips from ${name}.`],
@@ -196,7 +262,15 @@ export function getServiceFaqs(service, city) {
     ]
   };
 
-  return [...(bySlug[service.slug] || []), ...common];
+  return [
+    ...chennaiAirportFaqs,
+    ...chennaiOutstationFaqs,
+    ...chennaiOneWayFaqs,
+    ...chennaiTempoFaqs,
+    ...chennaiRentalFaqs,
+    ...(bySlug[service.slug] || []),
+    ...common
+  ];
 }
 
 export function getRouteFaqs(route) {
@@ -269,6 +343,76 @@ export function getRouteFaqs(route) {
       [
         "Is toll included in Chennai to Trichy cab fare?",
         "Toll treatment varies by vendor package. Cabzii shows toll, state tax and driver allowance inclusions clearly in the fare breakdown before payment."
+      ]
+    ],
+    "chennai-to-pondicherry-cab": [
+      [
+        "What is the Chennai to Pondicherry cab distance?",
+        `This route is approximately ${distance} by road, typically ${duration}. Indicative sedan fares start around ₹${sedanFrom.toLocaleString("en-IN")}; confirm the live quote.`
+      ],
+      [
+        "Is round trip booked on this page?",
+        "This page is one-way. If the same cab should wait or return, book outstation cab Chennai instead."
+      ]
+    ],
+    "chennai-to-bangalore-cab": [
+      [
+        "How long is Chennai to Bangalore by cab?",
+        `The catalog distance is ${distance}, typically ${duration} on NH48 excluding long stops. Sedan from ₹${sedanFrom.toLocaleString("en-IN")} on this page — live fare may differ.`
+      ]
+    ],
+    "chennai-to-kanchipuram-cab": [
+      [
+        "What is Chennai to Kanchipuram cab distance?",
+        `Approximately ${distance}, typically ${duration}. Indicative sedan from ₹${sedanFrom.toLocaleString("en-IN")}.`
+      ]
+    ],
+    "chennai-to-tiruvannamalai-cab": [
+      [
+        "Can I book Chennai to Tiruvannamalai cab for Girivalam?",
+        `Yes, as a one-way or via outstation if the cab should wait. Distance on this page: ${distance}, typically ${duration}.`
+      ]
+    ],
+    "chennai-to-madurai-cab": [
+      [
+        "What is Chennai to Madurai cab fare?",
+        `Indicative sedan from ₹${sedanFrom.toLocaleString("en-IN")}, SUV from ₹${suvFrom.toLocaleString("en-IN")}. Distance ${distance}, typically ${duration}. Confirm the live quote.`
+      ]
+    ],
+    "chennai-to-kanyakumari-cab": [
+      [
+        "How long is Chennai to Kanyakumari by cab?",
+        `This page lists ${distance}, typically ${duration}. It is a long highway, not a casual same-day hop.`
+      ]
+    ],
+    "chennai-to-ooty-cab": [
+      [
+        "Should I book Chennai to Ooty or Coimbatore to Ooty?",
+        `Chennai to Ooty on this page is ${distance}, typically ${duration}. The shorter hill transfer is Coimbatore to Ooty.`
+      ]
+    ],
+    "madurai-to-kanyakumari-cab": [
+      [
+        "What is Madurai to Kanyakumari cab distance?",
+        `Approximately ${distance}, typically ${duration}. Indicative sedan from ₹${sedanFrom.toLocaleString("en-IN")}.`
+      ]
+    ],
+    "bengaluru-to-mysore-cab": [
+      [
+        "What is Bengaluru to Mysore cab fare?",
+        `Indicative sedan from ₹${sedanFrom.toLocaleString("en-IN")}. Distance ${distance}, typically ${duration}.`
+      ]
+    ],
+    "coimbatore-to-ooty-cab": [
+      [
+        "How long is Coimbatore to Ooty by cab?",
+        `This page lists ${distance}, typically ${duration} including the ghat. Timing varies with weather and tourist traffic.`
+      ]
+    ],
+    "bengaluru-to-tirupati-cab": [
+      [
+        "How much is Bengaluru to Tirupati cab fare?",
+        `Indicative sedan from ₹${sedanFrom.toLocaleString("en-IN")}, SUV from ₹${suvFrom.toLocaleString("en-IN")}. Distance ${distance}, typically ${duration}. Confirm before payment.`
       ]
     ]
   };

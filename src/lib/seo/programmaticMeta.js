@@ -140,7 +140,7 @@ const SERVICE_META_OVERRIDES = {
   "chennai:airport-taxi": {
     title: formatSerpTitle("Chennai Airport Taxi", "Airport Pickup & Drop"),
     description: clampDescription(
-      "Book Chennai airport taxi (MAA) pickup and drop on Cabzii. Share terminal and flight time. Swift Dzire local packages from ₹1,200 (4 Hrs / 40 Km) on the published tariff."
+      "Book Chennai airport taxi (MAA) for pickup, drop and city transfers. Share terminal and flight time. Swift Dzire local packages from ₹1,200 (4 Hrs / 40 Km) on the published tariff."
     )
   },
   "chennai:local-taxi": {
@@ -396,6 +396,42 @@ const ROUTE_META_OVERRIDES = {
       "Chennai to Trichy taxi & cab service from ₹4,200. 330 km distance by car, 5–6 hours. Book one-way taxi online — Srirangam & city drops on Cabzii."
     )
   },
+  "chennai-to-kanchipuram-cab": {
+    title: formatSerpTitle("Chennai to Kanchipuram Cab", "Temple One-Way Taxi"),
+    description: clampDescription(
+      "Chennai to Kanchipuram cab on Cabzii — one-way taxi, about 75 km / 2 hours on the catalog. Indicative sedan from ₹1,800. Confirm the live fare before you pay."
+    )
+  },
+  "chennai-to-tiruvannamalai-cab": {
+    title: formatSerpTitle("Chennai to Tiruvannamalai Cab", "One-Way Taxi"),
+    description: clampDescription(
+      "Chennai to Tiruvannamalai cab on Cabzii — one-way taxi, about 185 km / 4 hours on the catalog. Indicative sedan from ₹3,000. Book with OTP."
+    )
+  },
+  "chennai-to-kanyakumari-cab": {
+    title: formatSerpTitle("Chennai to Kanyakumari Cab", "One-Way Taxi"),
+    description: clampDescription(
+      "Chennai to Kanyakumari cab on Cabzii — long highway one-way, about 700 km / 11–12 hours on the catalog. Confirm sedan/SUV fare on the route page before payment."
+    )
+  },
+  "chennai-to-ooty-cab": {
+    title: formatSerpTitle("Chennai to Ooty Cab", "Hill Station Taxi"),
+    description: clampDescription(
+      "Chennai to Ooty cab on Cabzii — about 555 km / 9–10 hours on the catalog. For the shorter hill hop see Coimbatore to Ooty. Confirm the live fare before you pay."
+    )
+  },
+  "madurai-to-kanyakumari-cab": {
+    title: formatSerpTitle("Madurai to Kanyakumari Cab", "One-Way Taxi"),
+    description: clampDescription(
+      "Madurai to Kanyakumari cab on Cabzii — one-way taxi with distance and starting fare on this route page. Book sedan or SUV with OTP."
+    )
+  },
+  "bengaluru-to-mysore-cab": {
+    title: formatSerpTitle("Bengaluru to Mysore Cab", "One-Way Taxi"),
+    description: clampDescription(
+      "Bengaluru to Mysore cab on Cabzii — one-way taxi, about 145 km / 3–4 hours on the catalog. Indicative sedan from ₹2,499. Confirm the live quote."
+    )
+  },
   "bengaluru-to-tirupati-cab": {
     title: formatSerpTitle("Bengaluru to Tirupati Cab", "One-Way Taxi"),
     description: clampDescription(
@@ -592,6 +628,18 @@ export function getRouteMeta(route) {
 }
 
 export function getServiceH1(service, city) {
+  if (city.slug === "chennai" && service.slug === "airport-taxi") {
+    return "Chennai Airport Taxi (MAA) — Pickup, Drop & City Transfers";
+  }
+  if (city.slug === "chennai" && service.slug === "outstation-cab") {
+    return "Outstation Cab from Chennai — One-Way vs Round Trip";
+  }
+  if (city.slug === "chennai" && service.slug === "tempo-traveller") {
+    return "Tempo Traveller in Chennai — 12 to 18 Seater Group Hire";
+  }
+  if (city.slug === "chennai" && service.slug === "one-way-cab") {
+    return "One-Way Cab from Chennai — Inter-City Drops";
+  }
   if (service.slug === "hourly-rental") {
     return `Full Day Taxi in ${city.name} — 4/8/12 Hour Packages`;
   }
@@ -877,12 +925,24 @@ const ROUTE_KEYWORD_OVERRIDES = {
 };
 
 export function getRouteH1(route) {
-  if (route.slug === "chennai-to-trichy-cab") {
-    return "Chennai to Trichy Taxi — One-Way Cab Service";
-  }
-  if (route.slug === "chennai-to-tirupati-cab") {
-    return "Chennai to Tirupati Cab Booking — One-Way Taxi";
-  }
+  const h1BySlug = {
+    "chennai-to-trichy-cab": "Chennai to Trichy Taxi — One-Way Cab Service",
+    "chennai-to-tirupati-cab": "Chennai to Tirupati Cab — Darshan One-Way Taxi",
+    "chennai-to-pondicherry-cab": "Chennai to Pondicherry Cab — ECR One-Way Taxi",
+    "chennai-to-bangalore-cab": "Chennai to Bangalore Taxi — NH48 One-Way Cab",
+    "chennai-to-kanchipuram-cab": "Chennai to Kanchipuram Cab — Temple One-Way Taxi",
+    "chennai-to-tiruvannamalai-cab": "Chennai to Tiruvannamalai Cab — One-Way Taxi",
+    "chennai-to-rameswaram-cab": "Chennai to Rameswaram Cab — Pilgrimage One-Way Taxi",
+    "chennai-to-madurai-cab": "Chennai to Madurai Taxi — One-Way Cab",
+    "chennai-to-kanyakumari-cab": "Chennai to Kanyakumari Cab — One-Way Taxi",
+    "chennai-to-ooty-cab": "Chennai to Ooty Cab — Hill Station One-Way Taxi",
+    "madurai-to-rameswaram-cab": "Madurai to Rameswaram Cab — Temple Day Trip",
+    "madurai-to-kanyakumari-cab": "Madurai to Kanyakumari Cab — One-Way Taxi",
+    "coimbatore-to-ooty-cab": "Coimbatore to Ooty Cab — Hill Transfer Taxi",
+    "bengaluru-to-tirupati-cab": "Bengaluru to Tirupati Cab — Darshan One-Way Taxi",
+    "bengaluru-to-mysore-cab": "Bengaluru to Mysore Cab — One-Way Taxi"
+  };
+  if (h1BySlug[route.slug]) return h1BySlug[route.slug];
   return `${route.fromCity.name} to ${route.toCity.name} Cab — One Way Taxi`;
 }
 

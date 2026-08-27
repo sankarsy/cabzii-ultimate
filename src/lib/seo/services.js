@@ -54,7 +54,7 @@ export const SEO_SERVICES = [
     primaryKeyword: "car rental",
     searchQuery: "car rental",
     priceFrom: 1200,
-    highlights: ["Self-drive alternatives via cab", "Sedan & SUV fleet", "Daily rental slabs"]
+    highlights: ["Chauffeur-driven hire (not self-drive)", "Sedan & SUV fleet", "Daily rental slabs"]
   },
   {
     slug: "cab-rental",

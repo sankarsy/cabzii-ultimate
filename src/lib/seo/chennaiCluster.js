@@ -5,12 +5,15 @@
  * Do not add new App Router paths from this file.
  */
 
+export { chennaiServiceUniqueHtml } from "./chennaiServiceContent";
+
 export const CHENNAI_MONEY_LINKS = [
   { href: "/cab-booking/chennai", label: "Cab booking in Chennai", intent: "cab" },
   { href: "/services/airport-taxi/chennai", label: "Chennai airport taxi", intent: "airport" },
   { href: "/services/hourly-rental/chennai", label: "Hourly / full-day taxi", intent: "local" },
   { href: "/services/outstation-cab/chennai", label: "Outstation cab Chennai", intent: "outstation" },
   { href: "/services/one-way-cab/chennai", label: "One-way cab from Chennai", intent: "one-way" },
+  { href: "/services/car-rental/chennai", label: "Car rental (with driver)", intent: "rental" },
   { href: "/acting-driver/chennai", label: "Acting driver in Chennai", intent: "driver" },
   { href: "/call-driver", label: "Book Call Driver", intent: "book-driver" },
   { href: "/services/tempo-traveller/chennai", label: "Tempo Traveller Chennai", intent: "tempo" },
@@ -19,7 +22,9 @@ export const CHENNAI_MONEY_LINKS = [
   { href: "/holidays", label: "Holiday packages", intent: "tours" },
   { href: "/routes/chennai-to-tirupati-cab", label: "Chennai to Tirupati cab", intent: "route" },
   { href: "/routes/chennai-to-pondicherry-cab", label: "Chennai to Pondicherry cab", intent: "route" },
-  { href: "/routes/chennai-to-bangalore-cab", label: "Chennai to Bengaluru cab", intent: "route" }
+  { href: "/routes/chennai-to-bangalore-cab", label: "Chennai to Bengaluru cab", intent: "route" },
+  { href: "/routes/chennai-to-kanchipuram-cab", label: "Chennai to Kanchipuram cab", intent: "route" },
+  { href: "/routes/chennai-to-rameswaram-cab", label: "Chennai to Rameswaram cab", intent: "route" }
 ];
 
 export const CHENNAI_KEYWORD_URL_MAP = [
@@ -31,7 +36,12 @@ export const CHENNAI_KEYWORD_URL_MAP = [
   { keyword: "car rental Chennai", url: "/services/car-rental/chennai" },
   { keyword: "cab rental Chennai", url: "/services/cab-rental/chennai" },
   { keyword: "airport taxi Chennai", url: "/services/airport-taxi/chennai" },
+  { keyword: "Chennai airport cab", url: "/services/airport-taxi/chennai" },
   { keyword: "Chennai airport pickup", url: "/services/airport-taxi/chennai" },
+  { keyword: "Chennai airport drop", url: "/services/airport-taxi/chennai" },
+  { keyword: "airport cab booking Chennai", url: "/services/airport-taxi/chennai" },
+  { keyword: "Chennai airport to city", url: "/services/airport-taxi/chennai" },
+  { keyword: "round trip cab Chennai", url: "/services/outstation-cab/chennai" },
   { keyword: "outstation cab Chennai", url: "/services/outstation-cab/chennai" },
   { keyword: "one way cab Chennai", url: "/services/one-way-cab/chennai" },
   { keyword: "acting driver Chennai", url: "/acting-driver/chennai" },
@@ -46,8 +56,17 @@ export const CHENNAI_KEYWORD_URL_MAP = [
 
 export function chennaiCabUniqueHtml() {
   return `
+<h2>How to book a cab in Chennai</h2>
+<p>Enter pickup, choose local, airport or outstation, compare the package, confirm with mobile OTP. Driver details follow by SMS or WhatsApp. Cabzii is chauffeur-driven cab hire — not self-drive. HQ locality is Maduravoyal; pickup is city-wide when a partner cab is available.</p>
+<ol>
+<li>Open this page or <a href="/cabs">Cabs</a></li>
+<li>Select trip type and vehicle class (Dzire, Ertiga, Innova, Tempo Traveller)</li>
+<li>Read km/hour limits, extra km, batta, tolls and parking on the quote</li>
+<li>Confirm with OTP</li>
+</ol>
+
 <h2>Chennai airport taxi (MAA)</h2>
-<p>Chennai International Airport (MAA) is one of Cabzii’s highest-demand bookings. Pre-book pickup or drop, share your terminal (T1 or T2) and flight time, and confirm the fare before payment. This is a cab with driver — not a self-drive desk. See <a href="/services/airport-taxi/chennai">airport taxi Chennai</a> for pickup and drop packages.</p>
+<p>Chennai International Airport (MAA) is one of Cabzii’s highest-demand bookings. Pre-book pickup or drop, share your terminal and flight time, and confirm the fare before payment. This is a cab with driver — not a self-drive desk. Full pickup/drop process: <a href="/services/airport-taxi/chennai">airport taxi Chennai</a>.</p>
 
 <h2>Local, hourly and full-day cabs in Chennai</h2>
 <p>OMR office days, T. Nagar shopping, hospital visits in Kilpauk or Vadapalani, and wedding logistics usually fit a 4 hour / 40 km or 8 hour / 80 km package. Extra km and extra hour rates are on the <a href="/tariff">published Chennai tariff</a>. Use <a href="/services/hourly-rental/chennai">hourly / full-day taxi Chennai</a> when you need the cab for several stops in one day.</p>
@@ -63,7 +82,10 @@ export function chennaiCabUniqueHtml() {
 <p>If you already have a car, Cabzii Call Driver assigns a professional to drive it — local, airport chauffeur, outstation highway days, monthly/corporate quotes and valet for functions. The Chennai guide is <a href="/acting-driver/chennai">acting driver in Chennai</a>; booking starts at <a href="/call-driver">Call Driver</a>.</p>
 
 <h2>Pilgrimage and holiday packages from Chennai</h2>
-<p>Cabzii holiday packages include pilgrimage circuits (Tirupati, Rameswaram–Madurai) and hill/family trips such as Ooty–Kodaikanal. Transport origin is typically Chennai. Browse <a href="/holidays?category=pilgrimage">pilgrimage packages</a> or all <a href="/holidays">holiday packages</a>. Package pages show itinerary and cab-type options where the vendor has listed them.</p>
+<p>Cabzii holiday packages include pilgrimage circuits (Tirupati, Rameswaram–Madurai) and hill/family trips such as Ooty–Kodaikanal. Transport origin is typically Chennai. Browse <a href="/holidays?category=pilgrimage">pilgrimage packages</a> or all <a href="/holidays">holiday packages</a>. Cab-only temple runs stay on existing route pages — there is no /pilgrimage URL tree.</p>
+
+<h2>Indicative Chennai fares (published tariff)</h2>
+<p>Swift Dzire from ₹1,200 (4 Hrs / 40 Km). Innova Crysta from ₹2,200. Tempo Traveller 12 seater from ₹3,000 (5 Hrs / 50 Km). Outstation cars: 250 km minimum (Dzire from ₹3,250). Extra km, extra hour and driver batta are on the <a href="/tariff">tariff</a>. Live quotes can vary.</p>
 `;
 }
 
@@ -89,35 +111,10 @@ export function chennaiDriverUniqueHtml() {
 
 <h2>Night bookings</h2>
 <p>Night bookings after 10 pm may include a night charge. Availability depends on a driver being free in Chennai at that hour — Cabzii does not promise a guaranteed emergency dispatch product.</p>
-`;
-}
 
-export function chennaiServiceUniqueHtml(slug) {
-  const extras = {
-    "airport-taxi": `<h2>MAA terminals and how to book</h2>
-<p>Share domestic or international terminal, flight number and a buffer for baggage. Cabzii airport taxi is a cab with driver, billed as a local or airport package from the <a href="/tariff">Chennai tariff</a> (Swift Dzire local from ₹1,200 for 4 Hrs / 40 Km). For a driver in your own car, use <a href="/acting-driver/chennai">acting driver Chennai</a>.</p>`,
-    "outstation-cab": `<h2>Round-trip vs one-way from Chennai</h2>
-<p>Choose outstation when you want the same cab for the return or a waiting day. Choose <a href="/services/one-way-cab/chennai">one-way cab</a> when you only need a drop. Starting outstation car minimums are on the tariff (250 km for cars). Popular corridors: Tirupati, Pondicherry, Bengaluru, Madurai, Trichy and Rameswaram.</p>`,
-    "one-way-cab": `<h2>When one-way from Chennai is the better fit</h2>
-<p>One-way is for a single drop — for example Chennai to Tirupati for darshan without paying a round-trip package. Indicative sedan starting fares are on each <a href="/routes">route page</a>. Toll treatment is shown in the fare breakdown before payment.</p>`,
-    "hourly-rental": `<h2>4 hour and 8 hour Chennai packages</h2>
-<p>These slabs match the published car tariff: Dzire from ₹1,200 (4 Hrs / 40 Km) and ₹2,400 (8 Hrs / 80 Km). Use hourly hire for multi-stop city work. Point-to-point local taxi is also listed under <a href="/services/local-taxi/chennai">local taxi Chennai</a>.</p>`,
-    "local-taxi": `<h2>Point-to-point vs hourly in Chennai</h2>
-<p>Local taxi covers city rides and the same hourly packages. If your search is “full day taxi Chennai” or “8 hour cab”, the detailed package page is <a href="/services/hourly-rental/chennai">hourly rental Chennai</a>.</p>`,
-    "car-rental": `<h2>Car rental in Chennai means a cab with driver</h2>
-<p>Cabzii car rental is chauffeur-driven local hire, not a self-drive counter. Packages follow the same 4hr/8hr tariff as other Chennai cabs. For taxi wording see <a href="/services/cab-rental/chennai">cab rental Chennai</a>.</p>`,
-    "cab-rental": `<h2>Cab rental vs cab booking in Chennai</h2>
-<p>Cab rental is the hourly/full-day city product. Airport and outstation tabs live on <a href="/cab-booking/chennai">cab booking Chennai</a>. All published rates: <a href="/tariff">tariff</a>.</p>`,
-    "tempo-traveller": `<h2>Tempo Traveller hire in Chennai</h2>
-<p>12 and 13 seater local packages start from ₹3,000 (5 Hrs / 50 Km) on the published van tariff. Outstation vans have a 300 km minimum. Use this page for group airport, wedding and pilgrimage movement. Mini bus rates (21–30 seater) are on the same <a href="/tariff">tariff</a>.</p>`,
-    "driver-on-hire": `<h2>Driver on hire is the same service as acting driver</h2>
-<p>This page matches searches for “driver on hire Chennai”. The full Chennai guide and booking path are on <a href="/acting-driver/chennai">acting driver in Chennai</a> and <a href="/call-driver">Call Driver</a>. Do not book twice — one booking covers chauffeur-for-your-car.</p>`,
-    "chauffeur-service": `<h2>Chauffeur service in Chennai</h2>
-<p>Corporate days, wedding cars and multi-stop presentation driving use the same Call Driver assignment as acting driver. Read the city guide at <a href="/acting-driver/chennai">acting driver in Chennai</a> and book at <a href="/call-driver">Call Driver</a>.</p>`,
-    "tour-packages": `<h2>Holiday and pilgrimage packages from Chennai</h2>
-<p>Browse live packages on <a href="/holidays">holiday packages</a>. Pilgrimage listings (Tirupati, Rameswaram circuits) are grouped under pilgrimage. Each package page is the booking surface; this city page is the Chennai entry point.</p>`
-  };
-  return extras[slug] || "";
+<h2>Book an acting driver</h2>
+<p>The booking CTA is <a href="/call-driver">Call Driver</a>. Synonym searches (chauffeur, driver on hire, airport chauffeur, outstation driver) stay on this city guide plus Call Driver — they are not separate thin pages. Need a Cabzii vehicle as well? Use <a href="/cab-booking/chennai">cab booking Chennai</a>.</p>
+`;
 }
 
 export const CHENNAI_CAB_FAQS = [
@@ -136,6 +133,10 @@ export const CHENNAI_CAB_FAQS = [
   [
     "When should I book an acting driver instead of a cab?",
     "Book an acting driver when you want a chauffeur for your own car. Book a cab when you need the vehicle as well. Both are booked on Cabzii; acting driver starts from Call Driver."
+  ],
+  [
+    "Is Cabzii car rental in Chennai self-drive?",
+    "No. Cabzii car rental and cab booking in Chennai are chauffeur-driven. For a driver in your own car, use acting driver / Call Driver."
   ]
 ];
 
@@ -167,5 +168,9 @@ export const CHENNAI_DRIVER_FAQS = [
   [
     "How do I book an acting driver?",
     "Open Call Driver, pick the service, enter date, time, pickup and vehicle, review the estimate or request a quote, then confirm. Cabzii assigns an available driver after booking."
+  ],
+  [
+    "Is airport chauffeur the same as airport taxi?",
+    "No. Airport chauffeur on Call Driver is a driver in your car to or from MAA. Airport taxi includes a Cabzii vehicle — book that on the Chennai airport taxi page."
   ]
 ];

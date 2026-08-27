@@ -3,7 +3,7 @@ import { serviceBySlug } from "../../../../lib/seo/services";
 import { cabziiOgImage, OG_CONTENT_TYPE, OG_SIZE } from "../../../../lib/seo/cabziiOgImage";
 
 export const runtime = "edge";
-export const alt = "Cabzii city service";
+export const alt = "Chauffeur-driven cab booking on Cabzii";
 export const size = OG_SIZE;
 export const contentType = OG_CONTENT_TYPE;
 

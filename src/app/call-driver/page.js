@@ -1,7 +1,8 @@
 import JsonLd from "../../components/seo/JsonLd";
 import CallDriverLanding from "../../components/call-driver/CallDriverLanding";
 import SeoPageView from "../../components/seo/SeoPageView";
-import { breadcrumbJsonLd } from "../../lib/seo";
+import { breadcrumbJsonLd, faqFromPairs } from "../../lib/seo";
+import { CHENNAI_DRIVER_FAQS } from "../../lib/seo/chennaiCluster";
 import { SITE_URL } from "../../lib/seo/constants";
 
 export const metadata = {
@@ -36,7 +37,8 @@ export default function CallDriverPage() {
       url: `${SITE_URL}/call-driver`,
       description:
         "Professional call driver and acting driver service in Chennai for local, outstation, airport, monthly, corporate and valet parking bookings."
-    }
+    },
+    faqFromPairs(CHENNAI_DRIVER_FAQS)
   ];
 
   return (

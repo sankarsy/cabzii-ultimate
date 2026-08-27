@@ -6,7 +6,7 @@ import { relatedLinksForPage } from "../src/lib/seo/internalLinks.js";
 import { cityAreas, getCityFaqs, getServiceFaqs } from "../src/lib/seo/content.js";
 import { cityHasCommercialAirport, airportInfoForCity } from "../src/lib/seo/airports.js";
 import { getServiceH1, getCabBookingMeta, clampDescription, getServiceMeta } from "../src/lib/seo/programmaticMeta.js";
-import { getCityLandingBody, getServiceLandingBody } from "../src/lib/seo/landingContent.js";
+import { getCityLandingBody, getServiceLandingBody, getRouteLandingBody } from "../src/lib/seo/landingContent.js";
 import { SEO_SERVICES } from "../src/lib/seo/services.js";
 import { cityBySlug, SEO_CITIES } from "../src/lib/seo/cities.js";
 import {
@@ -17,6 +17,8 @@ import {
 } from "../src/lib/seo/indexation.js";
 import { SEO_ROUTES } from "../src/lib/seo/routes.js";
 import { FEATURED_ROUTE_SLUGS } from "../src/lib/seo/featuredRoutes.js";
+import { featuredRouteUniqueHtml } from "../src/lib/seo/featuredRouteContent.js";
+import { revenueSeoReport } from "../src/lib/seo/revenueAudit.js";
 import { PUBLIC_ROUTE_REDIRECTS } from "../src/lib/routes/publicRoutes.js";
 import { SERVICE_URL_PREFIXES, TRAVELS_URL_PREFIXES } from "../src/lib/seo/urlAliases.js";
 import { isLiveApiHostProtected } from "../src/lib/liveApiHostGuard.js";
@@ -143,6 +145,46 @@ assert(preservedAliases > 100, "Existing 301 alias patterns must remain in code"
 assert(PUBLIC_ROUTE_REDIRECTS["/airport-taxi"] === "/services/airport-taxi/chennai", "Bare /airport-taxi remains a 301");
 
 assert(typeof isLiveApiHostProtected === "function", "Live API guard must remain exported");
+
+const chennaiAirportBody = getServiceLandingBody(airportTaxi, chennai);
+assert(/MAA/i.test(chennaiAirportBody), "Chennai airport body must mention MAA");
+assert(/pickup/i.test(chennaiAirportBody) && /drop/i.test(chennaiAirportBody), "Chennai airport body must cover pickup and drop");
+assert(!/self-drive/i.test(chennaiAirportBody) || /not a self-drive/i.test(chennaiAirportBody), "Chennai airport must not sell self-drive");
+assert(!/guaranteed availability/i.test(chennaiAirportBody), "Chennai airport must not promise guaranteed availability");
+
+const outstation = SEO_SERVICES.find((s) => s.slug === "outstation-cab");
+const oneWay = SEO_SERVICES.find((s) => s.slug === "one-way-cab");
+const tempo = SEO_SERVICES.find((s) => s.slug === "tempo-traveller");
+const chennaiOutstation = getServiceLandingBody(outstation, chennai);
+const chennaiOneWay = getServiceLandingBody(oneWay, chennai);
+const chennaiTempo = getServiceLandingBody(tempo, chennai);
+assert(/250 km/i.test(chennaiOutstation), "Chennai outstation must state 250 km car minimum");
+assert(/round trip/i.test(chennaiOutstation), "Chennai outstation must explain round trip");
+assert(/chennai-to-tirupati-cab/.test(chennaiOneWay), "Chennai one-way must link Tirupati route");
+assert(/not bus ticket/i.test(chennaiTempo), "Tempo page must not be bus ticketing");
+assert(/chauffeur-driven/i.test(getServiceLandingBody(carRental, chennai)), "Chennai car rental must say chauffeur-driven");
+
+assert(/MAA/i.test(chennaiBody) && /tariff/i.test(chennaiBody), "Chennai hub unique copy must mention MAA and tariff");
+
+const airportFaqs = getServiceFaqs(airportTaxi, chennai).map(([q, a]) => `${q} ${a}`).join(" ");
+assert(/pickup or drop/i.test(airportFaqs), "Chennai airport FAQs must mention pickup or drop");
+
+for (const slug of FEATURED_ROUTE_SLUGS) {
+  const route = SEO_ROUTES.find((r) => r.slug === slug);
+  assert(route, `Featured route exists: ${slug}`);
+  const unique = featuredRouteUniqueHtml(route);
+  assert(unique.length > 200, `Featured route unique HTML: ${slug}`);
+  const body = getRouteLandingBody({ ...route, fromCity: cityBySlug(route.from), toCity: cityBySlug(route.to) });
+  assert(body.includes(String(route.distance)), `Featured route body uses catalog distance: ${slug}`);
+}
+
+const report = revenueSeoReport();
+assert(report.topMoneyPages.length === 20, "Revenue audit must list top 20 money pages");
+assert(report.topContentImprovement.length === 20, "Revenue audit must list top 20 content pages");
+assert(report.bookingDataAvailable === false, "Do not invent booking conversion rates");
+assert(report.revenueDataAvailable === false, "Do not invent GMV/revenue");
+assert(report.tnCities.length >= 10, "TN city ranking must exist");
+assert(report.nationalExpansion.length >= 8, "National expansion is a report, not new URLs");
 
 if (failures.length) {
   console.error(`SEO foundation QA FAILED (${failures.length}):`);

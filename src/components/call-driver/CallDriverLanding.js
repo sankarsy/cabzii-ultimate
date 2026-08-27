@@ -82,7 +82,30 @@ export default function CallDriverLanding({
             <h2 className="text-lg font-bold text-slate-900">Safety and professional drivers</h2>
             <p className="mt-2">
               Drivers are operational resources managed by Cabzii. We can replace a driver if needed, cover availability
-              gaps, and keep personal driver records in the admin panel rather than on the public website.
+              gaps, and keep personal driver records in the admin panel rather than on the public website. Cabzii does
+              not publish a public list of named drivers.
+            </p>
+          </section>
+          <section>
+            <h2 className="text-lg font-bold text-slate-900">Related Chennai bookings</h2>
+            <p className="mt-2">
+              Need a Cabzii vehicle as well? Use{" "}
+              <Link href="/cab-booking/chennai" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
+                cab booking Chennai
+              </Link>{" "}
+              or{" "}
+              <Link href="/services/airport-taxi/chennai" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
+                Chennai airport taxi
+              </Link>
+              . City guide for chauffeur / driver-on-hire wording:{" "}
+              <Link href="/acting-driver/chennai" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
+                acting driver in Chennai
+              </Link>
+              . Published cab rates:{" "}
+              <Link href="/tariff" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
+                tariff
+              </Link>
+              .
             </p>
           </section>
         </div>

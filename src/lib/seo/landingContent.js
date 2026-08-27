@@ -4,6 +4,7 @@ import { servicePath, SEO_SERVICES } from "./services";
 import { airportInfoForCity } from "./airports";
 import { cityHubContext, driverCityContext } from "./cityHubCopy";
 import { chennaiCabUniqueHtml, chennaiDriverUniqueHtml, chennaiServiceUniqueHtml } from "./chennaiCluster";
+import { featuredRouteUniqueHtml } from "./featuredRouteContent";
 
 function link(href, label) {
   return `<a href="${href}">${label}</a>`;
@@ -86,6 +87,8 @@ function airportBodyBits(city) {
 }
 
 function buildCityCabBody(city) {
+  if (city.slug === "chennai") return chennaiCabUniqueHtml();
+
   const name = city.name;
   const areas = cityAreas(city.slug);
   const areaText = areas.length ? areas.join(", ") : `central ${name} and nearby suburbs`;
@@ -93,7 +96,6 @@ function buildCityCabBody(city) {
   const routes = cityRouteLinks(city.slug);
   const context = cityHubContext(city.slug);
   const airport = airportBodyBits(city);
-  const chennaiExtra = city.slug === "chennai" ? chennaiCabUniqueHtml() : "";
 
   return `
 <h2>Cab booking in ${name} — local guide</h2>
@@ -153,7 +155,6 @@ ${benefitsList([
 
 <h2>Book your ${name} cab now</h2>
 <p>Use the search widget above or browse ${link(`/cab-booking/${city.slug}`, `cab booking ${name}`)}, ${link("/cabs", "all cabs")} and ${link("/blogs", "travel guides")}. For same-day outstation departures, book early on festival weekends.</p>
-${chennaiExtra}
 `;
 }
 
@@ -229,7 +230,7 @@ ${benefitsList(service.highlights.length ? service.highlights : [
 <h2>${svc} pricing in ${name}</h2>
 <p>Packages start from ${priceFrom}. Exact package price is always shown on Cabzii before you pay. Full rate card: <a href="/tariff">Cabzii tariff</a>.</p>
 ${pricingTable(pricing[slug] || pricing["local-taxi"])}
-<p><em>Fares vary by date, vehicle availability and trip details. Festival weekends and peak hours may affect pricing — book early for guaranteed availability.</em></p>
+<p><em>Fares vary by date, vehicle availability and trip details. Festival weekends and peak hours may affect pricing — book early when you need a specific vehicle class.</em></p>
 
 <h2>Areas we serve for ${svc.toLowerCase()} in ${name}</h2>
 <p>Pickup and drop available across ${areaText}. ${
@@ -391,15 +392,18 @@ export function getCityLandingBody(city, variant = "cab") {
 
 export function getServiceLandingBody(service, city) {
   if (city?.slug === "chennai") {
-    const generated = PRIORITY_SERVICES.has(service.slug) ? buildServiceBody(service, city) : "";
     const extra = chennaiServiceUniqueHtml(service.slug);
-    return `${generated}${extra}`;
+    if (extra) return extra;
+    const generated = PRIORITY_SERVICES.has(service.slug) ? buildServiceBody(service, city) : "";
+    return generated;
   }
   if (!PRIORITY_SERVICES.has(service.slug)) return "";
   return buildServiceBody(service, city);
 }
 
 export function getRouteLandingBody(route) {
+  const unique = featuredRouteUniqueHtml(route);
+  if (unique) return unique;
   if (!shouldGenerateRouteBody(route)) return "";
   return buildRouteBody(route);
 }
