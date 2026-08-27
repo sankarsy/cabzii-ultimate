@@ -130,7 +130,35 @@ Performance → Queries:
 
 ```bash
 GOOGLE_SITE_VERIFICATION=your_google_token_here
-NEXT_PUBLIC_SITE_URL=https://your-production-domain
+NEXT_PUBLIC_SITE_URL=https://www.cabzii.in
 ```
 
 Restart / redeploy after setting verification so the meta tag is present on HTML responses.
+
+---
+
+## 14. Search Console API (backend, super-admin)
+
+The Admin → SEO revenue report can pull impressions, clicks, CTR, position, and queries from the Search Console API. This is **not** GA4. Credentials stay on the API server.
+
+Canonical origin in code: `https://www.cabzii.in`. The GSC **property** may still be `https://www.cabzii.in/`, `https://cabzii.in/`, or `sc-domain:cabzii.in` — use the string shown in Search Console.
+
+Backend env (never frontend):
+
+```bash
+GSC_SITE_URL=https://www.cabzii.in/
+GSC_CANONICAL_ORIGIN=https://www.cabzii.in
+GOOGLE_APPLICATION_CREDENTIALS=/secure/path/service-account.json
+```
+
+1. Enable **Search Console API** on a Google Cloud project.
+2. Create a service account. Download JSON. Store it outside git.
+3. In Search Console → Settings → Users, add the service account email.
+4. Set `GSC_SITE_URL` to the exact property.
+5. Restart the backend.
+6. Super-admin: Admin → SEO revenue → **Sync Search Console**.
+
+Manual CSV/JSON import remains available. API sync does not delete imported rows.
+
+Until credentials + property + a successful sync for the selected dates exist, the report shows **GSC DATA NOT CONNECTED**. Empty GSC metrics are not shown as fake zeros.
+

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import AdminSeoNoindexReview from "./AdminSeoNoindexReview";
 
 function showMetric(m) {
   if (m == null) return "DATA UNAVAILABLE";
@@ -20,7 +21,14 @@ function showInr(m) {
   return "DATA UNAVAILABLE";
 }
 
-function Table({ columns, rows, empty }) {
+function showCtr(m) {
+  if (m == null || m.available === false) return m?.label || "GSC DATA NOT CONNECTED";
+  const n = typeof m === "number" ? m : m.value;
+  if (!Number.isFinite(n)) return "GSC DATA NOT CONNECTED";
+  return `${(n * 100).toFixed(2)}%`;
+}
+
+function Table({ columns, rows, empty, stickyFirst = false }) {
   return (
     <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white">
       <table className="min-w-full text-left text-xs">
@@ -44,7 +52,7 @@ function Table({ columns, rows, empty }) {
             rows.map((row, i) => (
               <tr key={row.key || row.landingPage || row.url || row.city || row.service || row.route || i} className="border-b border-slate-100">
                 {row.cells.map((cell, j) => (
-                  <td key={j} className="px-3 py-2 text-slate-800">
+                  <td key={j} className={`px-3 py-2 text-slate-800 ${stickyFirst && j === 0 ? "sticky left-0 bg-white" : ""}`}>
                     {cell}
                   </td>
                 ))}
@@ -90,6 +98,8 @@ export default function AdminSeoRevenue({ token }) {
   });
   const [editGscId, setEditGscId] = useState("");
   const [formMsg, setFormMsg] = useState("");
+  const [section, setSection] = useState("overview");
+  const [syncing, setSyncing] = useState(false);
 
   const authHeaders = token ? { authorization: `Bearer ${token}` } : {};
 
@@ -198,6 +208,31 @@ export default function AdminSeoRevenue({ token }) {
     loadReport();
   }
 
+  async function syncGsc() {
+    setSyncing(true);
+    setFormMsg("");
+    setError("");
+    try {
+      const body = from && to ? { from, to } : { days };
+      const res = await fetch("/api/enterprise/search-console/sync", {
+        method: "POST",
+        headers: { ...authHeaders, "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.message || "GSC DATA NOT CONNECTED");
+      setFormMsg(
+        `Search Console sync stored ${json.data?.stored ?? 0} rows for ${json.data?.startDate} → ${json.data?.endDate} (${json.data?.property}).`
+      );
+      await loadReport();
+      await loadCrud();
+    } catch (err) {
+      setError(err.message || "GSC DATA NOT CONNECTED");
+    } finally {
+      setSyncing(false);
+    }
+  }
+
   const src = data?.sources;
 
   return (
@@ -236,9 +271,24 @@ export default function AdminSeoRevenue({ token }) {
           <button type="button" onClick={loadReport} className="rounded-md bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white">
             Apply
           </button>
+          <button
+            type="button"
+            onClick={syncGsc}
+            disabled={syncing}
+            className="rounded-md bg-emerald-700 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-60"
+          >
+            {syncing ? "Syncing…" : "Sync Search Console"}
+          </button>
         </div>
         {data?.period ? (
-          <p className="mt-2 text-xs font-semibold text-slate-700">Selected period: {data.period.label}</p>
+          <div className="mt-3 space-y-1 text-xs text-slate-700">
+            <p className="font-semibold">Selected period: {data.period.label}</p>
+            <p>Booking date range: {data.period.bookingRange?.start} → {data.period.bookingRange?.end}</p>
+            <p>GSC date range: {data.period.gscRange?.start} → {data.period.gscRange?.end}</p>
+            {data.period.rangeWarning ? (
+              <p className="rounded-md bg-amber-50 px-2 py-1 font-medium text-amber-900">{data.period.rangeWarning}</p>
+            ) : null}
+          </div>
         ) : null}
       </div>
 
@@ -257,6 +307,11 @@ export default function AdminSeoRevenue({ token }) {
           <p className="text-xs text-slate-600">
             Attribution: {data.attribution.method} Window: {data.attribution.window}
           </p>
+          {data.attribution?.conversionWarning ? (
+            <p className="rounded-md bg-slate-50 px-3 py-2 text-xs font-medium text-slate-700">
+              {data.attribution.conversionWarning} GSC is used for impressions, clicks, CTR, position, and queries only.
+            </p>
+          ) : null}
           <p className="text-xs text-slate-600">
             Cabzii commission: {showMetric(src.cabziiCommission)} · Vendor payout: {showMetric(src.vendorPayout)}
           </p>
@@ -269,6 +324,30 @@ export default function AdminSeoRevenue({ token }) {
             <Kpi label="SEO-attributed GMV" value={`₹${Number(data.totals.attributedGmv).toLocaleString("en-IN")}`} />
           </div>
 
+          <nav className="flex flex-wrap gap-1">
+            {[
+              ["overview", "Overview"],
+              ["pages", "Pages"],
+              ["queries", "Queries"],
+              ["opportunities", "Opportunities"],
+              ["noindex", "Noindex review"],
+              ["notes", "Notes & GSC rows"]
+            ].map(([id, label]) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => setSection(id)}
+                className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
+                  section === id ? "bg-slate-900 text-white" : "border border-slate-200 text-slate-700"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </nav>
+
+          {section === "overview" ? (
+            <>
           <div className="grid gap-3 lg:grid-cols-3">
             {(data.spotlight || []).map((spot) => (
               <div key={spot.id} className="rounded-xl border border-slate-200 bg-white p-4">
@@ -376,131 +455,174 @@ export default function AdminSeoRevenue({ token }) {
             }))}
           />
 
-          <h3 className="text-sm font-bold text-slate-900">37 noindex pages — reconsideration (indexation not changed)</h3>
-          <Table
-            columns={["URL", "Impressions", "Clicks", "Bookings", "GMV", "Status", "Recommendation"]}
-            empty="Catalog missing."
-            rows={(data.noindexReport || []).map((r) => ({
-              url: r.url,
-              cells: [r.url, showMetric(r.impressions), showMetric(r.clicks), showMetric(r.bookings), showInr(r.gmv), r.currentStatus, r.recommendation]
-            }))}
-          />
-
           <h3 className="text-sm font-bold text-slate-900">Vendor expansion signal</h3>
           <p className="text-xs text-slate-500">Active cab listings vs operational completed bookings. Does not change vendor records.</p>
           <Table
-            columns={["City", "Completed bookings", "Active cab listings", "Recommendation"]}
+            columns={["City", "Completed bookings", "Active cab listings", "GSC impressions", "Recommendation"]}
             empty="No city signal."
             rows={(data.vendorExpansion || []).slice(0, 20).map((r) => ({
               city: r.city,
-              cells: [r.city, r.operationalCompletedBookings, r.activeCabListings, r.recommendation]
+              cells: [r.city, r.operationalCompletedBookings, r.activeCabListings, showMetric(r.gscImpressions), r.recommendation]
             }))}
           />
+            </>
+          ) : null}
 
-          <h3 className="text-sm font-bold text-slate-900">Query intelligence</h3>
-          <p className="text-xs text-slate-500">
-            {data.queries?.status || "GSC DATA = NOT CONNECTED"}. Queries map to the snapshot landingPage field — no new URLs are created.
-          </p>
-          {(data.sources?.gsc?.setupRequirement || []).map((line) => (
-            <p key={line} className="text-[11px] text-slate-500">
-              {line}
-            </p>
-          ))}
-          <Table
-            columns={["Keyword", "Clicks", "Impressions", "CTR", "Canonical page"]}
-            empty="GSC DATA = NOT CONNECTED"
-            rows={(data.queries?.highCommercialIntentQueries || []).map((r) => ({
-              key: r.keyword,
-              cells: [r.keyword, r.clicks, r.impressions, r.ctr, r.landingPage || "DATA UNAVAILABLE"]
-            }))}
-          />
-          <h4 className="text-xs font-bold text-slate-800">High impressions + low CTR</h4>
-          <Table
-            columns={["Keyword", "Impressions", "CTR", "Page"]}
-            empty="GSC DATA = NOT CONNECTED"
-            rows={(data.queries?.highImpressionsLowCtr || []).map((r) => ({
-              key: `${r.keyword}-imp`,
-              cells: [r.keyword, r.impressions, r.ctr, r.landingPage || "DATA UNAVAILABLE"]
-            }))}
-          />
+          {section === "pages" ? (
+            <div className="space-y-2">
+              <h3 className="text-sm font-bold text-slate-900">SEO pages with Search Console + bookings</h3>
+              <p className="text-xs text-slate-500">
+                Conversion uses first-party SEO sessions, not GSC clicks. Swipe horizontally on small screens.
+              </p>
+              <Table
+                stickyFirst
+                columns={[
+                  "Page",
+                  "City",
+                  "Service",
+                  "Origin",
+                  "Destination",
+                  "Impressions",
+                  "Clicks",
+                  "CTR",
+                  "Avg position",
+                  "SEO views",
+                  "Booking starts",
+                  "Completed",
+                  "GMV",
+                  "Avg booking",
+                  "Conversion"
+                ]}
+                empty="No page rows for this period."
+                rows={(data.pagePerformance || []).map((r) => ({
+                  landingPage: r.landingPage,
+                  cells: [
+                    r.landingPage,
+                    r.city || "—",
+                    r.service || "—",
+                    r.origin || "—",
+                    r.destination || "—",
+                    showMetric(r.impressions),
+                    showMetric(r.clicks),
+                    showCtr(r.ctr),
+                    showMetric(r.position),
+                    showMetric(r.seoSessions),
+                    r.bookingStarts,
+                    r.completedBookings,
+                    showInr(r.gmv),
+                    showInr(r.averageBookingValue),
+                    showMetric(r.seoToCompleted)
+                  ]
+                }))}
+              />
+            </div>
+          ) : null}
 
-          <h3 className="text-sm font-bold text-slate-900">Business decision report</h3>
-          <p className="text-xs text-slate-500">{data.decisions?.note}</p>
-          <h4 className="text-xs font-bold text-slate-800">Top 10 cities to invest in</h4>
-          <Table
-            columns={["City", "Operational bookings", "GMV"]}
-            empty="No city booking data in this period."
-            rows={(data.decisions?.investCities || []).map((r) => ({
-              city: r.city,
-              cells: [r.city, r.bookings, showInr(r.gmv)]
-            }))}
-          />
-          <h4 className="text-xs font-bold text-slate-800">Top 10 services to invest in</h4>
-          <Table
-            columns={["Service", "Operational bookings", "GMV"]}
-            empty="No service booking data in this period."
-            rows={(data.decisions?.investServices || []).map((r) => ({
-              service: r.service,
-              cells: [r.service, r.bookings, showInr(r.gmv)]
-            }))}
-          />
-          <h4 className="text-xs font-bold text-slate-800">Top 20 routes to invest in</h4>
-          <Table
-            columns={["Route", "Bookings", "GMV"]}
-            empty="No route bookings in this period."
-            rows={(data.decisions?.investRoutes || []).map((r) => ({
-              route: r.route,
-              cells: [r.route, r.bookings, showInr(r.gmv)]
-            }))}
-          />
-          <h4 className="text-xs font-bold text-slate-800">Top 10 pages to improve</h4>
-          <Table
-            columns={["Page"]}
-            empty="No improve flags or high-traffic low-booking pages yet."
-            rows={(data.decisions?.pagesToImprove || []).map((p) => ({
-              landingPage: p,
-              cells: [p]
-            }))}
-          />
-          <h4 className="text-xs font-bold text-slate-800">High traffic, low bookings</h4>
-          <Table
-            columns={["Page", "Traffic", "Source", "Completed"]}
-            empty="No first-party sessions or GSC clicks to score this list."
-            rows={(data.decisions?.highTrafficLowBookings || []).map((r) => ({
-              landingPage: r.landingPage,
-              cells: [r.landingPage, r.traffic, r.trafficSource, r.completedBookings]
-            }))}
-          />
-          <h4 className="text-xs font-bold text-slate-800">Low traffic, high conversion</h4>
-          <Table
-            columns={["Page", "Traffic", "Completed", "Conversion"]}
-            empty="No first-party sessions or GSC clicks to score this list."
-            rows={(data.decisions?.lowTrafficHighConversion || []).map((r) => ({
-              landingPage: r.landingPage,
-              cells: [r.landingPage, r.traffic, r.completedBookings, showMetric(r.conversion)]
-            }))}
-          />
-          <h4 className="text-xs font-bold text-slate-800">High GMV (SEO-attributed)</h4>
-          <Table
-            columns={["Page", "Completed", "GMV"]}
-            empty="No SEO-attributed GMV in this period."
-            rows={(data.decisions?.highGmvAttributed || []).map((r) => ({
-              landingPage: r.landingPage,
-              cells: [r.landingPage, r.completedBookings, showInr(r.gmv)]
-            }))}
-          />
-          <h4 className="text-xs font-bold text-slate-800">Vendor supply to add</h4>
-          <Table
-            columns={["City", "Completed bookings", "Active listings", "Recommendation"]}
-            empty="No ADD VENDORS signal in this period."
-            rows={(data.decisions?.addVendors || []).map((r) => ({
-              city: r.city,
-              cells: [r.city, r.operationalCompletedBookings, r.activeCabListings, r.recommendation]
-            }))}
-          />
+          {section === "queries" ? (
+            <div className="space-y-3">
+              <p className="text-xs text-slate-500">
+                {data.queries?.status || "GSC DATA NOT CONNECTED"}. Queries map to canonical landing pages — no new URLs are created.
+              </p>
+              <h3 className="text-sm font-bold text-slate-900">Top queries by clicks</h3>
+              <Table
+                columns={["Query", "Clicks", "Impressions", "CTR", "Position", "Canonical page"]}
+                empty="GSC DATA NOT CONNECTED"
+                rows={(data.queries?.topByClicks || []).map((r) => ({
+                  key: `c-${r.keyword}`,
+                  cells: [r.keyword, r.clicks, r.impressions, r.ctr, r.position, r.landingPage || "DATA UNAVAILABLE"]
+                }))}
+              />
+              <h3 className="text-sm font-bold text-slate-900">Top queries by impressions</h3>
+              <Table
+                columns={["Query", "Impressions", "Clicks", "CTR", "Canonical page"]}
+                empty="GSC DATA NOT CONNECTED"
+                rows={(data.queries?.topByImpressions || []).map((r) => ({
+                  key: `i-${r.keyword}`,
+                  cells: [r.keyword, r.impressions, r.clicks, r.ctr, r.landingPage || "DATA UNAVAILABLE"]
+                }))}
+              />
+              <h3 className="text-sm font-bold text-slate-900">Queries with attributed bookings</h3>
+              <p className="text-[11px] text-slate-500">
+                Attributed bookings on the mapped canonical page. This is not clicks ÷ bookings.
+              </p>
+              <Table
+                columns={["Query", "Clicks", "Attributed completed", "Canonical page"]}
+                empty="GSC DATA NOT CONNECTED"
+                rows={(data.queries?.topByAttributedBookings || []).map((r) => ({
+                  key: `b-${r.keyword}`,
+                  cells: [r.keyword, r.clicks, r.attributedCompletedBookings, r.landingPage || "DATA UNAVAILABLE"]
+                }))}
+              />
+            </div>
+          ) : null}
+
+          {section === "opportunities" ? (
+            <div className="space-y-3">
+              <h3 className="text-sm font-bold text-slate-900">Opportunity report</h3>
+              <p className="text-xs text-slate-500">Recommendations only. No pages or vendors are created automatically.</p>
+              <h4 className="text-xs font-bold text-slate-800">High impressions + low CTR</h4>
+              <Table
+                columns={["Page", "Impressions", "Clicks", "CTR"]}
+                empty="GSC DATA NOT CONNECTED"
+                rows={(data.opportunities?.highImpressionsLowCtr || []).map((r) => ({
+                  landingPage: r.landingPage,
+                  cells: [r.landingPage, r.impressions, r.clicks, r.ctr]
+                }))}
+              />
+              <h4 className="text-xs font-bold text-slate-800">High clicks + low bookings</h4>
+              <Table
+                columns={["Page", "GSC clicks", "Completed bookings", "Note"]}
+                empty="GSC DATA NOT CONNECTED"
+                rows={(data.opportunities?.highClicksLowBookings || []).map((r) => ({
+                  landingPage: r.landingPage,
+                  cells: [r.landingPage, r.clicks, r.completedBookings, r.note]
+                }))}
+              />
+              <h4 className="text-xs font-bold text-slate-800">Low traffic + high conversion</h4>
+              <Table
+                columns={["Page", "SEO sessions", "Completed", "Conversion"]}
+                empty="No first-party sessions to score this list."
+                rows={(data.opportunities?.lowTrafficHighConversion || []).map((r) => ({
+                  landingPage: r.landingPage,
+                  cells: [r.landingPage, r.traffic, r.completedBookings, showMetric(r.conversion)]
+                }))}
+              />
+              <h4 className="text-xs font-bold text-slate-800">High bookings + high GMV</h4>
+              <Table
+                columns={["Page", "Completed", "GMV"]}
+                empty="No SEO-attributed GMV in this period."
+                rows={(data.opportunities?.highBookingsHighGmv || []).map((r) => ({
+                  landingPage: r.landingPage,
+                  cells: [r.landingPage, r.completedBookings, showInr(r.gmv)]
+                }))}
+              />
+              <h4 className="text-xs font-bold text-slate-800">High search demand + low supply</h4>
+              <Table
+                columns={["City", "Completed bookings", "Active listings", "GSC impressions", "Recommendation"]}
+                empty="No city demand/supply signal."
+                rows={(data.opportunities?.highDemandLowSupply || []).map((r) => ({
+                  city: r.city,
+                  cells: [r.city, r.operationalCompletedBookings, r.activeCabListings, showMetric(r.gscImpressions), r.recommendation]
+                }))}
+              />
+              <h3 className="text-sm font-bold text-slate-900">Business decision report</h3>
+              <p className="text-xs text-slate-500">{data.decisions?.note}</p>
+              <Table
+                columns={["City", "Operational bookings", "GMV"]}
+                empty="No city booking data in this period."
+                rows={(data.decisions?.investCities || []).map((r) => ({
+                  city: r.city,
+                  cells: [r.city, r.bookings, showInr(r.gmv)]
+                }))}
+              />
+            </div>
+          ) : null}
+
+          {section === "noindex" ? <AdminSeoNoindexReview rows={data.noindexReport || []} /> : null}
         </>
       ) : null}
 
+      {section === "notes" ? (
       <div className="grid gap-4 lg:grid-cols-2">
         <form onSubmit={saveInsight} className="rounded-xl border border-slate-200 bg-white p-4">
           <h3 className="font-bold text-slate-900">{editInsightId ? "Edit" : "Add"} SEO insight note</h3>
@@ -607,6 +729,7 @@ export default function AdminSeoRevenue({ token }) {
           </ul>
         </form>
       </div>
+      ) : null}
     </div>
   );
 }

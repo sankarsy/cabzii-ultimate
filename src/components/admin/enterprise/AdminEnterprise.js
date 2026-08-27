@@ -579,9 +579,25 @@ export default function AdminEnterprise({ token, initialSection = "dashboard" })
         <div className="rounded-xl border border-slate-200 bg-white p-4">
           <h3 className="font-bold">Search Console insights</h3>
           <p className="mt-1 text-xs text-slate-500">
-            Live GSC API is not connected. Add, edit, or delete imported snapshot rows here, or import JSON via Bulk
-            Operations. Until rows exist: GSC DATA = NOT CONNECTED.
+            API sync uses server-side credentials. Manual add/edit/delete and bulk import still work. Until a matching
+            sync or import exists: GSC DATA NOT CONNECTED.
           </p>
+          <button
+            type="button"
+            className="mt-3 rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700"
+            onClick={async () => {
+              try {
+                const body = { days: 30 };
+                await enterpriseFetch("search-console/sync", { token, method: "POST", body });
+                setMessage("Search Console API sync finished for the last 30 days (GSC lag applied).");
+                loadSection();
+              } catch (err) {
+                setError(err.message);
+              }
+            }}
+          >
+            Sync Search Console API (last 30 days)
+          </button>
           <form onSubmit={saveGscRow} className="mt-3 grid gap-2 sm:grid-cols-2">
             <Field label="Keyword">
               <input className={inputCls()} required value={gscForm.keyword} onChange={(e) => setGscForm((p) => ({ ...p, keyword: e.target.value }))} />
