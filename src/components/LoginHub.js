@@ -68,13 +68,13 @@ export default function LoginHub() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-lg px-4">
-      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-lg sm:p-8">
-        <div className="mb-6 text-center">
-          <h1 className="text-xl font-bold text-slate-900">Welcome to Cabzii</h1>
-          <p className="mt-1 text-sm text-slate-600">Choose how you want to sign in</p>
+    <div className="mx-auto w-full max-w-sm">
+      <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-md">
+        <div className="mb-3 text-center">
+          <h1 className="text-base font-bold text-slate-900">Welcome to Cabzii</h1>
+          <p className="mt-0.5 text-xs text-slate-600">Choose how you want to sign in</p>
         </div>
-        <div className="grid gap-3 sm:gap-4">
+        <div className="grid gap-2">
           {ROLES.map((role) => {
             const Icon = role.icon;
             return (
@@ -82,16 +82,16 @@ export default function LoginHub() {
                 key={role.id}
                 type="button"
                 onClick={() => setSelectedRole(role.id)}
-                className="flex w-full items-start gap-4 rounded-xl border border-slate-200 p-4 text-left transition hover:border-[#0056D2]/50 hover:bg-blue-50/40 focus:outline-none focus:ring-2 focus:ring-blue-100"
+                className="flex w-full items-center gap-2.5 rounded-lg border border-slate-200 px-2.5 py-2 text-left transition hover:border-[#0056D2]/50 hover:bg-blue-50/40 focus:outline-none focus:ring-2 focus:ring-blue-100"
               >
-                <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-sky-50 text-sky-400">
-                  <Icon className="h-5 w-5" />
+                <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-sky-50 text-sky-400">
+                  <Icon className="h-4 w-4" />
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block text-base font-bold text-slate-900">{role.title}</span>
-                  <span className="mt-0.5 block text-sm text-slate-600">{role.description}</span>
+                  <span className="block text-sm font-bold leading-tight text-slate-900">{role.title}</span>
+                  <span className="mt-0.5 block text-[11px] leading-snug text-slate-600">{role.description}</span>
                 </span>
-                <ChevronRightIcon className="mt-2 h-5 w-5 shrink-0 text-slate-400" />
+                <ChevronRightIcon className="h-4 w-4 shrink-0 text-slate-400" />
               </button>
             );
           })}
@@ -155,27 +155,27 @@ function PasswordLoginForm({ mode, onBack }) {
   const btnClass = isAdmin ? "bg-slate-800 hover:bg-slate-700" : "bg-[#0056D2] hover:bg-[#0047b3]";
 
   return (
-    <div className="mx-auto w-full max-w-md px-4">
-      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-lg sm:p-8">
-        <button type="button" onClick={onBack} className="mb-4 text-sm font-medium text-[#0056D2] hover:underline">
+    <div className="mx-auto w-full max-w-sm">
+      <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-md">
+        <button type="button" onClick={onBack} className="mb-3 text-xs font-medium text-[#0056D2] hover:underline">
           ← Back to login options
         </button>
-        <div className="mb-6 text-center">
+        <div className="mb-4 text-center">
           <span
-            className={`inline-flex h-12 w-12 items-center justify-center rounded-full ${
+            className={`inline-flex h-9 w-9 items-center justify-center rounded-full ${
               isAdmin ? "bg-violet-50 text-violet-400" : "bg-sky-50 text-sky-400"
             }`}
           >
-            {isAdmin ? <ShieldIcon className="h-6 w-6" /> : <BriefcaseIcon className="h-6 w-6" />}
+            {isAdmin ? <ShieldIcon className="h-4 w-4" /> : <BriefcaseIcon className="h-4 w-4" />}
           </span>
-          <h1 className="mt-3 text-xl font-bold text-slate-900">{title}</h1>
-          <p className="mt-1 text-sm text-slate-600">{subtitle}</p>
+          <h1 className="mt-2 text-base font-bold text-slate-900">{title}</h1>
+          <p className="mt-0.5 text-xs text-slate-600">{subtitle}</p>
         </div>
-        <div className="space-y-4">
+        <div className="space-y-3">
           <div>
-            <label className="mb-1.5 block text-xs font-semibold text-slate-600">Mobile number</label>
-            <div className="flex overflow-hidden rounded-xl border border-slate-200 focus-within:border-[#0056D2] focus-within:ring-2 focus-within:ring-blue-100">
-              <span className="flex items-center bg-slate-50 px-3 text-sm font-medium text-slate-600">+91</span>
+            <label className="mb-1 block text-[11px] font-semibold text-slate-600">Mobile number</label>
+            <div className="flex overflow-hidden rounded-lg border border-slate-200 focus-within:border-[#0056D2] focus-within:ring-2 focus-within:ring-blue-100">
+              <span className="flex items-center bg-slate-50 px-2.5 text-xs font-medium text-slate-600">+91</span>
               <input
                 type="tel"
                 inputMode="numeric"
@@ -184,12 +184,12 @@ function PasswordLoginForm({ mode, onBack }) {
                 onChange={(e) => setMobile(sanitizeMobileInput(e.target.value))}
                 placeholder="10-digit number"
                 disabled={loading}
-                className="h-12 flex-1 px-3 text-sm text-slate-900 outline-none disabled:opacity-60"
+                className="h-10 flex-1 px-3 text-sm text-slate-900 outline-none disabled:opacity-60"
               />
             </div>
           </div>
           <div>
-            <label className="mb-1.5 block text-xs font-semibold text-slate-600">Password</label>
+            <label className="mb-1 block text-[11px] font-semibold text-slate-600">Password</label>
             <input
               type="password"
               value={password}
@@ -197,19 +197,19 @@ function PasswordLoginForm({ mode, onBack }) {
               onKeyDown={(e) => e.key === "Enter" && submit()}
               placeholder="Your password"
               disabled={loading}
-              className="h-12 w-full rounded-xl border border-slate-200 px-3 text-sm text-slate-900 outline-none focus:border-[#0056D2] focus:ring-2 focus:ring-blue-100 disabled:opacity-60"
+              className="h-10 w-full rounded-lg border border-slate-200 px-3 text-sm text-slate-900 outline-none focus:border-[#0056D2] focus:ring-2 focus:ring-blue-100 disabled:opacity-60"
             />
           </div>
           <button
             type="button"
             disabled={loading}
             onClick={submit}
-            className={`h-12 w-full rounded-xl text-sm font-bold text-white transition disabled:opacity-60 ${btnClass}`}
+            className={`h-10 w-full rounded-lg text-sm font-bold text-white transition disabled:opacity-60 ${btnClass}`}
           >
             {loading ? "Signing in…" : isAdmin ? "Sign in to Admin" : "Sign in as Partner"}
           </button>
         </div>
-        {error ? <p className="mt-3 rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-800">{error}</p> : null}
+        {error ? <p className="mt-3 rounded-lg bg-rose-50 px-3 py-2 text-xs text-rose-800">{error}</p> : null}
       </div>
     </div>
   );

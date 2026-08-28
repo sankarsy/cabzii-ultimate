@@ -52,6 +52,7 @@ export default async function sitemap() {
     { url: `${base}/tariff`, lastModified: now, changeFrequency: "weekly", priority: 0.9, images: [HERO_IMAGE] },
     { url: `${base}/call-driver`, lastModified: now, changeFrequency: "weekly", priority: 0.95, images: [HERO_IMAGE] },
     { url: `${base}/acting-driver`, lastModified: now, changeFrequency: "weekly", priority: 0.9, images: [HERO_IMAGE] },
+    { url: `${base}/cab-booking`, lastModified: now, changeFrequency: "weekly", priority: 0.88, images: [HERO_IMAGE] },
     { url: `${base}/drivers`, lastModified: now, changeFrequency: "weekly", priority: 0.7, images: [HERO_IMAGE] },
     { url: `${base}/holidays`, lastModified: now, changeFrequency: "daily", priority: 0.92, images: [HERO_IMAGE] },
     { url: `${base}/services`, lastModified: now, changeFrequency: "weekly", priority: 0.88, images: [HERO_IMAGE] },

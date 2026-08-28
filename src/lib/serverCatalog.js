@@ -1,5 +1,7 @@
 import { isLiveApiHostProtected } from "./liveApiHostGuard";
 import { getBackendUrl } from "./seo";
+import { SHOWCASE_FALLBACKS } from "./homeShowcase";
+import { mergeCallDriverServices } from "./callDriver";
 
 const FETCH_CACHE_MS = 60 * 1000;
 const fetchCache = new Map();
@@ -99,4 +101,16 @@ export async function fetchSeoCityPage(pageType, citySlug) {
 export async function fetchSeoMenuLinks() {
   const data = await fetchJson("/seo-menu", 300);
   return Array.isArray(data) ? data : [];
+}
+
+export async function fetchHomeShowcase(section) {
+  const data = await fetchJson(`/offers?section=${encodeURIComponent(section)}`, 600);
+  const rows = Array.isArray(data) ? data.filter((o) => o?.title && o.published !== false) : [];
+  if (rows.length) return rows;
+  return SHOWCASE_FALLBACKS[section] || SHOWCASE_FALLBACKS.offers || [];
+}
+
+export async function fetchHomeCallDriverServices() {
+  const data = await fetchJson("/call-driver", 600);
+  return mergeCallDriverServices(data?.services);
 }

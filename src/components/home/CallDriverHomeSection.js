@@ -1,6 +1,3 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   Building2,
@@ -13,12 +10,7 @@ import {
   ShieldCheck,
   UserRound
 } from "lucide-react";
-import {
-  CALL_DRIVER_SERVICES,
-  callDriverBookHref,
-  formatFromPrice,
-  mergeCallDriverServices
-} from "../../lib/callDriver";
+import { CALL_DRIVER_SERVICES, callDriverBookHref, formatFromPrice } from "../../lib/callDriver";
 
 const SERVICE_ICONS = {
   local: MapPin,
@@ -37,28 +29,12 @@ const STEPS = [
 
 function fareFor(svc) {
   const from = formatFromPrice(svc.fromPrice);
-  if (svc.quoteOnly) return "Quote";
   if (svc.id === "outstation" && from) return `${from}/day`;
-  return from || "Book";
+  return from || "";
 }
 
-export default function CallDriverHomeSection() {
-  const [services, setServices] = useState(CALL_DRIVER_SERVICES);
-
-  useEffect(() => {
-    let cancelled = false;
-    fetch("/api/call-driver", { cache: "no-store" })
-      .then((r) => r.json())
-      .then((json) => {
-        if (cancelled || !json?.data?.services) return;
-        setServices(mergeCallDriverServices(json.data.services));
-      })
-      .catch(() => {});
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
+export default function CallDriverHomeSection({ services: servicesProp }) {
+  const services = Array.isArray(servicesProp) && servicesProp.length ? servicesProp : CALL_DRIVER_SERVICES;
   const localFare = formatFromPrice(services.find((s) => s.id === "local")?.fromPrice);
 
   return (
@@ -148,10 +124,12 @@ export default function CallDriverHomeSection() {
                   </span>
                   <h3 className="mt-2.5 text-[13px] font-bold leading-snug text-slate-900 sm:text-sm">{svc.shortTitle || svc.title}</h3>
                   <p className="mt-1 line-clamp-2 text-[11px] leading-relaxed text-slate-600 sm:text-xs">{svc.blurb}</p>
-                  <span className="mt-auto flex items-center justify-between gap-2 border-t border-slate-100 pt-2.5">
-                    <span className="text-xs font-extrabold text-[var(--cabzii-cta)] sm:text-sm">{fare}</span>
-                    <span className="inline-flex items-center text-[11px] font-extrabold tracking-wide text-slate-800 group-hover:text-[var(--cabzii-cta)]">
-                      {svc.quoteOnly ? "QUOTE" : "BOOK"}
+                  <span className={`mt-auto flex items-center gap-2 border-t border-slate-100 pt-2.5 ${fare ? "justify-between" : "justify-end"}`}>
+                    {fare ? (
+                      <span className="text-xs font-extrabold text-[var(--cabzii-cta)] sm:text-sm">{fare}</span>
+                    ) : null}
+                    <span className="inline-flex items-center text-[11px] font-extrabold tracking-wide text-[var(--cabzii-cta)]">
+                      {svc.quoteOnly ? "Quote" : "Book"}
                       <ChevronRight className="h-3.5 w-3.5" />
                     </span>
                   </span>

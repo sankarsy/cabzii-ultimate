@@ -24,6 +24,9 @@ import {
 } from "../../lib/catalogDisplay";
 import { trackEvent } from "../../lib/analytics";
 import { beaconSeoEvent, readSeoAttribution } from "../../lib/seoAttribution";
+import { HydrateSafeDate, useTodayStr } from "../../lib/useTodayStr";
+import { formatTime12, openNativePicker } from "../../lib/emt/heroDates";
+import { defaultPickupTime, todayStr, toDateInputValue, toTimeInputValue } from "../../lib/istDate";
 
 function firstParam(value) {
   if (Array.isArray(value)) return String(value[0] ?? "").trim();
@@ -41,7 +44,10 @@ export default function PaymentPage({ searchParams }) {
   const [email, setEmail] = useState("");
   const [pickup, setPickup] = useState(firstParam(searchParams?.pickup));
   const [drop, setDrop] = useState(firstParam(searchParams?.drop));
-  const [date, setDate] = useState(firstParam(searchParams?.date));
+  const [date, setDate] = useState(() => toDateInputValue(firstParam(searchParams?.date)));
+  const [time, setTime] = useState(() =>
+    toTimeInputValue(firstParam(searchParams?.time) || firstParam(searchParams?.pickupTime))
+  );
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [bookingId, setBookingId] = useState("");
@@ -65,8 +71,10 @@ export default function PaymentPage({ searchParams }) {
     const v = searchParams?.[key];
     return Array.isArray(v) ? v[0] : v ?? "";
   });
+  const needsPickupTime = type === "cab" || type === "driver";
 
   const [selectedItem, setSelectedItem] = useState(null);
+  const today = useTodayStr();
   const cabTrip = useMemo(() => parseTripSearchParams(searchParams), [searchParams]);
   const paymentTrip = {
     tripType: cabTrip.tripType || firstParam(searchParams?.serviceTripType) || serviceTab || "outstation",
@@ -90,7 +98,20 @@ export default function PaymentPage({ searchParams }) {
     if (saved.email) setEmail(saved.email);
     if (saved.pickup) setPickup(saved.pickup);
     if (saved.drop) setDrop(saved.drop);
-    if (saved.date) setDate(saved.date);
+    const q = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
+    const nextDate =
+      toDateInputValue(q?.get("date") || firstParam(searchParams?.date) || saved.date) || todayStr();
+    const nextTime =
+      toTimeInputValue(
+        q?.get("time") ||
+          q?.get("pickupTime") ||
+          firstParam(searchParams?.time) ||
+          firstParam(searchParams?.pickupTime) ||
+          saved.time ||
+          saved.pickupTime
+      ) || defaultPickupTime(nextDate);
+    setDate(nextDate);
+    setTime(nextTime);
   }, [router]);
 
   useEffect(() => {
@@ -193,6 +214,14 @@ export default function PaymentPage({ searchParams }) {
       setSubmitError("Please enter a valid 10-digit mobile number.");
       return;
     }
+    if (!toDateInputValue(date)) {
+      setSubmitError("Pickup date is required.");
+      return;
+    }
+    if (needsPickupTime && !toTimeInputValue(time)) {
+      setSubmitError("Select pickup time.");
+      return;
+    }
     setSubmitting(true);
     setSubmitError("");
     try {
@@ -208,7 +237,7 @@ export default function PaymentPage({ searchParams }) {
           itemId: callDriverFlag || (type === "bus" && !/^[a-f0-9]{24}$/i.test(itemId)) ? "" : itemId,
           pickup: pickup.trim(),
           drop: type === "tour" ? "" : drop,
-          date,
+          date: toDateInputValue(date),
           routeType:
             type === "bus"
               ? busSeats
@@ -216,7 +245,7 @@ export default function PaymentPage({ searchParams }) {
                 ? `${tourPersons} persons`
                 : serviceTab || firstParam(searchParams?.routeType),
           tripType: type === "bus" ? firstParam(searchParams?.busType) || "AC Bus" : firstParam(searchParams?.tripType),
-          pickupTime: firstParam(searchParams?.time),
+          pickupTime: needsPickupTime ? toTimeInputValue(time) : firstParam(searchParams?.time),
           serviceTripType:
             type === "bus" ? busOperator : cabTrip.tripType || firstParam(searchParams?.serviceTripType) || serviceTab,
           callDriver:
@@ -353,12 +382,49 @@ export default function PaymentPage({ searchParams }) {
                 </div>
               </>
             ) : null}
-            <input
-              type="date"
-              className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-[#0056D2] sm:col-span-2"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-            />
+            <div className="grid grid-cols-1 gap-3 sm:col-span-2 sm:grid-cols-2">
+              <label className="block">
+                <span className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+                  Pickup date
+                </span>
+                <div className="relative min-h-11 overflow-hidden rounded-xl border border-slate-200 bg-white px-4 py-2.5">
+                  <HydrateSafeDate
+                    iso={date}
+                    className="pointer-events-none text-sm font-semibold text-slate-900"
+                    empty="Select date"
+                  />
+                  <input
+                    type="date"
+                    min={today || undefined}
+                    value={date}
+                    onChange={(e) => setDate(e.target.value)}
+                    onClick={openNativePicker}
+                    className="emt-date-input absolute inset-0 z-10 cursor-pointer"
+                    aria-label="Pickup date"
+                  />
+                </div>
+              </label>
+              {needsPickupTime ? (
+                <label className="block">
+                  <span className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+                    Pickup time
+                  </span>
+                  <div className="relative min-h-11 overflow-hidden rounded-xl border border-slate-200 bg-white px-4 py-2.5">
+                    <p className="pointer-events-none text-sm font-semibold text-slate-900">
+                      {formatTime12(time) || "Select time"}
+                    </p>
+                    <input
+                      type="time"
+                      value={time}
+                      onChange={(e) => setTime(e.target.value)}
+                      onClick={openNativePicker}
+                      className="emt-date-input absolute inset-0 z-10 cursor-pointer"
+                      aria-label="Pickup time"
+                    />
+                  </div>
+                </label>
+              ) : null}
+            </div>
           </div>
 
           {bookingId ? (

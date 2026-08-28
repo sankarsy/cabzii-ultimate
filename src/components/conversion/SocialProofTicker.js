@@ -1,5 +1,3 @@
-"use client";
-
 const TICKER_ITEMS = [
   "✅ Transparent fares before you confirm",
   "⚡ Instant booking confirmation",

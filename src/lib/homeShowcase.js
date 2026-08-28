@@ -22,7 +22,7 @@ export const HOME_CARD_COPY = {
   },
   services: {
     title: "Cab services in all cities",
-    viewAllHref: "/cabs",
+    viewAllHref: "/cab-booking",
     viewAllLabel: "View all →",
     ariaLabel: "Cab services in all cities",
     noun: "city service",
@@ -30,7 +30,7 @@ export const HOME_CARD_COPY = {
   },
   routes: {
     title: "Popular routes & services",
-    viewAllHref: "/cabs",
+    viewAllHref: "/routes",
     viewAllLabel: "View all →",
     ariaLabel: "Popular routes and services",
     noun: "route",

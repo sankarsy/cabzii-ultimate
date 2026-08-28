@@ -6,7 +6,8 @@ import { UserRound } from "lucide-react";
 import CabziiBrowseHeader from "../mmt/CabziiBrowseHeader";
 import RelatedSeoLinks from "../seo/RelatedSeoLinks";
 import CallDriverServiceGrid from "./CallDriverServiceGrid";
-import { CALL_DRIVER_SERVICES, mergeCallDriverServices } from "../../lib/callDriver";
+import { CALL_DRIVER_SERVICES, callDriverBookHref, mergeCallDriverServices } from "../../lib/callDriver";
+import CallDriverServiceSeo from "./CallDriverServiceSeo";
 
 export default function CallDriverLanding({
   showSeoCopy = false,
@@ -14,14 +15,16 @@ export default function CallDriverLanding({
   subtitle = "Need a professional driver for your own car? Choose the service you need."
 }) {
   const [services, setServices] = useState(CALL_DRIVER_SERVICES);
+  const [seoMap, setSeoMap] = useState({});
 
   useEffect(() => {
     let cancelled = false;
     fetch("/api/call-driver", { cache: "no-store" })
       .then((r) => r.json())
       .then((json) => {
-        if (cancelled || !json?.data?.services) return;
-        setServices(mergeCallDriverServices(json.data.services));
+        if (cancelled || !json?.data) return;
+        if (json.data.services) setServices(mergeCallDriverServices(json.data.services));
+        if (json.data.seo && typeof json.data.seo === "object") setSeoMap(json.data.seo);
       })
       .catch(() => {});
     return () => {
@@ -108,6 +111,21 @@ export default function CallDriverLanding({
               .
             </p>
           </section>
+          <div className="space-y-10 border-t border-slate-200 pt-8">
+            {services.map((svc) => (
+              <div key={svc.id} id={svc.id}>
+                <CallDriverServiceSeo serviceId={svc.id} compact adminMap={seoMap} />
+                <p className="mt-3">
+                  <Link
+                    href={callDriverBookHref(svc.id)}
+                    className="font-semibold text-[var(--cabzii-brand)] hover:underline"
+                  >
+                    Book {svc.title} →
+                  </Link>
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
       ) : null}
 

@@ -1,11 +1,7 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Clock, CalendarDays, ArrowRight } from "lucide-react";
 import SectionIntro from "../ui/SectionIntro";
 import { SAMPLE_BLOGS, estimateReadMinutes } from "../../lib/sampleContent";
-import { fetchJson } from "../../lib/apiClient";
 
 function BlogTile({ post }) {
   const href = post.slug ? `/blog/${post.slug}` : "/blogs";
@@ -42,26 +38,8 @@ function BlogTile({ post }) {
 }
 
 /** Latest blog teasers — real posts when published, sample guides otherwise. */
-export default function HomeBlogTeasers() {
-  const [posts, setPosts] = useState(SAMPLE_BLOGS);
-
-  useEffect(() => {
-    let cancelled = false;
-    fetchJson("/api/blogs?limit=3&page=1")
-      .then((json) => {
-        if (cancelled) return;
-        const list = Array.isArray(json?.data) ? json.data : Array.isArray(json) ? json : [];
-        setPosts(list.length ? list : SAMPLE_BLOGS);
-      })
-      .catch(() => {
-        if (!cancelled) setPosts(SAMPLE_BLOGS);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  const visible = (posts || SAMPLE_BLOGS).slice(0, 3);
+export default function HomeBlogTeasers({ posts }) {
+  const visible = (Array.isArray(posts) && posts.length ? posts : SAMPLE_BLOGS).slice(0, 3);
 
   return (
     <section className="border-t border-slate-200 bg-white py-8 sm:py-10">

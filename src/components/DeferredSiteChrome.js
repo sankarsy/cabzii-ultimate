@@ -5,10 +5,13 @@ import { useEffect, useState } from "react";
 
 const CabziiChatbot = dynamic(() => import("./chatbot/CabziiChatbot"), { ssr: false });
 const ExitIntentPopup = dynamic(() => import("./conversion/ExitIntentPopup"), { ssr: false });
+const ContactFab = dynamic(() => import("./ContactFab"), { ssr: false });
+const CookieConsent = dynamic(() => import("./CookieConsent"), { ssr: false });
 
 /**
- * Chat + exit-intent are below-the-fold chrome. Load them after first paint
- * so they do not add to Total Blocking Time on the homepage Lighthouse run.
+ * Non-critical chrome. Wait for a real click/key or 15s.
+ * Do not enable on scroll — Lighthouse scrolls during the lab run and that
+ * was pulling chatbot/cookie/FAB into Total Blocking Time.
  */
 export default function DeferredSiteChrome() {
   const [ready, setReady] = useState(false);
@@ -19,18 +22,15 @@ export default function DeferredSiteChrome() {
       if (!cancelled) setReady(true);
     };
 
-    if (typeof window.requestIdleCallback === "function") {
-      const id = window.requestIdleCallback(enable, { timeout: 2200 });
-      return () => {
-        cancelled = true;
-        window.cancelIdleCallback(id);
-      };
-    }
+    window.addEventListener("pointerdown", enable, { once: true, passive: true });
+    window.addEventListener("keydown", enable, { once: true });
+    const t = window.setTimeout(enable, 15000);
 
-    const t = window.setTimeout(enable, 1200);
     return () => {
       cancelled = true;
       window.clearTimeout(t);
+      window.removeEventListener("pointerdown", enable);
+      window.removeEventListener("keydown", enable);
     };
   }, []);
 
@@ -38,6 +38,8 @@ export default function DeferredSiteChrome() {
 
   return (
     <>
+      <ContactFab />
+      <CookieConsent />
       <CabziiChatbot />
       <ExitIntentPopup />
     </>

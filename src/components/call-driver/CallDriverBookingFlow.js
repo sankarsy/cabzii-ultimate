@@ -10,6 +10,7 @@ import {
   callDriverServiceById,
   todayISODate
 } from "../../lib/callDriver";
+import CallDriverServiceSeo from "./CallDriverServiceSeo";
 import { authHeaders, buildLoginHref, getToken, isLoggedIn } from "../../lib/auth";
 import { saveCheckoutDraft } from "../../lib/checkoutStorage";
 import { inputBaseClass, typo } from "../../lib/typography";
@@ -569,6 +570,9 @@ export default function CallDriverBookingFlow() {
             </div>
           </div>
         ) : null}
+        </div>
+        <div className="mx-auto mt-8 max-w-3xl">
+          <CallDriverServiceSeo serviceId={serviceId} />
         </div>
       </div>
 

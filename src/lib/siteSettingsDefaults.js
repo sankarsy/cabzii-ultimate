@@ -182,7 +182,8 @@ export const DEFAULT_SITE_SETTINGS = {
       desc: "Kid-friendly itineraries, spacious cabs & relaxed sightseeing for all ages."
     }
   ],
-  pageSeo: {}
+  pageSeo: {},
+  callDriverSeo: {}
 };
 
 export function getHomeSection(settings, key) {

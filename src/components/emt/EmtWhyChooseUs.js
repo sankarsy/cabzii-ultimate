@@ -1,8 +1,6 @@
-"use client";
-
 import { resolveWhyFeatures, resolveWhySection, resolveWhyStats } from "../../lib/marketingFromSettings";
 import { getTrustIcon, TRUST_ICON_STYLES } from "../icons/heroIcons";
-import { useSiteSettings } from "../SiteSettingsProvider";
+import { DEFAULT_SITE_SETTINGS } from "../../lib/siteSettingsDefaults";
 
 const STAT_ICON = {
   otp: "secure",
@@ -15,8 +13,7 @@ function statIconKey(value) {
   return STAT_ICON[String(value || "").trim().toLowerCase()] || "verified";
 }
 
-export default function EmtWhyChooseUs() {
-  const settings = useSiteSettings();
+export default function EmtWhyChooseUs({ settings = DEFAULT_SITE_SETTINGS }) {
   const whySection = resolveWhySection(settings);
   const whyStats = resolveWhyStats(settings);
   const features = resolveWhyFeatures(settings);

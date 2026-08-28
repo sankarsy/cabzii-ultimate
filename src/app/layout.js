@@ -1,10 +1,8 @@
 import "./globals.css";
 import { Inter } from "next/font/google";
 import SiteSettingsProvider from "../components/SiteSettingsProvider";
-import ContactFab from "../components/ContactFab";
 import DeferredSiteChrome from "../components/DeferredSiteChrome";
 import StickyBookingBar from "../components/StickyBookingBar";
-import CookieConsent from "../components/CookieConsent";
 import ServiceWorkerRegister from "../components/ServiceWorkerRegister";
 import { fetchSiteSettings } from "../lib/serverSiteSettings";
 import { fetchSiteReviewStats } from "../lib/serverReviewStats";
@@ -13,7 +11,7 @@ import { DEFAULT_KEYWORDS, HOME_SEO_TITLE, SITE_URL, organizationJsonLd, taxiSer
 
 const inter = Inter({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "600", "700"],
   variable: "--font-inter",
   display: "swap",
   preload: true,
@@ -80,9 +78,7 @@ export default async function RootLayout({ children }) {
         <SiteSettingsProvider initialSettings={siteSettings}>
           {children}
           <StickyBookingBar />
-          <ContactFab />
           <DeferredSiteChrome />
-          <CookieConsent />
         </SiteSettingsProvider>
         <ServiceWorkerRegister />
       </body>

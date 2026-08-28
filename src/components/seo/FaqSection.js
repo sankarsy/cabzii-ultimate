@@ -1,7 +1,3 @@
-"use client";
-
-import { useState } from "react";
-import { ChevronDown } from "lucide-react";
 import SectionIntro from "../ui/SectionIntro";
 
 export default function FaqSection({
@@ -34,32 +30,21 @@ export default function FaqSection({
         <div className={`${scrollable ? "faq-scroll-wrap relative" : ""} ${showCardTitle ? "mt-2.5" : ""}`}>
           <div className={`cabzii-faq ${listClass}`}>
             {faqs.map(([question, answer]) => (
-              <FaqItem key={question} question={question} answer={answer} />
+              <details key={question} className="faq-item">
+                <summary className="faq-trigger">
+                  <span className="min-w-0 flex-1 text-left">{question}</span>
+                  <span className="faq-chevron" aria-hidden>
+                    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="m6 9 6 6 6-6" />
+                    </svg>
+                  </span>
+                </summary>
+                <p className="faq-answer">{answer}</p>
+              </details>
             ))}
           </div>
         </div>
       </section>
-    </div>
-  );
-}
-
-function FaqItem({ question, answer }) {
-  const [open, setOpen] = useState(false);
-
-  return (
-    <div className={`faq-item${open ? " is-open" : ""}`}>
-      <button
-        type="button"
-        className="faq-trigger"
-        aria-expanded={open}
-        onClick={() => setOpen((value) => !value)}
-      >
-        <span className="min-w-0 flex-1 text-left">{question}</span>
-        <span className="faq-chevron" aria-hidden>
-          <ChevronDown className="h-4 w-4" strokeWidth={2.25} />
-        </span>
-      </button>
-      {open ? <p className="faq-answer">{answer}</p> : null}
     </div>
   );
 }

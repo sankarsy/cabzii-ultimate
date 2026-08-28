@@ -12,12 +12,10 @@ export const metadata = buildPageMetadata({
 
 export default function LoginPage() {
   return (
-    <div className="mx-auto max-w-lg px-4 py-6 sm:py-10">
-      <section className="py-6 md:py-14">
-        <Suspense fallback={<div className="mx-auto max-w-md text-center text-sm text-slate-600">Loading…</div>}>
-          <LoginHub />
-        </Suspense>
-      </section>
+    <div className="mx-auto max-w-md px-4 py-4 sm:py-6">
+      <Suspense fallback={<div className="text-center text-sm text-slate-600">Loading…</div>}>
+        <LoginHub />
+      </Suspense>
     </div>
   );
 }

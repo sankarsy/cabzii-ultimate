@@ -1,9 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import { normalizeTrustBadges, EMOJI_BY_KEY } from "../TrustBadges";
-
 import ImageUploadField from "./ImageUploadField";
+import { CALL_DRIVER_SERVICES } from "../../lib/callDriver";
+import { emptyCallDriverSeo } from "../../lib/callDriverSeo";
+
+const SeoRichTextEditor = dynamic(() => import("./vehicles/SeoRichTextEditor"), { ssr: false });
 
 const SECTIONS = [
   { id: "general", label: "General & contact" },
@@ -15,7 +19,8 @@ const SECTIONS = [
   { id: "homeSections", label: "Homepage sections" },
   { id: "holidayCategories", label: "Explore by category photos" },
   { id: "whatsapp", label: "WhatsApp button" },
-  { id: "callDriver", label: "Call Driver tariff" }
+  { id: "callDriver", label: "Call Driver tariff" },
+  { id: "callDriverSeo", label: "Call Driver SEO" }
 ];
 
 function Field({ label, children, hint }) {
@@ -111,6 +116,8 @@ export default function AdminSiteSettings({ token, isSuperAdmin }) {
   const [holidayCategories, setHolidayCategories] = useState([]);
   const [whatsappFab, setWhatsappFab] = useState({ enabled: true, number: "" });
   const [callDriverTariff, setCallDriverTariff] = useState({});
+  const [callDriverSeo, setCallDriverSeo] = useState({});
+  const [seoServiceId, setSeoServiceId] = useState("local");
 
   const authHeaders = token ? { authorization: `Bearer ${token}` } : {};
 
@@ -160,6 +167,7 @@ export default function AdminSiteSettings({ token, isSuperAdmin }) {
       number: s.whatsappFab?.number || ""
     });
     setCallDriverTariff(s.callDriverTariff && typeof s.callDriverTariff === "object" ? s.callDriverTariff : {});
+    setCallDriverSeo(s.callDriverSeo && typeof s.callDriverSeo === "object" ? s.callDriverSeo : {});
   }, []);
 
   useEffect(() => {
@@ -206,6 +214,8 @@ export default function AdminSiteSettings({ token, isSuperAdmin }) {
         return { whatsappFab };
       case "callDriver":
         return { callDriverTariff };
+      case "callDriverSeo":
+        return { callDriverSeo };
       default:
         return {};
     }
@@ -773,6 +783,107 @@ export default function AdminSiteSettings({ token, isSuperAdmin }) {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {activeSection === "callDriverSeo" && (
+          <div className="max-w-3xl space-y-4">
+            <p className="text-sm text-slate-600">
+              Shown below the booking form on each Call Driver page (Local, Outstation, Airport, Monthly, Corporate,
+              Valet). Leave a field blank to keep the default Cabzii copy.
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {CALL_DRIVER_SERVICES.map((svc) => (
+                <button
+                  key={svc.id}
+                  type="button"
+                  onClick={() => setSeoServiceId(svc.id)}
+                  className={`rounded-full px-3 py-1.5 text-xs font-bold ${
+                    seoServiceId === svc.id
+                      ? "bg-[var(--cabzii-brand)] text-white"
+                      : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                  }`}
+                >
+                  {svc.shortTitle || svc.title}
+                </button>
+              ))}
+            </div>
+            {(() => {
+              const row = { ...emptyCallDriverSeo(), ...(callDriverSeo[seoServiceId] || {}) };
+              const faqs = Array.isArray(row.faqs) ? row.faqs : [];
+              const patchSeo = (patch) =>
+                setCallDriverSeo((p) => ({
+                  ...p,
+                  [seoServiceId]: { ...emptyCallDriverSeo(), ...(p[seoServiceId] || {}), ...patch }
+                }));
+              return (
+                <div className="space-y-3 rounded-xl border border-slate-200 p-3">
+                  <Field label="H2 heading">
+                    <input
+                      className={inputCls()}
+                      value={row.heading}
+                      onChange={(e) => patchSeo({ heading: e.target.value })}
+                      placeholder="Leave blank for default heading"
+                    />
+                  </Field>
+                  <Field label="SEO title (browser / search — optional)">
+                    <input
+                      className={inputCls()}
+                      value={row.seoTitle}
+                      onChange={(e) => patchSeo({ seoTitle: e.target.value })}
+                    />
+                  </Field>
+                  <Field label="SEO description">
+                    <textarea
+                      className={`${inputCls()} min-h-[4.5rem]`}
+                      value={row.seoDescription}
+                      onChange={(e) => patchSeo({ seoDescription: e.target.value })}
+                    />
+                  </Field>
+                  <Field label="Page content (HTML)">
+                    <SeoRichTextEditor
+                      value={row.html || ""}
+                      onChange={(html) => patchSeo({ html })}
+                      disabled={!isSuperAdmin}
+                    />
+                  </Field>
+                  <div>
+                    <p className="text-xs font-semibold text-slate-600">FAQs</p>
+                    <div className="mt-2 space-y-2">
+                      {faqs.map((faq, i) => (
+                        <div key={i} className="grid gap-2 rounded-lg border border-slate-100 bg-slate-50 p-2 sm:grid-cols-2">
+                          <input
+                            className={inputCls()}
+                            placeholder="Question"
+                            value={faq.question || ""}
+                            onChange={(e) => {
+                              const next = faqs.map((f, idx) => (idx === i ? { ...f, question: e.target.value } : f));
+                              patchSeo({ faqs: next });
+                            }}
+                          />
+                          <input
+                            className={inputCls()}
+                            placeholder="Answer"
+                            value={faq.answer || ""}
+                            onChange={(e) => {
+                              const next = faqs.map((f, idx) => (idx === i ? { ...f, answer: e.target.value } : f));
+                              patchSeo({ faqs: next });
+                            }}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                    <button
+                      type="button"
+                      className="mt-2 text-xs font-semibold text-[var(--cabzii-brand)] hover:underline"
+                      onClick={() => patchSeo({ faqs: [...faqs, { question: "", answer: "" }] })}
+                    >
+                      + Add FAQ
+                    </button>
+                  </div>
+                </div>
+              );
+            })()}
           </div>
         )}
       </div>

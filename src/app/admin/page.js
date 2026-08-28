@@ -40,6 +40,7 @@ export default function AdminPage() {
   const [token, setToken] = useState("");
   const [user, setUser] = useState(null);
   const [authChecked, setAuthChecked] = useState(false);
+  const [navOpen, setNavOpen] = useState(false);
 
   const authHeaders = token ? { authorization: `Bearer ${token}` } : {};
 
@@ -193,6 +194,48 @@ export default function AdminPage() {
     }
   ];
 
+  const adminSidebar = (
+    <>
+      {sidebarGroups.map((group) => {
+        const items = group.items.filter((item) => !item.superAdminOnly || isSuperAdmin);
+        if (!items.length) return null;
+        return (
+          <div key={group.label} className="mb-2">
+            <p className="mb-1 px-2 pt-1 text-[10px] font-bold uppercase tracking-wide text-slate-400">{group.label}</p>
+            <nav className="space-y-0.5">
+              {items.map((item) => {
+                const tab = item.tab || item.key;
+                const section = item.section || "";
+                const isActive =
+                  activeTab === tab && (!section || (tab === "master" && masterSection === section));
+                return (
+                  <button
+                    key={item.key}
+                    type="button"
+                    onClick={() => {
+                      setActiveTab(tab);
+                      if (tab === "master") setMasterSection(section || "vendors");
+                      const qs = tab === "master" ? `?tab=master&section=${section || "vendors"}` : `?tab=${tab}`;
+                      router.push(`/admin${qs}`);
+                      setNavOpen(false);
+                    }}
+                    className={`flex w-full items-center rounded-md px-2 py-1.5 text-left text-xs font-semibold transition ${
+                      isActive
+                        ? "bg-[var(--cabzii-brand)] text-white"
+                        : "text-slate-700 hover:bg-slate-100"
+                    }`}
+                  >
+                    {item.label}
+                  </button>
+                );
+              })}
+            </nav>
+          </div>
+        );
+      })}
+    </>
+  );
+
   const panel = (
     <>
       {authChecked && !token ? (
@@ -217,46 +260,7 @@ export default function AdminPage() {
           </div>
         </div>
       ) : token ? (
-        <div className="flex h-full min-h-0 flex-col gap-3 overflow-hidden lg:grid lg:grid-cols-[11.5rem_minmax(0,1fr)]">
-          <aside className="max-h-[40vh] min-h-0 shrink-0 overflow-y-auto overscroll-contain rounded-xl border border-slate-200 bg-white p-1.5 shadow-[var(--cabzii-shadow-card)] lg:max-h-none lg:h-full">
-            {sidebarGroups.map((group) => {
-              const items = group.items.filter((item) => !item.superAdminOnly || isSuperAdmin);
-              if (!items.length) return null;
-              return (
-                <div key={group.label} className="mb-2">
-                  <p className="mb-1 px-2 pt-1 text-[10px] font-bold uppercase tracking-wide text-slate-400">{group.label}</p>
-                  <nav className="space-y-0.5">
-                    {items.map((item) => {
-                      const tab = item.tab || item.key;
-                      const section = item.section || "";
-                      const isActive =
-                        activeTab === tab && (!section || (tab === "master" && masterSection === section));
-                      return (
-                        <button
-                          key={item.key}
-                          type="button"
-                          onClick={() => {
-                            setActiveTab(tab);
-                            if (tab === "master") setMasterSection(section || "vendors");
-                            const qs = tab === "master" ? `?tab=master&section=${section || "vendors"}` : `?tab=${tab}`;
-                            router.push(`/admin${qs}`);
-                          }}
-                          className={`flex w-full items-center rounded-md px-2 py-1.5 text-left text-xs font-semibold transition ${
-                            isActive
-                              ? "bg-[var(--cabzii-brand)] text-white"
-                              : "text-slate-700 hover:bg-slate-100"
-                          }`}
-                        >
-                          {item.label}
-                        </button>
-                      );
-                    })}
-                  </nav>
-                </div>
-              );
-            })}
-          </aside>
-          <div className="min-h-0 min-w-0 flex-1 overflow-y-auto overscroll-contain">
+        <>
             {!isSuperAdmin && !VENDOR_ALLOWED_TABS.has(activeTab) ? (
               <AdminOpsDashboard token={token} isSuperAdmin={false} />
             ) : activeTab === "ops" ? (
@@ -306,15 +310,21 @@ export default function AdminPage() {
                 prefillSlug={prefillSlug}
               />
             ) : null}
-          </div>
-        </div>
+        </>
       ) : null}
     </>
   );
 
   if (token) {
     return (
-      <AdminShell user={user} onLogout={logout}>
+      <AdminShell
+        user={user}
+        onLogout={logout}
+        navOpen={navOpen}
+        onToggleNav={() => setNavOpen((open) => !open)}
+        onCloseNav={() => setNavOpen(false)}
+        sidebar={adminSidebar}
+      >
         {panel}
       </AdminShell>
     );
