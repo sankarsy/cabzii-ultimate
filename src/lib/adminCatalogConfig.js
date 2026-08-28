@@ -1128,7 +1128,8 @@ export function emptyTestimonialForm() {
     message: "",
     rating: 5,
     sortOrder: 0,
-    published: true
+    published: false,
+    sampleReview: false
   };
 }
 

@@ -1,11 +1,16 @@
 import { fetchCatalogList } from "./serverCatalog";
 
-/** Approved testimonials → AggregateRating only when real ratings exist (never fabricate). */
+/** Approved public testimonials + booking reviews only. Never fabricate a rating. */
 export async function fetchSiteReviewStats() {
-  const items = await fetchCatalogList("testimonials", 200);
-  if (!items.length) return null;
-
-  const ratings = items
+  const [testimonials, bookingReviews] = await Promise.all([
+    fetchCatalogList("testimonials", 200),
+    fetchCatalogList("reviews", 200)
+  ]);
+  const ratings = [
+    ...(Array.isArray(testimonials) ? testimonials : []),
+    ...(Array.isArray(bookingReviews) ? bookingReviews.filter((item) => item.status !== "pending" && item.status !== "rejected") : [])
+  ]
+    .filter((item) => !item.sampleReview)
     .map((item) => Number(item.rating ?? item.stars))
     .filter((n) => Number.isFinite(n) && n > 0);
 
@@ -14,7 +19,7 @@ export async function fetchSiteReviewStats() {
   const avg = ratings.reduce((sum, n) => sum + n, 0) / ratings.length;
   return {
     ratingValue: avg.toFixed(1),
-    reviewCount: String(items.length),
+    reviewCount: String(ratings.length),
     bestRating: "5",
     worstRating: "1"
   };

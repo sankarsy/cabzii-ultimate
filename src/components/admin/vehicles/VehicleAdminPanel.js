@@ -525,8 +525,8 @@ export default function VehicleAdminPanel({
               <h2 className="text-lg font-bold text-slate-900">{editingId ? "Edit vehicle" : "New vehicle"}</h2>
               <button type="button" onClick={closeForm} className="rounded-lg px-3 py-1 text-sm text-slate-600 hover:bg-slate-100">Close</button>
             </div>
-            <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-5">
-              <div className="mb-4 flex gap-1 overflow-x-auto">
+            <div className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-4 py-4 sm:px-5">
+              <div className="admin-tab-scroller sticky top-0 z-10 -mx-4 mb-4 bg-white px-4 pb-2 sm:-mx-5 sm:px-5">
                 {VEHICLE_TABS.map((tab) => (
                   <button
                     key={tab.id}

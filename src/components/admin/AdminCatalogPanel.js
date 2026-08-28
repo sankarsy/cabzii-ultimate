@@ -84,7 +84,10 @@ function itemTitle(item, tabKey) {
 
 function itemSubtitle(item, tabKey) {
   if (tabKey === "blogs") return `${item.slug || "—"} · ${item.published === false ? "Draft" : "Published"}`;
-  if (tabKey === "testimonials") return `${item.location || "—"} · ${item.rating ?? 5}★`;
+  if (tabKey === "testimonials") {
+    const state = item.sampleReview ? "Sample" : item.published === false ? "Pending" : "Published";
+    return `${item.location || "—"} · ${item.rating ?? 5}★ · ${state}`;
+  }
   if (tabKey === "bookings") {
     const parts = [
       item.type || "cab",
@@ -424,7 +427,8 @@ export default function AdminCatalogPanel({
         message: item.message || "",
         rating: item.rating ?? 5,
         sortOrder: item.sortOrder ?? 0,
-        published: item.published !== false
+        published: item.published !== false,
+        sampleReview: Boolean(item.sampleReview)
       });
       return;
     }
@@ -1125,9 +1129,13 @@ export default function AdminCatalogPanel({
                 <textarea className={inputCls()} rows={4} value={testimonialForm.message} onChange={(e) => setTestimonialForm((p) => ({ ...p, message: e.target.value }))} />
               </Field>
             </div>
-            <label className="flex items-center gap-2 text-sm text-slate-700 sm:col-span-2">
+            <label className="flex items-center gap-2 text-sm text-slate-700">
               <input type="checkbox" checked={testimonialForm.published} onChange={(e) => setTestimonialForm((p) => ({ ...p, published: e.target.checked }))} />
               Published (visible on website)
+            </label>
+            <label className="flex items-center gap-2 text-sm text-slate-700">
+              <input type="checkbox" checked={Boolean(testimonialForm.sampleReview)} onChange={(e) => setTestimonialForm((p) => ({ ...p, sampleReview: e.target.checked }))} />
+              Sample — never show on the public site
             </label>
           </div>
         ) : tab.form === "driver" ? (

@@ -3,7 +3,7 @@ import { buildPageMetadata } from "../../lib/seo/constants";
 
 export const metadata = buildPageMetadata({
   title: "Customer Reviews — Cabzii",
-  description: "Read verified reviews for cabs, acting drivers and holiday packages booked on cabzii.in.",
+  description: "Real customer reviews for cabs, acting drivers and holiday trips booked on cabzii.in. Write a review after your trip.",
   path: "/testimonials",
   keywords: ["cabzii reviews", "cab booking reviews", "pilgrimage tour reviews"]
 });
