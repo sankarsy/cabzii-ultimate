@@ -25,10 +25,10 @@ const isBuild = String(process.env.npm_lifecycle_event || "").includes("build");
 if (protect && (isBuild || !allowLocalUi)) {
   console.error(
     [
-      "Refusing next dev/build on the live Cabzii API host.",
+      "Refusing next build on the live Cabzii API host.",
       "This PC serves https://api.cabzii.in (port 8000).",
       "Frontend SSG belongs on Vercel / CI, not this machine.",
-      "For a local UI preview on this PC only: npm run dev:local",
+      "For a local UI preview on this PC: npm run dev",
       "Unset CABZII_PROTECT_LIVE_API only on a dedicated frontend machine."
     ].join("\n")
   );

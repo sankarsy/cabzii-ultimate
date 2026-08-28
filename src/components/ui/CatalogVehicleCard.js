@@ -3,6 +3,7 @@ import CatalogCardImage from "../mmt/CatalogCardImage";
 import MmtCardPriceBlock from "../mmt/MmtCardPriceBlock";
 import VerifiedBadge from "./VerifiedBadge";
 import { ICON_SOFT_CLASS } from "../icons";
+import { isLocalFallbackImage, isPlaceholderProductImage } from "../../lib/dynamicImageSeo";
 
 /**
  * Premium vertical vehicle/driver card — Uber/Ola-style layout.
@@ -22,6 +23,9 @@ export default function CatalogVehicleCard({
   imageObjectPosition,
   onNavigate
 }) {
+  const hasRealPhoto =
+    Boolean(imageSrc) && !isPlaceholderProductImage(imageSrc) && !isLocalFallbackImage(imageSrc);
+
   return (
     <article className="group flex h-full min-w-0 max-w-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[var(--emt-shadow-card)] transition-all duration-200 sm:hover:-translate-y-1 sm:hover:shadow-[var(--emt-shadow-hover)]">
       <Link
@@ -29,16 +33,22 @@ export default function CatalogVehicleCard({
         onClick={onNavigate}
         className="flex h-full min-w-0 flex-col focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cabzii-brand)] focus-visible:ring-offset-2"
       >
-        {/* Banner — vehicle / driver photo, same height as the offer cards */}
-        <div className="relative h-32 w-full shrink-0 overflow-hidden bg-slate-50 sm:h-36">
+        <div className="relative aspect-[16/10] w-full shrink-0 overflow-hidden bg-[linear-gradient(180deg,#edf2f7_0%,#f8fafc_48%,#ffffff_100%)]">
           <CatalogCardImage
             src={imageSrc}
             alt={imageAlt}
             product={imageProduct}
-            className="object-contain p-1.5 transition-transform duration-300 sm:group-hover:scale-105"
-            objectPosition={imageObjectPosition || "center"}
+            className={
+              hasRealPhoto
+                ? "object-cover object-center transition-transform duration-300 sm:group-hover:scale-[1.04]"
+                : "object-contain p-5 transition-transform duration-300 sm:p-6 sm:group-hover:scale-105"
+            }
+            objectPosition={imageObjectPosition || (hasRealPhoto ? "center" : "center bottom")}
             sizes="(max-width:640px) 100vw, (max-width:1024px) 50vw, 25vw"
           />
+          {hasRealPhoto ? (
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-900/25 via-transparent to-white/10" />
+          ) : null}
           <div className="absolute left-2.5 top-2.5">
             <VerifiedBadge compact />
           </div>

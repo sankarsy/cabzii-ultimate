@@ -117,7 +117,7 @@ export default function MmtFooter() {
         </div>
 
         <div className="mt-6 flex flex-col items-center justify-between gap-2 border-t border-slate-200/80 pt-4 text-center sm:mt-8 sm:flex-row sm:gap-3 sm:pt-6 sm:text-left">
-          <p className="text-[10px] text-slate-500 sm:text-xs">
+          <p className="text-[10px] text-slate-500 sm:text-xs" suppressHydrationWarning>
             © {new Date().getFullYear()} {BRAND.name} · {BRAND.domain}
           </p>
           <p className="text-[10px] text-slate-400 sm:text-xs">Cabs, taxis, tours &amp; travel across India</p>

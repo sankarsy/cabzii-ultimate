@@ -376,7 +376,11 @@ export function driverFormToPayload(form) {
     metaKeywords: form.metaKeywords || form.seo || "",
     canonicalUrl: form.canonicalUrl || "",
     schemaEnabled: form.schemaEnabled !== false,
-    faq: Array.isArray(form.faq) ? form.faq.filter((f) => f?.question?.trim() || f?.answer?.trim()) : [],
+    faq: Array.isArray(form.faq)
+      ? form.faq
+          .filter((f) => f?.question?.trim() || f?.answer?.trim())
+          .map((f) => ({ question: String(f.question || ""), answer: String(f.answer || "") }))
+      : [],
     enterpriseSeo: form.enterpriseSeo && typeof form.enterpriseSeo === "object" ? form.enterpriseSeo : {},
     ...productFieldsToPayload(form)
   };
@@ -694,7 +698,11 @@ export function tourPackageFormToPayload(form) {
     metaKeywords: form.metaKeywords || form.seo || "",
     canonicalUrl: form.canonicalUrl || "",
     schemaEnabled: form.schemaEnabled !== false,
-    faq: Array.isArray(form.faq) ? form.faq.filter((f) => f?.question?.trim() || f?.answer?.trim()) : [],
+    faq: Array.isArray(form.faq)
+      ? form.faq
+          .filter((f) => f?.question?.trim() || f?.answer?.trim())
+          .map((f) => ({ question: String(f.question || ""), answer: String(f.answer || "") }))
+      : [],
     enterpriseSeo: form.enterpriseSeo && typeof form.enterpriseSeo === "object" ? form.enterpriseSeo : {},
     ...productFieldsToPayload(form)
   };

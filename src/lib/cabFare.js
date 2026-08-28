@@ -215,6 +215,7 @@ export function buildPaymentSearchParams(cabId, selection) {
   if (selection.packageId) q.set("packageId", selection.packageId);
   if (selection.packageLabel) q.set("package", selection.packageLabel);
   if (selection.serviceTab) q.set("service", selection.serviceTab);
+  if (num(selection.driverBatta) > 0) q.set("driverBatta", String(selection.driverBatta));
   return q;
 }
 

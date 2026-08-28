@@ -33,7 +33,11 @@ export default function MmtHomeCatalogSection({
             <p className="text-xs font-bold uppercase tracking-wider text-[var(--cabzii-brand)]">{eyebrow}</p>
           ) : null}
           <h2 className="mt-1 text-xl font-extrabold tracking-tight text-slate-900 sm:text-[1.75rem]">{title}</h2>
-          {subtitle ? <p className="mt-1 text-sm leading-relaxed text-slate-600">{subtitle}</p> : null}
+          {subtitle ? (
+            <p className="mt-1 text-sm leading-relaxed text-slate-600" suppressHydrationWarning>
+              {subtitle}
+            </p>
+          ) : null}
         </div>
         {viewAllHref ? (
           <div className="mt-3 flex justify-center sm:absolute sm:right-0 sm:top-1/2 sm:mt-0 sm:-translate-y-1/2 sm:justify-end">

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { MapPin, ArrowRight } from "lucide-react";
 import SectionIntro from "../ui/SectionIntro";
+import { formatInr } from "../../lib/formatInr";
 
 const DESTINATIONS = [
   {
@@ -62,7 +63,7 @@ const DESTINATIONS = [
 ];
 
 function inr(n) {
-  return `₹${Number(n).toLocaleString("en-IN")}`;
+  return `₹${formatInr(n)}`;
 }
 
 /** Curated South India destinations with cab fares — always populated, never empty. */

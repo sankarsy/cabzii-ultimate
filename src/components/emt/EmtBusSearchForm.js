@@ -1,17 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeftRight, Calendar } from "lucide-react";
-import { todayStr } from "../../lib/mmtTrip";
-import { addDays, formatDayName, formatEmtDate } from "../../lib/emt/heroDates";
+import { addDays } from "../../lib/emt/heroDates";
+import { useTodayStr, HydrateSafeDate } from "../../lib/useTodayStr";
 import { POPULAR_BUS_ROUTES, busResultsHref } from "../../lib/popularBusRoutes";
 
 export default function EmtBusSearchForm({ emtHero = false, compact = false, initialFrom = "", initialTo = "", initialDate = "" }) {
   const router = useRouter();
   const [from, setFrom] = useState(initialFrom || "Chennai");
   const [to, setTo] = useState(initialTo || "");
-  const [date, setDate] = useState(initialDate || todayStr());
+  const today = useTodayStr();
+  const [date, setDate] = useState(initialDate || "");
+
+  useEffect(() => {
+    if (today) setDate((prev) => prev || today);
+  }, [today]);
 
   function search() {
     router.push(busResultsHref(from.trim() || "Chennai", to.trim(), date));
@@ -23,11 +28,12 @@ export default function EmtBusSearchForm({ emtHero = false, compact = false, ini
   }
 
   function pickQuick(offset) {
-    setDate(addDays(todayStr(), offset));
+    if (!today) return;
+    setDate(addDays(today, offset));
   }
 
-  const isToday = date === todayStr();
-  const isTomorrow = date === addDays(todayStr(), 1);
+  const isToday = Boolean(today) && date === today;
+  const isTomorrow = Boolean(today) && date === addDays(today, 1);
 
   return (
     <div className={compact ? "" : ""}>
@@ -78,11 +84,15 @@ export default function EmtBusSearchForm({ emtHero = false, compact = false, ini
             <div className="flex flex-wrap items-center gap-2">
               <div className="relative min-w-[8rem] flex-1">
                 <Calendar className="pointer-events-none absolute right-0 top-2 h-4 w-4 text-slate-400" aria-hidden />
-                <p className="truncate text-base font-extrabold text-slate-900">{date ? formatEmtDate(date) : "DD-MM-YYYY"}</p>
-                <p className="text-xs text-slate-500">{date ? formatDayName(date) : ""}</p>
+                <HydrateSafeDate
+                  iso={date}
+                  empty="DD-MM-YYYY"
+                  className="truncate text-base font-extrabold text-slate-900"
+                />
+                <HydrateSafeDate iso={date} weekday className="text-xs text-slate-500" />
                 <input
                   type="date"
-                  min={todayStr()}
+                  min={today || undefined}
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
                   className="absolute inset-0 h-full w-full cursor-pointer opacity-0"

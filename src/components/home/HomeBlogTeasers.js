@@ -43,7 +43,7 @@ function BlogTile({ post }) {
 
 /** Latest blog teasers — real posts when published, sample guides otherwise. */
 export default function HomeBlogTeasers() {
-  const [posts, setPosts] = useState(null);
+  const [posts, setPosts] = useState(SAMPLE_BLOGS);
 
   useEffect(() => {
     let cancelled = false;

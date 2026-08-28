@@ -217,8 +217,8 @@ export default function AdminPage() {
           </div>
         </div>
       ) : token ? (
-        <div className="grid gap-3 lg:grid-cols-[140px_minmax(0,1fr)]">
-          <aside className="sticky top-20 max-h-[42vh] self-start overflow-y-scroll overscroll-contain rounded-xl border border-slate-200 bg-white p-1.5 shadow-[var(--cabzii-shadow-card)] lg:max-h-[calc(100vh-6.5rem)]">
+        <div className="flex h-full min-h-0 flex-col gap-3 overflow-hidden lg:grid lg:grid-cols-[11.5rem_minmax(0,1fr)]">
+          <aside className="max-h-[40vh] min-h-0 shrink-0 overflow-y-auto overscroll-contain rounded-xl border border-slate-200 bg-white p-1.5 shadow-[var(--cabzii-shadow-card)] lg:max-h-none lg:h-full">
             {sidebarGroups.map((group) => {
               const items = group.items.filter((item) => !item.superAdminOnly || isSuperAdmin);
               if (!items.length) return null;
@@ -256,7 +256,7 @@ export default function AdminPage() {
               );
             })}
           </aside>
-          <div className="min-w-0">
+          <div className="min-h-0 min-w-0 flex-1 overflow-y-auto overscroll-contain">
             {!isSuperAdmin && !VENDOR_ALLOWED_TABS.has(activeTab) ? (
               <AdminOpsDashboard token={token} isSuperAdmin={false} />
             ) : activeTab === "ops" ? (

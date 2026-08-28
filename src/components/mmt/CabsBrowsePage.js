@@ -35,8 +35,7 @@ export default function CabsBrowsePage() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const q = new URLSearchParams({ limit: "20", page: String(page) });
-      if (displayCity) q.set("priorityCity", displayCity);
+      const q = new URLSearchParams({ limit: "24", page: String(page) });
       const res = await fetch(`/api/cabs?${q}`, { cache: "no-store" });
       const json = await res.json();
       setCabs(sortBySelectedCity(extractCabList(json), displayCity));
@@ -77,7 +76,7 @@ export default function CabsBrowsePage() {
       ) : (
         <div className="bg-[#f4f5f7] py-5">
           <div className="section-shell">
-            <MmtCabResults cabs={cabs} trip={defaultTrip} />
+            <MmtCabResults cabs={cabs} trip={defaultTrip} catalogMode displayCity={displayCity} />
           </div>
           {meta.totalPages > 1 ? (
             <div className="section-shell flex justify-center gap-3 pb-10">

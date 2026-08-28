@@ -63,7 +63,7 @@ export default function Footer() {
 
         <FooterSeoLinks />
 
-        <div className="mt-8 border-t border-slate-800 pt-4 text-center text-sm text-slate-500">
+        <div className="mt-8 border-t border-slate-800 pt-4 text-center text-sm text-slate-500" suppressHydrationWarning>
           © {new Date().getFullYear()} {siteName || "cabzii.in"}. All rights reserved.
         </div>
       </div>

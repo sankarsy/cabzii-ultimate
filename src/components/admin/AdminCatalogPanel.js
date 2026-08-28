@@ -39,6 +39,8 @@ import {
   formatBookingStatsLine
 } from "../../lib/bookingStats";
 import { normalizeStoredImagePath, resolveMediaUrl } from "../../lib/media";
+import { IMAGE_UPLOAD_RULES } from "../../lib/imageUploadRules";
+import imageCompression from "browser-image-compression";
 import AdminBookingEditor from "./AdminBookingEditor";
 import { AdminSeoCityPageForm, AdminSeoRouteForm, AdminSeoServiceForm } from "./AdminSeoForm";
 import { AdminProductSeoSection } from "./AdminProductSeoSection";
@@ -601,8 +603,8 @@ export default function AdminCatalogPanel({
       setUploadError("Only jpg, jpeg, png, and webp are allowed.");
       return;
     }
-    if (selectedImage.size > 1 * 1024 * 1024) {
-      setUploadError("Image is oversized. Maximum allowed size is 1 MB.");
+    if (selectedImage.size > IMAGE_UPLOAD_RULES.maxBytes) {
+      setUploadError(`Image is oversized. Maximum original size is ${IMAGE_UPLOAD_RULES.maxMb} MB.`);
       return;
     }
 
@@ -611,8 +613,20 @@ export default function AdminCatalogPanel({
     setUploadedUrl("");
 
     try {
+      let file = selectedImage;
+      try {
+        file = await imageCompression(selectedImage, {
+          maxSizeMB: IMAGE_UPLOAD_RULES.compressedMaxMb || 2,
+          maxWidthOrHeight: IMAGE_UPLOAD_RULES.maxWidth,
+          useWebWorker: true,
+          fileType: "image/webp"
+        });
+      } catch {
+        file = selectedImage;
+      }
       const formData = new FormData();
-      formData.append("file", selectedImage);
+      const name = String(file.name || selectedImage.name || "upload").replace(/\.\w+$/, ".webp");
+      formData.append("file", file, name);
 
       const res = await fetch("/api/upload", {
         method: "POST",
@@ -981,7 +995,7 @@ export default function AdminCatalogPanel({
         <div className="mb-5 rounded-lg border border-slate-200 bg-slate-50 p-3">
           <p className="text-sm font-semibold text-slate-800">Image upload</p>
           <p className="mt-1 text-xs text-slate-600">
-            Upload a photo — the image path is filled automatically. You must click <strong>Save</strong> below for it to appear on the website.
+            Upload a photo up to {IMAGE_UPLOAD_RULES.maxMb} MB — it is compressed automatically. Click <strong>Save</strong> below for it to appear on the website.
           </p>
           <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center">
             <input
@@ -1153,12 +1167,13 @@ export default function AdminCatalogPanel({
               <div className="sm:col-span-2">
                 <AdminProductImageField
                   label="Product image"
-                  hint="Upload below or paste /uploads/ path — click Delete to remove"
+                  hint="Upload a photo or paste /uploads/ path — click Save to publish"
                   value={driverForm.image}
                   onChange={(v) => setDriverForm((p) => ({ ...p, image: normalizeStoredImagePath(v) }))}
                   onDelete={() => deleteProductImage(driverForm.image)}
                   deleting={deletingImagePath === driverForm.image}
                   disabled={!canEdit}
+                  authToken={token}
                   alt={driverForm.name || "Driver preview"}
                 />
               </div>
@@ -1199,12 +1214,13 @@ export default function AdminCatalogPanel({
               <div className="sm:col-span-2">
                 <AdminGalleryField
                   label="Gallery images (max 3)"
-                  hint="Comma-separated image paths"
+                  hint="Upload photos or paste comma-separated /uploads/ paths"
                   value={driverForm.gallery}
                   onChange={(v) => setDriverForm((p) => ({ ...p, gallery: v }))}
                   onRemoveImage={(path) => deleteProductImage(path)}
                   removingPath={deletingImagePath}
                   disabled={!canEdit}
+                  authToken={token}
                 />
               </div>
               <Field label="Languages" hint="Comma-separated">
@@ -1317,13 +1333,14 @@ export default function AdminCatalogPanel({
               <div className="sm:col-span-2">
                 <AdminProductImageField
                   label="Product image"
-                  hint="Upload below or paste /uploads/ path — click Delete to remove"
+                  hint="Choose a tour photo here — then click Save"
                   value={tourPackageForm.image}
                   onChange={(v) => setTourPackageForm((p) => ({ ...p, image: normalizeStoredImagePath(v) }))}
                   onDelete={() => deleteProductImage(tourPackageForm.image)}
                   deleting={deletingImagePath === tourPackageForm.image}
                   disabled={!canEdit}
-                  alt={tourPackageForm.title || "Package preview"}
+                  authToken={token}
+                  alt={tourPackageForm.name || tourPackageForm.title || "Package preview"}
                 />
               </div>
               <Field label="Status" hint="Active packages appear on the website">
@@ -1339,12 +1356,13 @@ export default function AdminCatalogPanel({
               <div className="sm:col-span-2">
                 <AdminGalleryField
                   label="Gallery images (max 3)"
-                  hint="Comma-separated image paths"
+                  hint="Upload extra tour photos (max 3). Click Save after upload."
                   value={tourPackageForm.gallery}
                   onChange={(v) => setTourPackageForm((p) => ({ ...p, gallery: v }))}
                   onRemoveImage={(path) => deleteProductImage(path)}
                   removingPath={deletingImagePath}
                   disabled={!canEdit}
+                  authToken={token}
                 />
               </div>
               <div className="sm:col-span-2">

@@ -6,6 +6,7 @@ import { serviceFallbackPath } from "../lib/dynamicImageSeo";
 /** Shared layout tokens matching CabCard (image + meta below). */
 
 import { CheckIcon } from "./icons";
+import { formatInr } from "../lib/formatInr";
 
 export const CARD_ARTICLE_CLASS =
   "cabzii-card cabzii-card-interactive group relative flex h-full flex-col overflow-hidden";
@@ -80,7 +81,7 @@ export function PriceSummaryCard({
           <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">{priceLabel}</p>
           <div className="mt-0.5 flex flex-wrap items-center gap-1.5">
             <p className="text-sm font-extrabold tracking-tight text-slate-900 sm:text-base">
-              ₹{finalPrice.toLocaleString("en-IN")}
+              ₹{formatInr(finalPrice)}
               {priceSuffix ? <span className="ml-1 text-[10px] font-medium text-slate-500">{priceSuffix}</span> : null}
             </p>
           </div>
@@ -110,7 +111,7 @@ export function PriceSummaryCard({
 export function PackagePill({ pkg, selected, onSelect, showPrice = true }) {
   const price = pkg?.price ?? pkg?.list;
   const hasPrice = showPrice && price > 0;
-  const priceText = hasPrice ? `₹${Number(price).toLocaleString("en-IN")}` : "—";
+  const priceText = hasPrice ? `₹${formatInr(price)}` : "—";
 
   return (
     <button

@@ -148,6 +148,7 @@ export default function PaymentPage({ searchParams }) {
       total,
       extraKm: perKmRate || undefined,
       extraHr: Number(searchParams?.extraHr) || undefined,
+      driverBatta: Number(searchParams?.driverBatta) || (usesDistance ? 0 : Math.max(0, baseFare - listPrice)),
       distanceKm: distanceKm || undefined,
       perKmRate: perKmRate || undefined,
       distanceCharge: distanceCharge || undefined,

@@ -58,6 +58,20 @@ export function serviceFallbackPath(kind = "default") {
   return SERVICE_FALLBACK_PATHS[kind] || SERVICE_FALLBACK_PATHS.default || BRAND_OG_IMAGE;
 }
 
+/** Stock Unsplash / placeholder URLs are not product photos. */
+export function isPlaceholderProductImage(url = "") {
+  const u = String(url || "").trim().toLowerCase();
+  if (!u) return true;
+  if (u.includes("images.unsplash.com") || u.includes("source.unsplash.com")) return true;
+  if (u.includes("picsum.photos") || u.includes("loremflickr") || u.includes("placehold")) return true;
+  if (/\/sample[-_]?image\b/.test(u)) return true;
+  return false;
+}
+
+export function isLocalFallbackImage(url = "") {
+  return /\/images\/fallbacks\//i.test(String(url || ""));
+}
+
 /** Normalize rich images[] + string gallery + cover field into ordered assets. */
 export function collectProductImages(product = {}) {
   const out = [];
@@ -65,7 +79,7 @@ export function collectProductImages(product = {}) {
 
   const push = (raw, meta = {}) => {
     const url = resolveMediaUrl(raw?.url || raw);
-    if (!url || seen.has(url)) return;
+    if (!url || seen.has(url) || isPlaceholderProductImage(url)) return;
     seen.add(url);
     out.push({
       url,
@@ -115,7 +129,7 @@ export function resolveCoverImage(product = {}, { kind } = {}) {
 
   const es = product.enterpriseSeo || {};
   const og = resolveMediaUrl(es.ogImage || product.ogImage);
-  if (og) {
+  if (og && !isPlaceholderProductImage(og)) {
     return {
       url: og,
       alt: product.imageAlt || "",

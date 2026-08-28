@@ -1,16 +1,23 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import CabziiLogo from "../brand/CabziiLogo";
 import { BRAND } from "../../lib/brand";
 
 /**
  * Cabzii.in admin chrome — matches public site header colors.
+ * Header and workspace stay locked; only the main panel scrolls.
  */
 export default function AdminShell({ user, onLogout, children }) {
+  useEffect(() => {
+    document.documentElement.classList.add("admin-scroll-lock");
+    return () => document.documentElement.classList.remove("admin-scroll-lock");
+  }, []);
+
   return (
-    <div className="min-h-screen bg-[var(--cabzii-bg)]">
-      <header className="sticky top-0 z-40 border-b border-white/10 bg-[var(--cabzii-header)] text-white shadow-md">
+    <div className="flex h-dvh flex-col overflow-hidden bg-[var(--cabzii-bg)]">
+      <header className="z-40 shrink-0 border-b border-white/10 bg-[var(--cabzii-header)] text-white shadow-md">
         <div className="flex min-h-[56px] flex-wrap items-center justify-between gap-3 px-4 md:px-6 lg:px-8">
           <div className="flex items-center gap-4">
             <Link href="/" className="rounded-lg bg-white px-2.5 py-1">
@@ -45,7 +52,7 @@ export default function AdminShell({ user, onLogout, children }) {
           ) : null}
         </div>
       </header>
-      <div className="px-4 py-8 md:px-6 lg:px-8">{children}</div>
+      <div className="min-h-0 flex-1 overflow-hidden px-4 py-4 md:px-6 lg:px-8">{children}</div>
     </div>
   );
 }

@@ -1,9 +1,7 @@
+import { formatInrCurrency } from "../../lib/formatInr";
+
 function formatINR(n) {
-  return new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency: "INR",
-    maximumFractionDigits: 0
-  }).format(Number(n) || 0);
+  return formatInrCurrency(n);
 }
 
 const MIN_DISPLAY_PRICE = 1;

@@ -162,7 +162,7 @@ export default function VehicleForm({
               ))}
             </select>
             <p className="mt-1 text-[11px] font-normal text-slate-500">
-              Active needs a name, seats, primary photo and pricing. Draft/Inactive stay off the public site and sitemap.
+              Active needs a name, seats and pricing. A photo is optional. Draft/Inactive stay off the public site and sitemap.
             </p>
           </Field>
           <div className="flex flex-wrap gap-4 sm:col-span-2">

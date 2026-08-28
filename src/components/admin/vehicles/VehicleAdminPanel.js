@@ -138,8 +138,8 @@ export default function VehicleAdminPanel({
     (async () => {
       try {
         const [citiesRes, vendorsRes] = await Promise.all([
-          fetch("/api/cities?limit=200", { headers: { authorization: authHeaders.authorization }, cache: "no-store" }),
-          fetch("/api/vendors", { headers: { authorization: authHeaders.authorization }, cache: "no-store" })
+          fetch("/api/cities?active=0&limit=200", { headers: { authorization: authHeaders.authorization }, cache: "no-store" }),
+          fetch("/api/vendors?active=0", { headers: { authorization: authHeaders.authorization }, cache: "no-store" })
         ]);
         const citiesJson = await citiesRes.json().catch(() => ({}));
         const vendorsJson = await vendorsRes.json().catch(() => ({}));
@@ -218,11 +218,6 @@ export default function VehicleAdminPanel({
       }
     }
     if (form.status === "active") {
-      const cover =
-        String(form.image || "").trim() ||
-        (Array.isArray(form.images) && form.images.find((img) => img?.url)?.url) ||
-        "";
-      if (!cover) return "Primary image is required before setting Active";
       const packs = form.farePackages && typeof form.farePackages === "object" ? form.farePackages : {};
       const hasFare =
         Number(form.price) > 0 ||
@@ -357,7 +352,7 @@ export default function VehicleAdminPanel({
           <h1 className="text-xl font-bold text-slate-900">Vehicle management</h1>
         <p className="text-sm text-slate-600">
             {isSuperAdmin === false
-              ? "Add each physical vehicle separately. Force Traveller #1 and #2 must be two records. Draft stays off the public site until name, seats, photo and pricing are complete."
+              ? "Add each physical vehicle separately. Force Traveller #1 and #2 must be two records. Draft stays off the public site until name, seats and pricing are complete. A photo is optional."
               : `Edit fleet city under Basic Info. HQ default: ${DEFAULT_HQ_CITY}. Path: Admin → Cabs.`}
           </p>
         </div>

@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import SectionIntro from "../ui/SectionIntro";
 
@@ -41,15 +44,22 @@ export default function FaqSection({
 }
 
 function FaqItem({ question, answer }) {
+  const [open, setOpen] = useState(false);
+
   return (
-    <details className="group">
-      <summary>
-        <span className="min-w-0 flex-1">{question}</span>
+    <div className={`faq-item${open ? " is-open" : ""}`}>
+      <button
+        type="button"
+        className="faq-trigger"
+        aria-expanded={open}
+        onClick={() => setOpen((value) => !value)}
+      >
+        <span className="min-w-0 flex-1 text-left">{question}</span>
         <span className="faq-chevron" aria-hidden>
-          <ChevronDown className="h-4 w-4 text-slate-400" strokeWidth={2.25} />
+          <ChevronDown className="h-4 w-4" strokeWidth={2.25} />
         </span>
-      </summary>
-      <p className="faq-answer">{answer}</p>
-    </details>
+      </button>
+      {open ? <p className="faq-answer">{answer}</p> : null}
+    </div>
   );
 }

@@ -20,9 +20,10 @@ import { FuelIcon, LuggageIcon, PersonIcon, SnowflakeIcon } from "../icons";
 import CatalogCardImage from "./CatalogCardImage";
 import CatalogVehicleCard, { FeatureChip } from "../ui/CatalogVehicleCard";
 import { trackEvent } from "../../lib/analytics";
+import { formatInrCurrency } from "../../lib/formatInr";
 
 function formatINR(n) {
-  return `₹${Number(n || 0).toLocaleString("en-IN")}`;
+  return formatInrCurrency(n);
 }
 
 export default function MmtCabResultCard({ cab, trip, layout = "row", catalogMode = false, displayCity = "" }) {

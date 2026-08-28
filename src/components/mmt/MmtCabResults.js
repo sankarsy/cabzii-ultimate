@@ -6,6 +6,7 @@ import { buildFareSlabs, formatRating } from "../../lib/cabFare";
 import { resolveCabTripFare } from "../../lib/distanceFare";
 import { cabSlabForTrip } from "../../lib/mmtTrip";
 import MmtCabResultCard from "./MmtCabResultCard";
+import { formatInr } from "../../lib/formatInr";
 
 const SORTS = [
   { id: "price-asc", label: "Price" },
@@ -144,7 +145,7 @@ export default function MmtCabResults({ cabs, trip, embedded = false, catalogMod
         />
         <span className="mt-1 flex justify-between text-[11px] text-slate-500">
           <span>₹300</span>
-          <span>₹{Number(priceCap).toLocaleString("en-IN")}</span>
+          <span>₹{formatInr(priceCap)}</span>
         </span>
       </label>
     </aside>
@@ -170,15 +171,31 @@ export default function MmtCabResults({ cabs, trip, embedded = false, catalogMod
       </div>
 
       {filtered.length ? (
-        filtered.map((cab) => (
-          <MmtCabResultCard
-            key={String(cab._id ?? cab.id)}
-            cab={cab}
-            trip={trip}
-            catalogMode={catalogMode}
-            displayCity={displayCity}
-          />
-        ))
+        catalogMode ? (
+          <div className="cabzii-catalog-grid pt-1">
+            {filtered.map((cab) => (
+              <div className="cabzii-catalog-item" key={String(cab._id ?? cab.id)}>
+                <MmtCabResultCard
+                  cab={cab}
+                  trip={trip}
+                  layout="card"
+                  catalogMode
+                  displayCity={displayCity}
+                />
+              </div>
+            ))}
+          </div>
+        ) : (
+          filtered.map((cab) => (
+            <MmtCabResultCard
+              key={String(cab._id ?? cab.id)}
+              cab={cab}
+              trip={trip}
+              catalogMode={catalogMode}
+              displayCity={displayCity}
+            />
+          ))
+        )
       ) : (
         <div className="rounded-xl border border-dashed border-slate-200 bg-white p-12 text-center text-slate-500">
           No cabs match your filters. Try clearing filters or changing the route.

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { buildDomesticDestinations } from "../../lib/holidayHome";
 import { resolveMediaUrl } from "../../lib/media";
+import { formatInrCurrency } from "../../lib/formatInr";
 
 /* Gradient fallbacks when a destination has no image */
 const CARD_COLORS = [
@@ -16,11 +17,7 @@ const CARD_COLORS = [
 ];
 
 function formatINR(n) {
-  return new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency: "INR",
-    maximumFractionDigits: 0
-  }).format(Number(n) || 0);
+  return formatInrCurrency(n);
 }
 
 function ScrollButton({ direction, onClick }) {

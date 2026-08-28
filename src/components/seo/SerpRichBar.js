@@ -1,4 +1,5 @@
 import { Star } from "lucide-react";
+import { formatInr } from "../../lib/formatInr";
 
 /**
  * On-page mirror of Google rich-result rows — stars, price, attribute pills.
@@ -35,7 +36,7 @@ export default function SerpRichBar({
               ))}
             </span>
             <span>{rating.toFixed(1)}</span>
-            <span className="font-normal text-slate-500">({reviews.toLocaleString("en-IN")} reviews)</span>
+            <span className="font-normal text-slate-500">({formatInr(reviews)} reviews)</span>
           </div>
         ) : null}
         {priceLabel ? (

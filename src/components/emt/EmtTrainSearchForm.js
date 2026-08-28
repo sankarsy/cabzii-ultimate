@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CalendarIcon, TwoWayIcon } from "../icons";
-import { todayStr } from "../../lib/mmtTrip";
-import { addDays, formatDayName, formatEmtDate, formatEmtDateShort, openNativePicker } from "../../lib/emt/heroDates";
+import { addDays, formatEmtDateShort, openNativePicker } from "../../lib/emt/heroDates";
+import { useTodayStr, HydrateSafeDate } from "../../lib/useTodayStr";
 import EmtHeroPills, { EmtHeroPriceHint } from "./EmtHeroPills";
 
 const TRAIN_MODES = [
@@ -24,7 +24,12 @@ export default function EmtTrainSearchForm({ emtHero = false }) {
   const [mode, setMode] = useState("search");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
-  const [date, setDate] = useState(todayStr());
+  const today = useTodayStr();
+  const [date, setDate] = useState("");
+
+  useEffect(() => {
+    if (today) setDate((prev) => prev || today);
+  }, [today]);
 
   function search() {
     if (mode !== "search") {
@@ -47,7 +52,7 @@ export default function EmtTrainSearchForm({ emtHero = false }) {
     return null;
   }
 
-  const quick = quickDates(todayStr());
+  const quick = today ? quickDates(today) : [];
 
   return (
     <div>
@@ -90,13 +95,15 @@ export default function EmtTrainSearchForm({ emtHero = false }) {
               <div className="flex flex-wrap items-center gap-2">
                 <div className="relative min-w-[7rem] flex-1">
                   <CalendarIcon className="pointer-events-none absolute right-0 top-2 h-4 w-4 text-slate-400" aria-hidden />
-                  <p className="truncate text-base font-bold text-slate-900 sm:text-lg">
-                    {date ? formatEmtDate(date) : "Depart Date"}
-                  </p>
-                  <p className="text-xs text-slate-500">{date ? formatDayName(date) : ""}</p>
+                  <HydrateSafeDate
+                    iso={date}
+                    empty="Depart Date"
+                    className="truncate text-base font-bold text-slate-900 sm:text-lg"
+                  />
+                  <HydrateSafeDate iso={date} weekday className="text-xs text-slate-500" />
                   <input
                     type="date"
-                    min={todayStr()}
+                    min={today || undefined}
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
                     onClick={openNativePicker}

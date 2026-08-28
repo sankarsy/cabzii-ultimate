@@ -80,7 +80,10 @@ export default function VehicleGalleryEditor({ images = [], onChange, disabled, 
           </div>
         ))}
       </div>
-      <p className="text-xs text-slate-500">Drag rows to reorder. First cover image is used on cards and the detail page. Maximum {IMAGE_UPLOAD_RULES.maxGallery} photos.</p>
+      <p className="text-xs text-slate-500">
+        Drag rows to reorder. Cover photo is used on cards and the detail page. Photo size is not limited. Max{" "}
+        {IMAGE_UPLOAD_RULES.maxGallery} photos.
+      </p>
     </div>
   );
 }

@@ -1,21 +1,28 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CalendarIcon, ChevronDownIcon } from "../icons";
-import { todayStr } from "../../lib/mmtTrip";
-import { addDays, formatDayName, formatEmtDate, openNativePicker } from "../../lib/emt/heroDates";
+import { addDays, openNativePicker } from "../../lib/emt/heroDates";
+import { useTodayStr, HydrateSafeDate } from "../../lib/useTodayStr";
 import { EmtHeroPriceHint } from "./EmtHeroPills";
 
 export default function EmtHotelSearchForm({ emtHero = false }) {
   const router = useRouter();
   const [city, setCity] = useState("Bangalore");
   const [country] = useState("India");
-  const [checkIn, setCheckIn] = useState(todayStr());
-  const [checkOut, setCheckOut] = useState(addDays(todayStr(), 1));
+  const today = useTodayStr();
+  const [checkIn, setCheckIn] = useState("");
+  const [checkOut, setCheckOut] = useState("");
   const [rooms, setRooms] = useState(1);
   const [guests, setGuests] = useState(2);
+
+  useEffect(() => {
+    if (!today) return;
+    setCheckIn((prev) => prev || today);
+    setCheckOut((prev) => prev || addDays(today, 1));
+  }, [today]);
 
   function search() {
     const q = new URLSearchParams({
@@ -55,12 +62,12 @@ export default function EmtHotelSearchForm({ emtHero = false }) {
                 <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Check-In</span>
                 <div className="relative">
                   <CalendarIcon className="pointer-events-none absolute right-0 top-2 h-4 w-4 text-slate-400" aria-hidden />
-                  <p className="truncate text-base font-bold text-slate-900 sm:text-xl">{formatEmtDate(checkIn)}</p>
-                  <p className="text-xs text-slate-500">{formatDayName(checkIn)}</p>
+                  <HydrateSafeDate iso={checkIn} className="truncate text-base font-bold text-slate-900 sm:text-xl" />
+                  <HydrateSafeDate iso={checkIn} weekday className="text-xs text-slate-500" />
                   <input
                     type="date"
                     value={checkIn}
-                    min={todayStr()}
+                    min={today || undefined}
                     onChange={(e) => setCheckIn(e.target.value)}
                     onClick={openNativePicker}
                     className="emt-date-input absolute inset-0 z-10 h-full w-full cursor-pointer"
@@ -73,12 +80,12 @@ export default function EmtHotelSearchForm({ emtHero = false }) {
                 <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Check-Out</span>
                 <div className="relative">
                   <CalendarIcon className="pointer-events-none absolute right-0 top-2 h-4 w-4 text-slate-400" aria-hidden />
-                  <p className="truncate text-base font-bold text-slate-900 sm:text-xl">{formatEmtDate(checkOut)}</p>
-                  <p className="text-xs text-slate-500">{formatDayName(checkOut)}</p>
+                  <HydrateSafeDate iso={checkOut} className="truncate text-base font-bold text-slate-900 sm:text-xl" />
+                  <HydrateSafeDate iso={checkOut} weekday className="text-xs text-slate-500" />
                   <input
                     type="date"
                     value={checkOut}
-                    min={checkIn || todayStr()}
+                    min={checkIn || today || undefined}
                     onChange={(e) => setCheckOut(e.target.value)}
                     onClick={openNativePicker}
                     className="emt-date-input absolute inset-0 z-10 h-full w-full cursor-pointer"
@@ -163,7 +170,7 @@ export default function EmtHotelSearchForm({ emtHero = false }) {
           <input
             type="date"
             value={checkIn}
-            min={todayStr()}
+            min={today || undefined}
             onChange={(e) => setCheckIn(e.target.value)}
             className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm font-semibold"
           />
@@ -173,7 +180,7 @@ export default function EmtHotelSearchForm({ emtHero = false }) {
           <input
             type="date"
             value={checkOut}
-            min={checkIn || todayStr()}
+            min={checkIn || today || undefined}
             onChange={(e) => setCheckOut(e.target.value)}
             className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm font-semibold"
           />

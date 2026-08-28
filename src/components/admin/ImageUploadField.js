@@ -11,24 +11,33 @@ function inputCls() {
 
 export function ImageUploadRequirements({ maxGallery }) {
   return (
-    <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-[11px] leading-relaxed text-slate-600">
-      <p className="font-semibold text-slate-800">Vehicle images</p>
-      <ul className="mt-1 list-disc space-y-0.5 pl-4">
-        <li>Recommended: {IMAGE_UPLOAD_RULES.recommendedWidth} × {IMAGE_UPLOAD_RULES.recommendedHeight} px</li>
-        <li>Minimum: {IMAGE_UPLOAD_RULES.minWidth} × {IMAGE_UPLOAD_RULES.minHeight} px</li>
-        <li>Format: {IMAGE_UPLOAD_RULES.formatsLabel} (recommended: WebP)</li>
-        <li>Maximum file size: {IMAGE_UPLOAD_RULES.maxMb} MB per image</li>
-        {maxGallery ? <li>Maximum gallery: {maxGallery} images</li> : null}
+    <div className="rounded-lg border border-sky-100 bg-sky-50/80 px-3 py-2.5 text-[11px] leading-relaxed text-slate-700">
+      <p className="font-semibold text-slate-900">Photo requirements</p>
+      <ul className="mt-1.5 list-disc space-y-0.5 pl-4">
+        <li>
+          <strong>Required:</strong> {IMAGE_UPLOAD_RULES.formatsLabel} · original file up to {IMAGE_UPLOAD_RULES.maxMb} MB
+        </li>
+        <li>
+          <strong>Any size is allowed</strong> — small or low-quality photos will upload
+        </li>
+        <li>
+          <strong>Best (optional):</strong> {IMAGE_UPLOAD_RULES.recommendedWidth} × {IMAGE_UPLOAD_RULES.recommendedHeight} px landscape WebP
+        </li>
+        {maxGallery ? <li>Maximum {maxGallery} photos per vehicle. First cover photo is used on cards.</li> : null}
       </ul>
-      <p className="mt-1.5">Use clear real vehicle photos. Avoid screenshots, blurry, watermarked, or duplicate images.</p>
+      <p className="mt-1.5 text-slate-600">
+        A photo is optional — you can save the vehicle without one. Photos already saved on this vehicle can stay.
+        Use a real vehicle photo when you add one — not a screenshot or a tiny thumbnail.
+      </p>
     </div>
   );
 }
 
+
 async function compressForUpload(file) {
   try {
     return await imageCompression(file, {
-      maxSizeMB: IMAGE_UPLOAD_RULES.maxMb,
+      maxSizeMB: IMAGE_UPLOAD_RULES.compressedMaxMb || 2,
       maxWidthOrHeight: IMAGE_UPLOAD_RULES.maxWidth,
       useWebWorker: true,
       fileType: "image/webp"
@@ -52,6 +61,7 @@ export default function ImageUploadField({
 }) {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
+  const [warning, setWarning] = useState("");
   const [staged, setStaged] = useState(null);
 
   useEffect(() => {
@@ -68,12 +78,14 @@ export default function ImageUploadField({
   const stageFile = async (file) => {
     if (!file) return;
     setError("");
-    const checked = await validateImageFile(file);
+    setWarning("");
+    const checked = await validateImageFile(file, { skipDimensions: true });
     if (!checked.ok) {
       setError(checked.message);
       return;
     }
     if (staged?.preview) URL.revokeObjectURL(staged.preview);
+    setWarning(checked.warning || "");
     setStaged({
       file,
       preview: URL.createObjectURL(file),
@@ -92,7 +104,8 @@ export default function ImageUploadField({
     setError("");
     setUploading(true);
     try {
-      const compressed = await compressForUpload(staged.file);
+      const skipCompress = staged.file.size < 200 * 1024;
+      const compressed = skipCompress ? staged.file : await compressForUpload(staged.file);
       const formData = new FormData();
       const name = String(compressed.name || staged.name || "vehicle").replace(/\.\w+$/, ".webp");
       formData.append("file", compressed, name);
@@ -105,6 +118,8 @@ export default function ImageUploadField({
       if (!res.ok) throw new Error(json?.message || "Upload failed");
       const path = normalizeStoredImagePath(json?.data?.url || json?.data?.path || json?.url || "");
       if (!path) throw new Error("Upload returned no path");
+      setError("");
+      setWarning("");
       onChange(path);
       clearStaged();
     } catch (err) {
@@ -154,6 +169,10 @@ export default function ImageUploadField({
           ) : null}
           {uploading ? <span className="text-[11px] text-slate-500">Uploading…</span> : null}
         </div>
+        <p className="font-normal text-[10px] leading-snug text-slate-500">
+          Any photo size is allowed · {IMAGE_UPLOAD_RULES.formatsLabel} · max {IMAGE_UPLOAD_RULES.maxMb} MB · sharper at{" "}
+          {IMAGE_UPLOAD_RULES.recommendedWidth} × {IMAGE_UPLOAD_RULES.recommendedHeight} px
+        </p>
         {staged ? (
           <div className="flex flex-wrap items-start gap-3 rounded-lg border border-slate-200 bg-white p-2">
             <img src={staged.preview} alt="Selected file preview" width={160} height={100} className="h-20 w-32 rounded object-cover" />
@@ -185,6 +204,7 @@ export default function ImageUploadField({
           </div>
         ) : null}
         {error ? <p className="text-[11px] text-rose-600">{error}</p> : null}
+        {warning && !error ? <p className="text-[11px] text-amber-700">{warning}</p> : null}
         {value ? (
           <img
             src={resolveMediaUrl(value)}

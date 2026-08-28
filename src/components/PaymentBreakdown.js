@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { formatInrCurrency } from "../lib/formatInr";
+import { getCabVehicleName } from "../lib/catalogDisplay";
 
 function inr(n) {
   return formatInrCurrency(n);
@@ -18,13 +19,35 @@ export default function PaymentBreakdown({
   footerNote,
   onProceed
 }) {
-  const product = item ?? (cab ? { title: cab.title, type: cab.type, vendor: cab.vendor } : null);
-  const baseFare = selection?.baseFare ?? selection?.fare ?? 0;
-  const listPrice = selection?.listPrice ?? baseFare;
-  const discountPct = selection?.discountPct ?? 0;
-  const discountAmount = selection?.discountAmount ?? Math.max(0, listPrice - baseFare);
-  const total = selection?.total ?? baseFare;
+  const product =
+    item ??
+    (cab
+      ? {
+          title: getCabVehicleName(cab) || cab.title,
+          type: cab.type,
+          vendor: cab.vendor
+        }
+      : null);
+  const payable = selection?.total ?? selection?.baseFare ?? selection?.fare ?? 0;
   const usesDistance = Boolean(selection?.usesDistance && selection?.distanceKm > 0 && selection?.perKmRate > 0);
+  const packageFare =
+    Number(selection?.listPrice) > 0
+      ? Number(selection.listPrice)
+      : Number(selection?.baseFare ?? selection?.fare ?? 0) - Number(selection?.driverBatta || 0);
+  const quotedBase = Number(selection?.baseFare ?? selection?.fare ?? 0);
+  const explicitBatta = Number(selection?.driverBatta) || 0;
+  const inferredBatta =
+    explicitBatta <= 0 &&
+    !usesDistance &&
+    Number(selection?.listPrice) > 0 &&
+    quotedBase > Number(selection.listPrice)
+      ? quotedBase - Number(selection.listPrice)
+      : 0;
+  const driverBatta = explicitBatta || inferredBatta;
+  const listPrice = selection?.listPrice ?? packageFare;
+  const discountPct = selection?.discountPct ?? 0;
+  const discountAmount = selection?.discountAmount ?? 0;
+  const total = payable;
   const distanceCharge =
     selection?.distanceCharge ??
     (usesDistance
@@ -79,8 +102,14 @@ export default function PaymentBreakdown({
       ) : null}
       <div className="flex justify-between gap-2 border-t border-slate-100 pt-2">
         <dt className="font-medium">Base fare</dt>
-        <dd className="font-semibold">{inr(baseFare)}</dd>
+        <dd className="font-semibold">{inr(packageFare)}</dd>
       </div>
+      {driverBatta > 0 ? (
+        <div className="mt-1 flex justify-between gap-2">
+          <dt>Driver allowance</dt>
+          <dd className="font-semibold">{inr(driverBatta)}</dd>
+        </div>
+      ) : null}
     </>
   );
 

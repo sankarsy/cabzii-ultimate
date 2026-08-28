@@ -1,11 +1,10 @@
 import "./globals.css";
-import { Inter, Plus_Jakarta_Sans } from "next/font/google";
+import { Inter } from "next/font/google";
 import SiteSettingsProvider from "../components/SiteSettingsProvider";
 import ContactFab from "../components/ContactFab";
-import CabziiChatbot from "../components/chatbot/CabziiChatbot";
+import DeferredSiteChrome from "../components/DeferredSiteChrome";
 import StickyBookingBar from "../components/StickyBookingBar";
 import CookieConsent from "../components/CookieConsent";
-import ExitIntentPopup from "../components/conversion/ExitIntentPopup";
 import ServiceWorkerRegister from "../components/ServiceWorkerRegister";
 import { fetchSiteSettings } from "../lib/serverSiteSettings";
 import { fetchSiteReviewStats } from "../lib/serverReviewStats";
@@ -17,15 +16,8 @@ const inter = Inter({
   weight: ["400", "500", "600", "700"],
   variable: "--font-inter",
   display: "swap",
-  preload: true
-});
-
-const jakarta = Plus_Jakarta_Sans({
-  subsets: ["latin"],
-  weight: ["500", "600", "700", "800"],
-  variable: "--font-jakarta",
-  display: "swap",
-  preload: true
+  preload: true,
+  adjustFontFallback: true
 });
 
 const siteVerification = {
@@ -79,22 +71,17 @@ export default async function RootLayout({ children }) {
   return (
     <html lang="en-IN">
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-        <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
       </head>
-      <body className={`${inter.variable} ${jakarta.variable}`}>
+      <body className={inter.variable}>
         <SiteSettingsProvider initialSettings={siteSettings}>
           {children}
           <StickyBookingBar />
           <ContactFab />
-          <CabziiChatbot />
-          <ExitIntentPopup />
+          <DeferredSiteChrome />
           <CookieConsent />
         </SiteSettingsProvider>
         <ServiceWorkerRegister />

@@ -52,6 +52,30 @@ function applyCabData(data, setCab, setSelection) {
   if (first) setSelection(selectionFromPackage(first, first.group, enriched));
 }
 
+function CabPaymentPanel({ cab, selection, payHref, onProceed }) {
+  return (
+    <div className="space-y-3">
+      <PaymentBreakdown
+        cab={cab}
+        selection={selection}
+        payHref={payHref}
+        proceedLabel="Book now"
+        showExtrasNote
+        compact
+        onProceed={onProceed}
+      />
+      <div className="rounded-xl border border-slate-200 bg-white p-3 text-[11px] text-slate-600 shadow-sm">
+        <p className="font-semibold text-slate-900">{selection?.packageLabel || "Selected package"}</p>
+        <p className="mt-1 capitalize">
+          {selection?.serviceTab || "local"} · {cab.vendor || "Cabzii Partner"}
+        </p>
+        <p className="mt-2 text-[10px] text-slate-500">Toll, parking and extra km/hr are billed as per the package card.</p>
+      </div>
+      <p className="text-center text-[10px] text-slate-500">Secure payment · Verified drivers · 24/7 support</p>
+    </div>
+  );
+}
+
 function parseBreadcrumb(cab) {
   const city = (cab?.city || "Chennai").replace(/\bAll India\b/gi, "Chennai");
   const shortName = getCabVehicleName(cab) || cab?.title || "Cab";
@@ -239,16 +263,37 @@ export default function CabDetailPage({ cabId, initialCab = null }) {
               ))}
             </nav>
 
-            <div className="grid grid-cols-1 items-start gap-3 lg:grid-cols-[minmax(0,15rem)_minmax(0,1fr)_minmax(17rem,20rem)] lg:gap-4">
-              <section id="gallery" className="scroll-mt-24 lg:sticky lg:top-24">
-                <VehicleDetailGallery cab={cab} />
-              </section>
+            <div className="grid grid-cols-1 items-start gap-3 md:gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(19rem,22rem)] lg:gap-5">
+              <aside className="order-first hidden md:block lg:order-2">
+                <div className="lg:sticky lg:top-24">
+                  <CabPaymentPanel
+                    cab={cab}
+                    selection={selection}
+                    payHref={payHref}
+                    onProceed={fireBookingStarted}
+                  />
+                </div>
+              </aside>
 
-              <div className="min-w-0 space-y-3 sm:space-y-4">
-                <section id="packages" className="scroll-mt-24">
-                  <h2 className="mb-1 text-xs font-semibold text-slate-900 sm:mb-1.5 sm:text-sm">Available packages</h2>
-                  <CabBookingDetail cab={cab} onSelectionChange={setSelection} hideHeroImage />
-                </section>
+              <div className="order-2 min-w-0 space-y-3 sm:space-y-4 lg:order-1">
+                <div className="grid grid-cols-1 items-start gap-3 md:grid-cols-2 xl:grid-cols-[minmax(0,22rem)_minmax(0,1fr)]">
+                  <section id="gallery" className="scroll-mt-24">
+                    <VehicleDetailGallery cab={cab} />
+                  </section>
+                  <section id="packages" className="scroll-mt-24 min-w-0">
+                    <h2 className="mb-1 text-xs font-semibold text-slate-900 sm:mb-1.5 sm:text-sm">Available packages</h2>
+                    <CabBookingDetail cab={cab} onSelectionChange={setSelection} hideHeroImage />
+                  </section>
+                </div>
+
+                <div className="md:hidden">
+                  <CabPaymentPanel
+                    cab={cab}
+                    selection={selection}
+                    payHref={payHref}
+                    onProceed={fireBookingStarted}
+                  />
+                </div>
 
                 <VehicleDetailExtras cab={cab} showPageContent={false} />
                 <CabProductSpecs cab={cab} />
@@ -269,25 +314,13 @@ export default function CabDetailPage({ cabId, initialCab = null }) {
 
                 <VehiclePageContent cab={cab} />
               </div>
-
-              <aside className="hidden lg:block">
-                <div className="sticky top-24 space-y-3">
-                  <PaymentBreakdown cab={cab} selection={selection} payHref={payHref} proceedLabel="Book now" showExtrasNote compact onProceed={fireBookingStarted} />
-                  <div className="rounded-xl border border-slate-200 bg-white p-3 text-[11px] text-slate-600 shadow-sm">
-                    <p className="font-semibold text-slate-900">{selection?.packageLabel || "Selected package"}</p>
-                    <p className="mt-1 capitalize">{selection?.serviceTab || "local"} · {cab.vendor || "Cabzii Partner"}</p>
-                    <p className="mt-2 text-[10px] text-slate-500">Toll, parking and extra km/hr are billed as per the package card.</p>
-                  </div>
-                  <p className="text-center text-[10px] text-slate-500">Secure payment · Verified drivers · 24/7 support</p>
-                </div>
-              </aside>
             </div>
           </>
         )}
       </div>
 
       {cab && payHref ? (
-        <div className="fixed inset-x-0 bottom-0 z-30 border-t border-slate-200 bg-white/95 px-3 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] shadow-[0_-6px_16px_rgba(0,0,0,0.08)] backdrop-blur lg:hidden">
+        <div className="fixed inset-x-0 bottom-0 z-30 border-t border-slate-200 bg-white/95 px-3 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] shadow-[0_-6px_16px_rgba(0,0,0,0.08)] backdrop-blur md:hidden">
           <div className="section-shell flex items-center justify-between gap-2">
             <div className="min-w-0">
               <p className="text-[9px] font-semibold uppercase tracking-wide text-slate-500">Selected package</p>

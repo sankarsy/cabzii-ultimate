@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { resolveTrustCounters } from "../../lib/marketingFromSettings";
 import { useSiteSettings } from "../SiteSettingsProvider";
 import { getTrustIcon, TRUST_ICON_STYLES } from "../icons/heroIcons";
+import { formatInr } from "../../lib/formatInr";
 
 function useCountUp(target, start, durationMs = 1400) {
   const [value, setValue] = useState(0);
@@ -29,7 +30,7 @@ function CounterCard({ item, start }) {
   const style = TRUST_ICON_STYLES[item.iconKey] || TRUST_ICON_STYLES.verified;
 
   const valueText = item.animate
-    ? `${value.toLocaleString("en-IN")}${item.suffix || ""}`
+    ? `${formatInr(value)}${item.suffix || ""}`
     : item.display || `${item.value}${item.suffix || ""}`;
 
   return (

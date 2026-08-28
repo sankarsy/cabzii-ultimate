@@ -4,8 +4,9 @@ import { useEffect, useState } from "react";
 import { resolveMediaUrl } from "../../lib/media";
 import { CARD_IMAGE_WIDTH, optimizeImageUrl } from "../../lib/imageOptimize";
 import { stockImageForProduct } from "../../lib/vehicleImages";
+import { isPlaceholderProductImage } from "../../lib/dynamicImageSeo";
 
-/** Cab/driver card image — uploaded photo or type-aware stock image. */
+/** Cab/driver card image — uploaded photo or type-aware local fallback. */
 export default function CatalogCardImage({
   src,
   alt,
@@ -17,15 +18,17 @@ export default function CatalogCardImage({
 }) {
   const uploaded = resolveMediaUrl(src);
   const fallback = stockImageForProduct(product || { title: alt });
-  const resolved = optimizeImageUrl(uploaded || fallback, CARD_IMAGE_WIDTH);
+  const source = uploaded && !isPlaceholderProductImage(uploaded) ? uploaded : fallback;
+  const resolved = optimizeImageUrl(source, CARD_IMAGE_WIDTH);
   const [current, setCurrent] = useState(resolved);
 
   useEffect(() => {
-    const next = optimizeImageUrl(
-      resolveMediaUrl(src) || stockImageForProduct(product || { title: alt }),
-      CARD_IMAGE_WIDTH
-    );
-    setCurrent(next);
+    const nextUploaded = resolveMediaUrl(src);
+    const next =
+      nextUploaded && !isPlaceholderProductImage(nextUploaded)
+        ? nextUploaded
+        : stockImageForProduct(product || { title: alt });
+    setCurrent(optimizeImageUrl(next, CARD_IMAGE_WIDTH));
   }, [src, alt, product]);
 
   return (

@@ -14,7 +14,7 @@ export default function MmtLayout({ children, className = "" }) {
         <MmtHeader />
       </Suspense>
       <div className="cabzii-home-header-spacer shrink-0" aria-hidden />
-      <div className="flex-1">{children}</div>
+      <div className="min-h-min grow">{children}</div>
       <MmtFooter />
     </div>
   );

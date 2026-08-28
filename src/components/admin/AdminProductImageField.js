@@ -1,6 +1,7 @@
 "use client";
 
-import { resolveMediaUrl } from "../../lib/media";
+import { resolveMediaUrl, normalizeStoredImagePath } from "../../lib/media";
+import ImageUploadField from "./ImageUploadField";
 
 function inputCls() {
   return "w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-sky-600";
@@ -25,49 +26,45 @@ function parseGallery(value) {
 }
 
 /**
- * Product image field with preview and delete (clears form + optional server file delete).
+ * Product image field with file upload, preview and delete.
  */
 export function AdminProductImageField({
   label = "Product image",
-  hint,
+  hint = "Choose a photo — it is compressed automatically. Then click Save on the form.",
   value,
   onChange,
   onDelete,
   deleting = false,
   disabled = false,
-  alt = "Product preview"
+  alt = "Product preview",
+  authToken = ""
 }) {
   return (
-    <Field label={label} hint={hint}>
-      <input
-        className={inputCls()}
+    <div className="space-y-2">
+      <ImageUploadField
+        label={label}
+        hint={hint}
         value={value || ""}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder="/uploads/product.jpg"
+        onChange={(path) => onChange(normalizeStoredImagePath(path) || path)}
         disabled={disabled}
+        authToken={authToken}
+        alt={alt}
       />
       {value ? (
-        <div className="mt-2 flex flex-wrap items-start gap-3">
-          <img
-            src={resolveMediaUrl(value)}
-            alt={alt}
-            className="h-28 w-auto max-w-full rounded-md border border-slate-200 bg-white object-contain"
-          />
-          <button
-            type="button"
-            disabled={disabled || deleting}
-            onClick={onDelete}
-            className="rounded-lg border border-rose-300 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700 hover:bg-rose-100 disabled:opacity-50"
-          >
-            {deleting ? "Deleting…" : "Delete image"}
-          </button>
-        </div>
+        <button
+          type="button"
+          disabled={disabled || deleting}
+          onClick={onDelete}
+          className="rounded-lg border border-rose-300 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700 hover:bg-rose-100 disabled:opacity-50"
+        >
+          {deleting ? "Deleting…" : "Delete image from server"}
+        </button>
       ) : null}
-    </Field>
+    </div>
   );
 }
 
-/** Gallery paths with per-image remove buttons. */
+/** Gallery paths with upload + per-image remove. */
 export function AdminGalleryField({
   label = "Gallery (max 3)",
   hint,
@@ -75,21 +72,42 @@ export function AdminGalleryField({
   onChange,
   onRemoveImage,
   removingPath = "",
-  disabled = false
+  disabled = false,
+  authToken = ""
 }) {
   const items = parseGallery(value);
 
+  const addPath = (path) => {
+    const next = normalizeStoredImagePath(path);
+    if (!next || items.includes(next) || items.length >= 3) {
+      onChange(items.join(", "));
+      return;
+    }
+    onChange([...items, next].join(", "));
+  };
+
   return (
-    <Field label={label} hint={hint}>
-      <input
-        className={inputCls()}
-        value={value || ""}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder="/uploads/a.jpg, /uploads/b.jpg"
-        disabled={disabled}
+    <div className="space-y-2">
+      <ImageUploadField
+        label={label}
+        hint={hint || "Upload a gallery photo (max 3). Click Save on the form after upload."}
+        value=""
+        onChange={addPath}
+        disabled={disabled || items.length >= 3}
+        authToken={authToken}
+        alt="Gallery"
       />
+      <Field label="Gallery paths">
+        <input
+          className={inputCls()}
+          value={value || ""}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder="/uploads/a.jpg, /uploads/b.jpg"
+          disabled={disabled}
+        />
+      </Field>
       {items.length ? (
-        <ul className="mt-2 flex flex-wrap gap-2">
+        <ul className="flex flex-wrap gap-2">
           {items.map((path) => (
             <li key={path} className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white p-1.5">
               <img src={resolveMediaUrl(path)} alt="" className="h-12 w-16 rounded object-cover" />
@@ -106,7 +124,7 @@ export function AdminGalleryField({
           ))}
         </ul>
       ) : null}
-    </Field>
+    </div>
   );
 }
 

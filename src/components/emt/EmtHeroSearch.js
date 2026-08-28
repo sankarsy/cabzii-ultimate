@@ -1,12 +1,33 @@
 "use client";
 
-import EmtBusSearchForm from "./EmtBusSearchForm";
+import dynamic from "next/dynamic";
 import EmtCategoryTabs from "./EmtCategoryTabs";
 import EmtHeroFeatures from "./EmtHeroFeatures";
-import EmtHolidaySearchForm from "./EmtHolidaySearchForm";
 import { useHeroSearch } from "./HeroSearchContext";
-import CallDriverHeroPanel from "../call-driver/CallDriverHeroPanel";
 import MmtCabSearchWidget from "../mmt/MmtCabSearchWidget";
+
+function HeroSearchFallback() {
+  return (
+    <div className="emt-hero-search-card emt-cab-search-card min-h-[11.5rem] sm:min-h-[12.75rem]" aria-hidden>
+      <div className="emt-search-wrap">
+        <div className="emt-search-bar min-h-[4.75rem] animate-pulse rounded-xl bg-white/50" />
+      </div>
+    </div>
+  );
+}
+
+const CallDriverHeroPanel = dynamic(() => import("../call-driver/CallDriverHeroPanel"), {
+  ssr: false,
+  loading: HeroSearchFallback
+});
+const EmtBusSearchForm = dynamic(() => import("./EmtBusSearchForm"), {
+  ssr: false,
+  loading: HeroSearchFallback
+});
+const EmtHolidaySearchForm = dynamic(() => import("./EmtHolidaySearchForm"), {
+  ssr: false,
+  loading: HeroSearchFallback
+});
 
 export default function EmtHeroSearch({
   defaultCity = "Chennai",

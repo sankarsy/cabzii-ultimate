@@ -60,7 +60,8 @@ const nextConfig = {
     ]
   },
   experimental: {
-    // Tree-shake large client libraries to cut unused JS / execution time.
+    // lucide-react 1.x has no per-icon package exports Next 14.2 can rewrite;
+    // optimizePackageImports on it yields webpack "factory.call" runtime crashes.
     optimizePackageImports: ["framer-motion", "swiper"]
   },
   async headers() {

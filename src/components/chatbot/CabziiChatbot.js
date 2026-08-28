@@ -46,12 +46,6 @@ export default function CabziiChatbot() {
   const settings = useSiteSettings();
   const phone = settings.contact?.phone || "+91-9944197416";
   const whatsappNumber = String(settings.contact?.whatsapp || settings.whatsappFab?.number || "9944197416").replace(/\D/g, "");
-  const waHref = whatsappBookingUrl({
-    phone: whatsappNumber,
-    pathname,
-    searchParams: typeof window !== "undefined" ? window.location.search : "",
-    city: "Chennai"
-  });
   const callHref = telUrl(phone);
   const launcherRef = useRef(null);
   const panelRef = useRef(null);
@@ -60,6 +54,7 @@ export default function CabziiChatbot() {
   const listRef = useRef(null);
   const inputRef = useRef(null);
 
+  const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState("welcome");
   /** null | "phone" | "name" | "done" — mobile is required first */
@@ -72,6 +67,13 @@ export default function CabziiChatbot() {
   const [suggestions, setSuggestions] = useState([]);
   const [submittingLead, setSubmittingLead] = useState(false);
 
+  const waHref = whatsappBookingUrl({
+    phone: whatsappNumber,
+    pathname,
+    searchParams: search,
+    city: "Chennai"
+  });
+
   useEffect(() => {
     const session = loadChatSession();
     if (session) {
@@ -82,6 +84,10 @@ export default function CabziiChatbot() {
       setStep("chat");
     }
   }, []);
+
+  useEffect(() => {
+    setSearch(typeof window !== "undefined" ? window.location.search : "");
+  }, [pathname]);
 
   useEffect(() => {
     if (open && step === "chat") {

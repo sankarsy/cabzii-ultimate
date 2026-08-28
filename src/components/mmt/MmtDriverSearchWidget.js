@@ -7,7 +7,8 @@ import PlaceAutocomplete from "../PlaceAutocomplete";
 import { CalendarIcon, ClockIcon, SearchIcon, TwoWayIcon } from "../icons";
 import { SEARCH_FIELD_ICON_CHIPS, SEARCH_FIELD_ICONS } from "../icons/heroIcons";
 import { EmtHeroPriceHint } from "../emt/EmtHeroPills";
-import { formatEmtDate, formatTime12, openNativePicker } from "../../lib/emt/heroDates";
+import { formatTime12, addDays, openNativePicker } from "../../lib/emt/heroDates";
+import { useTodayStr, HydrateSafeDate } from "../../lib/useTodayStr";
 import {
   DRIVER_HOURLY_PACKAGES,
   DRIVER_TRIP_TABS,
@@ -30,9 +31,8 @@ const DRIVER_MODE_TABS = [
 ];
 
 function nextDayStr(dateStr) {
-  const d = new Date(dateStr || todayStr());
-  d.setDate(d.getDate() + 1);
-  return d.toISOString().split("T")[0];
+  if (!dateStr) return "";
+  return addDays(dateStr, 1);
 }
 
 export default function MmtDriverSearchWidget({
@@ -51,7 +51,8 @@ export default function MmtDriverSearchWidget({
   const [toCoords, setToCoords] = useState(null);
   const [airportDirection, setAirportDirection] = useState("pickup");
   const [packageHours, setPackageHours] = useState(8);
-  const [date, setDate] = useState(todayStr());
+  const today = useTodayStr();
+  const [date, setDate] = useState("");
   const [time, setTime] = useState("09:00");
   /* UI-only return date for the round-trip cell — search params stay unchanged */
   const [returnDate, setReturnDate] = useState("");
@@ -72,6 +73,10 @@ export default function MmtDriverSearchWidget({
       setTripType(id);
     }
   }
+
+  useEffect(() => {
+    if (today) setDate((prev) => prev || today);
+  }, [today]);
 
   useEffect(() => {
     if (!initialTrip?.from?.trim()) return;
@@ -190,11 +195,14 @@ export default function MmtDriverSearchWidget({
     <div className="cabzii-search-cell">
       <span className="pointer-events-none text-xs font-semibold uppercase tracking-wide text-slate-500">Pick-up Date &amp; Time</span>
       <div className="relative min-h-[2.75rem]">
-        <p className="pointer-events-none truncate text-base font-bold text-slate-900 sm:text-xl">{formatEmtDate(date)}</p>
+        <HydrateSafeDate
+          iso={date}
+          className="pointer-events-none truncate text-base font-bold text-slate-900 sm:text-xl"
+        />
         <p className="pointer-events-none text-sm font-medium text-slate-500">{formatTime12(time)}</p>
         <input
           type="date"
-          min={todayStr()}
+          min={today || undefined}
           value={date}
           onChange={(e) => handlePickupDate(e.target.value)}
           onClick={openNativePicker}
@@ -219,7 +227,7 @@ export default function MmtDriverSearchWidget({
           <CalendarIcon className="pointer-events-none absolute left-0 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" aria-hidden />
           <input
             type="date"
-            min={todayStr()}
+            min={today || undefined}
             value={date}
             onChange={(e) => handlePickupDate(e.target.value)}
             onClick={openNativePicker}
@@ -284,9 +292,10 @@ export default function MmtDriverSearchWidget({
         <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Return Date &amp; Time</span>
         {roundTrip ? (
           <div className="relative min-h-[2.75rem]">
-            <p className="pointer-events-none truncate text-base font-bold text-slate-900 sm:text-xl">
-              {formatEmtDate(returnDate || nextDayStr(date))}
-            </p>
+            <HydrateSafeDate
+              iso={returnDate || nextDayStr(date)}
+              className="pointer-events-none truncate text-base font-bold text-slate-900 sm:text-xl"
+            />
             <p className="pointer-events-none text-sm font-medium text-slate-500">Select Time</p>
             <input
               type="date"

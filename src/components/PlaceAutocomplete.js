@@ -6,6 +6,7 @@ import { coordsForPlaceLabel } from "../lib/indiaCityCoords";
 import { localPlaceSuggestions, mergePlaceSuggestions } from "../lib/localPlaceSuggestions";
 import { writeServiceArea } from "../lib/locationPriority";
 import { inputBaseClass, typo } from "../lib/typography";
+import { useHasMounted } from "../lib/useTodayStr";
 
 /**
  * Address autocomplete via instant local list + /api/places (Nominatim + DB + optional Google).
@@ -23,6 +24,7 @@ export default function PlaceAutocomplete({
   leadingIcon: LeadingIcon,
   leadingIconClassName = "text-slate-400"
 }) {
+  const mounted = useHasMounted();
   const [query, setQuery] = useState(value || "");
   const [suggestions, setSuggestions] = useState([]);
   const [open, setOpen] = useState(false);
@@ -275,7 +277,7 @@ export default function PlaceAutocomplete({
           <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-slate-400">…</span>
         ) : null}
       </div>
-      {typeof document !== "undefined" && dropdown ? createPortal(dropdown, document.body) : null}
+      {mounted && dropdown ? createPortal(dropdown, document.body) : null}
     </div>
   );
 }

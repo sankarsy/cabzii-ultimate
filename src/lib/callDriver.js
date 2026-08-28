@@ -1,3 +1,6 @@
+import { formatInr } from "./formatInr";
+import { todayStr } from "./istDate";
+
 export const CALL_DRIVER_SERVICES = [
   {
     id: "local",
@@ -81,15 +84,11 @@ export function callDriverBookHref(serviceId) {
 export function formatFromPrice(fromPrice) {
   const n = Number(fromPrice);
   if (!Number.isFinite(n) || n <= 0) return "";
-  return `From ₹${n.toLocaleString("en-IN")}`;
+  return `From ₹${formatInr(n)}`;
 }
 
 export function todayISODate() {
-  const d = new Date();
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${y}-${m}-${day}`;
+  return todayStr();
 }
 
 export function mergeCallDriverServices(apiServices) {

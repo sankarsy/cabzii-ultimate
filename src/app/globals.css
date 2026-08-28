@@ -77,7 +77,7 @@ html {
 }
 
 body {
-  font-family: var(--font-inter), var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   font-size: 0.9375rem;
   line-height: 1.55;
   letter-spacing: -0.01em;
@@ -93,13 +93,21 @@ h1,
 h2,
 h3,
 .font-display {
-  font-family: var(--font-jakarta), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   letter-spacing: -0.02em;
 }
 
 /* Mobile nav open — lock page scroll (restored when menu closes) */
 html.menu-scroll-lock,
 html.menu-scroll-lock body {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+/* Admin panel — freeze header + sidenav; only the main column scrolls */
+html.admin-scroll-lock,
+html.admin-scroll-lock body {
+  height: 100%;
   overflow: hidden;
   overscroll-behavior: none;
 }
@@ -321,9 +329,9 @@ main h3,
   }
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
   :root {
-    --cabzii-home-header-h: 4.5rem;
+    --cabzii-home-header-h: 5rem;
   }
 }
 
@@ -426,7 +434,7 @@ main h3,
   overflow: visible;
   background: linear-gradient(135deg, #1565c0 0%, #1a73e8 40%, #42a5f5 100%);
   padding-block: 0.875rem 1.25rem;
-  min-height: 12.5rem;
+  min-height: 16.5rem;
 }
 @media (min-width: 640px) {
   .emt-hero-shell-body.emt-hero-gradient {
@@ -1180,9 +1188,10 @@ main h3,
   }
 }
 
-/* Catalog cards — responsive grid */
+/* Catalog cards — 1 / 2 / 4 columns (home shows 8 cabs = 2 rows of 4) */
 .cabzii-catalog-grid {
   display: grid;
+  grid-auto-flow: row;
   grid-template-columns: minmax(0, 1fr);
   gap: 0.875rem;
   padding-block: 0.2rem;
@@ -1858,28 +1867,29 @@ main h3,
   100% { background-position: -200% 0; }
 }
 
-.cabzii-faq details {
+.cabzii-faq .faq-item {
   border-bottom: 1px solid var(--cabzii-border-subtle);
   padding: 0.875rem 0;
 }
-.cabzii-faq details:last-child {
+.cabzii-faq .faq-item:last-child {
   border-bottom: 0;
 }
-.cabzii-faq summary {
+.cabzii-faq .faq-trigger {
   cursor: pointer;
-  list-style: none;
   display: flex;
+  width: 100%;
   align-items: flex-start;
   justify-content: space-between;
   gap: 0.75rem;
+  border: 0;
+  background: transparent;
+  padding: 0;
   font-size: 0.875rem;
   font-weight: 600;
   line-height: 1.45;
   color: #0f172a;
+  text-align: left;
   -webkit-tap-highlight-color: transparent;
-}
-.cabzii-faq summary::-webkit-details-marker {
-  display: none;
 }
 .cabzii-faq .faq-chevron {
   display: flex;
@@ -1896,15 +1906,15 @@ main h3,
     background-color var(--cabzii-transition),
     color var(--cabzii-transition);
 }
-.cabzii-faq details[open] .faq-chevron {
+.cabzii-faq .faq-item.is-open .faq-chevron {
   transform: rotate(180deg);
   background: #fff4ee;
   color: var(--emt-orange);
 }
-.cabzii-faq details[open] .faq-chevron svg {
+.cabzii-faq .faq-item.is-open .faq-chevron svg {
   color: var(--emt-orange);
 }
-.cabzii-faq details[open] summary {
+.cabzii-faq .faq-item.is-open .faq-trigger {
   color: var(--cabzii-brand);
 }
 .cabzii-faq .faq-answer {

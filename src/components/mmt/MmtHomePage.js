@@ -1,6 +1,5 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import EmtHeroSearch from "../emt/EmtHeroSearch";
@@ -22,11 +21,14 @@ import { isValidDriverTripSearch, parseDriverTripSearchParams } from "../../lib/
 import { isValidTripSearch, parseTripSearchParams } from "../../lib/mmtTrip";
 import { extractCabList, fetchJson } from "../../lib/apiClient";
 import HomeSeoDiscover from "../seo/HomeSeoDiscover";
-
-const HomeShowcaseCarousel = dynamic(() => import("../home/HomeShowcaseCarousel"), { ssr: false });
-const HomeBlogTeasers = dynamic(() => import("../home/HomeBlogTeasers"), { ssr: false });
+import HomeShowcaseCarousel from "../home/HomeShowcaseCarousel";
+import HomeBlogTeasers from "../home/HomeBlogTeasers";
 
 const HOME_CABS_LIMIT = 8;
+const HOME_CABS_FETCH = 24;
+/** Smaller cars first, then family MPVs, SUVs and group vans. */
+const HOME_BODY_CLASS_ORDER = ["sedan", "hatchback", "mpv", "suv", "tempo", "other"];
+const HOME_FLEET_SUBTITLE = `Sedan, hatchback, MPV & SUV taxi cars · ${DEFAULT_HQ_CITY}`;
 
 function resolveHeroTab(tabParam) {
   if (tabParam === "drivers") return "drivers";
@@ -35,13 +37,32 @@ function resolveHeroTab(tabParam) {
   return "cabs";
 }
 
+function cabBodyClass(cab) {
+  const text = `${cab.type || ""} ${cab.category || ""} ${cab.vehicleName || ""} ${cab.vehicleModel || ""} ${cab.title || ""} ${cab.model || ""}`.toLowerCase();
+  if (/tempo|traveller|urbania|mini\s*bus|\bbus\b|\bvan\b/.test(text)) return "tempo";
+  if (/dzire|amaze|ciaz|\bcity\b|verna|slavia|virtus|etios|xcent|premium\s*sedan|\bsedan\b/.test(text)) return "sedan";
+  if (/hatch|\balto\b|\bi10\b|\bi20\b|wagon|celerio|tiago|punch/.test(text)) return "hatchback";
+  if (/\bswift\b/.test(text) && !/dzire/.test(text)) return "hatchback";
+  if (/mpv|muv|ertiga|xl6|carens|rumion|innova|crysta|hycross/.test(text)) return "mpv";
+  if (/suv|fortuner|scorpio|xuv|safari|harrier|creta|seltos|bolero/.test(text)) return "suv";
+  if (/luxury/.test(text)) return "sedan";
+  return "other";
+}
+
+function bodyClassRank(cab) {
+  const idx = HOME_BODY_CLASS_ORDER.indexOf(cabBodyClass(cab));
+  return idx === -1 ? HOME_BODY_CLASS_ORDER.length : idx;
+}
+
 function sortCabsForHome(list) {
   return [...list].sort((a, b) => {
+    const classDiff = bodyClassRank(a) - bodyClassRank(b);
+    if (classDiff !== 0) return classDiff;
     const featuredDiff = (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
     if (featuredDiff !== 0) return featuredDiff;
     const recommendedDiff = (b.recommended ? 1 : 0) - (a.recommended ? 1 : 0);
     if (recommendedDiff !== 0) return recommendedDiff;
-    return 0;
+    return String(a.vehicleName || a.title || "").localeCompare(String(b.vehicleName || b.title || ""));
   });
 }
 
@@ -89,7 +110,7 @@ function HomePageBody({
       <MmtHomeCatalogSection
         eyebrow="Our fleet"
         title="Top cabs for you"
-        subtitle={`Dzire, Ertiga, Innova & Tempo taxi cars · ${DEFAULT_HQ_CITY}`}
+        subtitle={HOME_FLEET_SUBTITLE}
         viewAllHref="/cabs"
         viewAllLabel="View all cabs"
         loading={loadingCabs}
@@ -145,11 +166,14 @@ function HomePageWithSearchParams(props) {
   );
 }
 
-export default function MmtHomePage() {
+export default function MmtHomePage({ initialCabs = [] }) {
   const { city: selectedCity } = useSelectedCity();
   const displayCity = selectedCity || "Chennai";
-  const [cabs, setCabs] = useState([]);
-  const [loadingCabs, setLoadingCabs] = useState(true);
+  const seeded = Array.isArray(initialCabs) && initialCabs.length
+    ? sortCabsForHome(sortBySelectedCity(initialCabs, DEFAULT_HQ_CITY)).slice(0, HOME_CABS_LIMIT)
+    : [];
+  const [cabs, setCabs] = useState(seeded);
+  const [loadingCabs, setLoadingCabs] = useState(seeded.length === 0);
   const [cabsError, setCabsError] = useState("");
 
   const sharedProps = {
@@ -160,13 +184,13 @@ export default function MmtHomePage() {
   };
 
   useEffect(() => {
+    if (seeded.length) return undefined;
     let cancelled = false;
     setLoadingCabs(true);
     setCabsError("");
     const q = new URLSearchParams({
-      limit: String(HOME_CABS_LIMIT),
-      page: "1",
-      priorityCity: DEFAULT_HQ_CITY
+      limit: String(HOME_CABS_FETCH),
+      page: "1"
     });
 
     fetchJson(`/api/cabs?${q}`)
@@ -187,7 +211,7 @@ export default function MmtHomePage() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [seeded.length]);
 
   return (
     <HeroSearchProvider defaultTab="cabs">

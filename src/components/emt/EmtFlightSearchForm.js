@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CalendarIcon, ChevronDownIcon, TwoWayIcon } from "../icons";
-import { todayStr } from "../../lib/mmtTrip";
 import { airportByCode } from "../../lib/mock-data/airports";
-import { formatDayName, formatEmtDate, openNativePicker } from "../../lib/emt/heroDates";
+import { openNativePicker } from "../../lib/emt/heroDates";
+import { useTodayStr, HydrateSafeDate } from "../../lib/useTodayStr";
 import EmtAirportInput from "./EmtAirportInput";
 import EmtFlightSpecialFares from "./EmtFlightSpecialFares";
 import EmtHeroPills, { EmtHeroPriceHint } from "./EmtHeroPills";
@@ -35,11 +35,16 @@ export default function EmtFlightSearchForm({ emtHero = false }) {
   const [to, setTo] = useState("BOM");
   const [fromLabel, setFromLabel] = useState("New Delhi (DEL)");
   const [toLabel, setToLabel] = useState("Mumbai (BOM)");
-  const [date, setDate] = useState(todayStr());
+  const today = useTodayStr();
+  const [date, setDate] = useState("");
   const [returnDate, setReturnDate] = useState("");
   const [adults, setAdults] = useState(1);
   const [travelClass, setTravelClass] = useState("economy");
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (today) setDate((prev) => prev || today);
+  }, [today]);
 
   function swap() {
     setFrom(to);
@@ -176,11 +181,11 @@ export default function EmtFlightSearchForm({ emtHero = false }) {
               <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Departure Date</span>
               <div className="relative">
                 <CalendarIcon className="pointer-events-none absolute right-0 top-2 h-[1.125rem] w-[1.125rem] text-slate-300 sm:h-5 sm:w-5" aria-hidden />
-                <p className="truncate text-base font-bold text-slate-900 sm:text-xl">{formatEmtDate(date)}</p>
-                <p className="text-xs text-slate-500">{formatDayName(date)}</p>
+                <HydrateSafeDate iso={date} className="truncate text-base font-bold text-slate-900 sm:text-xl" />
+                <HydrateSafeDate iso={date} weekday className="text-xs text-slate-500" />
                 <input
                   type="date"
-                  min={todayStr()}
+                  min={today || undefined}
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
                   onClick={openNativePicker}
@@ -195,13 +200,15 @@ export default function EmtFlightSearchForm({ emtHero = false }) {
               {tripType === "roundtrip" ? (
                 <div className="relative">
                   <CalendarIcon className="pointer-events-none absolute right-0 top-2 h-[1.125rem] w-[1.125rem] text-slate-300 sm:h-5 sm:w-5" aria-hidden />
-                  <p className="truncate text-base font-bold text-slate-900 sm:text-xl">
-                    {returnDate ? formatEmtDate(returnDate) : "Select date"}
-                  </p>
-                  <p className="text-xs text-slate-500">{returnDate ? formatDayName(returnDate) : ""}</p>
+                  <HydrateSafeDate
+                    iso={returnDate}
+                    empty="Select date"
+                    className="truncate text-base font-bold text-slate-900 sm:text-xl"
+                  />
+                  <HydrateSafeDate iso={returnDate} weekday className="text-xs text-slate-500" />
                   <input
                     type="date"
-                    min={date || todayStr()}
+                    min={date || today || undefined}
                     value={returnDate}
                     onChange={(e) => setReturnDate(e.target.value)}
                     onClick={openNativePicker}
@@ -314,7 +321,7 @@ function LegacyFlightFields(props) {
           <input
             type="date"
             value={date}
-            min={todayStr()}
+            min={today || undefined}
             onChange={(e) => setDate(e.target.value)}
             className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm font-semibold"
           />
@@ -325,7 +332,7 @@ function LegacyFlightFields(props) {
             <input
               type="date"
               value={returnDate}
-              min={date || todayStr()}
+              min={date || today || undefined}
               onChange={(e) => setReturnDate(e.target.value)}
               className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm font-semibold"
             />
