@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FormProvider, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
@@ -53,6 +53,12 @@ export default function VehicleAdminPanel({
 
   const formMethods = useForm({ defaultValues: emptyVehicleForm() });
   const { reset, handleSubmit } = formMethods;
+  const formScrollRef = useRef(null);
+
+  const goToTab = (tabId) => {
+    setActiveTab(tabId);
+    if (formScrollRef.current) formScrollRef.current.scrollTop = 0;
+  };
 
   const [q, setQ] = useState("");
   const [city, setCity] = useState("");
@@ -519,44 +525,46 @@ export default function VehicleAdminPanel({
       </div>
 
       {formOpen ? (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 p-0 sm:items-center sm:p-4">
-          <div className="flex h-[98vh] w-full max-w-6xl flex-col overflow-hidden rounded-t-2xl bg-white shadow-2xl sm:h-[96vh] sm:rounded-2xl">
-            <div className="flex shrink-0 items-center justify-between border-b border-slate-200 px-4 py-3 sm:px-5">
-              <h2 className="text-lg font-bold text-slate-900">{editingId ? "Edit vehicle" : "New vehicle"}</h2>
-              <button type="button" onClick={closeForm} className="rounded-lg px-3 py-1 text-sm text-slate-600 hover:bg-slate-100">Close</button>
+        <div className="fixed inset-0 z-[80] flex flex-col bg-white lg:items-center lg:justify-center lg:bg-slate-900/50 lg:p-4">
+          <div className="flex min-h-0 flex-1 flex-col bg-white lg:h-[96vh] lg:w-full lg:max-w-6xl lg:rounded-2xl lg:shadow-2xl">
+          <div className="flex shrink-0 items-center justify-between border-b border-slate-200 px-3 py-2">
+            <h2 className="text-sm font-bold text-slate-900 sm:text-lg">{editingId ? "Edit vehicle" : "New vehicle"}</h2>
+            <button type="button" onClick={closeForm} className="rounded-lg px-3 py-1 text-sm text-slate-600 hover:bg-slate-100">Close</button>
+          </div>
+          <div className="shrink-0 border-b border-slate-200 bg-white px-3 py-2">
+            <div className="admin-tab-scroller">
+              {VEHICLE_TABS.map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => goToTab(tab.id)}
+                  className={`shrink-0 rounded-lg px-3 py-1.5 text-xs font-semibold ${activeTab === tab.id ? "bg-sky-600 text-white" : "bg-slate-100 text-slate-600"}`}
+                >
+                  {tab.label}
+                </button>
+              ))}
             </div>
-            <div className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-4 py-4 sm:px-5">
-              <div className="admin-tab-scroller sticky top-0 z-10 -mx-4 mb-4 bg-white px-4 pb-2 sm:-mx-5 sm:px-5">
-                {VEHICLE_TABS.map((tab) => (
-                  <button
-                    key={tab.id}
-                    type="button"
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`shrink-0 rounded-lg px-3 py-1.5 text-xs font-semibold ${activeTab === tab.id ? "bg-sky-600 text-white" : "bg-slate-100 text-slate-600"}`}
-                  >
-                    {tab.label}
-                  </button>
-                ))}
-              </div>
-              <FormProvider {...formMethods}>
-                <VehicleForm
-                  activeTab={activeTab}
-                  disabled={saving}
-                  onRequestSave={requestSilentSave}
-                  authToken={token}
-                  cityOptions={cityOptions}
-                  vendorOptions={vendorOptions}
-                  categoryOptions={categoryOptions}
-                  isSuperAdmin={isSuperAdmin !== false}
-                />
-              </FormProvider>
-            </div>
-            <div className="flex shrink-0 justify-end gap-2 border-t border-slate-200 px-4 py-3 sm:px-5">
-              <button type="button" onClick={closeForm} className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold">Cancel</button>
-              <button type="button" disabled={saving} onClick={save} className="rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">
-                {saving ? "Saving…" : "Save vehicle"}
-              </button>
-            </div>
+          </div>
+          <div ref={formScrollRef} className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-3 py-3 sm:px-5 sm:py-4">
+            <FormProvider {...formMethods}>
+              <VehicleForm
+                activeTab={activeTab}
+                disabled={saving}
+                onRequestSave={requestSilentSave}
+                authToken={token}
+                cityOptions={cityOptions}
+                vendorOptions={vendorOptions}
+                categoryOptions={categoryOptions}
+                isSuperAdmin={isSuperAdmin !== false}
+              />
+            </FormProvider>
+          </div>
+          <div className="flex shrink-0 justify-end gap-2 border-t border-slate-200 px-3 py-2 sm:px-5 sm:py-3">
+            <button type="button" onClick={closeForm} className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold">Cancel</button>
+            <button type="button" disabled={saving} onClick={save} className="rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">
+              {saving ? "Saving…" : "Save vehicle"}
+            </button>
+          </div>
           </div>
         </div>
       ) : null}

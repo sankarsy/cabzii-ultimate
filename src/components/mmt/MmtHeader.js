@@ -126,7 +126,7 @@ export default function MmtHeader() {
   return (
     <>
       <header
-        className={`fixed left-0 right-0 top-0 z-[100] border-b border-slate-200 bg-white text-slate-900 shadow-sm transition-transform duration-300 ease-out will-change-transform max-xl:translate-y-0 ${
+        className={`fixed left-0 right-0 top-0 z-[100] border-b border-slate-200 bg-white text-slate-900 shadow-sm transition-transform duration-300 ease-out will-change-transform ${
           showHeader ? "translate-y-0" : "-translate-y-full"
         }`}
       >
