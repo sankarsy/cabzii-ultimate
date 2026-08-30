@@ -1,9 +1,9 @@
 "use client";
 
 import { getTrustIcon, TRUST_ICON_STYLES } from "./icons/heroIcons";
+import { isUnsupportedTrustCopy } from "../lib/trustSignals";
 
 const FALLBACK_TRUST_BADGES = [
-  { label: "OTP booking", iconKey: "secure" },
   { label: "Upfront fares", iconKey: "price" },
   { label: "Partner vehicles", iconKey: "verified" },
   { label: "WhatsApp updates", iconKey: "support" }
@@ -29,17 +29,21 @@ export const EMOJI_BY_KEY = {
 export function normalizeTrustBadges(raw) {
   if (!Array.isArray(raw) || !raw.length) return FALLBACK_TRUST_BADGES;
 
-  return raw.map((item) => {
-    if (typeof item === "string") {
-      const iconKey = LABEL_ICON_MAP[item.trim().toLowerCase()] || "verified";
-      return { label: item, iconKey };
-    }
-    const iconKey = item.iconKey || LABEL_ICON_MAP[(item.label || "").trim().toLowerCase()] || "verified";
-    return {
-      label: item.label || "",
-      iconKey
-    };
-  });
+  const items = (Array.isArray(raw) ? raw : [])
+    .map((item) => {
+      if (typeof item === "string") {
+        const iconKey = LABEL_ICON_MAP[item.trim().toLowerCase()] || "verified";
+        return { label: item, iconKey };
+      }
+      const iconKey = item.iconKey || LABEL_ICON_MAP[(item.label || "").trim().toLowerCase()] || "verified";
+      return {
+        label: item.label || "",
+        iconKey
+      };
+    })
+    .filter((item) => item.label && !isUnsupportedTrustCopy(item.label));
+
+  return items.length ? items : FALLBACK_TRUST_BADGES;
 }
 
 export default function TrustBadges({ badges }) {

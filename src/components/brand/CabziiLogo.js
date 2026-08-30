@@ -7,14 +7,12 @@ function SloganTagline({ onDark, compact }) {
   const exploreColor = onDark ? "text-emerald-400" : "text-[#138808]";
 
   return (
-    <span className={`mt-1 inline-flex items-center gap-1.5 sm:mt-1.5 sm:gap-2 ${sizeClass}`}>
-      <span className="h-px w-3 shrink-0 bg-[#FF9933] sm:w-4" aria-hidden />
-      <span className="whitespace-nowrap font-medium italic tracking-wide">
+    <span className={`mt-1 inline-flex items-center sm:mt-1.5 ${sizeClass}`}>
+      <span className="whitespace-nowrap font-medium not-italic tracking-wide">
         <span className={bookColor}>Book.</span>{" "}
         <span className={rideColor}>Ride.</span>{" "}
         <span className={exploreColor}>Explore.</span>
       </span>
-      <span className="h-px w-3 shrink-0 bg-[#138808] sm:w-4" aria-hidden />
     </span>
   );
 }

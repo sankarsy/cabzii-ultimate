@@ -1,3 +1,4 @@
+import dynamic from "next/dynamic";
 import EmtWhyChooseUs from "../emt/EmtWhyChooseUs";
 import MmtCabResultCard from "../mmt/MmtCabResultCard";
 import MmtHomeCatalogSection, { MmtHomeCatalogScroll, MmtHomeCatalogScrollItem } from "../mmt/MmtHomeCatalogSection";
@@ -9,6 +10,14 @@ import HomeSeoDiscover from "../seo/HomeSeoDiscover";
 import HomeShowcaseCarousel from "./HomeShowcaseCarousel";
 import HomeBlogTeasers from "./HomeBlogTeasers";
 import HomeFleetLoader from "./HomeFleetLoader";
+
+const TestimonialsSection = dynamic(() => import("../reviews/TestimonialsSection"), {
+  loading: () => (
+    <section className="border-t border-slate-200 bg-white py-8 sm:py-10" aria-hidden>
+      <div className="section-shell h-24" />
+    </section>
+  )
+});
 
 const HOME_FLEET_SUBTITLE = `Sedan, hatchback, MPV & SUV taxi cars · ${DEFAULT_HQ_CITY}`;
 
@@ -53,6 +62,7 @@ export default function HomeBelowFold({
 
       <CallDriverHomeSection services={callDriverServices} />
       <EmtWhyChooseUs settings={siteSettings} />
+      <TestimonialsSection />
       <HomeBlogTeasers posts={blogs} />
       <HomeSeoDiscover />
 

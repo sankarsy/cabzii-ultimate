@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { BadgeCheck } from "lucide-react";
 import StarRating from "../reviews/StarRating";
+import { trackEvent } from "../../lib/analytics";
 
 const STATUS_FILTERS = [
   { id: "pending", label: "Pending" },
@@ -19,6 +20,15 @@ const STATUS_BADGE = {
 
 /** Verified-review moderation: approve / reject / delete. Aggregates recalc on the backend instantly. */
 export default function AdminReviews({ token }) {
+  return (
+    <>
+      <VerifiedReviewsPanel token={token} />
+      <PendingPublicReviews token={token} />
+    </>
+  );
+}
+
+function VerifiedReviewsPanel({ token }) {
   const [status, setStatus] = useState("pending");
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -61,6 +71,7 @@ export default function AdminReviews({ token }) {
       });
       const json = await res.json();
       if (!res.ok || json?.success === false) throw new Error(json?.message || "Update failed");
+      if (nextStatus === "approved") trackEvent("review_approved", { review_id: id, verified: true });
       await load();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Update failed");
@@ -175,6 +186,94 @@ export default function AdminReviews({ token }) {
                     Delete
                   </button>
                 </div>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </section>
+  );
+}
+
+function PendingPublicReviews({ token }) {
+  const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [busyId, setBusyId] = useState("");
+  const headers = token ? { authorization: `Bearer ${token}` } : {};
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const res = await fetch("/api/testimonials?admin=1&published=false&limit=50", { headers, cache: "no-store" });
+      const json = await res.json();
+      if (!res.ok || json?.success === false) throw new Error(json?.message || "Could not load pending reviews");
+      setRows(Array.isArray(json?.data) ? json.data : []);
+    } catch (err) {
+      setRows([]);
+      setError(err instanceof Error ? err.message : "Failed to load pending reviews");
+    } finally {
+      setLoading(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  const approve = async (id) => {
+    setBusyId(id);
+    setError("");
+    try {
+      const res = await fetch(`/api/testimonials/${id}/publish`, {
+        method: "PATCH",
+        headers: { ...headers, "Content-Type": "application/json" },
+        body: JSON.stringify({ published: true })
+      });
+      const json = await res.json();
+      if (!res.ok || json?.success === false) throw new Error(json?.message || "Approve failed");
+      trackEvent("review_approved", { review_id: id });
+      await load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Approve failed");
+    } finally {
+      setBusyId("");
+    }
+  };
+
+  return (
+    <section className="mt-6 rounded-xl border border-slate-200 bg-white p-4 shadow-[var(--cabzii-shadow-card)] md:p-5">
+      <h2 className="text-lg font-bold text-slate-900">Pending public reviews</h2>
+      <p className="mt-0.5 text-xs text-slate-600">Submitted from the website. Approve to publish. These are not labelled verified.</p>
+      {error ? <p className="mt-3 rounded-lg border border-rose-200 bg-rose-50 p-3 text-xs text-rose-800">{error}</p> : null}
+      {loading ? <p className="mt-3 text-xs text-slate-500">Loading…</p> : null}
+      {!loading && !rows.length ? (
+        <p className="mt-4 rounded-xl border border-dashed border-slate-300 p-6 text-center text-sm text-slate-500">No pending public reviews.</p>
+      ) : (
+        <ul className="mt-4 space-y-3">
+          {rows.map((row) => {
+            const id = String(row._id);
+            return (
+              <li key={id} className="rounded-xl border border-slate-200 p-3.5">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-sm font-bold text-slate-900">{row.name}</span>
+                  <StarRating value={row.rating} size="h-3.5 w-3.5" />
+                </div>
+                <p className="mt-1 text-[11px] text-slate-500">
+                  {[row.serviceType, row.tripRoute || row.location].filter(Boolean).join(" · ") || "—"}
+                  {row.createdAt ? ` · ${new Date(row.createdAt).toLocaleDateString("en-IN")}` : ""}
+                </p>
+                {row.message ? <p className="mt-2 text-xs leading-relaxed text-slate-700">{row.message}</p> : null}
+                <button
+                  type="button"
+                  disabled={busyId === id}
+                  onClick={() => approve(id)}
+                  className="mt-3 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-emerald-700 disabled:opacity-60"
+                >
+                  Approve
+                </button>
               </li>
             );
           })}

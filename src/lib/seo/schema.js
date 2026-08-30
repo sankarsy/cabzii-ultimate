@@ -198,7 +198,7 @@ export function routeServiceJsonLd({
       url,
       price: priceFrom,
       lowPrice: priceFrom,
-      highPrice: priceTo ?? (priceFrom != null ? Math.round(Number(priceFrom) * 1.8) : undefined)
+      highPrice: priceTo
     })
   };
 }
@@ -225,10 +225,9 @@ export function organizationJsonLd(reviewStats) {
     },
     image: SITE_LOGO,
     description:
-      "Book cabs, taxis, airport transfers, outstation trips, acting drivers and tour packages across India with instant confirmation on Cabzii.in.",
+      "Book cabs, taxis, airport transfers, outstation trips, acting drivers and tour packages across South India on Cabzii.in.",
     email: ORG_EMAIL,
     telephone: ORG_PHONE,
-    foundingDate: "2024",
     areaServed: { "@type": "Country", name: "India" },
     ...(hasRealRating
       ? {
@@ -321,7 +320,7 @@ export function localBusinessJsonLd(cityName, cityRegion, urlPath, geo) {
     logo: SITE_LOGO,
     telephone: ORG_PHONE,
     email: ORG_EMAIL,
-    description: `Book cabs, airport taxi, outstation trips and acting drivers in ${cityName} with instant confirmation on Cabzii.in.`,
+    description: `Book cabs, airport taxi, outstation trips and acting drivers in ${cityName}. Fares are shown before you confirm on Cabzii.in.`,
     areaServed: {
       "@type": "City",
       name: cityName,

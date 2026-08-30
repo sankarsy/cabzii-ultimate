@@ -3,7 +3,7 @@ import JsonLd from "../components/seo/JsonLd";
 import SocialProofTicker from "../components/conversion/SocialProofTicker";
 import TrustStrip from "../components/ui/TrustStrip";
 import HomeBelowFold from "../components/home/HomeBelowFold";
-import { breadcrumbJsonLd } from "../lib/seo";
+import { breadcrumbJsonLd, faqJsonLd } from "../lib/seo";
 import { buildMetadataForPath } from "../lib/seo/resolvePageSeo";
 import { fetchSiteSettings } from "../lib/serverSiteSettings";
 import { fetchCatalogList, fetchHomeCallDriverServices, fetchHomeShowcase } from "../lib/serverCatalog";
@@ -33,7 +33,7 @@ export default async function Page() {
 
   return (
     <>
-      <JsonLd data={[breadcrumbJsonLd([{ name: "Home", path: "/" }])]} />
+      <JsonLd data={[breadcrumbJsonLd([{ name: "Home", path: "/" }]), faqJsonLd()]} />
       <MmtHomePage>
         <SocialProofTicker />
         <TrustStrip />

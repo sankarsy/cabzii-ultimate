@@ -7,7 +7,7 @@ export default function HomeSeoDiscover() {
     <section className="border-t border-slate-200 bg-slate-50 py-8 sm:py-10">
       <div className="section-shell">
         <h2 className="text-base font-bold text-slate-900 sm:text-lg">Explore Cabzii</h2>
-        <p className="mt-1 text-sm text-slate-600">Cabs, drivers, holidays and city pages — then book with OTP.</p>
+        <p className="mt-1 text-sm text-slate-600">Cabs, drivers, holidays and city pages — then get your fare.</p>
         <ul className="mt-4 flex flex-wrap gap-2">
           {[
             { href: "/cabs", label: "Cabs" },

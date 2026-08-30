@@ -14,6 +14,7 @@ import {
 } from "../lib/cabFare";
 import { formatInrCurrency } from "../lib/formatInr";
 import { formatCabSeatPill } from "../lib/cabSeats";
+import { vehiclePhotoAlt } from "../lib/catalogDisplay";
 import { MetaPill, ProductImageFrame, ProductMetaBlock } from "./productCardShared";
 import {
   CalendarIcon,
@@ -109,7 +110,7 @@ export default function CabBookingDetail({ cab, onSelectionChange, hideHeroImage
   return (
     <article className={`overflow-hidden border border-slate-200 bg-white ${hideHeroImage ? "rounded-xl shadow-sm" : "rounded-[18px] shadow-lg"}`}>
       {!hideHeroImage ? (
-        <ProductImageFrame src={imageSrc} alt={cab.title || "Cab"} badges={imageBadges} imageClassName="h-[200px] w-full object-contain p-2 sm:h-[220px]" />
+        <ProductImageFrame src={imageSrc} alt={cab.imageAlt || vehiclePhotoAlt(cab)} badges={imageBadges} imageClassName="h-[200px] w-full object-contain p-2 sm:h-[220px]" />
       ) : null}
 
       {!hideHeroImage ? (

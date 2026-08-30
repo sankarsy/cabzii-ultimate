@@ -208,7 +208,7 @@ export function actingDriverDescription(cityName, state) {
 export const homeMetadata = buildPageMetadata({
   title: HOME_SEO_TITLE,
   description:
-    "Book cabs from Chennai and across Tamil Nadu with Cabzii — airport taxi, local packages, outstation and one-way trips. Transparent fares, OTP booking and WhatsApp support.",
+    "Book cabs from Chennai and across Tamil Nadu with Cabzii — airport taxi, local packages, outstation and one-way trips. Transparent fares and WhatsApp support.",
   path: "/",
   image: "/opengraph-image",
   imageAlt: "Cabzii — Cab Booking Chennai & Tamil Nadu",

@@ -14,6 +14,6 @@ export default function Image({ params }) {
   const svc = service?.name || "Cab service";
   return cabziiOgImage({
     headline: `${svc} in ${name}`,
-    subline: "Upfront fares · OTP booking · WhatsApp support"
+    subline: "Upfront fares · WhatsApp support"
   });
 }

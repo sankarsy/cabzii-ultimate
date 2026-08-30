@@ -508,9 +508,9 @@ export function buildSampleVehiclePageSeo(item = {}) {
     `<li>Corporate and hotel transfers</li>`,
     `</ul>`,
     `<h3>Transparent pricing</h3>`,
-    `<p>Fares start from ${price}. Choose a package on this page, review inclusions (hours/km) and book online with OTP — no hidden charges at the end of the trip.</p>`,
+    `<p>Fares start from ${price}. Choose a package on this page, review inclusions (hours/km) and book online — no hidden charges at the end of the trip.</p>`,
     `<h3>Why Cabzii</h3>`,
-    `<p>Verified partner drivers, sanitized cars, 24×7 support and instant confirmation. Book ${vehicle} in ${city} on <a href="https://www.cabzii.in">cabzii.in</a>.</p>`
+    `<p>Verified partner drivers and sanitized cars. Book ${vehicle} in ${city} on <a href="https://www.cabzii.in">cabzii.in</a>.</p>`
   ].join("");
 
   return {

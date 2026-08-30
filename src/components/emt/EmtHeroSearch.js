@@ -35,7 +35,7 @@ export default function EmtHeroSearch({
   initialCabTrip = null,
   initialDriverTrip = null,
   seoHeading = "Book Trusted Cabs & Drivers Across India",
-  seoSubheading = "Airport transfers, outstation trips, local rentals & driver services — transparent fares, verified partners."
+  seoSubheading = "Local hourly packages, airport taxi, outstation trips and a driver for your own car — fares shown before you confirm."
 }) {
   const hero = useHeroSearch();
   const active = hero?.activeTab ?? defaultTab;

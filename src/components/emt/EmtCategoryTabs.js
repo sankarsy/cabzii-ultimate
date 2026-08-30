@@ -73,8 +73,8 @@ export default function EmtCategoryTabs({
             <span className={cn("emt-category-tab-icon", iconTone)} aria-hidden>
               {TabIcon ? (
                 <TabIcon
-                  className={isShell ? "h-[1.25rem] w-[1.25rem]" : "h-[1.0625rem] w-[1.0625rem] sm:h-[1.125rem] sm:w-[1.125rem]"}
-                  strokeWidth={isShell ? 1.75 : undefined}
+                  className={isShell ? "h-6 w-6" : "h-[1.0625rem] w-[1.0625rem] sm:h-[1.125rem] sm:w-[1.125rem]"}
+                  strokeWidth={isShell ? 1.6 : 1.5}
                 />
               ) : null}
             </span>

@@ -11,7 +11,7 @@ export const STATIC_PAGE_SEO_LIST = [
     productName: "Cabzii Home",
     seoTitle: HOME_SEO_TITLE,
     seoDescription:
-      "Book cabs from Chennai and across Tamil Nadu with Cabzii — airport taxi, local packages, outstation and one-way trips. Transparent fares and OTP booking.",
+      "Book cabs from Chennai and across Tamil Nadu with Cabzii — airport taxi, local packages, outstation and one-way trips. Transparent fares and WhatsApp support.",
     seoKeywords:
       "cab booking chennai, taxi service chennai, airport taxi chennai, outstation cab chennai, cab rental tariff chennai, cab booking tamil nadu, cabzii, cabzii.in"
   },
@@ -68,7 +68,7 @@ export const STATIC_PAGE_SEO_LIST = [
     productName: "Routes",
     seoTitle: "Popular Cab Routes — One-Way & Outstation | Cabzii",
     seoDescription:
-      "High-value cab routes such as Chennai–Tirupati and Chennai–Trichy with distance, fare context and OTP booking on Cabzii.",
+      "High-value cab routes such as Chennai–Tirupati and Chennai–Trichy with distance, fare context and WhatsApp support on Cabzii.",
     seoKeywords: "chennai to tirupati cab, one way cab, outstation routes, cabzii routes"
   },
   {

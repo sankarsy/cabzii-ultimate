@@ -12,7 +12,7 @@ export function builtInSeoServicePayloads() {
     highlights: Array.isArray(s.highlights) ? s.highlights : [],
     body: s.body || "",
     seoTitle: `${s.name} — Book Online | Cabzii`,
-    seoDescription: `Book ${String(s.name || "").toLowerCase()} online on Cabzii. Transparent fares, verified drivers, instant confirmation.`,
+    seoDescription: `Book ${String(s.name || "").toLowerCase()} online on Cabzii. Transparent fares and verified drivers.`,
     seo: [s.primaryKeyword, s.searchQuery, s.slug?.replace(/-/g, " "), "cabzii"]
       .filter(Boolean)
       .join(","),

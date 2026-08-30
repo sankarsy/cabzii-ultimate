@@ -41,7 +41,7 @@ export function serviceSerpBadges(service, city) {
   const fleet = serviceFleetFor(service?.slug);
   const badges = [
     { label: `Vehicles: ${fleet.join(", ")}`, schemaName: "Available vehicles", schemaValue: fleet.join(", ") },
-    { label: "OTP booking", schemaName: "Booking", schemaValue: "Mobile OTP confirmation" }
+    { label: "Fares shown before you confirm", schemaName: "Pricing", schemaValue: "Upfront fare before confirmation" }
   ];
   if (service?.priceFrom) {
     badges.unshift({

@@ -78,7 +78,7 @@ function tourPackageMetaFields(pkg, slug) {
     pkg?.seoDescription ||
     pkg?.description?.slice(0, 158) ||
     clampDescription(
-      `${priceLine}Book ${pkg.name} with ${pkg.vendor} on Cabzii.in — verified cabs, transparent pricing & instant confirmation.`
+      `${priceLine}Book ${pkg.name} with ${pkg.vendor} on Cabzii.in — verified cabs and transparent pricing.`
     );
   const keywords = (pkg?.seo || "")
     .split(",")

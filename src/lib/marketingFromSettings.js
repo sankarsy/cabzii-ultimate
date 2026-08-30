@@ -1,10 +1,11 @@
 import { TRUST_COUNTERS, WHY_STATS } from "./marketingStats";
+import { isUnsupportedTrustCopy } from "./trustSignals";
 
 const DEFAULT_WHY_FEATURES = [
-  { iconKey: "secure", title: "OTP booking", desc: "Confirm with your mobile number. Fare is shown before you pay." },
   { iconKey: "price", title: "Published Chennai tariff", desc: "Local, outstation and van packages are listed on the Cabzii tariff page." },
   { iconKey: "verified", title: "Partner vehicles", desc: "Cabzii assigns a cab or acting driver after you confirm — not a public driver directory." },
-  { iconKey: "support", title: "WhatsApp and phone", desc: "Trip updates and booking help on WhatsApp and phone during operating hours." }
+  { iconKey: "support", title: "WhatsApp and phone", desc: "Trip updates and booking help on WhatsApp and phone during operating hours." },
+  { iconKey: "secure", title: "Fares shown first", desc: "Compare the fare before you confirm." }
 ];
 
 const DEFAULT_WHY_SECTION = {
@@ -66,13 +67,15 @@ export function parseStatValue(raw) {
 }
 
 export function resolveWhyStats(settings) {
-  if (Array.isArray(settings?.whyStats) && settings.whyStats.length) {
-    return settings.whyStats.map(({ value, label }) => ({
-      value: String(value ?? ""),
-      label: String(label ?? "")
-    }));
-  }
-  return WHY_STATS;
+  const raw =
+    Array.isArray(settings?.whyStats) && settings.whyStats.length
+      ? settings.whyStats.map(({ value, label }) => ({
+          value: String(value ?? ""),
+          label: String(label ?? "")
+        }))
+      : WHY_STATS;
+  const safe = raw.filter((item) => !isUnsupportedTrustCopy(item.value, item.label));
+  return safe.length ? safe : WHY_STATS;
 }
 
 export function resolveWhySection(settings) {
@@ -85,14 +88,16 @@ export function resolveWhySection(settings) {
 }
 
 export function resolveWhyFeatures(settings) {
-  if (Array.isArray(settings?.whyChooseUs) && settings.whyChooseUs.length) {
-    return settings.whyChooseUs.slice(0, 4).map((item) => ({
-      iconKey: WHY_ICON_MAP[item.iconKey] || item.iconKey || "verified",
-      title: item.title || "",
-      desc: item.subtitle || ""
-    }));
-  }
-  return DEFAULT_WHY_FEATURES;
+  const mapped =
+    Array.isArray(settings?.whyChooseUs) && settings.whyChooseUs.length
+      ? settings.whyChooseUs.slice(0, 4).map((item) => ({
+          iconKey: WHY_ICON_MAP[item.iconKey] || item.iconKey || "verified",
+          title: item.title || "",
+          desc: item.subtitle || ""
+        }))
+      : DEFAULT_WHY_FEATURES;
+  const safe = mapped.filter((item) => !isUnsupportedTrustCopy(item.title, item.desc));
+  return safe.length ? safe : DEFAULT_WHY_FEATURES;
 }
 
 /** Animated trust counters — reads admin Hero stats when available. */
@@ -102,20 +107,26 @@ export function resolveTrustCounters(settings) {
     return TRUST_COUNTERS.filter((item) => item.display || item.value > 0);
   }
 
-  return stats.slice(0, 4).map((stat, index) => {
-    const parsed = parseStatValue(stat.value);
-    const iconKey = HERO_ICON_TO_TRUST[stat.iconKey] || TRUST_COUNTERS[index]?.iconKey || "verified";
-    const style = COUNTER_STYLES[iconKey] || COUNTER_STYLES.verified;
+  const fromAdmin = stats
+    .slice(0, 4)
+    .filter((stat) => !isUnsupportedTrustCopy(stat.value, stat.label))
+    .map((stat, index) => {
+      const parsed = parseStatValue(stat.value);
+      const iconKey = HERO_ICON_TO_TRUST[stat.iconKey] || TRUST_COUNTERS[index]?.iconKey || "verified";
+      const style = COUNTER_STYLES[iconKey] || COUNTER_STYLES.verified;
 
-    return {
-      label: stat.label || TRUST_COUNTERS[index]?.label || "",
-      value: parsed.animate ? parsed.numeric : 0,
-      display: parsed.animate ? null : parsed.display,
-      suffix: parsed.suffix,
-      iconKey,
-      color: style.color,
-      bg: style.bg,
-      animate: parsed.animate
-    };
-  }).filter((item) => item.label && (item.display || item.value > 0));
+      return {
+        label: stat.label || TRUST_COUNTERS[index]?.label || "",
+        value: parsed.animate ? parsed.numeric : 0,
+        display: parsed.animate ? null : parsed.display,
+        suffix: parsed.suffix,
+        iconKey,
+        color: style.color,
+        bg: style.bg,
+        animate: parsed.animate
+      };
+    })
+    .filter((item) => item.label && (item.display || item.value > 0));
+
+  return fromAdmin.length ? fromAdmin : TRUST_COUNTERS.filter((item) => item.display || item.value > 0);
 }

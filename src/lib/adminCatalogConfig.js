@@ -1129,7 +1129,9 @@ export function emptyTestimonialForm() {
     rating: 5,
     sortOrder: 0,
     published: false,
-    sampleReview: false
+    sampleReview: false,
+    serviceType: "",
+    tripRoute: ""
   };
 }
 

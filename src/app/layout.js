@@ -31,7 +31,7 @@ export const metadata = {
     template: "%s | Cabzii"
   },
   description:
-    "Book cabs, taxis, airport transfers, outstation trips, acting drivers and tour packages across India. Instant confirmation on Cabzii.in.",
+    "Book cabs, taxis, airport transfers, outstation trips, acting drivers and tour packages across India. Fares shown before you confirm on Cabzii.in.",
   category: "travel",
   keywords: DEFAULT_KEYWORDS,
   icons: SITE_ICONS,
@@ -51,7 +51,7 @@ export const metadata = {
 };
 
 export const viewport = {
-  themeColor: "#0EA5E9",
+  themeColor: "#1E40AF",
   width: "device-width",
   initialScale: 1
 };

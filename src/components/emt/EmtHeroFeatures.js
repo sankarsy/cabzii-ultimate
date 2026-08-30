@@ -6,12 +6,12 @@ import { HERO_FEATURE_ICONS } from "../icons/heroIcons";
 import { cn } from "../../lib/emt/cn";
 
 const FEATURES = [
-  { href: "/cabs", label: "Best Cab Deals", iconKey: "deals" },
-  { href: "/locations", label: "Locations", iconKey: "locations" },
+  { href: "/cabs", label: "Local Cab", iconKey: "deals" },
   { href: "/services/airport-taxi/chennai", label: "Airport Taxi", iconKey: "airport" },
-  { href: "/holidays", label: "Tour Packages", iconKey: "packages" },
-  { href: "/routes/chennai-to-bangalore-cab", label: "Popular Routes", iconKey: "routes" },
-  { href: "/blogs", label: "Travel Blog", iconKey: "blog" }
+  { href: "/services/outstation-cab/chennai", label: "Outstation", iconKey: "routes" },
+  { href: "/call-driver", label: "Hire a Driver", iconKey: "driver" },
+  { href: "/locations", label: "Locations", iconKey: "locations" },
+  { href: "/holidays", label: "Tour Packages", iconKey: "packages" }
 ];
 
 export default function EmtHeroFeatures() {

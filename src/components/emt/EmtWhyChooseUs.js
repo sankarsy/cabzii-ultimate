@@ -5,6 +5,7 @@ import { DEFAULT_SITE_SETTINGS } from "../../lib/siteSettingsDefaults";
 const STAT_ICON = {
   otp: "secure",
   upfront: "price",
+  partner: "verified",
   chennai: "verified",
   whatsapp: "support"
 };

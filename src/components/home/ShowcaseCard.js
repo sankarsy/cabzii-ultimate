@@ -13,7 +13,7 @@ export default function ShowcaseCard({ card: o, section = "offers", layout = "ca
   return (
     <Link
       href={o.href || "/cabs"}
-      className={`${layoutClass} group overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[var(--emt-shadow-card)] transition-all duration-200 sm:hover:-translate-y-1 sm:hover:shadow-[var(--emt-shadow-hover)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cabzii-brand)] focus-visible:ring-offset-2`}
+      className={`${layoutClass} group overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-[var(--emt-shadow-card)] transition-all duration-200 sm:hover:-translate-y-1 sm:hover:shadow-[var(--emt-shadow-hover)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cabzii-brand)] focus-visible:ring-offset-2`}
     >
       <div
         className={`relative flex min-h-[8.5rem] flex-col overflow-hidden bg-linear-to-br ${o.color || "from-[var(--cabzii-brand)] to-blue-500"} p-4 text-white`}
@@ -27,7 +27,7 @@ export default function ShowcaseCard({ card: o, section = "offers", layout = "ca
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
               className="object-cover transition-transform duration-300 group-hover:scale-105"
             />
-            <div className="absolute inset-0 bg-linear-to-t from-slate-950/85 via-slate-950/45 to-slate-950/20" aria-hidden />
+            <div className="absolute inset-0 bg-linear-to-t from-slate-950/80 via-slate-950/30 to-transparent" aria-hidden />
           </>
         ) : (
           <span
@@ -62,9 +62,9 @@ export default function ShowcaseCard({ card: o, section = "offers", layout = "ca
         <p className="line-clamp-2 text-[13px] leading-relaxed text-slate-600">{o.desc}</p>
         <div className="mt-auto flex items-center justify-between border-t border-slate-100 pt-3">
           <span className="text-[11px] font-medium text-slate-400">
-            {o.validTill ? `Valid Till : ${o.validTill}` : "Instant confirmation"}
+            {o.validTill ? `Valid till ${o.validTill}` : "Fares shown before you confirm"}
           </span>
-          <span className="inline-flex items-center gap-1 text-xs font-extrabold tracking-wide text-slate-900 transition group-hover:text-[var(--cabzii-cta)]">
+          <span className="inline-flex items-center gap-1 text-xs font-extrabold tracking-wide text-[var(--cabzii-brand)]">
             BOOK NOW
             <span aria-hidden className="transition-transform group-hover:translate-x-0.5">
               →

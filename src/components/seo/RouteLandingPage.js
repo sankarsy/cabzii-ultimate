@@ -140,7 +140,7 @@ export default function RouteLandingPage({ route, faqs, extraBody = "", cabs = [
             "True one-way pricing — no return empty charge confusion",
             `Highway-experienced drivers on ${fromCity.name} – ${toCity.name}`,
             "Sedan, SUV, Innova and tempo for groups",
-            "Instant confirmation with mobile OTP booking",
+            "WhatsApp support before and during your trip",
             "WhatsApp support before and during your trip",
             "Upfront fare breakdown before you pay"
           ].map((item) => (

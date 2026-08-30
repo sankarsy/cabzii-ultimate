@@ -110,8 +110,8 @@ export default function MmtCabResultCard({ cab, trip, layout = "row", catalogMod
 
   return (
     <article className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-      <div className="flex flex-wrap items-center gap-2 border-b border-sky-100 bg-sky-50 px-4 py-1.5 text-[11px] font-semibold text-sky-800">
-        <span className="inline-flex items-center gap-1 rounded bg-sky-600 px-1.5 py-0.5 text-[10px] font-bold text-white">
+      <div className="flex flex-wrap items-center gap-2 border-b border-indigo-100 bg-indigo-50 px-4 py-1.5 text-[11px] font-semibold text-indigo-900">
+        <span className="inline-flex items-center gap-1 rounded bg-[var(--cabzii-brand)] px-1.5 py-0.5 text-[10px] font-bold text-white">
           <ShieldCheck className="h-3 w-3" /> Cabzii Assured
         </span>
         <span>{cab.vendor || "Cabzii Partner"} · verified listing</span>
@@ -135,7 +135,7 @@ export default function MmtCabResultCard({ cab, trip, layout = "row", catalogMod
           ) : null}
           <div className="mt-2 flex flex-wrap gap-1.5">
             {tags.map((t) => (
-              <span key={t} className="rounded border border-sky-200 px-1.5 py-0.5 text-[10px] font-semibold text-sky-800">
+              <span key={t} className="rounded border border-slate-200 px-1.5 py-0.5 text-[10px] font-semibold text-slate-600">
                 {t}
               </span>
             ))}
@@ -169,7 +169,7 @@ export default function MmtCabResultCard({ cab, trip, layout = "row", catalogMod
           <Link
             href={href}
             onClick={trackSelect}
-            className="rounded-lg bg-[#d84e55] px-4 py-2 text-center text-sm font-bold text-white hover:bg-[#c03940]"
+            className="rounded-full bg-[var(--cabzii-cta)] px-4 py-2 text-center text-sm font-bold text-white shadow-[0_4px_12px_rgba(249,115,22,0.3)] hover:bg-[var(--cabzii-cta-hover)]"
           >
             {catalogMode ? "View Cab" : "Select Cab"}
           </Link>

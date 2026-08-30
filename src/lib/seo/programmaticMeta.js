@@ -182,7 +182,7 @@ const SERVICE_META_OVERRIDES = {
   "chennai:car-rental": {
     title: formatSerpTitle("Car Rental in Chennai", "Driver-Included Packages"),
     description: clampDescription(
-      "Car rental in Chennai on Cabzii is chauffeur-driven local hire — 4 hour and 8 hour packages. Not self-drive. Compare fares on the published tariff and book with OTP."
+      "Car rental in Chennai on Cabzii is chauffeur-driven local hire — 4 hour and 8 hour packages. Not self-drive. Compare fares on the published tariff and book online."
     )
   },
   "chennai:cab-rental": {
@@ -218,7 +218,7 @@ const SERVICE_META_OVERRIDES = {
   "madurai:car-rental": {
     title: formatSerpTitle("Car Rental Madurai", "Hourly & Daily Packages"),
     description: clampDescription(
-      "Car rental in Madurai on Cabzii.in — flexible hourly and full-day cabs for temples, weddings and local travel. Transparent package fares, OTP booking."
+      "Car rental in Madurai on Cabzii.in — flexible hourly and full-day cabs for temples, weddings and local travel. Transparent package fares."
     )
   },
   "goa:car-rental": {
@@ -242,13 +242,13 @@ const SERVICE_META_OVERRIDES = {
   "delhi:car-rental": {
     title: formatSerpTitle("Car Rental Delhi", "Hourly & Airport Transfer"),
     description: clampDescription(
-      "Car rental in Delhi on Cabzii.in — hourly city hire, airport transfers and local packages across NCR. Book online with transparent fares and OTP login."
+      "Car rental in Delhi on Cabzii.in — hourly city hire, airport transfers and local packages across NCR. Book online with transparent fares."
     )
   },
   "bengaluru:cab-rental": {
     title: formatSerpTitle("Cab Rental Bangalore", "Hourly & City Packages"),
     description: clampDescription(
-      "Cab rental in Bengaluru with Cabzii.in. Airport drops, outstation trips and local hourly hire. OTP booking with fares shown before you confirm."
+      "Cab rental in Bengaluru with Cabzii.in. Airport drops, outstation trips and local hourly hire. Fares shown before you confirm."
     )
   }
 };
@@ -258,13 +258,13 @@ const CAB_BOOKING_META = {
   chennai: {
     title: formatSerpTitle("Chennai Cab Booking", "Local, Airport & Outstation"),
     description: clampDescription(
-      "Book cabs in Chennai with Cabzii — airport taxi, local packages, outstation and one-way trips. Upfront fares, OTP booking and WhatsApp support."
+      "Book cabs in Chennai with Cabzii — airport taxi, local packages, outstation and one-way trips. Upfront fares and WhatsApp support."
     )
   },
   salem: {
     title: formatSerpTitle("Cab Booking Salem", "Outstation & Local Taxi"),
     description: clampDescription(
-      "Cab booking in Salem on Cabzii — outstation to Chennai and Coimbatore, local packages and one-way cabs. Transparent fares and OTP booking online."
+      "Cab booking in Salem on Cabzii — outstation to Chennai and Coimbatore, local packages and one-way cabs. Transparent fares online."
     )
   },
   vellore: {
@@ -282,25 +282,25 @@ const CAB_BOOKING_META = {
   hosur: {
     title: formatSerpTitle("Cab Booking Hosur", "Bengaluru & Chennai"),
     description: clampDescription(
-      "Book cabs in Hosur with Cabzii — quick trips to Bengaluru and Chennai, local packages and outstation hire. Upfront fares and OTP booking."
+      "Book cabs in Hosur with Cabzii — quick trips to Bengaluru and Chennai, local packages and outstation hire. Upfront fares."
     )
   },
   madurai: {
     title: formatSerpTitle("Cab Booking Madurai", "Online Taxi & Outstation"),
     description: clampDescription(
-      "Cab booking in Madurai on Cabzii.in — online taxi, one-way and outstation cabs to Trichy, Chennai and hill stations. Transparent fares and OTP booking."
+      "Cab booking in Madurai on Cabzii.in — online taxi, one-way and outstation cabs to Trichy, Chennai and hill stations. Transparent fares."
     )
   },
   bengaluru: {
     title: formatSerpTitle("Bengaluru Cab Booking", "Airport Taxi & Outstation"),
     description: clampDescription(
-      "Book cabs in Bengaluru with Cabzii.in. Airport drops, outstation trips and local hire. OTP booking with fares shown before you confirm."
+      "Book cabs in Bengaluru with Cabzii.in. Airport drops, outstation trips and local hire. Fares shown before you confirm."
     )
   },
   hyderabad: {
     title: formatSerpTitle("Hyderabad Cab Booking", "Airport & Outstation"),
     description: clampDescription(
-      "Book cabs in Hyderabad with Cabzii.in. Airport taxi, outstation and one-way trips. Fares shown before you confirm — OTP booking online."
+      "Book cabs in Hyderabad with Cabzii.in. Airport taxi, outstation and one-way trips. Fares shown before you confirm."
     )
   },
   coimbatore: {
@@ -387,7 +387,7 @@ const ROUTE_META_OVERRIDES = {
   "chennai-to-salem-cab": {
     title: formatSerpTitle("Chennai to Salem Taxi", "One-Way Cab"),
     description: clampDescription(
-      "Chennai to Salem taxi on Cabzii — one-way cab from ₹4,300 sedan. 340 km, 5–6 hours. Book online with upfront fare and instant confirmation."
+      "Chennai to Salem taxi on Cabzii — one-way cab from ₹4,300 sedan. 340 km, 5–6 hours. Book online with upfront fare."
     )
   },
   "chennai-to-trichy-cab": {
@@ -405,7 +405,7 @@ const ROUTE_META_OVERRIDES = {
   "chennai-to-tiruvannamalai-cab": {
     title: formatSerpTitle("Chennai to Tiruvannamalai Cab", "One-Way Taxi"),
     description: clampDescription(
-      "Chennai to Tiruvannamalai cab on Cabzii — one-way taxi, about 185 km / 4 hours on the catalog. Indicative sedan from ₹3,000. Book with OTP."
+      "Chennai to Tiruvannamalai cab on Cabzii — one-way taxi, about 185 km / 4 hours on the catalog. Indicative sedan from ₹3,000. Book online."
     )
   },
   "chennai-to-kanyakumari-cab": {
@@ -423,7 +423,7 @@ const ROUTE_META_OVERRIDES = {
   "madurai-to-kanyakumari-cab": {
     title: formatSerpTitle("Madurai to Kanyakumari Cab", "One-Way Taxi"),
     description: clampDescription(
-      "Madurai to Kanyakumari cab on Cabzii — one-way taxi with distance and starting fare on this route page. Book sedan or SUV with OTP."
+      "Madurai to Kanyakumari cab on Cabzii — one-way taxi with distance and starting fare on this route page. Book sedan or SUV online."
     )
   },
   "bengaluru-to-mysore-cab": {
@@ -435,7 +435,7 @@ const ROUTE_META_OVERRIDES = {
   "bengaluru-to-tirupati-cab": {
     title: formatSerpTitle("Bengaluru to Tirupati Cab", "One-Way Taxi"),
     description: clampDescription(
-      "Bengaluru to Tirupati one-way cab on Cabzii.in — sedan and SUV options with distance and starting fare on the route page. Book online with OTP."
+      "Bengaluru to Tirupati one-way cab on Cabzii.in — sedan and SUV options with distance and starting fare on the route page. Book online."
     )
   }
 };
@@ -497,7 +497,7 @@ export function getServiceMeta(service, city) {
       return {
         title: formatSerpTitle(`Airport Taxi from ${city.name}`, `${airport.code} Transfer`),
         description: clampDescription(
-          `${airport.note} Cab to ${airport.name} from ${city.name} on Cabzii — upfront fare, OTP booking.`
+          `${airport.note} Cab to ${airport.name} from ${city.name} on Cabzii — upfront fare.`
         )
       };
     }
@@ -538,19 +538,19 @@ export function getCabBookingMeta(city) {
         {
           title: formatSerpTitle(`${city.name} Cab Booking`, "Airport Taxi & Packages"),
           description: clampDescription(
-            `Book cabs in ${city.name} with Cabzii.in. Outstation, airport taxi and local hire. Transparent fares and OTP booking.`
+            `Book cabs in ${city.name} with Cabzii.in. Outstation, airport taxi and local hire. Transparent fares.`
           )
         },
         {
           title: formatSerpTitle(`Cab Booking ${city.name}`, "Online Taxi Service"),
           description: clampDescription(
-            `Cab booking in ${city.name} made easy — compare outstation, airport and hourly packages on Cabzii.in. Professional drivers, upfront fares, instant OTP booking.`
+            `Cab booking in ${city.name} made easy — compare outstation, airport and hourly packages on Cabzii.in. Professional drivers, upfront fares.`
           )
         },
         {
           title: formatSerpTitle(`Taxi in ${city.name}`, "Book Cabs Online"),
           description: clampDescription(
-            `Need a taxi in ${city.name}? Book local, airport and outstation cabs on Cabzii.in with transparent fares and OTP booking.`
+            `Need a taxi in ${city.name}? Book local, airport and outstation cabs on Cabzii.in with transparent fares.`
           )
         }
       ]
@@ -558,19 +558,19 @@ export function getCabBookingMeta(city) {
         {
           title: formatSerpTitle(`${city.name} Cab Booking`, "Outstation & Local Taxi"),
           description: clampDescription(
-            `Book cabs in ${city.name} with Cabzii.in — local packages, outstation and one-way trips. Transparent fares, OTP booking and WhatsApp support.`
+            `Book cabs in ${city.name} with Cabzii.in — local packages, outstation and one-way trips. Transparent fares and WhatsApp support.`
           )
         },
         {
           title: formatSerpTitle(`Cab Booking ${city.name}`, "Online Taxi Service"),
           description: clampDescription(
-            `Cab booking in ${city.name} — compare local hourly and outstation packages on Cabzii.in. Professional drivers, upfront fares, instant OTP booking.`
+            `Cab booking in ${city.name} — compare local hourly and outstation packages on Cabzii.in. Professional drivers, upfront fares.`
           )
         },
         {
           title: formatSerpTitle(`Taxi in ${city.name}`, "Book Cabs Online"),
           description: clampDescription(
-            `Need a taxi in ${city.name}? Book local and outstation cabs on Cabzii.in with transparent fares and OTP booking.`
+            `Need a taxi in ${city.name}? Book local and outstation cabs on Cabzii.in with transparent fares.`
           )
         }
       ];
@@ -595,7 +595,7 @@ export function getRouteMeta(route) {
     description: clampDescription(
       hasTrip
         ? `Book ${from} to ${to} one-way cab online — ${distance}, around ${duration}. Fare shown before payment on Cabzii.in.`
-        : `Book ${from} to ${to} one-way cab online with Cabzii.in. Door pickup, fare shown before payment, and OTP confirmation.`
+        : `Book ${from} to ${to} one-way cab online with Cabzii.in. Door pickup and fare shown before payment.`
     )
   });
 

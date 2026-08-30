@@ -166,9 +166,9 @@ function fallbackDescriptions(ctx) {
     descriptions: [
       d.slice(0, 160),
       `Book ${ctx.vehicle} in ${ctx.city} from ${ctx.price}. Verified drivers, airport & outstation. Book now on Cabzii.`.slice(0, 160),
-      `Need a ${ctx.vehicle}? Hire in ${ctx.city}, ${ctx.state} with upfront fares. Instant OTP booking on Cabzii.in.`.slice(0, 160),
+      `Need a ${ctx.vehicle}? Hire in ${ctx.city}, ${ctx.state} with upfront fares on Cabzii.in.`.slice(0, 160),
       `${ctx.vehicle} rental ${ctx.city} — local, airport transfer & corporate travel. Transparent pricing. Book today.`.slice(0, 160),
-      `Reserve ${ctx.vehicle} online in ${ctx.city}. AC cabs, professional drivers, 24×7 support. Start booking on Cabzii.`.slice(0, 160)
+      `Reserve ${ctx.vehicle} online in ${ctx.city}. AC cabs and professional drivers. Start booking on Cabzii.`.slice(0, 160)
     ]
   };
 }
@@ -229,7 +229,7 @@ AC, verified drivers, GPS tracking, and sanitized vehicles.
 Packages start from ${ctx.price}. See exact fares before payment.
 
 ### Why choose Cabzii
-OTP booking, upfront pricing, 24×7 support, and professional drivers across South India.
+Upfront pricing, WhatsApp support, and professional drivers across South India.
 
 ### Popular routes
 Explore popular one-way and round-trip routes from ${ctx.city}.

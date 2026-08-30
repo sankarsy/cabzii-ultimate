@@ -126,7 +126,7 @@ export function buildSampleTourPackageContent(pkg = {}) {
     "Personal expenses & tips"
   ];
 
-  const seoDescription = `Book ${name} from ${origin} on cabzii.in — ${kind} package for ${city} with AC cab options, transparent fares & instant confirmation.`.slice(
+  const seoDescription = `Book ${name} from ${origin} on cabzii.in — ${kind} package for ${city} with AC cab options and transparent fares.`.slice(
     0,
     158
   );

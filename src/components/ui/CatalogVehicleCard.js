@@ -19,7 +19,7 @@ export default function CatalogVehicleCard({
   meta,
   features,
   priceBlockProps,
-  ctaLabel = "Select",
+  ctaLabel = "SELECT",
   imageObjectPosition,
   onNavigate
 }) {
@@ -27,7 +27,7 @@ export default function CatalogVehicleCard({
     Boolean(imageSrc) && !isPlaceholderProductImage(imageSrc) && !isLocalFallbackImage(imageSrc);
 
   return (
-    <article className="group flex h-full min-w-0 max-w-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[var(--emt-shadow-card)] transition-all duration-200 sm:hover:-translate-y-1 sm:hover:shadow-[var(--emt-shadow-hover)]">
+    <article className="group flex h-full min-w-0 max-w-full flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-[var(--emt-shadow-card)] transition-all duration-200 sm:hover:-translate-y-1 sm:hover:shadow-[var(--emt-shadow-hover)]">
       <Link
         href={href}
         onClick={onNavigate}
@@ -56,7 +56,7 @@ export default function CatalogVehicleCard({
 
         <div className="flex min-h-0 flex-1 flex-col gap-3 p-4">
           <div className="min-w-0 space-y-1">
-            <h3 className="line-clamp-2 text-base font-extrabold leading-snug tracking-tight text-slate-900 transition group-hover:text-[var(--cabzii-brand)]">
+            <h3 className="line-clamp-2 text-base font-extrabold leading-snug tracking-tight text-slate-900">
               {title}
             </h3>
             {subtitle ? (
@@ -71,7 +71,7 @@ export default function CatalogVehicleCard({
 
           <div className="mt-auto flex items-end justify-between gap-3 border-t border-slate-100 pt-3">
             <MmtCardPriceBlock {...priceBlockProps} compact />
-            <span className="inline-flex shrink-0 items-center gap-1 text-xs font-extrabold uppercase tracking-wide text-slate-900 transition group-hover:text-[var(--cabzii-cta)]">
+            <span className="inline-flex shrink-0 items-center gap-1 text-xs font-extrabold uppercase tracking-wide text-[var(--cabzii-cta)]">
               {ctaLabel}
               <span aria-hidden className="transition-transform group-hover:translate-x-0.5">→</span>
             </span>
@@ -84,7 +84,7 @@ export default function CatalogVehicleCard({
 
 export function FeatureChip({ icon: Icon, children }) {
   return (
-    <span className="inline-flex items-center gap-1 rounded-lg bg-slate-50/90 px-2 py-1 text-[11px] font-medium text-slate-500 ring-1 ring-slate-100">
+    <span className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-500">
       {Icon ? <Icon className={`h-3 w-3 shrink-0 ${ICON_SOFT_CLASS}`} strokeWidth={1.75} /> : null}
       {children}
     </span>

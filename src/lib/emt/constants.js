@@ -3,7 +3,7 @@ import { BRAND } from "../brand";
 /** Home hero tabs — live services only (flights / hotels / trains are paused). */
 export const HERO_TABS = [
   { id: "cabs", label: "Cabs", iconKey: "car" },
-  { id: "drivers", label: "Call Driver", iconKey: "driver" },
+  { id: "drivers", label: "Hire a Driver", iconKey: "driver" },
   { id: "buses", label: "Buses", iconKey: "bus" },
   { id: "holidays", label: "Holidays", iconKey: "holiday" }
 ];

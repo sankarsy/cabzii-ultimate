@@ -1,54 +1,56 @@
+import { SITE_STATS } from "./siteStats";
+
 /** Homepage trust labels — only statements Cabzii can support without invented counts. */
 export const MARKETING_STATS = {
-  happyCustomers: 0,
-  happyCustomersLabel: "OTP",
-  tripsCompleted: 0,
-  verifiedDrivers: 0,
-  citiesCovered: 0,
-  rating: ""
+  happyCustomers: SITE_STATS.happyCustomers ?? 0,
+  happyCustomersLabel: "Upfront",
+  tripsCompleted: SITE_STATS.tripsCompleted ?? 0,
+  verifiedDrivers: SITE_STATS.verifiedDrivers ?? 0,
+  citiesCovered: SITE_STATS.citiesCovered ?? 0,
+  rating: SITE_STATS.rating || ""
 };
 
 export const WHY_STATS = [
-  { value: "OTP", label: "Secure booking" },
   { value: "Upfront", label: "Fares shown" },
+  { value: "Partner", label: "Vehicles" },
   { value: "Chennai", label: "Home market" },
   { value: "WhatsApp", label: "Trip updates" }
 ];
 
 export const TRUST_COUNTERS = [
   {
-    label: "OTP booking",
-    value: 0,
-    display: "Secure",
-    suffix: "",
-    iconKey: "rated",
-    color: "text-amber-400",
-    bg: "bg-amber-50"
-  },
-  {
     label: "Published tariff",
     value: 0,
-    display: "Chennai",
+    display: "Upfront",
     suffix: "",
-    iconKey: "trips",
+    iconKey: "price",
     color: "text-sky-400",
     bg: "bg-blue-50"
   },
   {
-    label: "Driver assigned after booking",
+    label: "Partner vehicles",
     value: 0,
-    display: "Call Driver",
+    display: "Assigned",
     suffix: "",
     iconKey: "verified",
     color: "text-emerald-400",
     bg: "bg-emerald-50"
   },
   {
-    label: "Tamil Nadu first",
+    label: "Driver for your own car",
     value: 0,
-    display: "South India",
+    display: "Call Driver",
     suffix: "",
-    iconKey: "locations",
+    iconKey: "trips",
+    color: "text-amber-400",
+    bg: "bg-amber-50"
+  },
+  {
+    label: "Trip help on WhatsApp",
+    value: 0,
+    display: "WhatsApp",
+    suffix: "",
+    iconKey: "support",
     color: "text-violet-400",
     bg: "bg-violet-50"
   }

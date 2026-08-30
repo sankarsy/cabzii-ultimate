@@ -20,6 +20,7 @@ import { ArrowRightIcon, PersonIcon, SeatIcon, SnowflakeIcon, StarFilledIcon } f
 
 import { resolveCabImage } from "../lib/vehicleImages";
 import { formatCabSeatPill } from "../lib/cabSeats";
+import { vehiclePhotoAlt } from "../lib/catalogDisplay";
 
 export default function CabCard({ cab, onBook, bookHref }) {
   const basePrice = num(cab.price);
@@ -202,7 +203,7 @@ export default function CabCard({ cab, onBook, bookHref }) {
     <article className={CARD_ARTICLE_CLASS}>
       <ProductImageFrame
         src={imageSrc}
-        alt={cab.title || "Cab"}
+        alt={cab.imageAlt || vehiclePhotoAlt(cab)}
         badges={imageBadges}
         imageClassName="h-[100px] w-full object-cover object-top p-0 sm:h-[118px] md:h-[110px]"
       />

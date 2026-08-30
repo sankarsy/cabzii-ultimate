@@ -5,9 +5,10 @@ import { useEffect, useState } from "react";
 import { Phone } from "lucide-react";
 import WhatsAppIcon from "./WhatsAppIcon";
 import { useSiteSettings } from "./SiteSettingsProvider";
-import { telUrl, whatsappBookingUrl } from "../lib/conversion";
+import { telUrl, whatsappBookingUrl, contactPhoneFromSettings, whatsappDigitsFromSettings } from "../lib/conversion";
 import { shouldHideFloatingUi } from "../lib/floatingUi";
 import { useSelectedCity } from "../lib/useSelectedCity";
+import { trackEvent } from "../lib/analytics";
 
 /** Floating Call + WhatsApp — desktop/tablet; mobile uses StickyBookingBar. */
 export default function ContactFab() {
@@ -16,8 +17,8 @@ export default function ContactFab() {
   const { city } = useSelectedCity();
   const [search, setSearch] = useState("");
   const whatsapp = settings.whatsappFab;
-  const phone = settings.contact?.phone || "+91-9944197416";
-  const whatsappNumber = String(whatsapp?.number || settings.contact?.whatsapp || "9944197416").replace(/\D/g, "");
+  const phone = contactPhoneFromSettings(settings);
+  const whatsappNumber = whatsappDigitsFromSettings(settings);
 
   useEffect(() => {
     setSearch(typeof window !== "undefined" ? window.location.search : "");
@@ -42,6 +43,7 @@ export default function ContactFab() {
         style={{ background: "var(--cabzii-gradient-brand)" }}
         aria-label="Call Cabzii to book a cab"
         title="Call us"
+        onClick={() => trackEvent("call_clicked", { source_page: pathname, cta_location: "contact_fab" })}
       >
         <Phone className="h-5 w-5" strokeWidth={2} aria-hidden />
       </a>
@@ -53,6 +55,7 @@ export default function ContactFab() {
           className="cabzii-tap inline-flex h-12 w-12 items-center justify-center rounded-full bg-[#25D366] text-white shadow-[0_4px_20px_rgba(37,211,102,0.35)] transition hover:scale-105 hover:bg-[#20BA5A]"
           aria-label="Book cab on WhatsApp"
           title="WhatsApp"
+          onClick={() => trackEvent("whatsapp_clicked", { source_page: pathname, cta_location: "contact_fab" })}
         >
           <WhatsAppIcon className="h-6 w-6 text-white" />
         </a>

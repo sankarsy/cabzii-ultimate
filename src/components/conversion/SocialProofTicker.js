@@ -1,9 +1,9 @@
 const TICKER_ITEMS = [
-  "✅ Transparent fares before you confirm",
-  "⚡ Instant booking confirmation",
-  "🛡️ Verified drivers & OTP-secure rides",
-  "💬 WhatsApp support for trip changes",
-  "🚗 Airport, local & outstation cabs"
+  "Transparent fares before you confirm",
+  "Airport, local and outstation cabs",
+  "Driver for your own car",
+  "WhatsApp support for trip changes",
+  "Partner vehicles assigned after booking"
 ];
 
 /** Auto-scrolling social proof strip shown right below the hero search widget. */

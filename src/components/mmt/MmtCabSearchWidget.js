@@ -23,13 +23,15 @@ const TRIP_TABS = [
   { id: "local", label: "Local" }
 ];
 
-/* EMT-style hero toggle — maps onto the same tripType + roundTrip state */
+/* Homepage services — maps onto the same tripType + roundTrip state */
 const CAB_MODE_TABS = [
-  { id: "oneway", label: "Outstation One Way" },
-  { id: "roundtrip", label: "Outstation Round Trip" },
-  { id: "hourly", label: "Hourly" },
-  { id: "airport", label: "Airport Transfer" }
+  { id: "hourly", label: "Local Cab" },
+  { id: "airport", label: "Airport Taxi" },
+  { id: "outstation", label: "Outstation" }
 ];
+
+const HERO_PLACE_INPUT =
+  "h-auto min-h-[1.75rem] w-full rounded-none border-0 bg-transparent p-0 text-lg font-extrabold leading-tight text-slate-900 outline-none ring-0 placeholder:text-base placeholder:font-semibold placeholder:text-slate-400 focus:border-0 focus:bg-transparent focus:ring-0 sm:text-xl";
 
 function nextDayStr(dateStr) {
   if (!dateStr) return "";
@@ -68,6 +70,8 @@ export default function MmtCabSearchWidget({
   const [searching, setSearching] = useState(false);
 
   const cabMode = tripType === "outstation" ? (roundTrip ? "roundtrip" : "oneway") : tripType;
+  const cabService =
+    tripType === "airport" ? "airport" : tripType === "outstation" ? "outstation" : "hourly";
 
   function setCabMode(id) {
     if (id === "oneway") {
@@ -77,6 +81,8 @@ export default function MmtCabSearchWidget({
       setTripType("outstation");
       setRoundTrip(true);
       setReturnDate((prev) => prev || nextDayStr(date));
+    } else if (id === "outstation") {
+      setTripType("outstation");
     } else {
       setTripType(id);
     }
@@ -215,11 +221,13 @@ export default function MmtCabSearchWidget({
 
   const dateTimeCell = heroMode ? (
     <div className="cabzii-search-cell">
-      <span className="pointer-events-none text-xs font-semibold uppercase tracking-wide text-slate-500">Pick-up Date &amp; Time</span>
+      <span className="pointer-events-none text-xs font-semibold uppercase tracking-wide text-slate-400">
+        Pick-up Date &amp; Time
+      </span>
       <div className="relative min-h-[2.75rem]">
         <HydrateSafeDate
           iso={date}
-          className="pointer-events-none truncate text-base font-bold text-slate-900 sm:text-xl"
+          className="pointer-events-none text-base font-bold leading-tight text-slate-900 sm:text-xl"
         />
         <p className="pointer-events-none text-sm font-medium text-slate-500">{formatTime12(time)}</p>
         <input
@@ -275,8 +283,8 @@ export default function MmtCabSearchWidget({
 
   const packageCell = (
     <div className="cabzii-search-cell">
-      <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-        {heroMode ? "Rent For" : "Package"}
+      <span className={`text-xs font-semibold uppercase tracking-wide ${heroMode ? "emt-redbus-label" : "text-slate-500"}`}>
+        {heroMode ? "PACKAGE" : "Package"}
       </span>
       <select
         value={packageHours}
@@ -295,7 +303,9 @@ export default function MmtCabSearchWidget({
   const airportDirectionCell =
     heroMode && tripType === "airport" ? (
       <div className="cabzii-search-cell">
-        <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Airport Transfer</span>
+        <span className={`text-xs font-semibold uppercase tracking-wide ${heroMode ? "emt-redbus-label" : "text-slate-500"}`}>
+          {heroMode ? "AIRPORT TRANSFER" : "Airport Transfer"}
+        </span>
         <select
           value={airportDirection}
           onChange={(e) => setAirportDirection(e.target.value)}
@@ -311,7 +321,9 @@ export default function MmtCabSearchWidget({
   const returnCell =
     heroMode && tripType === "outstation" ? (
       <div className="cabzii-search-cell relative">
-        <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Return Date &amp; Time</span>
+        <span className={`text-xs font-semibold uppercase tracking-wide ${heroMode ? "emt-redbus-label" : "text-slate-500"}`}>
+          {heroMode ? "RETURN DATE" : "Return Date & Time"}
+        </span>
         {roundTrip ? (
           <div className="relative min-h-[2.75rem]">
             <HydrateSafeDate
@@ -357,17 +369,19 @@ export default function MmtCabSearchWidget({
       {tripType === "hourly" ? (
         <>
           <div className="cabzii-search-cell">
+            {heroMode ? <span className="emt-redbus-label">FROM</span> : null}
             <PlaceAutocomplete
-              label={heroMode ? "From (Pick-up)" : "City"}
-              placeholder={heroMode ? "Select Pick-up Location, landmark, or hotel" : "Pickup city or area"}
+              label={heroMode ? "" : "City"}
+              placeholder={heroMode ? "Pickup city" : "Pickup city or area"}
               value={pickup}
               onChange={setPickup}
               onResolved={(area) => {
                 setFromCoords(area?.lat != null ? { lat: area.lat, lng: area.lng } : null);
                 if (area?.city) writeSelectedCity(area.city);
               }}
-              leadingIcon={SEARCH_FIELD_ICONS.pickup}
+              leadingIcon={heroMode ? undefined : SEARCH_FIELD_ICONS.pickup}
               leadingIconClassName={SEARCH_FIELD_ICON_CHIPS.pickup}
+              inputClassName={heroMode ? HERO_PLACE_INPUT : undefined}
             />
           </div>
           {!heroMode ? packageCell : null}
@@ -375,81 +389,85 @@ export default function MmtCabSearchWidget({
       ) : tripType === "airport" ? (
         <>
           <div className="cabzii-search-cell">
+            {heroMode ? <span className="emt-redbus-label">FROM</span> : null}
             <PlaceAutocomplete
-              label={heroMode ? "From (Pick-up)" : "Airport"}
-              placeholder={heroMode ? "Enter Airport" : "Airport name"}
+              label={heroMode ? "" : "Airport"}
+              placeholder={heroMode ? "Pickup city" : "Airport name"}
               value={pickup}
               onChange={setPickup}
               onResolved={(area) => {
                 setFromCoords(area?.lat != null ? { lat: area.lat, lng: area.lng } : null);
               }}
-              leadingIcon={SEARCH_FIELD_ICONS.airport}
+              leadingIcon={heroMode ? undefined : SEARCH_FIELD_ICONS.airport}
               leadingIconClassName={SEARCH_FIELD_ICON_CHIPS.airport}
+              inputClassName={heroMode ? HERO_PLACE_INPUT : undefined}
             />
-            {heroMode ? <span className="text-xs text-slate-400">e.g. Chennai T1, Bengaluru T2</span> : null}
           </div>
           {heroMode ? (
-            <div className="emt-search-swap-cell hidden lg:flex">
+            <div className="emt-search-swap-cell hidden sm:flex">
               <button type="button" onClick={swapLocations} className="emt-search-swap-btn" aria-label="Swap locations">
                 <TwoWayIcon className="h-4 w-4 text-slate-400" />
               </button>
             </div>
           ) : null}
           <div className="cabzii-search-cell">
+            {heroMode ? <span className="emt-redbus-label">TO</span> : null}
             <PlaceAutocomplete
-              label={heroMode ? "To (Drop-off)" : "City"}
-              placeholder={heroMode ? "Enter Drop Location" : "City / area"}
+              label={heroMode ? "" : "City"}
+              placeholder={heroMode ? "Going to" : "City / area"}
               value={drop}
               onChange={setDrop}
               onResolved={(area) => {
                 setToCoords(area?.lat != null ? { lat: area.lat, lng: area.lng } : null);
                 if (area?.city) writeSelectedCity(area.city);
               }}
-              leadingIcon={SEARCH_FIELD_ICONS.drop}
+              leadingIcon={heroMode ? undefined : SEARCH_FIELD_ICONS.drop}
               leadingIconClassName={SEARCH_FIELD_ICON_CHIPS.drop}
+              inputClassName={heroMode ? HERO_PLACE_INPUT : undefined}
             />
-            {heroMode ? <span className="text-xs text-slate-400">e.g. hotel, office, home address</span> : null}
           </div>
         </>
       ) : (
         <>
           <div className="cabzii-search-cell">
+            {heroMode ? <span className="emt-redbus-label">FROM</span> : null}
             <PlaceAutocomplete
-              label={heroMode ? "From (Pick-up)" : "From"}
-              placeholder={heroMode ? "Select Pick-up Location, landmark, or hotel" : "Pickup location"}
+              label={heroMode ? "" : "From"}
+              placeholder={heroMode ? "Pickup city" : "Pickup location"}
               value={pickup}
               onChange={setPickup}
               onResolved={(area) => {
                 setFromCoords(area?.lat != null ? { lat: area.lat, lng: area.lng } : null);
                 if (area?.city) writeSelectedCity(area.city);
               }}
-              leadingIcon={SEARCH_FIELD_ICONS.pickup}
+              leadingIcon={heroMode ? undefined : SEARCH_FIELD_ICONS.pickup}
               leadingIconClassName={SEARCH_FIELD_ICON_CHIPS.pickup}
+              inputClassName={heroMode ? HERO_PLACE_INPUT : undefined}
             />
-            {heroMode ? <span className="text-xs text-slate-400">e.g. Chennai Airport, T Nagar</span> : null}
           </div>
           {tripType === "outstation" ? (
             <>
               {heroMode ? (
-                <div className="emt-search-swap-cell hidden lg:flex">
+                <div className="emt-search-swap-cell hidden sm:flex">
                   <button type="button" onClick={swapLocations} className="emt-search-swap-btn" aria-label="Swap locations">
                     <TwoWayIcon className="h-4 w-4 text-slate-400" />
                   </button>
                 </div>
               ) : null}
               <div className="cabzii-search-cell">
+                {heroMode ? <span className="emt-redbus-label">TO</span> : null}
                 <PlaceAutocomplete
-                  label={heroMode ? "To (Drop-off)" : "To"}
-                  placeholder={heroMode ? "Drop Location, landmark, or hotel" : "Drop location"}
+                  label={heroMode ? "" : "To"}
+                  placeholder={heroMode ? "Going to" : "Drop location"}
                   value={drop}
                   onChange={setDrop}
                   onResolved={(area) => {
                     setToCoords(area?.lat != null ? { lat: area.lat, lng: area.lng } : null);
                   }}
-                  leadingIcon={SEARCH_FIELD_ICONS.drop}
+                  leadingIcon={heroMode ? undefined : SEARCH_FIELD_ICONS.drop}
                   leadingIconClassName={SEARCH_FIELD_ICON_CHIPS.drop}
+                  inputClassName={heroMode ? HERO_PLACE_INPUT : undefined}
                 />
-                {heroMode ? <span className="text-xs text-slate-400">e.g. hotel, office, home address</span> : null}
               </div>
             </>
           ) : null}
@@ -474,7 +492,7 @@ export default function MmtCabSearchWidget({
       }
     >
       <SearchIcon className="h-3.5 w-3.5 text-white/90" />
-      {searching ? "Searching…" : emtLayout ? "SEARCH" : "Search cabs"}
+      {searching ? "Searching…" : heroMode ? "SEARCH" : "Get Fare"}
     </button>
   );
 
@@ -486,9 +504,9 @@ export default function MmtCabSearchWidget({
           key={tab.id}
           type="button"
           role="tab"
-          aria-selected={cabMode === tab.id}
+          aria-selected={cabService === tab.id}
           onClick={() => setCabMode(tab.id)}
-          className={`emt-cab-mode-pill cabzii-tap ${cabMode === tab.id ? "emt-cab-mode-pill-active" : ""}`}
+          className={`emt-cab-mode-pill cabzii-tap ${cabService === tab.id ? "emt-cab-mode-pill-active" : ""}`}
         >
           {tab.label}
         </button>
@@ -600,13 +618,13 @@ export default function MmtCabSearchWidget({
           <div className="mb-4 flex items-center justify-between gap-3">
             {modeToggle}
             <span className="hidden sm:block">
-              <EmtHeroPriceHint>Book Online Cab</EmtHeroPriceHint>
+              <EmtHeroPriceHint>Get fare online</EmtHeroPriceHint>
             </span>
           </div>
           {searchCard}
           <div className="mt-4 flex justify-end">
             <p className="rounded-md border border-white/40 bg-white/10 px-3 py-1.5 text-xs font-bold text-white backdrop-blur-sm">
-              ✓ Trusted by 50K+ travellers
+              Fares shown before you confirm
             </p>
           </div>
         </>

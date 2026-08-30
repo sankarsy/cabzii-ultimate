@@ -138,7 +138,7 @@ export function featuredRouteUniqueHtml(route) {
 <li>Use the booking widget on this page or search Cabs with pickup in ${from} and drop in ${to}</li>
 <li>Compare sedan, SUV/Innova or Tempo when listed</li>
 <li>Read toll, parking and batta line items before payment</li>
-<li>Confirm with mobile OTP — driver details follow by SMS or WhatsApp</li>
+<li>Confirm — driver details follow by SMS or WhatsApp</li>
 </ol>
 <p>Related: ${fromSlug ? `<a href="/cab-booking/${fromSlug}">cab booking ${from}</a>` : "cab booking"} · ${fromSlug ? `<a href="/services/one-way-cab/${fromSlug}">one-way cab ${from}</a>` : ""} · ${fromSlug ? `<a href="/services/outstation-cab/${fromSlug}">round-trip / outstation from ${from}</a>` : ""} · ${reverse ? `<a href="/routes/${reverse}">${to} to ${from} cab</a>` : ""}</p>
 `;

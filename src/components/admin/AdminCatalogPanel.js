@@ -428,7 +428,9 @@ export default function AdminCatalogPanel({
         rating: item.rating ?? 5,
         sortOrder: item.sortOrder ?? 0,
         published: item.published !== false,
-        sampleReview: Boolean(item.sampleReview)
+        sampleReview: Boolean(item.sampleReview),
+        serviceType: item.serviceType || "",
+        tripRoute: item.tripRoute || ""
       });
       return;
     }
@@ -1117,6 +1119,12 @@ export default function AdminCatalogPanel({
             </Field>
             <Field label="Location">
               <input className={inputCls()} value={testimonialForm.location} onChange={(e) => setTestimonialForm((p) => ({ ...p, location: e.target.value }))} placeholder="Chennai" />
+            </Field>
+            <Field label="Service type">
+              <input className={inputCls()} value={testimonialForm.serviceType || ""} onChange={(e) => setTestimonialForm((p) => ({ ...p, serviceType: e.target.value }))} placeholder="outstation" />
+            </Field>
+            <Field label="Route">
+              <input className={inputCls()} value={testimonialForm.tripRoute || ""} onChange={(e) => setTestimonialForm((p) => ({ ...p, tripRoute: e.target.value }))} placeholder="Chennai → Trichy" />
             </Field>
             <Field label="Rating (1–5)">
               <input type="number" min={1} max={5} className={inputCls()} value={testimonialForm.rating} onChange={(e) => setTestimonialForm((p) => ({ ...p, rating: Number(e.target.value) }))} />

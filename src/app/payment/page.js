@@ -23,6 +23,7 @@ import {
   getDriverDisplayTitle
 } from "../../lib/catalogDisplay";
 import { trackEvent } from "../../lib/analytics";
+import { upsertEnquiry } from "../../lib/enquiryCapture";
 import { beaconSeoEvent, readSeoAttribution } from "../../lib/seoAttribution";
 import { HydrateSafeDate, useTodayStr } from "../../lib/useTodayStr";
 import { formatTime12, openNativePicker } from "../../lib/emt/heroDates";
@@ -222,6 +223,20 @@ export default function PaymentPage({ searchParams }) {
       setSubmitError("Select pickup time.");
       return;
     }
+    await upsertEnquiry({
+      name: customerName.trim(),
+      phone: mobileNumber,
+      email: email.trim(),
+      pickup: pickup.trim(),
+      drop: type === "tour" ? "" : drop,
+      travelDate: toDateInputValue(date),
+      pickupTime: needsPickupTime ? toTimeInputValue(time) : firstParam(searchParams?.time),
+      service: type === "driver" ? "driver" : type === "bus" ? "bus" : type === "tour" ? "tour" : "cab",
+      tripType: firstParam(searchParams?.tripType) || type,
+      vehicleId: itemId,
+      estimatedFare: Number(searchParams?.total) || 0,
+      ctaLocation: "payment"
+    });
     setSubmitting(true);
     setSubmitError("");
     try {

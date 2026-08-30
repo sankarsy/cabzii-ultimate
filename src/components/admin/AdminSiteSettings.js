@@ -541,9 +541,9 @@ export default function AdminSiteSettings({ token, isSuperAdmin }) {
         {activeSection === "heroStats" && (
           <div className="space-y-3">
             <p className="text-xs text-slate-600">
-              Controls the animated trust counters on the homepage (Happy customers, Trips completed, etc.). Use values like{" "}
+              Do not enter invented customer counts. Values like{" "}
               <code className="rounded bg-slate-100 px-1">50K+</code>, <code className="rounded bg-slate-100 px-1">50000</code>, or{" "}
-              <code className="rounded bg-slate-100 px-1">4.9/5</code>.
+              <code className="rounded bg-slate-100 px-1">4.9/5</code> are not shown on the public site until they are backed by real booking or review data.
             </p>
             {heroStats.map((stat, index) => (
               <div key={index} className="grid gap-3 rounded-lg border border-slate-200 bg-slate-50 p-3 sm:grid-cols-4">

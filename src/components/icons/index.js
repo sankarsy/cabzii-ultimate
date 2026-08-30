@@ -231,7 +231,8 @@ export const HERO_FEATURE_ICON_STYLES = {
   airport: "bg-sky-50 text-sky-400 ring-1 ring-sky-100",
   packages: "bg-violet-50 text-violet-400 ring-1 ring-violet-100",
   routes: "bg-emerald-50 text-emerald-400 ring-1 ring-emerald-100",
-  blog: "bg-blue-50 text-blue-400 ring-1 ring-blue-100"
+  blog: "bg-blue-50 text-blue-400 ring-1 ring-blue-100",
+  driver: "bg-violet-50 text-violet-400 ring-1 ring-violet-100"
 };
 
 export function getIcon(iconKey) {

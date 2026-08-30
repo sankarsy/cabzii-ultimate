@@ -103,7 +103,7 @@ export function serviceTitle(service, cityName) {
 }
 
 export function serviceDescription(service, city) {
-  return `Book ${service.name.toLowerCase()} in ${city.name}, ${city.state}. ${service.highlights[0]}. Compare fares and book instantly on Cabzii with OTP login.`;
+  return `Book ${service.name.toLowerCase()} in ${city.name}, ${city.state}. ${service.highlights[0]}. Compare fares on Cabzii — amounts are shown before you confirm.`;
 }
 
 export function serviceKeywords(service, city) {

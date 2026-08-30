@@ -57,12 +57,12 @@ export const CHENNAI_KEYWORD_URL_MAP = [
 export function chennaiCabUniqueHtml() {
   return `
 <h2>How to book a cab in Chennai</h2>
-<p>Enter pickup, choose local, airport or outstation, compare the package, confirm with mobile OTP. Driver details follow by SMS or WhatsApp. Cabzii is chauffeur-driven cab hire — not self-drive. HQ locality is Maduravoyal; pickup is city-wide when a partner cab is available.</p>
+<p>Enter pickup, choose local, airport or outstation, compare the package, then confirm. Driver details follow by SMS or WhatsApp. Cabzii is chauffeur-driven cab hire — not self-drive. HQ locality is Maduravoyal; pickup is city-wide when a partner cab is available.</p>
 <ol>
 <li>Open this page or <a href="/cabs">Cabs</a></li>
 <li>Select trip type and vehicle class (Dzire, Ertiga, Innova, Tempo Traveller)</li>
 <li>Read km/hour limits, extra km, batta, tolls and parking on the quote</li>
-<li>Confirm with OTP</li>
+<li>Confirm — fares are shown first</li>
 </ol>
 
 <h2>Chennai airport taxi (MAA)</h2>
@@ -120,7 +120,7 @@ export function chennaiDriverUniqueHtml() {
 export const CHENNAI_CAB_FAQS = [
   [
     "How do I book a cab in Chennai on Cabzii?",
-    "Open cab booking Chennai or Cabs, enter pickup, choose local, airport or outstation, compare the published package, then confirm with mobile OTP. Driver details follow by SMS or WhatsApp."
+    "Open cab booking Chennai or Cabs, enter pickup, choose local, airport or outstation, compare the published package, then confirm. Driver details follow by SMS or WhatsApp."
   ],
   [
     "What is the cab fare in Chennai?",

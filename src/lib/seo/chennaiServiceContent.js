@@ -42,7 +42,7 @@ const CHENNAI_AIRPORT = `
 <li>Use the search on this page (Airport tab) or open <a href="/cabs">Cabs</a> with pickup or drop at Chennai airport</li>
 <li>Enter date, time, terminal/flight notes and passenger count</li>
 <li>Compare the package shown — local hour/km slab or the live airport quote</li>
-<li>Confirm with mobile OTP. Driver details follow by SMS or WhatsApp</li>
+<li>Confirm — driver details follow by SMS or WhatsApp</li>
 </ol>
 <p>Need a chauffeur in <em>your</em> car instead of a Cabzii taxi? That is <a href="/acting-driver/chennai">acting driver Chennai</a>, booked at <a href="/call-driver">Call Driver</a> — not this airport-taxi page.</p>
 
@@ -67,7 +67,7 @@ const CHENNAI_OUTSTATION = `
 <ol>
 <li>Search Outstation from Chennai with return date if you need the cab back</li>
 <li>Pick vehicle class and review km minimum, extra km, batta and extras</li>
-<li>Confirm with OTP — driver details follow before departure</li>
+<li>Confirm — driver details follow before departure</li>
 </ol>
 <p>High-demand corridors: <a href="/routes/chennai-to-tirupati-cab">Tirupati</a>, <a href="/routes/chennai-to-pondicherry-cab">Pondicherry</a>, <a href="/routes/chennai-to-bangalore-cab">Bengaluru</a>, <a href="/routes/chennai-to-madurai-cab">Madurai</a>, <a href="/routes/chennai-to-rameswaram-cab">Rameswaram</a>, <a href="/routes/chennai-to-ooty-cab">Ooty</a>.</p>
 `;
@@ -98,7 +98,7 @@ const CHENNAI_ONE_WAY = `
 <ol>
 <li>Open the destination route page or search Outstation one-way from Chennai</li>
 <li>Enter exact pickup and drop landmarks</li>
-<li>Compare vehicle class, confirm with OTP, receive driver details</li>
+<li>Compare vehicle class, confirm, receive driver details</li>
 </ol>
 <p>Airport start: <a href="/services/airport-taxi/chennai">MAA airport taxi</a>. Group vehicle: <a href="/services/tempo-traveller/chennai">Tempo Traveller</a>.</p>
 `;

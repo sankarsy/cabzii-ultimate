@@ -1,20 +1,13 @@
 import Link from "next/link";
 import { getTrustIcon, TRUST_ICON_STYLES } from "../icons/heroIcons";
-
-const TRUST_ITEMS = [
-  { label: "Customer reviews", iconKey: "rated", href: "/testimonials" },
-  { label: "Partner vehicles", iconKey: "verified" },
-  { label: "Upfront fares", iconKey: "price" },
-  { label: "OTP secure booking", iconKey: "secure" },
-  { label: "WhatsApp updates", iconKey: "support" }
-];
+import { TRUST_SIGNALS } from "../../lib/trustSignals";
 
 export default function TrustStrip({ className = "" }) {
   return (
     <section className={`border-b border-slate-200/80 bg-white ${className}`}>
       <div className="section-shell py-4 sm:py-5">
         <div className="scroll-x-touch flex items-center justify-start gap-2 overflow-x-auto pb-0.5 sm:justify-center sm:gap-3">
-          {TRUST_ITEMS.map((item) => {
+          {TRUST_SIGNALS.map((item) => {
             const Icon = getTrustIcon(item.iconKey);
             const style = TRUST_ICON_STYLES[item.iconKey] || TRUST_ICON_STYLES.verified;
             const inner = (

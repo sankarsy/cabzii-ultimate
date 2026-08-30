@@ -217,6 +217,18 @@ export function telUrl(phone = CABZII_PHONE) {
   return `tel:${normalized.startsWith("+") ? normalized : `+91${normalized.replace(/^91/, "")}`}`;
 }
 
+/** Phone shown in Call CTAs — site settings first, then the shared org number. */
+export function contactPhoneFromSettings(settings) {
+  const fromSettings = String(settings?.contact?.phone || "").trim();
+  return fromSettings || CABZII_PHONE;
+}
+
+/** WhatsApp digits for wa.me links — FAB number, then contact.whatsapp, then shared org number. */
+export function whatsappDigitsFromSettings(settings) {
+  const raw = settings?.whatsappFab?.number || settings?.contact?.whatsapp || CABZII_WHATSAPP;
+  return String(raw).replace(/\D/g, "");
+}
+
 export function airportTaxiWhatsappUrl(direction = "pickup", city = "Chennai") {
   const msg =
     direction === "drop"

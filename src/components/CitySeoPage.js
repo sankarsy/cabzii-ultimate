@@ -94,10 +94,10 @@ export default function CitySeoPage({
           <SerpRichBar
             ratingValue={reviewStats?.ratingValue}
             reviewCount={reviewStats?.reviewCount}
-            priceLabel={formatSerpPrice(priceFrom || 1200)}
+            priceLabel={formatSerpPrice(priceFrom)}
             badges={[
               { label: "Vehicles: Dzire, Amaze, Ertiga, Innova Crysta" },
-              { label: "OTP booking" },
+              { label: "Fares shown before you confirm" },
               { label: `City: ${city.name}` }
             ]}
           />

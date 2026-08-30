@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { UserRound } from "lucide-react";
 import CabziiLogo from "../brand/CabziiLogo";
 import { BRAND } from "../../lib/brand";
 import { clearSession, isLoggedIn } from "../../lib/auth";
@@ -11,6 +10,36 @@ import { useScrollHeader } from "../../lib/useScrollHeader";
 import HeaderSearchBar from "./HeaderSearchBar";
 import MobileSideNav from "../layout/MobileSideNav";
 import { useHeroSearch } from "../emt/HeroSearchContext";
+
+function AccountGlyph({ className = "h-5 w-5" }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <circle cx="12" cy="8" r="3.25" />
+      <path d="M5.75 19.5c.85-3.4 3.25-5.5 6.25-5.5s5.4 2.1 6.25 5.5" />
+    </svg>
+  );
+}
+
+function AccountButton({ href, label }) {
+  return (
+    <Link
+      href={href}
+      aria-label={label}
+      className="cabzii-tap inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#eef2f7] text-slate-700 transition hover:bg-[#e4e9f1]"
+    >
+      <AccountGlyph />
+    </Link>
+  );
+}
 
 function SiteHeader({ loggedIn, logout, menuOpen, setMenuOpen, pathname }) {
   const onLoginPage = pathname === "/login" || pathname.startsWith("/login/");
@@ -29,36 +58,24 @@ function SiteHeader({ loggedIn, logout, menuOpen, setMenuOpen, pathname }) {
           </Link>
 
           <div className="hidden min-w-0 justify-center px-2 lg:flex lg:px-4">
-            <HeaderSearchBar variant="light" className="w-full max-w-sm" onSubmitted={closeMenu} />
+            <HeaderSearchBar variant="light" className="w-full max-w-2xl" onSubmitted={closeMenu} />
           </div>
 
           <div className="hidden shrink-0 items-center justify-end gap-2 lg:flex sm:justify-self-end">
             {loggedIn ? (
               <>
-                <Link href="/account" className="rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50">
-                  Account
-                </Link>
-                <button type="button" onClick={logout} className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+                <AccountButton href="/account" label="Account" />
+                <button type="button" onClick={logout} className="rounded-lg px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50">
                   Logout
                 </button>
               </>
             ) : onLoginPage ? null : (
-              <Link href="/login" className="cabzii-btn cabzii-btn-cta cabzii-tap px-4 text-sm hover:-translate-y-px">
-                Login
-              </Link>
+              <AccountButton href="/login" label="Login" />
             )}
           </div>
 
           <div className="flex shrink-0 items-center justify-end gap-1.5 lg:hidden">
-            {loggedIn ? (
-              <Link
-                href="/account"
-                className="cabzii-tap inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 text-[var(--cabzii-brand)] hover:bg-blue-50/70"
-                aria-label="Account"
-              >
-                <UserRound className="h-5 w-5" strokeWidth={1.75} />
-              </Link>
-            ) : null}
+            {onLoginPage ? null : <AccountButton href={loggedIn ? "/account" : "/login"} label={loggedIn ? "Account" : "Login"} />}
             <button
               type="button"
               className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 text-[var(--cabzii-brand)] hover:bg-blue-50/70"

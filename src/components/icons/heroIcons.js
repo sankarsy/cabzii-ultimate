@@ -6,6 +6,7 @@ import {
   BookOpen,
   Bus,
   Car,
+  CarTaxiFront,
   Church,
   CircleUser,
   Gem,
@@ -24,8 +25,35 @@ import {
 
 function wrapLucide(Icon, defaultStroke = 1.5) {
   return function LucideIcon({ className = "h-5 w-5", strokeWidth = defaultStroke, ...props }) {
-    return <Icon className={className} strokeWidth={strokeWidth} aria-hidden {...props} />;
+    return <Icon className={className} strokeWidth={strokeWidth} fill="none" aria-hidden {...props} />;
   };
+}
+
+function OutlineIcon({ className = "h-5 w-5", strokeWidth = 1.6, children }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      {children}
+    </svg>
+  );
+}
+
+function DriverOutlineIcon(props) {
+  return (
+    <OutlineIcon {...props}>
+      <circle cx="12" cy="12" r="9" />
+      <circle cx="12" cy="10" r="2.7" />
+      <path d="M7.15 18.55c.95-2.45 2.75-3.8 4.85-3.8s3.9 1.35 4.85 3.8" />
+    </OutlineIcon>
+  );
 }
 
 /** Category tabs: Cabs, Drivers, Buses, Hotels, Trains, Flights, Holidays */
@@ -33,10 +61,10 @@ export const HERO_TAB_ICONS = {
   flights: wrapLucide(Plane),
   hotels: wrapLucide(Building2),
   trains: wrapLucide(TrainFront),
-  buses: wrapLucide(Bus),
-  holidays: wrapLucide(Umbrella),
-  cabs: wrapLucide(Car),
-  drivers: wrapLucide(CircleUser)
+  buses: wrapLucide(Bus, 1.6),
+  holidays: wrapLucide(Palmtree, 1.6),
+  cabs: wrapLucide(CarTaxiFront, 1.6),
+  drivers: DriverOutlineIcon
 };
 
 /** Bottom hero feature row */
@@ -46,7 +74,8 @@ export const HERO_FEATURE_ICONS = {
   airport: wrapLucide(Plane),
   packages: wrapLucide(Umbrella),
   routes: wrapLucide(Route),
-  blog: wrapLucide(BookOpen)
+  blog: wrapLucide(BookOpen),
+  driver: wrapLucide(CircleUser)
 };
 
 /** Trust strip + hero trust badges */

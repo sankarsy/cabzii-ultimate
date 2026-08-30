@@ -100,7 +100,7 @@ function buildCityCabBody(city) {
   return `
 <h2>Cab booking in ${name} — local guide</h2>
 <p>${context?.travel || `Cabzii connects ${name} riders with taxi partners for local hourly packages, outstation trips and one-way inter-city travel.`}</p>
-<p>${context?.useCases || `Enter your pickup in ${name}, compare sedan, SUV, Innova or tempo fares, and confirm with mobile OTP.`}</p>
+<p>${context?.useCases || `Enter your pickup in ${name}, compare sedan, SUV, Innova or tempo fares, and confirm.`}</p>
 
 <h2>Types of cab services in ${name}</h2>
 <p>Cabzii covers the taxi categories riders actually book in ${name}:</p>
@@ -121,7 +121,7 @@ ${benefitsList([
 <li>Enter your pickup location in ${name}</li>
 <li>Select date, time and vehicle type — Dzire, Ertiga, Innova or Tempo</li>
 <li>Compare packages with upfront fare breakdown</li>
-<li>Login with your 10-digit mobile number and OTP to confirm</li>
+<li>Confirm with your mobile number — fares are shown first</li>
 <li>Receive driver contact details on SMS / WhatsApp before pickup</li>
 </ol>
 
@@ -147,7 +147,7 @@ ${benefitsList([
   "Upfront fares — package amount shown before you pay",
   "Professional drivers assigned after booking confirmation",
   "Local, outstation, one-way and acting-driver options in one platform",
-  "OTP-secured booking and WhatsApp support for trip changes"
+  "WhatsApp support for trip changes"
 ])}
 
 <h2>Acting driver in ${name}</h2>
@@ -183,7 +183,7 @@ function buildServiceBody(service, city) {
     "one-way-cab": `<p><strong>One way taxi ${name}</strong> drops you in another city without paying for an empty return. Use it for relocations, temple visits and business transfers. Route pages: ${routes || "see Cabzii routes"}.</p>`,
     "cab-rental": `<p><strong>Cab rental in ${name}</strong> is chauffeur-driven local hire — 4hr/40km and 8hr/80km slabs — not a self-drive desk. You book a Cabzii cab with driver for weddings, city tours and corporate days across ${areaText}.</p>
 <p>Compare this with ${link(servicePath(SEO_SERVICES.find((s) => s.slug === "car-rental") || { slug: "car-rental" }, city), `car rental ${name}`)} when you want the same hourly model described as car hire, and with ${link(`/cab-booking/${city.slug}`, `cab booking ${name}`)} for airport or outstation tabs.</p>`,
-    "car-rental": `<p><strong>Car rental in ${name}</strong> on Cabzii is a driver-included car for local packages. It is not a vendor-branded self-drive fleet page. Search hourly or full-day Innova, Dzire, Wagon R or Ertiga packages, then confirm with OTP.</p>
+    "car-rental": `<p><strong>Car rental in ${name}</strong> on Cabzii is a driver-included car for local packages. It is not a vendor-branded self-drive fleet page. Search hourly or full-day Innova, Dzire, Wagon R or Ertiga packages, then confirm.</p>
 <p>For taxi-style city packages see ${link(servicePath(SEO_SERVICES.find((s) => s.slug === "cab-rental") || { slug: "cab-rental" }, city), `cab rental ${name}`)}. For outstation, use ${link(`/services/outstation-cab/${city.slug}`, `outstation cab ${name}`)}.</p>`
   };
 
@@ -223,7 +223,7 @@ ${benefitsList(service.highlights.length ? service.highlights : [
   `Upfront fare quote for ${svc.toLowerCase()} in ${name}`,
   "Professional drivers assigned after booking",
   "Sedan, SUV, Innova and tempo options",
-  "OTP booking and WhatsApp trip support",
+  "WhatsApp trip support",
   "No hidden charges — inclusions shown before payment"
 ])}
 
@@ -242,7 +242,7 @@ ${pricingTable(pricing[slug] || pricing["local-taxi"])}
 <li>Open Cabzii and search ${service.searchQuery} with pickup in ${name}</li>
 <li>Select date, time and cab type matching your passengers and luggage</li>
 <li>Review fare breakdown — base fare, km limits, allowances and extras</li>
-<li>Confirm with mobile OTP — driver details follow on SMS / WhatsApp</li>
+<li>Confirm — driver details follow on SMS / WhatsApp</li>
 <li>Track support via WhatsApp if your schedule changes</li>
 </ol>
 
@@ -262,7 +262,7 @@ ${pricingTable(pricing[slug] || pricing["local-taxi"])}
 <p>Keep your booking confirmation and driver contact handy. For airport ${svc.toLowerCase()}, share flight number and terminal. For outstation legs, confirm toll and state tax inclusions in the fare breakdown. Carry valid ID for interstate highway checkpoints where applicable. For night departures, verify driver allowance and night charges in the package — Cabzii lists these before payment.</p>
 
 <h2>Book ${svc.toLowerCase()} in ${name} now</h2>
-<p>Ready to travel? Tap the booking button above to search live availability, or visit ${link(`/cab-booking/${city.slug}`, `cab booking ${name}`)} for all taxi options in the city. Compare sedan, SUV and Innova fares in seconds — confirm with mobile OTP and receive driver details on WhatsApp.</p>
+<p>Ready to travel? Tap the booking button above to search live availability, or visit ${link(`/cab-booking/${city.slug}`, `cab booking ${name}`)} for all taxi options in the city. Compare sedan, SUV and Innova fares in seconds — confirm and receive driver details on WhatsApp.</p>
 `;
 }
 
@@ -320,7 +320,7 @@ ${benefitsList([
   `Fixed one-way fare quote for ${from} → ${to} before you pay`,
   "Highway-experienced drivers familiar with the route",
   "Sedan, SUV, Innova and tempo options for every group size",
-  "OTP-secured booking with WhatsApp support",
+  "WhatsApp support after you confirm",
   "No hidden return charges — true one-way pricing",
   "Easy reverse booking for return legs when needed"
 ])}
@@ -347,7 +347,7 @@ ${benefitsList([
 <p>Confirm pickup pin and drop landmark a day before departure. Share passenger count and large luggage details so the right vehicle is assigned. Keep hydration and light snacks for ${duration} drives. For temple trips, plan darshan timing at ${to} before setting pickup hour. Save driver contact in WhatsApp for coordination at toll plazas and rest stops.</p>
 
 <h2>Book ${from} to ${to} cab now</h2>
-<p>Ready to travel? Use the booking button above to get your live fare for ${from} to ${to}. Compare sedan and SUV options, confirm with OTP and receive driver details before departure. Need a return leg later? Book ${link(`/routes/${reverse}`, `${to} to ${from} cab`)} separately or explore ${link(`/services/outstation-cab/${fromCity.slug}`, `round-trip outstation packages from ${from}`)}.</p>
+<p>Ready to travel? Use the booking button above to get your live fare for ${from} to ${to}. Compare sedan and SUV options, confirm and receive driver details before departure. Need a return leg later? Book ${link(`/routes/${reverse}`, `${to} to ${from} cab`)} separately or explore ${link(`/services/outstation-cab/${fromCity.slug}`, `round-trip outstation packages from ${from}`)}.</p>
 `;
 }
 
@@ -369,7 +369,7 @@ function buildCityDriverBody(city) {
 <li>Open ${link(`/acting-driver/${city.slug}`, `acting driver ${name}`)} or ${link("/call-driver", "Call Driver")}</li>
 <li>Choose local, outstation or chauffeur package and enter date, time and pickup</li>
 <li>Add your vehicle details where asked</li>
-<li>Confirm with mobile OTP — Cabzii assigns an available driver</li>
+<li>Confirm — Cabzii assigns an available driver</li>
 </ol>
 
 <h2>Where we pick up in ${name}</h2>

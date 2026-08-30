@@ -22,6 +22,7 @@ import {
 import { cabSlabForTrip, parseTripSearchParams, tripToSearchQuery } from "../../../lib/mmtTrip";
 import { trackEvent } from "../../../lib/analytics";
 import { beaconSeoEvent } from "../../../lib/seoAttribution";
+import { upsertEnquiry } from "../../../lib/enquiryCapture";
 import { inputBaseClass } from "../../../lib/typography";
 
 function formatINR(n) {
@@ -118,6 +119,23 @@ function PassengerContent() {
       distanceKm: fare.distanceKm || trip.distanceKm || "",
       packageLine: cab ? getCabPackageLine(cab, trip, { slab, fare }) : "",
       tripType: trip.tripType
+    });
+    await upsertEnquiry({
+      name: name.trim(),
+      phone: phone.trim(),
+      email: email.trim(),
+      pickup: trip.from,
+      drop: trip.to || "",
+      travelDate: trip.date,
+      pickupTime: trip.time,
+      service: "cab",
+      tripType: trip.tripType,
+      vehicleId: cabId,
+      vehicleName: cab ? getCabVehicleName(cab) : "",
+      estimatedFare: total,
+      distanceKm: fare.distanceKm || trip.distanceKm || 0,
+      packageLabel: cab ? getCabPackageLine(cab, trip, { slab, fare }) : "",
+      ctaLocation: "passenger_details"
     });
     trackEvent("booking_started", {
       service_type: "cab",

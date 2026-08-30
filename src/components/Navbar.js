@@ -210,7 +210,7 @@ export default function Navbar({ variant = "default" }) {
             ) : (
               <Link
                 href="/login"
-                className="inline-flex items-center gap-2 rounded-lg bg-[#0056D2] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#0047b3]"
+                className="inline-flex items-center gap-2 rounded-full bg-[var(--cabzii-cta)] px-4 py-2.5 text-sm font-semibold text-white shadow-[0_4px_12px_rgba(249,115,22,0.32)] transition hover:bg-[var(--cabzii-cta-hover)]"
               >
                 <UserIcon className="h-4 w-4" />
                 <span className="hidden sm:inline">Login</span>

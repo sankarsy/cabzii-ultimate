@@ -56,7 +56,7 @@ export default function CallDriverHeroPanel() {
           href={callDriverBookHref(selected?.id || "local")}
           className="emt-hero-price-hint cabzii-tap hidden sm:inline-flex items-center hover:underline"
         >
-          Book a Driver
+          Get fare
         </Link>
       </div>
 
@@ -64,25 +64,25 @@ export default function CallDriverHeroPanel() {
         <div className="emt-search-wrap">
           <div className="emt-search-bar emt-search-bar-drivers">
             <div className="cabzii-search-cell">
-              <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Service</span>
-              <span className="text-base font-bold text-slate-900 sm:text-lg">{selected?.title}</span>
-              <span className="text-xs text-slate-400">{selected?.blurb}</span>
+              <span className="emt-redbus-label">SERVICE</span>
+              <span className="text-lg font-extrabold text-slate-900 sm:text-xl">{selected?.title}</span>
+              <span className="text-sm font-medium text-slate-400">{selected?.blurb}</span>
             </div>
             <div className="cabzii-search-cell">
-              <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Fare</span>
-              <span className="text-base font-bold text-slate-900 sm:text-lg">{fareLabel}</span>
-              <span className="text-xs text-slate-400">Professional driver assigned after booking</span>
+              <span className="emt-redbus-label">FARE</span>
+              <span className="text-lg font-extrabold text-slate-900 sm:text-xl">{fareLabel}</span>
+              <span className="text-sm font-medium text-slate-400">Driver assigned after you confirm</span>
             </div>
           </div>
           <Link href={callDriverBookHref(selected?.id || "local")} className="emt-search-submit cabzii-tap">
-            {selected?.quoteOnly ? "QUOTE" : "BOOK"}
+            SEARCH
           </Link>
         </div>
       </div>
 
       <div className="mt-3 flex justify-end sm:mt-4">
         <p className="rounded-md border border-white/40 bg-white/10 px-3 py-1.5 text-xs font-bold text-white backdrop-blur-sm">
-          OTP booking · fare shown before you confirm
+          Driver for your own car · fare shown before you confirm
         </p>
       </div>
     </div>

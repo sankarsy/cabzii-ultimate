@@ -31,6 +31,8 @@ export async function proxyRequest(req, path, options = {}) {
     ...options.headers
   };
   if (options.body) headers["Content-Type"] = "application/json";
+  const forwarded = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "";
+  if (forwarded) headers["x-forwarded-for"] = forwarded;
 
   try {
     const response = await fetch(url, {

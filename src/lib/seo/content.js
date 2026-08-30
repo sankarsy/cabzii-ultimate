@@ -6,7 +6,7 @@ import { CHENNAI_CAB_FAQS, CHENNAI_DRIVER_FAQS } from "./chennaiCluster";
 export const HOME_PAGE_FAQS = [
   [
     "How do I book a cab online on Cabzii?",
-    "Visit cabzii.in, enter pickup and destination, pick date and time, compare cab fares and confirm with your mobile OTP — no app download required."
+    "Visit cabzii.in, enter pickup and destination, pick date and time, compare cab fares and confirm — no app download required."
   ],
   [
     "Can I book a cab near me in Chennai, Madurai or Coimbatore?",
@@ -14,11 +14,11 @@ export const HOME_PAGE_FAQS = [
   ],
   [
     "How do I book car rental near me on Cabzii?",
-    "Open cabzii.in, choose Local or Rental, enter your pickup area (e.g. Maduravoyal, OMR or your city), compare hourly packages and confirm with OTP — no app required."
+    "Open cabzii.in, choose Local Cab, enter your pickup area, compare hourly packages (including 4hr/40km and 8hr/80km) and confirm — no app required."
   ],
   [
     "How do I book an outstation cab on Cabzii?",
-    "Choose Cabs on the home page, select Outstation, enter pickup and drop cities, date and time, then compare vehicles and confirm with OTP login."
+    "Choose Cabs on the home page, select Outstation, enter pickup and drop cities, date and time, then compare vehicles. Fares are shown before you confirm."
   ],
   [
     "Can I book airport pickup in Chennai?",
@@ -38,7 +38,7 @@ export const HOME_PAGE_FAQS = [
   ],
   [
     "Is OTP login required to book?",
-    "Yes. Login with your 10-digit mobile number and OTP to confirm booking and access My Trips anytime."
+    "Login uses a 10-digit mobile OTP when SMS is working. If OTP fails, use Call or WhatsApp — your enquiry is still saved when you enter pickup and phone."
   ],
   [
     "Which vehicles are available?",
@@ -62,7 +62,7 @@ export const HOME_PAGE_FAQS = [
   ],
   [
     "What payment methods are accepted?",
-    "Pay online through the secure checkout on cabzii.in after OTP verification. Payment options may vary by trip type."
+    "Pay online through the secure checkout on cabzii.in. Payment options may vary by trip type."
   ],
   [
     "How can I contact Cabzii support?",
@@ -117,7 +117,7 @@ export function getCityFaqs(city, variant = "cab") {
     [`How much does cab booking cost in ${name}?`, `Cab fares in ${name} vary by trip type, vehicle and distance. Local packages and outstation per-km rates are displayed on Cabzii before payment.`],
     ...airportFaq,
     [`Is Cabzii available for outstation trips from ${name}?`, `Yes. Book one way or round trip outstation cabs from ${name} to nearby cities with sedan, SUV, Innova and tempo options.`],
-    [`How do I book a cab on Cabzii in ${name}?`, `Enter pickup in ${name}, choose destination, compare vendors, login with mobile OTP and confirm — driver details follow by SMS/WhatsApp.`]
+    [`How do I book a cab on Cabzii in ${name}?`, `Enter pickup in ${name}, choose destination, compare vendors and confirm — driver details follow by SMS/WhatsApp.`]
   ];
 }
 
@@ -126,7 +126,7 @@ export function getServiceFaqs(service, city) {
   const svc = service.name.toLowerCase();
 
   const common = [
-    [`How do I book ${svc} in ${name}?`, `Search ${service.searchQuery} on Cabzii, select your pickup in ${name}, compare fares and confirm with mobile OTP.`],
+    [`How do I book ${svc} in ${name}?`, `Search ${service.searchQuery} on Cabzii, select your pickup in ${name}, compare fares and confirm.`],
     [`Is the fare shown upfront for ${svc} in ${name}?`, `Yes. Cabzii displays package or estimated fare before payment so you know the cost before the trip starts.`],
     [`Which vehicles are available for ${svc} in ${name}?`, `Sedan, SUV, Innova and tempo traveller options depend on service type. Available fleet is shown during search.`]
   ];
@@ -136,7 +136,7 @@ export function getServiceFaqs(service, city) {
       ? [
           [
             "How do I book Chennai airport taxi pickup or drop?",
-            "Open this page or Cabs, choose the Airport tab, set MAA as pickup or drop, add terminal and flight time in notes, then confirm with OTP. Driver details follow by SMS or WhatsApp."
+            "Open this page or Cabs, choose the Airport tab, set MAA as pickup or drop, add terminal and flight time in notes, then confirm. Driver details follow by SMS or WhatsApp."
           ],
           [
             "What is the Chennai airport cab fare?",
@@ -218,7 +218,7 @@ export function getServiceFaqs(service, city) {
             ],
             [
               `How do I book an airport transfer from ${name}?`,
-              `Open airport taxi for ${name} on Cabzii, set pickup in ${name} and drop at the nearest airport shown on the page, then confirm with OTP.`
+              `Open airport taxi for ${name} on Cabzii, set pickup in ${name} and drop at the nearest airport shown on the page, then confirm.`
             ]
           ])
     ],
@@ -257,7 +257,7 @@ export function getServiceFaqs(service, city) {
       ],
       [
         `Can I book car rental in ${name} online?`,
-        `Yes. Search car rental in ${name} on Cabzii, pick your package, login with mobile OTP and confirm — ideal for local sightseeing and city travel.`
+        `Yes. Search car rental in ${name} on Cabzii, pick your package and confirm — ideal for local sightseeing and city travel.`
       ]
     ]
   };
@@ -288,7 +288,7 @@ export function getRouteFaqs(route) {
       ],
       [
         "Can I book Tirupati car booking online from Chennai?",
-        "Yes. Book Chennai to Tirupati cab on Cabzii — enter pickup and drop, choose sedan or SUV, and confirm with mobile OTP. Driver details are shared before departure."
+        "Yes. Book Chennai to Tirupati cab on Cabzii — enter pickup and drop, choose sedan or SUV, and confirm. Driver details are shared before departure."
       ],
       [
         "Which cars are available for Chennai to Tirupati cab?",
@@ -310,7 +310,7 @@ export function getRouteFaqs(route) {
       ],
       [
         "Can I book Chennai to Rameswaram pilgrimage cab online?",
-        "Yes. Book Chennai to Rameswaram cab on Cabzii — choose sedan or SUV, confirm with mobile OTP, and receive driver details before departure."
+        "Yes. Book Chennai to Rameswaram cab on Cabzii — choose sedan or SUV, confirm, and receive driver details before departure."
       ]
     ],
     "madurai-to-rameswaram-cab": [
@@ -334,7 +334,7 @@ export function getRouteFaqs(route) {
       ],
       [
         "Is Chennai to Trichy cab service available online?",
-        "Yes. Book cab from Chennai to Trichy on Cabzii — enter pickup and drop, choose vehicle type and confirm with mobile OTP. Driver details are shared before departure."
+        "Yes. Book cab from Chennai to Trichy on Cabzii — enter pickup and drop, choose vehicle type and confirm. Driver details are shared before departure."
       ],
       [
         "Can I book a cab from Chennai to Trichy for Srirangam temple visit?",
@@ -422,7 +422,7 @@ export function getRouteFaqs(route) {
   return [
     [`What is the distance from ${fromCity.name} to ${toCity.name} by cab?`, `The road distance is approximately ${distance} and usually takes ${duration} depending on traffic and stops.`],
     [`How much is one way cab fare from ${fromCity.name} to ${toCity.name}?`, `Sedan one way fares start around ₹${sedanFrom.toLocaleString("en-IN")}; SUV/Innova from ₹${suvFrom.toLocaleString("en-IN")}. Exact fare is shown on Cabzii before booking.`],
-    [`Can I book one way cab ${fromCity.name} to ${toCity.name} online?`, `Yes. Enter pickup in ${fromCity.name} and drop in ${toCity.name} on Cabzii, choose cab type and confirm with OTP.`],
+    [`Can I book one way cab ${fromCity.name} to ${toCity.name} online?`, `Yes. Enter pickup in ${fromCity.name} and drop in ${toCity.name} on Cabzii, choose cab type and confirm.`],
     [`Is toll included in ${fromCity.name} to ${toCity.name} cab fare?`, `Toll treatment varies by vendor. Cabzii shows inclusions and any extra charges clearly in the fare breakdown.`],
     [`Can I book return cab ${toCity.name} to ${fromCity.name}?`, `Yes. Book the reverse route separately or choose round trip if you need the same cab to wait or return.`]
   ];
@@ -463,7 +463,7 @@ export function getCabFaqs(cab) {
     ],
     [
       `How do I book ${title} online?`,
-      "Select your package on this page, continue to payment, verify with mobile OTP and receive instant booking confirmation with driver details."
+      "Select your package on this page, continue to payment and receive driver details after confirmation."
     ]
   ];
 }

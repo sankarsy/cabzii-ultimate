@@ -12,9 +12,9 @@ function footerRouteLink(slug, label) {
 }
 
 const FOOTER_TRUST = [
-  { label: "OTP secure", iconKey: "secure" },
-  { label: "Verified drivers", iconKey: "verified" },
-  { label: "Upfront fares", iconKey: "price" }
+  { label: "Partner vehicles", iconKey: "verified" },
+  { label: "Upfront fares", iconKey: "price" },
+  { label: "WhatsApp updates", iconKey: "support" }
 ];
 
 const COLUMNS = [
@@ -24,7 +24,7 @@ const COLUMNS = [
       { label: "Outstation Cabs", href: "/cabs" },
       { label: "Airport Taxi Chennai", href: "/services/airport-taxi/chennai" },
       { label: "Bus tickets", href: "/buses" },
-      { label: "Call Driver", href: "/call-driver" },
+      { label: "Hire a Driver", href: "/call-driver" },
       { label: "Holiday Packages", href: "/holidays" },
       { label: "Cab Booking Chennai", href: "/cab-booking/chennai" },
       { label: "Cab rental tariff", href: "/tariff" }
@@ -47,7 +47,7 @@ const COLUMNS = [
       { label: "FAQ", href: "/faq" },
       { label: "Service locations", href: "/locations" },
       { label: "Travel blog", href: "/blogs" },
-      { label: "Customer reviews", href: "/testimonials" }
+      { label: "Leave a review", href: "/testimonials#write-review" }
     ]
   },
   {

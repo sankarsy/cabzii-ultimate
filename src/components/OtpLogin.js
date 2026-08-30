@@ -13,6 +13,7 @@ import { loadCheckoutDraft } from "../lib/checkoutStorage";
 import { PhoneIcon } from "./icons";
 import { tripContextFromNextUrl, whatsappBookingUrl, whatsappQuoteMessage } from "../lib/conversion";
 import { trackEvent, utmFromSearch } from "../lib/analytics";
+import { upsertEnquiry, getSessionEnquiryId, setSessionEnquiryId } from "../lib/enquiryCapture";
 
 const RESEND_SECONDS = 30;
 
@@ -71,6 +72,26 @@ export default function OtpLogin({
     if (mobileNumber.length !== 10) {
       setError("Enter a valid 10-digit mobile number.");
       return;
+    }
+    const trip = tripForQuote();
+    if (trip.pickup || trip.drop) {
+      upsertEnquiry({
+        phone: mobileNumber,
+        name: trip.name || "",
+        pickup: trip.pickup,
+        drop: trip.drop,
+        travelDate: trip.travelDate,
+        pickupTime: trip.pickupTime,
+        vehicleId: trip.vehicleId,
+        vehicleName: trip.vehicleName,
+        estimatedFare: Number(trip.estimatedFare) || 0,
+        distanceKm: Number(trip.distanceKm) || 0,
+        tripType: trip.tripType || "",
+        packageLabel: trip.packageLabel,
+        service: trip.service === "Call Driver" ? "driver" : trip.service === "Bus" ? "bus" : trip.service === "Holiday package" ? "tour" : "cab",
+        sourcePage: nextUrl,
+        ctaLocation: "otp_login"
+      });
     }
     setLoading(true);
     try {
@@ -231,8 +252,10 @@ export default function OtpLogin({
           distanceKm: Number(trip.distanceKm) || 0,
           tripType: trip.tripType || trip.service,
           packageLabel: trip.packageLabel,
+          enquiryId: getSessionEnquiryId(),
           sourcePage: nextUrl,
           ctaLocation: "otp_login",
+          source: "whatsapp_quote",
           utmSource: utm.utm_source,
           utmMedium: utm.utm_medium,
           utmCampaign: utm.utm_campaign
@@ -240,6 +263,8 @@ export default function OtpLogin({
       });
       const data = await parseJsonResponse(res);
       if (!res.ok) throw new Error(data?.message || "Could not save quote request");
+      const savedId = String(data?.data?.enquiryId || data?.data?.id || "");
+      if (savedId) setSessionEnquiryId(savedId);
       const quoteRef = data?.data?.quoteRef || "";
       const pdfUrl = `${origin}/api/quote-leads/public/${encodeURIComponent(quoteRef)}/pdf`;
       const viewUrl = `${origin}/quote/${encodeURIComponent(quoteRef)}`;

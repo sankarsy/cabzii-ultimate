@@ -13,6 +13,7 @@ import {
 import CallDriverServiceSeo from "./CallDriverServiceSeo";
 import { authHeaders, buildLoginHref, getToken, isLoggedIn } from "../../lib/auth";
 import { saveCheckoutDraft } from "../../lib/checkoutStorage";
+import { upsertEnquiry } from "../../lib/enquiryCapture";
 import { inputBaseClass, typo } from "../../lib/typography";
 import { SEARCH_FIELD_ICONS, SEARCH_FIELD_ICON_CHIPS } from "../icons/heroIcons";
 
@@ -202,7 +203,24 @@ export default function CallDriverBookingFlow() {
     loadQuote();
   }
 
+  function captureDriverEnquiry() {
+    const phone = form.parentContact || form.companyPhone || "";
+    return upsertEnquiry({
+      name: form.contactPerson || form.companyName || "",
+      phone,
+      pickup: pickupLabel,
+      drop: dropLabel || form.schoolName || "",
+      travelDate: form.date,
+      pickupTime: form.pickupTime,
+      service: "driver",
+      tripType: serviceId,
+      message: form.notes || form.requirement || "",
+      ctaLocation: "call_driver_book"
+    });
+  }
+
   function goToCheckout() {
+    captureDriverEnquiry();
     if (!isLoggedIn() || !getToken()) {
       const next = `/call-driver/book?service=${encodeURIComponent(serviceId)}`;
       router.push(buildLoginHref(next, "customer"));
@@ -237,6 +255,7 @@ export default function CallDriverBookingFlow() {
       router.push(buildLoginHref(next, "customer"));
       return;
     }
+    await captureDriverEnquiry();
     setSubmitting(true);
     setError("");
     try {

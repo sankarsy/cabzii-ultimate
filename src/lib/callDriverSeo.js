@@ -6,7 +6,7 @@ export const DEFAULT_CALL_DRIVER_SEO = {
   local: {
     seoTitle: "Local Call Driver Chennai | Driver for Your Own Car | Cabzii",
     seoDescription:
-      "Book a local Call Driver in Chennai for your own car. 4-hour city trips, OTP booking, and a professional driver assigned after you confirm.",
+      "Book a local Call Driver in Chennai for your own car. 4-hour city trips and a professional driver assigned after you confirm.",
     heading: "Local call driver in Chennai for your own car",
     html: `<p>A Cabzii local Call Driver is a professional chauffeur for <strong>your car</strong> — city trips, office days, shopping and hospital visits in Chennai. You do not hire a Cabzii cab. You keep the vehicle; we assign a driver after you confirm.</p>
 <p>The usual city package starts at <strong>4 hours</strong>. Choose Standard or Premium at booking. Extra hours and night charges follow the published Call Driver tariff. Confirm the fare on the form above before you pay.</p>
@@ -25,7 +25,7 @@ export const DEFAULT_CALL_DRIVER_SEO = {
   outstation: {
     seoTitle: "Outstation Call Driver Chennai | Highway Driver for Your Car | Cabzii",
     seoDescription:
-      "Hire an outstation Call Driver for your own car from Chennai. Full-day highway trips, food and stay for the driver as per tariff, OTP booking.",
+      "Hire an outstation Call Driver for your own car from Chennai. Full-day highway trips, food and stay for the driver as per tariff.",
     heading: "Outstation call driver from Chennai",
     html: `<p>Outstation Call Driver is for <strong>highway trips in your own car</strong> — Tirupati, Pondicherry, Bengaluru, Madurai and other corridors. Cabzii assigns a professional driver after you confirm. You do not pick a named driver from a public list.</p>
 <p>The outstation package is typically a <strong>full day (12 hours)</strong>. Long-distance days follow the Call Driver tariff. Food and accommodation for the driver are the customer's responsibility, as shown on the fare step.</p>
@@ -40,7 +40,7 @@ export const DEFAULT_CALL_DRIVER_SEO = {
   airport: {
     seoTitle: "Airport Call Driver Chennai | Driver for Airport Pickup in Your Car | Cabzii",
     seoDescription:
-      "Book an airport Call Driver in Chennai — chauffeur for your own car at MAA pickup or drop. Not an airport taxi. OTP booking on Cabzii.",
+      "Book an airport Call Driver in Chennai — chauffeur for your own car at MAA pickup or drop. Not an airport taxi. Book on Cabzii.",
     heading: "Airport call driver — your car at Chennai airport",
     html: `<p>Airport Call Driver is <strong>driver-only</strong> pickup or drop at Chennai International Airport (MAA) in <em>your</em> vehicle. It is not an airport taxi and not a Cabzii cab waiting at the terminal.</p>
 <p>Use this when someone should collect your car from home, drive to the airport, or bring the car to arrivals. Minimum hours follow the airport Call Driver tariff (usually 4 hours).</p>

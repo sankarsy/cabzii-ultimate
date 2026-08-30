@@ -39,7 +39,7 @@ export const DEFAULT_SITE_SETTINGS = {
     title: "Book Cabs, Taxis & Acting Drivers Online",
     titleHighlight: "Acting Drivers",
     subtitle:
-      "Compare sedan, SUV and Innova fares. Airport, local, outstation and acting driver booking with OTP confirmation.",
+      "Compare sedan, SUV and Innova fares. Airport, local, outstation and acting driver booking with fares shown before you confirm.",
     image: "/images/hero-banner.png",
     promoBadge: "",
     promoTitle: "",
@@ -54,17 +54,16 @@ export const DEFAULT_SITE_SETTINGS = {
     ],
     cabTypes: ["Sedan", "SUV", "Innova"],
     trustBadges: [
-      { label: "OTP booking", iconKey: "secure", icon: "🔒" },
       { label: "Upfront fares", iconKey: "price", icon: "💰" },
       { label: "Partner vehicles", iconKey: "verified", icon: "✅" },
       { label: "WhatsApp updates", iconKey: "support", icon: "🎧" }
     ]
   },
   heroStats: [
-    { value: "OTP", label: "Secure booking", iconKey: "users" },
+    { value: "Upfront", label: "Fares shown", iconKey: "car" },
     { value: "Chennai", label: "Home market", iconKey: "pin" },
-    { value: "Tariff", label: "Published rates", iconKey: "car" },
-    { value: "WhatsApp", label: "Trip updates", iconKey: "driver" }
+    { value: "Partner", label: "Vehicles", iconKey: "driver" },
+    { value: "WhatsApp", label: "Trip updates", iconKey: "users" }
   ],
   whySection: {
     eyebrow: "Why Cabzii",
@@ -73,16 +72,16 @@ export const DEFAULT_SITE_SETTINGS = {
       "Airport taxi, outstation, local packages and acting driver from Chennai and Tamil Nadu corridors."
   },
   whyStats: [
-    { value: "OTP", label: "Secure booking" },
     { value: "Upfront", label: "Fares shown" },
+    { value: "Partner", label: "Vehicles" },
     { value: "Chennai", label: "Home market" },
     { value: "WhatsApp", label: "Trip updates" }
   ],
   whyChooseUs: [
-    { title: "OTP booking", subtitle: "Confirm with your mobile number. Fare is shown before you pay.", iconKey: "secure" },
     { title: "Published Chennai tariff", subtitle: "Local, outstation and van packages are listed on the Cabzii tariff page.", iconKey: "price" },
     { title: "Partner vehicles", subtitle: "Cabzii assigns a cab or acting driver after you confirm.", iconKey: "verified" },
-    { title: "WhatsApp and phone", subtitle: "Trip updates and booking help on WhatsApp and phone.", iconKey: "support" }
+    { title: "WhatsApp and phone", subtitle: "Trip updates and booking help on WhatsApp and phone.", iconKey: "support" },
+    { title: "Fares shown first", subtitle: "Compare the fare before you confirm.", iconKey: "secure" }
   ],
   homeSections: [
     {

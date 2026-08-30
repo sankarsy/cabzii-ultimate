@@ -17,7 +17,7 @@ export const CARD_BOOK_BTN_CLASS =
 export function MetaPill({ icon, label }) {
   return (
     <span className="inline-flex items-center gap-0.5 rounded-full border border-slate-200 bg-slate-50 px-1.5 py-px text-[9px] leading-snug text-slate-600 sm:gap-1 sm:px-2 sm:text-[10px]">
-      {icon ? <span className="text-sky-400">{icon}</span> : null}
+      {icon ? <span className="text-slate-400">{icon}</span> : null}
       {label}
     </span>
   );
