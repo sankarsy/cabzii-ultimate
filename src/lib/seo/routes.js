@@ -372,6 +372,60 @@ const MANUAL_ROUTES = [
     duration: "9–10 hours",
     sedanFrom: 6800,
     suvFrom: 8800
+  },
+  {
+    slug: "trichy-to-tirupati-cab",
+    from: "trichy",
+    to: "tirupati",
+    distance: "380 km",
+    duration: "6–7 hours",
+    sedanFrom: 5000,
+    suvFrom: 6800
+  },
+  {
+    slug: "madurai-to-tirupati-cab",
+    from: "madurai",
+    to: "tirupati",
+    distance: "500 km",
+    duration: "8–9 hours",
+    sedanFrom: 6400,
+    suvFrom: 8400
+  },
+  {
+    slug: "salem-to-tirupati-cab",
+    from: "salem",
+    to: "tirupati",
+    distance: "280 km",
+    duration: "5–6 hours",
+    sedanFrom: 3800,
+    suvFrom: 5200
+  },
+  {
+    slug: "vellore-to-tirupati-cab",
+    from: "vellore",
+    to: "tirupati",
+    distance: "140 km",
+    duration: "3 hours",
+    sedanFrom: 2600,
+    suvFrom: 3600
+  },
+  {
+    slug: "pondicherry-to-tirupati-cab",
+    from: "pondicherry",
+    to: "tirupati",
+    distance: "210 km",
+    duration: "4–5 hours",
+    sedanFrom: 3200,
+    suvFrom: 4400
+  },
+  {
+    slug: "kanchipuram-to-tirupati-cab",
+    from: "kanchipuram",
+    to: "tirupati",
+    distance: "120 km",
+    duration: "2–3 hours",
+    sedanFrom: 2400,
+    suvFrom: 3400
   }
 ];
 
@@ -428,11 +482,9 @@ export function routeBySlug(slug) {
   return synthesized;
 }
 
-/** All slugs to pre-render (static mesh + homepage featured routes). */
+/** Featured corridors only — do not pre-render the full city mesh (ISR / crawl cost). */
 export function allRouteSlugsForBuild() {
-  const slugs = new Set(SEO_ROUTES.map((r) => r.slug).filter(Boolean));
-  for (const slug of FEATURED_ROUTE_SLUGS) slugs.add(slug);
-  return Array.from(slugs).sort();
+  return [...FEATURED_ROUTE_SLUGS];
 }
 
 export function routesForCity(citySlug) {

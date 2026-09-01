@@ -6,7 +6,7 @@
  */
 
 import { FEATURED_ROUTE_SLUGS } from "./featuredRoutes";
-import { isPrimaryFocusCity, isTamilNaduCity, SEO_CITIES } from "./cities";
+import { isMainPageCity, isPrimaryFocusCity, isTamilNaduCity, SEO_CITIES } from "./cities";
 import { SEO_SERVICES } from "./services";
 import { SEO_ROUTES } from "./routes";
 import { cityHasCommercialAirport } from "./airports";
@@ -123,6 +123,18 @@ export function classifyCityHub(citySlug, pageType = "cab-booking") {
     });
   }
 
+  if (!isMainPageCity(slug)) {
+    return policy({
+      classification: SEO_CLASS.C,
+      indexable: false,
+      commercialScore: 28,
+      searchIntent: intent,
+      contentQuality: "template",
+      vendorRequired: isCab,
+      reason: "Outside main operating cities — keep URL, noindex to cut crawler/ISR load"
+    });
+  }
+
   if (isTamilNaduCity(slug) || slug === "pondicherry" || slug === "tirupati") {
     return policy({
       classification: SEO_CLASS.A,
@@ -161,6 +173,18 @@ export function classifyCityHub(citySlug, pageType = "cab-booking") {
 export function classifyServiceCity(serviceSlug, citySlug) {
   const service = String(serviceSlug || "");
   const city = String(citySlug || "");
+
+  if (!isMainPageCity(city)) {
+    return policy({
+      classification: SEO_CLASS.C,
+      indexable: false,
+      commercialScore: 24,
+      searchIntent: service || "service",
+      contentQuality: "template",
+      vendorRequired: true,
+      reason: "Outside main operating cities — keep URL, noindex"
+    });
+  }
 
   if (city === "chennai") {
     const chennaiBoost = {
@@ -238,9 +262,6 @@ export function classifyServiceCity(serviceSlug, citySlug) {
 
 export function classifyRoute(route = {}, { source } = {}) {
   const slug = String(route.slug || "");
-  const from = String(route.from || route.fromCity?.slug || "");
-  const to = String(route.to || route.toCity?.slug || "");
-  const km = parseDistanceKm(route.distance) || Number(route.km) || 0;
 
   if (source === "cms") {
     return policy({
@@ -264,37 +285,13 @@ export function classifyRoute(route = {}, { source } = {}) {
     });
   }
 
-  const longHaul =
-    km >= 1000 ||
-    (km >= 900 && (LONG_HAUL_CITY_SLUGS.includes(from) || LONG_HAUL_CITY_SLUGS.includes(to)));
-
-  if (longHaul) {
-    return policy({
-      classification: SEO_CLASS.C,
-      indexable: false,
-      commercialScore: 22,
-      searchIntent: "route",
-      contentQuality: "template",
-      reason: "Long-haul mesh route — keep URL, noindex until demand/supply is proven"
-    });
-  }
-
-  let score = 58;
-  if (from === "chennai" || to === "chennai") score += 18;
-  if (from === "bengaluru" || to === "bengaluru" || from === "coimbatore" || from === "madurai") score += 8;
-  if (["tirupati", "pondicherry", "rameswaram", "kanchipuram", "tiruvannamalai", "ooty"].includes(to)) {
-    score += 10;
-  }
-  if (km > 0 && km <= 200) score += 6;
-  if (km > 700) score -= 8;
-
   return policy({
-    classification: score >= 72 ? SEO_CLASS.A : SEO_CLASS.B,
-    indexable: true,
-    commercialScore: score,
+    classification: SEO_CLASS.C,
+    indexable: false,
+    commercialScore: 26,
     searchIntent: "route",
-    contentQuality: from === "chennai" ? "local" : "template",
-    reason: "Existing corridor with booking widget"
+    contentQuality: "template",
+    reason: "Mesh route outside featured corridors — keep URL, noindex"
   });
 }
 

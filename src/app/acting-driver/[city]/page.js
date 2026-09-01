@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import CitySeoPage from "../../../components/CitySeoPage";
 import JsonLd from "../../../components/seo/JsonLd";
 import {
-  SEO_CITIES,
+  MAIN_PAGE_CITY_SLUGS,
   breadcrumbJsonLd,
   buildPageMetadata,
   cityBySlug,
@@ -21,10 +21,13 @@ import { fetchSeoCityPage } from "../../../lib/serverCatalog";
 import { getCityLandingBody } from "../../../lib/seo/landingContent";
 import { resolveMediaUrl } from "../../../lib/media";
 
-export const revalidate = 600;
+import { SEO_REVALIDATE_SECONDS } from "../../../lib/revalidation/constants";
+
+export const revalidate = SEO_REVALIDATE_SECONDS;
+export const dynamicParams = true;
 
 export function generateStaticParams() {
-  return SEO_CITIES.map((c) => ({ city: c.slug }));
+  return MAIN_PAGE_CITY_SLUGS.map((city) => ({ city }));
 }
 
 export async function generateMetadata({ params }) {

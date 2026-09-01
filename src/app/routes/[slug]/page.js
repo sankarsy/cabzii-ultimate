@@ -16,7 +16,9 @@ import {
 } from "../../../lib/seo";
 import { classifyRoute } from "../../../lib/seo/indexation";
 
-export const revalidate = 600;
+import { SEO_REVALIDATE_SECONDS } from "../../../lib/revalidation/constants";
+
+export const revalidate = SEO_REVALIDATE_SECONDS;
 
 export const dynamicParams = true;
 

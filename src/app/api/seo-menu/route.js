@@ -2,7 +2,7 @@ import { getBackendUrl } from "../../../lib/seo";
 
 export async function GET() {
   try {
-    const res = await fetch(`${getBackendUrl()}/api/v1/seo-menu`, { next: { revalidate: 300 } });
+    const res = await fetch(`${getBackendUrl()}/api/v1/seo-menu`, { next: { revalidate: 86400 } });
     const data = await res.json();
     return Response.json(data, { status: res.status });
   } catch {

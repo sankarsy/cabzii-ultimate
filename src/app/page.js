@@ -11,6 +11,9 @@ import { SAMPLE_BLOGS } from "../lib/sampleContent";
 import { sortBySelectedCity } from "../lib/locationPriority";
 import { DEFAULT_HQ_CITY } from "../lib/vehicleAdminConfig";
 import { HOME_CABS_LIMIT, sortCabsForHome } from "../lib/homeFleetSort";
+import { SEO_REVALIDATE_SECONDS } from "../lib/revalidation/constants";
+
+export const revalidate = SEO_REVALIDATE_SECONDS;
 
 export async function generateMetadata() {
   const settings = await fetchSiteSettings();

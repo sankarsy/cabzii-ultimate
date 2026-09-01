@@ -1,6 +1,9 @@
 import JsonLd from "../../components/seo/JsonLd";
 import ActingDriverHubSeo from "../../components/seo/ActingDriverHubSeo";
 import { breadcrumbJsonLd, buildPageMetadata } from "../../lib/seo";
+import { SEO_REVALIDATE_SECONDS } from "../../lib/revalidation/constants";
+
+export const revalidate = SEO_REVALIDATE_SECONDS;
 
 export const metadata = buildPageMetadata({
   title: "Acting Driver | Hire a Driver for Your Own Car | Cabzii",

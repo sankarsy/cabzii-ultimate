@@ -6,6 +6,9 @@ import { fetchCatalogList } from "../../lib/serverCatalog";
 import { SAMPLE_BLOGS } from "../../lib/sampleContent";
 import { blogListingJsonLd } from "../../lib/seo";
 import { cabBookingLinks } from "../../lib/seo/internalLinks";
+import { SEO_REVALIDATE_SECONDS } from "../../lib/revalidation/constants";
+
+export const revalidate = SEO_REVALIDATE_SECONDS;
 
 export default async function BlogsPage() {
   const real = await fetchCatalogList("blogs", 24);

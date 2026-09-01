@@ -2,10 +2,13 @@ import {
   SEO_CITIES,
   SEO_ROUTES,
   SEO_SERVICES,
+  FEATURED_ROUTE_SLUGS,
+  MAIN_PAGE_CITY_SLUGS,
   SITE_URL,
   getBackendUrl,
   servicePath
 } from "../lib/seo";
+import { SEO_REVALIDATE_SECONDS } from "../lib/revalidation/constants";
 import { classifyCityHub, classifyRoute, classifyServiceCity } from "../lib/seo/indexation";
 import { catalogPublicPath } from "../lib/catalogProduct";
 import { isLiveApiHostProtected } from "../lib/liveApiHostGuard";
@@ -20,14 +23,14 @@ function sitemapImageFromProduct(item, kind) {
   return seo.sitemapImage?.url || seo.absoluteUrl || null;
 }
 
-async function fetchAllIds(path, maxPages = 25) {
+async function fetchAllIds(path, maxPages = 2) {
   if (isLiveApiHostProtected()) return [];
   const backend = getBackendUrl();
   const all = [];
   for (let page = 1; page <= maxPages; page += 1) {
     try {
       const res = await fetch(`${backend}/api/v1${path}?limit=100&page=${page}`, {
-        next: { revalidate: 3600 }
+        next: { revalidate: SEO_REVALIDATE_SECONDS }
       });
       if (!res.ok) break;
       const json = await res.json();
@@ -69,7 +72,9 @@ export default async function sitemap() {
     { url: `${base}/cancellation-policy`, lastModified: now, changeFrequency: "yearly", priority: 0.4 }
   ];
 
-  const cityRoutes = SEO_CITIES.flatMap((city) => {
+  const cityRoutes = MAIN_PAGE_CITY_SLUGS.flatMap((slug) => {
+    const city = SEO_CITIES.find((c) => c.slug === slug);
+    if (!city) return [];
     const cabPolicy = classifyCityHub(city.slug, "cab-booking");
     const driverPolicy = classifyCityHub(city.slug, "acting-driver");
     const rows = [];
@@ -103,8 +108,10 @@ export default async function sitemap() {
   const cmsServiceSlugs = new Set((cmsServices || []).filter((s) => s.slug && s.published !== false).map((s) => s.slug));
   const cmsRouteSlugs = new Set((cmsRoutes || []).filter((r) => r.slug && r.published !== false).map((r) => r.slug));
 
-  const staticServiceRoutes = SEO_CITIES.flatMap((city) =>
-    SEO_SERVICES.filter((service) => !cmsServiceSlugs.has(service.slug))
+  const staticServiceRoutes = MAIN_PAGE_CITY_SLUGS.flatMap((citySlug) => {
+    const city = SEO_CITIES.find((c) => c.slug === citySlug);
+    if (!city) return [];
+    return SEO_SERVICES.filter((service) => !cmsServiceSlugs.has(service.slug))
       .map((service) => {
         const policy = classifyServiceCity(service.slug, city.slug);
         if (!policy.indexable) return null;
@@ -115,15 +122,15 @@ export default async function sitemap() {
           priority: policy.sitemapPriority
         };
       })
-      .filter(Boolean)
-  );
+      .filter(Boolean);
+  });
 
   const cmsServiceRoutes = (cmsServices || [])
     .filter((service) => service.slug && service.published !== false)
     .flatMap((service) => {
-      const cities = service.allCities !== false
-        ? SEO_CITIES
-        : SEO_CITIES.filter((city) => (service.citySlugs || []).includes(city.slug));
+      const cities = (service.allCities !== false
+        ? SEO_CITIES.filter((city) => MAIN_PAGE_CITY_SLUGS.includes(city.slug))
+        : SEO_CITIES.filter((city) => (service.citySlugs || []).includes(city.slug) && MAIN_PAGE_CITY_SLUGS.includes(city.slug)));
       return cities
         .map((city) => {
           const policy = classifyServiceCity(service.slug, city.slug);
@@ -138,12 +145,13 @@ export default async function sitemap() {
         .filter(Boolean);
     });
 
-  const staticRoutePages = SEO_ROUTES.filter((route) => !cmsRouteSlugs.has(route.slug))
-    .map((route) => {
+  const staticRoutePages = FEATURED_ROUTE_SLUGS.filter((slug) => !cmsRouteSlugs.has(slug))
+    .map((slug) => {
+      const route = SEO_ROUTES.find((r) => r.slug === slug) || { slug };
       const policy = classifyRoute(route);
       if (!policy.indexable) return null;
       return {
-        url: `${base}/routes/${route.slug}`,
+        url: `${base}/routes/${slug}`,
         lastModified: now,
         changeFrequency: policy.changeFrequency,
         priority: policy.sitemapPriority
@@ -175,6 +183,7 @@ export default async function sitemap() {
 
   const cabRoutes = cabs
     .filter(isPublishedCatalogItem)
+    .slice(0, 24)
     .map((item) => {
       const image = sitemapImageFromProduct(item, "cab");
       return {
@@ -191,7 +200,7 @@ export default async function sitemap() {
   );
 
   /* Booking pages at /holidays/{slug|id}; SEO landings stay at /tour-packages/{slug} */
-  const packageRoutes = packages.filter(isPublishedCatalogItem).map((item) => {
+  const packageRoutes = packages.filter(isPublishedCatalogItem).slice(0, 24).map((item) => {
     const image = sitemapImageFromProduct(item, "holiday");
     const hasSeoLanding = item.slug && tourPackageSlugs.has(String(item.slug));
     return {
@@ -206,6 +215,7 @@ export default async function sitemap() {
   const tourPackageRoutes = packages
     .filter(isPublishedCatalogItem)
     .filter((item) => item.slug)
+    .slice(0, 24)
     .map((item) => {
       const image = sitemapImageFromProduct(item, "holiday");
       return {
@@ -219,6 +229,7 @@ export default async function sitemap() {
 
   const blogRoutes = blogPosts
     .filter(isPublishedBlogPost)
+    .slice(0, 24)
     .map((item) => {
       const image = sitemapImageFromProduct(
         { image: item.coverImage || item.ogImage || item.image, imageAlt: item.title },

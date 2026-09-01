@@ -5,7 +5,9 @@ import { fetchCatalogList, fetchPackageById } from "../../../lib/serverCatalog";
 import { tourPackageLandingMetadata } from "../../../lib/metadataHelpers";
 import { breadcrumbJsonLd, faqFromPairs } from "../../../lib/seo";
 
-export const revalidate = 600;
+import { SEO_REVALIDATE_SECONDS } from "../../../lib/revalidation/constants";
+
+export const revalidate = SEO_REVALIDATE_SECONDS;
 
 export async function generateMetadata({ params }) {
   const pkg = await fetchPackageById(params.slug);

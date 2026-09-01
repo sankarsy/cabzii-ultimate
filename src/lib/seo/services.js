@@ -90,6 +90,21 @@ export const SEO_SERVICES = [
   }
 ];
 
+/** Only these service landings are pre-built + indexed (rest stay on-demand / noindex). */
+export const MAIN_PAGE_SERVICE_SLUGS = [
+  "airport-taxi",
+  "outstation-cab",
+  "one-way-cab",
+  "hourly-rental",
+  "local-taxi",
+  "car-rental",
+  "tempo-traveller"
+];
+
+export function isMainPageService(slug) {
+  return MAIN_PAGE_SERVICE_SLUGS.includes(String(slug || ""));
+}
+
 export function serviceBySlug(slug) {
   return SEO_SERVICES.find((s) => s.slug === slug) ?? null;
 }

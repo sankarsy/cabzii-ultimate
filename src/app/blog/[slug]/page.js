@@ -14,6 +14,9 @@ import {
 import { formatBlogAuthor, formatBlogDate } from "../../../lib/seo/serpRichData";
 import { resolveMediaUrl } from "../../../lib/media";
 import BlogCommercialLinks from "../../../components/seo/BlogCommercialLinks";
+import { SEO_REVALIDATE_SECONDS } from "../../../lib/revalidation/constants";
+
+export const revalidate = SEO_REVALIDATE_SECONDS;
 
 const CHENNAI_GUIDE_FAQS = [
   [

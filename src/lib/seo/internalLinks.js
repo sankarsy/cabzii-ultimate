@@ -1,4 +1,4 @@
-import { SEO_CITIES, cityBySlug } from "./cities";
+import { SEO_CITIES, MAIN_PAGE_CITY_SLUGS, cityBySlug } from "./cities";
 import { SEO_ROUTES, routesForCity } from "./routes";
 import { SEO_SERVICES, servicePath } from "./services";
 import { cityHasCommercialAirport } from "./airports";
@@ -15,26 +15,8 @@ export const CORE_INTERNAL_LINKS = [
   { href: "/blogs", label: "Travel blog", desc: "Tips & route guides" }
 ];
 
-/** Cities used for cab, acting-driver and multi-city service internal links — Chennai/TN first. */
-export const INTERNAL_LINK_CITIES = [
-  "chennai",
-  "coimbatore",
-  "madurai",
-  "trichy",
-  "salem",
-  "vellore",
-  "erode",
-  "hosur",
-  "pondicherry",
-  "tirupati",
-  "bengaluru",
-  "ooty",
-  "kanchipuram",
-  "thanjavur",
-  "kanyakumari",
-  "thoothukudi",
-  "tiruvannamalai"
-];
+/** Cities used for cab, acting-driver and multi-city service internal links — all TN + Tirupati. */
+export const INTERNAL_LINK_CITIES = MAIN_PAGE_CITY_SLUGS;
 
 /** Top cities for service landing cross-links (SEO). */
 export const SERVICE_LINK_CITIES = [
@@ -43,7 +25,11 @@ export const SERVICE_LINK_CITIES = [
   "madurai",
   "trichy",
   "salem",
-  "bengaluru"
+  "tirupati",
+  "bengaluru",
+  "pondicherry",
+  "rameswaram",
+  "kanchipuram"
 ];
 
 function citiesBySlugs(slugs) {

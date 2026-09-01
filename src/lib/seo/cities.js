@@ -95,6 +95,17 @@ export const PRIMARY_FOCUS_CITY_SLUGS = [
   "tiruppur"
 ];
 
+/**
+ * Tamil Nadu + Tirupati pilgrimage + Pondicherry + Bengaluru corridor.
+ * These are pre-rendered, sitemapped, and indexed. Other national cities stay on-demand / noindex.
+ */
+export const MAIN_PAGE_CITY_SLUGS = [
+  ...TAMIL_NADU_CITY_SLUGS,
+  "pondicherry",
+  "tirupati",
+  "bengaluru"
+];
+
 export function isTamilNaduCity(cityOrSlug) {
   const slug = typeof cityOrSlug === "string" ? cityOrSlug : cityOrSlug?.slug;
   return TAMIL_NADU_CITY_SLUGS.includes(slug);
@@ -103,6 +114,11 @@ export function isTamilNaduCity(cityOrSlug) {
 export function isPrimaryFocusCity(cityOrSlug) {
   const slug = typeof cityOrSlug === "string" ? cityOrSlug : cityOrSlug?.slug;
   return PRIMARY_FOCUS_CITY_SLUGS.includes(slug);
+}
+
+export function isMainPageCity(cityOrSlug) {
+  const slug = typeof cityOrSlug === "string" ? cityOrSlug : cityOrSlug?.slug;
+  return MAIN_PAGE_CITY_SLUGS.includes(slug);
 }
 
 /** Peer city links for hubs — TN peers first when viewing a TN city. */

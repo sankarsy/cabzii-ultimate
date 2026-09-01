@@ -2,12 +2,13 @@ import { isLiveApiHostProtected } from "./liveApiHostGuard";
 import { getBackendUrl } from "./seo";
 import { SHOWCASE_FALLBACKS } from "./homeShowcase";
 import { mergeCallDriverServices } from "./callDriver";
+import { SEO_REVALIDATE_SECONDS } from "./revalidation/constants";
 
 const FETCH_CACHE_MS = 60 * 1000;
 const fetchCache = new Map();
 const fetchInflight = new Map();
 
-async function fetchJson(path, revalidate = 300) {
+async function fetchJson(path, revalidate = SEO_REVALIDATE_SECONDS) {
   if (isLiveApiHostProtected()) return null;
   const cached = fetchCache.get(path);
   if (cached && Date.now() - cached.at < FETCH_CACHE_MS) return cached.value;
@@ -56,7 +57,7 @@ export async function fetchPackageById(id) {
 }
 
 export async function fetchCatalogList(resource, limit = 6) {
-  const data = await fetchJson(`/${resource}?limit=${limit}&page=1`, 600);
+  const data = await fetchJson(`/${resource}?limit=${limit}&page=1`, SEO_REVALIDATE_SECONDS);
   return Array.isArray(data) ? data : [];
 }
 
@@ -69,7 +70,7 @@ export async function fetchCatalogForCity(resource, cityName, limit = 8) {
     priorityCity: cityName,
     city: cityName
   });
-  const data = await fetchJson(`/${resource}?${q.toString()}`, 600);
+  const data = await fetchJson(`/${resource}?${q.toString()}`, SEO_REVALIDATE_SECONDS);
   const list = Array.isArray(data) ? data : [];
   if (list.length >= Math.min(4, limit)) return list;
   // Fallback: city-agnostic featured list so landings never look empty
@@ -79,38 +80,38 @@ export async function fetchCatalogForCity(resource, cityName, limit = 8) {
 
 export async function fetchBlogBySlug(slug) {
   if (!slug) return null;
-  return fetchJson(`/blogs/${encodeURIComponent(slug)}`, 600);
+  return fetchJson(`/blogs/${encodeURIComponent(slug)}`, SEO_REVALIDATE_SECONDS);
 }
 
 export async function fetchSeoServiceBySlug(slug) {
   if (!slug) return null;
-  return fetchJson(`/seo-services/${encodeURIComponent(slug)}`, 600);
+  return fetchJson(`/seo-services/${encodeURIComponent(slug)}`, SEO_REVALIDATE_SECONDS);
 }
 
 export async function fetchSeoRouteBySlug(slug) {
   if (!slug) return null;
-  return fetchJson(`/seo-routes/${encodeURIComponent(slug)}`, 600);
+  return fetchJson(`/seo-routes/${encodeURIComponent(slug)}`, SEO_REVALIDATE_SECONDS);
 }
 
 /** Admin-managed meta for /cab-booking/{city} and /acting-driver/{city}. */
 export async function fetchSeoCityPage(pageType, citySlug) {
   if (!pageType || !citySlug) return null;
-  return fetchJson(`/seo-city-pages/${encodeURIComponent(pageType)}/${encodeURIComponent(citySlug)}`, 600);
+  return fetchJson(`/seo-city-pages/${encodeURIComponent(pageType)}/${encodeURIComponent(citySlug)}`, SEO_REVALIDATE_SECONDS);
 }
 
 export async function fetchSeoMenuLinks() {
-  const data = await fetchJson("/seo-menu", 300);
+  const data = await fetchJson("/seo-menu", SEO_REVALIDATE_SECONDS);
   return Array.isArray(data) ? data : [];
 }
 
 export async function fetchHomeShowcase(section) {
-  const data = await fetchJson(`/offers?section=${encodeURIComponent(section)}`, 600);
+  const data = await fetchJson(`/offers?section=${encodeURIComponent(section)}`, SEO_REVALIDATE_SECONDS);
   const rows = Array.isArray(data) ? data.filter((o) => o?.title && o.published !== false) : [];
   if (rows.length) return rows;
   return SHOWCASE_FALLBACKS[section] || SHOWCASE_FALLBACKS.offers || [];
 }
 
 export async function fetchHomeCallDriverServices() {
-  const data = await fetchJson("/call-driver", 600);
+  const data = await fetchJson("/call-driver", SEO_REVALIDATE_SECONDS);
   return mergeCallDriverServices(data?.services);
 }

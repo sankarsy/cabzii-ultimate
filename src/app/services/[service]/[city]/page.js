@@ -5,8 +5,8 @@ import { resolveServiceForCity } from "../../../../lib/seo/cmsResolve";
 import { fetchSiteReviewStats } from "../../../../lib/serverReviewStats";
 import { fetchCatalogForCity } from "../../../../lib/serverCatalog";
 import {
-  SEO_CITIES,
-  SEO_SERVICES,
+  MAIN_PAGE_CITY_SLUGS,
+  MAIN_PAGE_SERVICE_SLUGS,
   breadcrumbJsonLd,
   buildPageMetadata,
   cityBySlug,
@@ -22,14 +22,14 @@ import {
 import { serviceSerpBadges } from "../../../../lib/seo/serpRichData";
 import { resolveMediaUrl } from "../../../../lib/media";
 
-export const revalidate = 600;
+import { SEO_REVALIDATE_SECONDS } from "../../../../lib/revalidation/constants";
+
+export const revalidate = SEO_REVALIDATE_SECONDS;
+export const dynamicParams = true;
 
 export function generateStaticParams() {
-  return SEO_SERVICES.flatMap((service) =>
-    SEO_CITIES.map((city) => ({
-      service: service.slug,
-      city: city.slug
-    }))
+  return MAIN_PAGE_SERVICE_SLUGS.flatMap((service) =>
+    MAIN_PAGE_CITY_SLUGS.map((city) => ({ service, city }))
   );
 }
 

@@ -6,6 +6,9 @@ import { BUS_TARIFF, CAR_TARIFF, TARIFF_FAQS, VAN_TARIFF } from "../../lib/publi
 import { faqFromPairs, productJsonLd } from "../../lib/seo";
 import ChennaiClusterLinks from "../../components/seo/ChennaiClusterLinks";
 import SeoPageView from "../../components/seo/SeoPageView";
+import { SEO_REVALIDATE_SECONDS } from "../../lib/revalidation/constants";
+
+export const revalidate = SEO_REVALIDATE_SECONDS;
 
 export const metadata = marketingMetadata({
   title: "Cab Rental Tariff in Chennai | Car, Tempo Traveller & Mini Bus Rates | Cabzii",

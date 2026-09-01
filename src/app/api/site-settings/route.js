@@ -1,5 +1,5 @@
-import { revalidatePath } from "next/cache";
 import { proxyRequest } from "../../../lib/backendProxy";
+import { proxySeoMutation } from "../../../lib/revalidation/proxySeoMutation";
 
 export async function GET(req) {
   return proxyRequest(req, "/site-settings");
@@ -7,9 +7,5 @@ export async function GET(req) {
 
 export async function PUT(req) {
   const body = await req.text();
-  const res = await proxyRequest(req, "/site-settings", { method: "PUT", body });
-  if (res.ok) {
-    revalidatePath("/", "layout");
-  }
-  return res;
+  return proxySeoMutation(req, "/site-settings", { method: "PUT", body, kind: "site-settings" });
 }

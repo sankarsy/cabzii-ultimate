@@ -1,21 +1,20 @@
 import CabDetailPage from "../../../components/CabDetailPage";
 import JsonLd from "../../../components/seo/JsonLd";
 import SerpRichBar from "../../../components/seo/SerpRichBar";
-import { fetchCabById, fetchCatalogList } from "../../../lib/serverCatalog";
+import { fetchCabById } from "../../../lib/serverCatalog";
 import { fetchSiteReviewStats } from "../../../lib/serverReviewStats";
 import { catalogPublicPath } from "../../../lib/catalogProduct";
 import { cabDetailMetadata } from "../../../lib/metadataHelpers";
 import { breadcrumbJsonLd, faqFromPairs, getCabFaqs } from "../../../lib/seo";
 import { formatSerpPrice, vehicleSerpBadges } from "../../../lib/seo/serpRichData";
 
-export const revalidate = 600;
+import { SEO_REVALIDATE_SECONDS } from "../../../lib/revalidation/constants";
+
+export const revalidate = SEO_REVALIDATE_SECONDS;
 export const dynamicParams = true;
 
 export async function generateStaticParams() {
-  const cabs = await fetchCatalogList("cabs", 100);
-  return (Array.isArray(cabs) ? cabs : [])
-    .filter((cab) => cab?.slug || cab?._id || cab?.id)
-    .map((cab) => ({ id: String(cab.slug || cab._id || cab.id) }));
+  return [];
 }
 
 export async function generateMetadata({ params }) {

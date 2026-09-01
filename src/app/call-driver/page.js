@@ -4,6 +4,9 @@ import SeoPageView from "../../components/seo/SeoPageView";
 import { breadcrumbJsonLd, faqFromPairs } from "../../lib/seo";
 import { CHENNAI_DRIVER_FAQS } from "../../lib/seo/chennaiCluster";
 import { SITE_URL } from "../../lib/seo/constants";
+import { SEO_REVALIDATE_SECONDS } from "../../lib/revalidation/constants";
+
+export const revalidate = SEO_REVALIDATE_SECONDS;
 
 export const metadata = {
   title: "Book Call Driver | Driver for Your Own Car | Cabzii",

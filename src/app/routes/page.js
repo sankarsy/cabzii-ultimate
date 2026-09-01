@@ -1,6 +1,9 @@
 import JsonLd from "../../components/seo/JsonLd";
 import RoutesHubSeo from "../../components/seo/RoutesHubSeo";
 import { breadcrumbJsonLd, buildPageMetadata } from "../../lib/seo";
+import { SEO_REVALIDATE_SECONDS } from "../../lib/revalidation/constants";
+
+export const revalidate = SEO_REVALIDATE_SECONDS;
 
 export const metadata = buildPageMetadata({
   title: "Popular Cab Routes — One-Way & Outstation | Cabzii",

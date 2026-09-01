@@ -5,6 +5,9 @@ import JsonLd from "../../components/seo/JsonLd";
 import { aggregateReviewJsonLd } from "../../lib/seo/schema";
 import { fetchSiteReviewStats } from "../../lib/serverReviewStats";
 import { fetchCatalogList } from "../../lib/serverCatalog";
+import { SEO_REVALIDATE_SECONDS } from "../../lib/revalidation/constants";
+
+export const revalidate = SEO_REVALIDATE_SECONDS;
 
 function asCards(testimonials = [], bookingReviews = []) {
   const fromTestimonials = testimonials

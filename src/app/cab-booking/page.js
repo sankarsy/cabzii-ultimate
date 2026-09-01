@@ -3,6 +3,9 @@ import Breadcrumbs from "../../components/seo/Breadcrumbs";
 import ShowcaseCard from "../../components/home/ShowcaseCard";
 import { breadcrumbJsonLd, buildPageMetadata } from "../../lib/seo";
 import { fetchHomeShowcase } from "../../lib/serverCatalog";
+import { SEO_REVALIDATE_SECONDS } from "../../lib/revalidation/constants";
+
+export const revalidate = SEO_REVALIDATE_SECONDS;
 
 export const metadata = buildPageMetadata({
   title: "Cab Services in All Cities | Cabzii",

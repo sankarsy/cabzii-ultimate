@@ -24,6 +24,10 @@ import { SERVICE_URL_PREFIXES, TRAVELS_URL_PREFIXES } from "../src/lib/seo/urlAl
 import { isLiveApiHostProtected } from "../src/lib/liveApiHostGuard.js";
 import { DEFAULT_KEYWORDS } from "../src/lib/seo/constants.js";
 import { websiteJsonLd, localBusinessJsonLd } from "../src/lib/seo/schema.js";
+import { SEO_REVALIDATE_SECONDS } from "../src/lib/revalidation/constants.js";
+import { isSafeSeoPath, pathsFromKind } from "../src/lib/revalidation/paths.js";
+import { MAIN_PAGE_CITY_SLUGS } from "../src/lib/seo/cities.js";
+import { MAIN_PAGE_SERVICE_SLUGS } from "../src/lib/seo/services.js";
 
 const failures = [];
 
@@ -133,9 +137,8 @@ assert(classifyServiceCity("tour-packages", "karur").indexable === false, "Thin 
 assert(classifyServiceCity("tour-packages", "chennai").indexable, "Chennai tour-packages stays indexable");
 
 const summary = summarizeIndexationPolicy();
-assert(summary.indexable > 500, "Most existing programmatic pages remain indexable");
-assert(summary.noindex > 0, "Phase 1 should noindex only weak pages");
-assert(summary.noindex < 80, "Do not mass-noindex the catalog");
+assert(summary.indexable > 400, "Main TN, service and featured pages remain indexable");
+assert(summary.noindex > 0, "Weak mesh and non-main-city pages stay noindex,follow");
 
 const preservedAliases =
   Object.keys(PUBLIC_ROUTE_REDIRECTS).length +
@@ -144,7 +147,32 @@ const preservedAliases =
 assert(preservedAliases > 100, "Existing 301 alias patterns must remain in code");
 assert(PUBLIC_ROUTE_REDIRECTS["/airport-taxi"] === "/services/airport-taxi/chennai", "Bare /airport-taxi remains a 301");
 
+assert(SEO_REVALIDATE_SECONDS === 86400, "SEO ISR must be 24 hours, not 10 minutes");
 assert(typeof isLiveApiHostProtected === "function", "Live API guard must remain exported");
+assert(MAIN_PAGE_CITY_SLUGS.includes("chennai"), "Chennai stays a main SEO city");
+assert(MAIN_PAGE_CITY_SLUGS.includes("trichy"), "Trichy stays a main SEO city");
+assert(MAIN_PAGE_CITY_SLUGS.includes("madurai"), "Madurai stays a main SEO city");
+assert(MAIN_PAGE_CITY_SLUGS.includes("tirupati"), "Tirupati stays a main SEO city");
+assert(MAIN_PAGE_SERVICE_SLUGS.includes("airport-taxi"), "Airport taxi stays a main SEO service");
+assert(isSafeSeoPath("/cab-booking/chennai"), "City hub paths are safe to revalidate");
+assert(!isSafeSeoPath("/api/revalidate"), "Open revalidate APIs are not safe paths");
+assert(!isSafeSeoPath("/payment"), "Payment paths must not be revalidated as SEO");
+assert(
+  pathsFromKind("seo-city-page", { pageType: "cab-booking", citySlug: "madurai" }).includes("/cab-booking/madurai"),
+  "City CMS updates revalidate only that city page"
+);
+assert(
+  pathsFromKind("seo-route", { slug: "chennai-to-tirupati-cab" }).includes("/routes/chennai-to-tirupati-cab"),
+  "Route CMS updates revalidate only that route"
+);
+for (const slug of [
+  "trichy-to-tirupati-cab",
+  "madurai-to-tirupati-cab",
+  "tirupati-to-chennai-cab",
+  "tirupati-to-bengaluru-cab"
+]) {
+  assert(FEATURED_ROUTE_SLUGS.includes(slug), `Pilgrimage featured route kept: ${slug}`);
+}
 
 const chennaiAirportBody = getServiceLandingBody(airportTaxi, chennai);
 assert(/MAA/i.test(chennaiAirportBody), "Chennai airport body must mention MAA");

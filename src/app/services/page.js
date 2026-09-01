@@ -1,6 +1,9 @@
 import JsonLd from "../../components/seo/JsonLd";
 import ServicesHubSeo from "../../components/seo/ServicesHubSeo";
 import { breadcrumbJsonLd, buildPageMetadata } from "../../lib/seo";
+import { SEO_REVALIDATE_SECONDS } from "../../lib/revalidation/constants";
+
+export const revalidate = SEO_REVALIDATE_SECONDS;
 
 export const metadata = buildPageMetadata({
   title: "Cab & Driver Services by City | Cabzii",
