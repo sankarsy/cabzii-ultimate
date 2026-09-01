@@ -8,6 +8,7 @@ import { fetchSiteSettings } from "../lib/serverSiteSettings";
 import { fetchSiteReviewStats } from "../lib/serverReviewStats";
 import { SITE_ICONS } from "../lib/brandAssets";
 import { DEFAULT_KEYWORDS, HOME_SEO_TITLE, SITE_URL, organizationJsonLd, taxiServiceJsonLd, websiteJsonLd } from "../lib/seo";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -81,6 +82,7 @@ export default async function RootLayout({ children }) {
           <DeferredSiteChrome />
         </SiteSettingsProvider>
         <ServiceWorkerRegister />
+        <SpeedInsights />
       </body>
     </html>
   );
