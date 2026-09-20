@@ -2,9 +2,7 @@
 
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import MmtTripSummaryBar from "../../../components/mmt/MmtTripSummaryBar";
-import MmtCardPriceBlock from "../../../components/mmt/MmtCardPriceBlock";
-import TripRoutePanel from "../../../components/maps/TripRoutePanel";
+import CabReviewBooking from "../../../components/mmt/CabReviewBooking";
 import { buildFareSlabs } from "../../../lib/cabFare";
 import { resolveCabTripFare } from "../../../lib/distanceFare";
 import { buildLoginHref, getUser, isLoggedIn } from "../../../lib/auth";
@@ -12,24 +10,12 @@ import { loadCheckoutDraft, saveCheckoutDraft } from "../../../lib/checkoutStora
 import { mergeTripDistance } from "../../../lib/mergeTripDistance";
 import { appendTripCoords } from "../../../lib/tripCoords";
 import { useTripRoute } from "../../../lib/useTripRoute";
-import { resolveCabImage } from "../../../lib/vehicleImages";
-import {
-  getCabDisplaySubtitle,
-  getCabDisplayTitle,
-  getCabPackageLine,
-  getCabVehicleName
-} from "../../../lib/catalogDisplay";
+import { getCabDisplayTitle, getCabPackageLine, getCabVehicleName } from "../../../lib/catalogDisplay";
 import { cabSlabForTrip, parseTripSearchParams, tripToSearchQuery } from "../../../lib/mmtTrip";
 import { trackEvent } from "../../../lib/analytics";
 import { beaconSeoEvent } from "../../../lib/seoAttribution";
 import { upsertEnquiry } from "../../../lib/enquiryCapture";
-import { inputBaseClass } from "../../../lib/typography";
-
-function formatINR(n) {
-  return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(
-    Number(n) || 0
-  );
-}
+import { couponDiscountAmount } from "../../../lib/paymentMethods";
 
 function PassengerContent() {
   const router = useRouter();
@@ -46,6 +32,9 @@ function PassengerContent() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
+  const [pickup, setPickup] = useState("");
+  const [coupon, setCoupon] = useState("");
+  const [payMode, setPayMode] = useState("advance");
   const [autoContinue, setAutoContinue] = useState(false);
 
   useEffect(() => {
@@ -57,6 +46,7 @@ function PassengerContent() {
     if (restoredName) setName(restoredName);
     if (restoredEmail) setEmail(restoredEmail);
     if (restoredPhone) setPhone(restoredPhone);
+    if (saved.pickup) setPickup(saved.pickup);
     if (saved.pendingResume && isLoggedIn() && restoredName.trim() && restoredPhone.trim()) {
       saveCheckoutDraft({ pendingResume: false });
       setAutoContinue(true);
@@ -64,10 +54,8 @@ function PassengerContent() {
   }, []);
 
   useEffect(() => {
-    if (!autoContinue || loading || !cab) return;
-    setAutoContinue(false);
-    handleContinue();
-  }, [autoContinue, loading, cab]);
+    if (!pickup && trip.from) setPickup(trip.from);
+  }, [pickup, trip.from]);
 
   useEffect(() => {
     if (!cabId) {
@@ -94,10 +82,15 @@ function PassengerContent() {
 
   const slabs = cab ? buildFareSlabs(cab) : [];
   const slab = cabSlabForTrip(slabs, trip);
-  const fare = cab && slab ? resolveCabTripFare(cab, slab, trip) : { listPrice: 0, total: 0, discountPct: 0, discountAmount: 0, perKmRate: 0, usesDistance: false };
+  const fare =
+    cab && slab
+      ? resolveCabTripFare(cab, slab, trip)
+      : { listPrice: 0, total: 0, discountPct: 0, discountAmount: 0, perKmRate: 0, usesDistance: false };
   const listPrice = fare.listPrice;
   const discount = fare.discountPct;
-  const total = fare.total;
+  const couponOff = couponDiscountAmount(coupon, fare.total);
+  const netTotal = Math.max(0, Number(fare.total) - couponOff);
+  const payable = payMode === "full" ? netTotal : Math.round(netTotal * 0.5);
 
   async function handleContinue() {
     setError("");
@@ -105,17 +98,18 @@ function PassengerContent() {
       setError("Enter passenger name and mobile number.");
       return;
     }
+    const pickupValue = pickup.trim() || trip.from;
     saveCheckoutDraft({
       customerName: name.trim(),
       phone: phone.trim(),
       email: email.trim(),
-      pickup: trip.from,
+      pickup: pickupValue,
       drop: trip.to || "",
       date: trip.date,
       time: trip.time,
       cabId,
       vehicleName: cab ? getCabDisplayTitle(cab, trip) : "",
-      total,
+      total: payable,
       distanceKm: fare.distanceKm || trip.distanceKm || "",
       packageLine: cab ? getCabPackageLine(cab, trip, { slab, fare }) : "",
       tripType: trip.tripType
@@ -124,7 +118,7 @@ function PassengerContent() {
       name: name.trim(),
       phone: phone.trim(),
       email: email.trim(),
-      pickup: trip.from,
+      pickup: pickupValue,
       drop: trip.to || "",
       travelDate: trip.date,
       pickupTime: trip.time,
@@ -132,7 +126,7 @@ function PassengerContent() {
       tripType: trip.tripType,
       vehicleId: cabId,
       vehicleName: cab ? getCabVehicleName(cab) : "",
-      estimatedFare: total,
+      estimatedFare: netTotal,
       distanceKm: fare.distanceKm || trip.distanceKm || 0,
       packageLabel: cab ? getCabPackageLine(cab, trip, { slab, fare }) : "",
       ctaLocation: "passenger_details"
@@ -141,11 +135,14 @@ function PassengerContent() {
       service_type: "cab",
       vehicle_id: cabId,
       vehicle_name: cab ? getCabVehicleName(cab) : "",
-      city: trip.from || "",
-      route: [trip.from, trip.to].filter(Boolean).join(" → "),
+      city: pickupValue || "",
+      route: [pickupValue, trip.to].filter(Boolean).join(" → "),
       cta_location: "passenger_details"
     });
-    beaconSeoEvent("booking_started", { city: trip.from || "", route: [trip.from, trip.to].filter(Boolean).join(" → ") });
+    beaconSeoEvent("booking_started", {
+      city: pickupValue || "",
+      route: [pickupValue, trip.to].filter(Boolean).join(" → ")
+    });
     if (!isLoggedIn()) {
       saveCheckoutDraft({ pendingResume: true });
       const next = `/cabs/passenger?${searchParams.toString()}`;
@@ -157,10 +154,11 @@ function PassengerContent() {
       const payParams = new URLSearchParams(tripToSearchQuery(trip));
       payParams.set("type", "cab");
       payParams.set("id", cabId);
-      payParams.set("total", String(total));
-      payParams.set("baseFare", String(total));
+      payParams.set("total", String(fare.total));
+      payParams.set("baseFare", String(fare.total));
       payParams.set("taxes", "0");
-      payParams.set("pickup", trip.from);
+      payParams.set("pickup", pickupValue);
+      payParams.set("passengerName", name.trim());
       if (trip.to) payParams.set("drop", trip.to);
       payParams.set("date", trip.date);
       payParams.set("time", trip.time);
@@ -175,7 +173,9 @@ function PassengerContent() {
       if (fare.distanceKm) payParams.set("distanceKm", String(fare.distanceKm));
       payParams.set("listPrice", String(listPrice));
       payParams.set("discountPct", String(discount));
-      payParams.set("discountAmount", String(Math.max(0, listPrice - total)));
+      payParams.set("discountAmount", String(Math.max(0, listPrice - fare.total)));
+      payParams.set("payMode", payMode);
+      if (coupon) payParams.set("coupon", coupon);
       appendTripCoords(payParams, trip);
 
       router.push(`/payment?${payParams.toString()}`);
@@ -186,6 +186,12 @@ function PassengerContent() {
     }
   }
 
+  useEffect(() => {
+    if (!autoContinue || loading || !cab) return;
+    setAutoContinue(false);
+    handleContinue();
+  }, [autoContinue, loading, cab]);
+
   if (loading) {
     return <div className="py-16 text-center text-slate-500">Loading…</div>;
   }
@@ -194,93 +200,31 @@ function PassengerContent() {
     return <div className="py-16 text-center text-rose-600">{error || "Cab not found"}</div>;
   }
 
-  const displayTitle = getCabDisplayTitle(cab, trip);
-  const displaySubtitle = getCabDisplaySubtitle(cab, trip);
-  const packageLine = getCabPackageLine(cab, trip, { slab, fare });
-
   return (
-    <>
-      <MmtTripSummaryBar trip={trip} />
-      <div className="section-shell">
-        <TripRoutePanel trip={trip} compact />
-      </div>
-      <div className="section-shell grid w-full grid-cols-1 items-start gap-6 px-4 py-6 lg:grid-cols-[minmax(0,36rem)_20rem]">
-        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-          <h2 className="text-lg font-bold text-slate-900">Traveller details</h2>
-          <p className="mt-1 text-sm text-slate-600">Enter details for the primary passenger</p>
-          <div className="mt-5 grid max-w-xl gap-4 sm:grid-cols-2">
-            <div className="sm:col-span-2">
-              <label className="mmt-search-label" htmlFor="traveller-name">Full name</label>
-              <input
-                id="traveller-name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                autoComplete="name"
-                className={`mt-1 ${inputBaseClass}`}
-                placeholder="As on ID"
-              />
-            </div>
-            <div>
-              <label className="mmt-search-label" htmlFor="traveller-phone">Mobile number</label>
-              <input
-                id="traveller-phone"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                inputMode="numeric"
-                autoComplete="tel"
-                className={`mt-1 ${inputBaseClass}`}
-                placeholder="10-digit mobile"
-              />
-            </div>
-            <div>
-              <label className="mmt-search-label" htmlFor="traveller-email">Email (optional)</label>
-              <input
-                id="traveller-email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                autoComplete="email"
-                className={`mt-1 ${inputBaseClass}`}
-                placeholder="name@email.com"
-              />
-            </div>
-          </div>
-          {error ? <p className="mt-3 text-sm text-rose-600">{error}</p> : null}
-          <button
-            type="button"
-            disabled={submitting}
-            onClick={handleContinue}
-            className="cabzii-btn cabzii-btn-primary cabzii-btn-lg cabzii-tap mt-6 w-full max-w-xs sm:w-auto sm:min-w-54"
-          >
-            {submitting ? "Processing…" : "Continue to payment"}
-          </button>
-        </div>
-
-        <aside className="h-fit rounded-xl border border-slate-200 bg-white p-5 shadow-sm lg:sticky lg:top-20">
-          <img
-            src={resolveCabImage(cab)}
-            alt={displayTitle}
-            className="mb-3 h-24 w-full rounded-lg object-cover"
-          />
-          <h3 className="font-bold text-slate-900">{displayTitle}</h3>
-          <p className="text-sm text-slate-500">{displaySubtitle}</p>
-          <hr className="my-4 border-slate-100" />
-          <div className="flex justify-end">
-            <MmtCardPriceBlock
-              originalPrice={listPrice}
-              finalPrice={total}
-              discountPct={discount}
-              perKmRate={fare.usesDistance ? fare.perKmRate : undefined}
-              distanceKm={fare.usesDistance ? fare.distanceKm : undefined}
-              roundTrip={Boolean(trip.roundTrip)}
-            />
-          </div>
-          {!fare.usesDistance && packageLine ? (
-            <p className="mt-2 text-right text-sm text-slate-600">{packageLine}</p>
-          ) : null}
-        </aside>
-      </div>
-    </>
+    <CabReviewBooking
+      trip={trip}
+      cab={cab}
+      fare={fare}
+      slab={slab}
+      name={name}
+      onName={setName}
+      phone={phone}
+      onPhone={setPhone}
+      email={email}
+      onEmail={setEmail}
+      pickup={pickup}
+      onPickup={setPickup}
+      error={error}
+      submitting={submitting}
+      coupon={coupon}
+      onCoupon={setCoupon}
+      payMode={payMode}
+      onPayMode={setPayMode}
+      netTotal={netTotal}
+      payable={payable}
+      onPay={handleContinue}
+      loginHref={buildLoginHref(`/cabs/passenger?${searchParams.toString()}`, "customer")}
+    />
   );
 }
 

@@ -41,6 +41,36 @@ export function formatEmtDateShort(iso) {
   return { day: p.day, mon: MONTHS[p.month - 1].toUpperCase(), wd };
 }
 
+/** Results modify bar: "Wed, 23 Sep 2026" */
+export function formatMmtBarDate(iso) {
+  const p = parseYmd(iso);
+  if (!p) return "";
+  const d = istNoon(iso);
+  const wd = d
+    ? new Intl.DateTimeFormat("en-IN", { weekday: "short", timeZone: "Asia/Kolkata" }).format(d)
+    : "";
+  return `${wd}, ${p.day} ${MONTHS[p.month - 1]} ${p.year}`;
+}
+
+/** Mobile listing stamp: "23 Sep, 10:00 AM" */
+export function formatMmtListingStamp(iso, time24) {
+  const p = parseYmd(iso);
+  const time = formatTime12(time24);
+  if (!p) return time;
+  return `${p.day} ${MONTHS[p.month - 1]}${time ? `, ${time}` : ""}`;
+}
+
+/** Search sheet date parts for "Wed 23 Sep 2026". */
+export function formatMmtSheetDateParts(iso) {
+  const p = parseYmd(iso);
+  if (!p) return { wd: "", day: "", mon: "", year: "" };
+  const d = istNoon(iso);
+  const wd = d
+    ? new Intl.DateTimeFormat("en-IN", { weekday: "short", timeZone: "Asia/Kolkata" }).format(d)
+    : "";
+  return { wd, day: String(p.day), mon: MONTHS[p.month - 1], year: p.year };
+}
+
 export function formatTime12(time24) {
   if (!time24) return "";
   const [h, m] = time24.split(":").map(Number);

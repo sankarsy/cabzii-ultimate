@@ -148,9 +148,7 @@ export default function AdminPage() {
       items: [
         { key: "ops", label: "Operations" },
         { key: "reports", label: "Reports" },
-        { key: "seoRevenue", label: "SEO revenue", superAdminOnly: true },
         { key: "crm", label: "CRM", superAdminOnly: true },
-        { key: "aiChat", label: "AI chat list", superAdminOnly: true },
         { key: "customers", label: "Customers", superAdminOnly: true },
         { key: "reviews", label: "Reviews", superAdminOnly: true }
       ]
@@ -169,14 +167,11 @@ export default function AdminPage() {
       label: "Content",
       items: [
         { key: "seoPagesHub", label: "Google SEO pages", superAdminOnly: true },
-        ...CATALOG_TAB_KEYS.filter((tab) => !["cabs", "drivers", "buses", "packages", "bookings"].includes(tab)).map(
-          (tab) => ({
-            key: tab,
-            label: CATALOG_TABS[tab].label,
-            superAdminOnly: CATALOG_TABS[tab].superAdminOnly !== false
-          })
-        ),
-        { key: "enterprise", label: "CMS", superAdminOnly: true },
+        ...CATALOG_TAB_KEYS.filter((tab) => ["blogs", "testimonials"].includes(tab)).map((tab) => ({
+          key: tab,
+          label: CATALOG_TABS[tab].label,
+          superAdminOnly: CATALOG_TABS[tab].superAdminOnly !== false
+        })),
         { key: "settings", label: "Settings", superAdminOnly: true }
       ]
     },

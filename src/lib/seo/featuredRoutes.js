@@ -1,6 +1,5 @@
 /**
  * Routes linked from homepage, footer, and marketing blocks.
- * Kept in sync with domesticFocus + PopularDestinations hrefs.
  */
 export const FEATURED_ROUTE_SLUGS = [
   "chennai-to-tirupati-cab",

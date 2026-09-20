@@ -26,7 +26,7 @@ const COLUMNS = [
       { label: "Bus tickets", href: "/buses" },
       { label: "Hire a Driver", href: "/call-driver" },
       { label: "Holiday Packages", href: "/holidays" },
-      { label: "Cab Booking Chennai", href: "/cab-booking/chennai" },
+      { label: "Cab Booking Chennai", href: "/car-rental/chennai-city-cabs" },
       { label: "Cab rental tariff", href: "/tariff" }
     ]
   },

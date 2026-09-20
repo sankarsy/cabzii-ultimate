@@ -32,20 +32,7 @@ function ApplyLandingTab() {
   return null;
 }
 
-function HomePageBody({ displayCity, initialCabTrip, initialDriverTrip, children }) {
-  return (
-    <MmtLayout>
-      <EmtHeroSearch
-        defaultCity={displayCity}
-        initialCabTrip={initialCabTrip}
-        initialDriverTrip={initialDriverTrip}
-      />
-      {children}
-    </MmtLayout>
-  );
-}
-
-function HomePageWithSearchParams({ displayCity, children }) {
+function HeroFromUrl({ displayCity }) {
   const searchParams = useSearchParams();
   const hasFrom = Boolean(searchParams.get("from") || searchParams.get("pickup"));
   const cabTrip = parseTripSearchParams(searchParams);
@@ -54,13 +41,11 @@ function HomePageWithSearchParams({ displayCity, children }) {
   return (
     <>
       <ApplyLandingTab />
-      <HomePageBody
-        displayCity={displayCity}
+      <EmtHeroSearch
+        defaultCity={displayCity}
         initialCabTrip={hasFrom && isValidTripSearch(cabTrip) ? cabTrip : null}
         initialDriverTrip={hasFrom && isValidDriverTripSearch(driverTrip) ? driverTrip : null}
-      >
-        {children}
-      </HomePageBody>
+      />
     </>
   );
 }
@@ -72,15 +57,12 @@ export default function MmtHomePage({ children }) {
   return (
     <HeroSearchProvider defaultTab="cabs">
       <HeroTabUrlSync />
-      <Suspense
-        fallback={
-          <HomePageBody displayCity={displayCity} initialCabTrip={null} initialDriverTrip={null}>
-            {children}
-          </HomePageBody>
-        }
-      >
-        <HomePageWithSearchParams displayCity={displayCity}>{children}</HomePageWithSearchParams>
-      </Suspense>
+      <MmtLayout>
+        <Suspense fallback={<EmtHeroSearch defaultCity={displayCity} initialCabTrip={null} initialDriverTrip={null} />}>
+          <HeroFromUrl displayCity={displayCity} />
+        </Suspense>
+        {children}
+      </MmtLayout>
     </HeroSearchProvider>
   );
 }

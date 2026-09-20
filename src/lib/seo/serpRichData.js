@@ -13,7 +13,7 @@ export const SERVICE_FLEET_BY_SLUG = {
 };
 
 export const SITE_SITELINKS = [
-  { name: "Cab Booking", path: "/cab-booking/chennai" },
+  { name: "Cab Booking", path: "/car-rental/chennai-city-cabs" },
   { name: "Car Rental", path: "/services/car-rental/chennai" },
   { name: "Cab Rental", path: "/services/cab-rental/chennai" },
   { name: "Airport Taxi", path: "/services/airport-taxi/chennai" },

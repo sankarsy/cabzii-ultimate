@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import { resolvePublicRouteRedirect } from "./lib/routes/publicRoutes";
 import { resolveSeoAliasPath } from "./lib/seo/urlAliases";
+import { cityCabLandingPath } from "./lib/cityCabPaths";
 
 const PROTECTED_PREFIXES = ["/payment", "/booking", "/my-bookings"];
 
-/** Prefix redirects: /taxi-booking/chennai → /cab-booking/chennai */
+/** Prefix redirects: /taxi-booking/chennai → /car-rental/chennai-city-cabs */
 const SEO_PREFIX_REDIRECTS = {
   "/taxi-booking": "/cab-booking"
 };
@@ -24,9 +25,16 @@ export function middleware(request) {
   }
 
   for (const [prefix, target] of Object.entries(SEO_PREFIX_REDIRECTS)) {
-    if (pathname === prefix || pathname.startsWith(`${prefix}/`)) {
-      const rest = pathname.slice(prefix.length);
-      return NextResponse.redirect(new URL(`${target}${rest}`, request.url), 301);
+    if (pathname === prefix) {
+      return NextResponse.redirect(new URL(target, request.url), 301);
+    }
+    if (pathname.startsWith(`${prefix}/`)) {
+      const rest = pathname.slice(prefix.length).replace(/^\/+/, "");
+      const city = rest.split("/")[0];
+      if (prefix === "/taxi-booking" && city) {
+        return NextResponse.redirect(new URL(cityCabLandingPath(city.toLowerCase()), request.url), 301);
+      }
+      return NextResponse.redirect(new URL(`${target}${pathname.slice(prefix.length)}`, request.url), 301);
     }
   }
 

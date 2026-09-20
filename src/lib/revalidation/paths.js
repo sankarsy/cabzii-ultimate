@@ -1,4 +1,5 @@
 import { MAIN_PAGE_CITY_SLUGS } from "../seo/cities";
+import { cityCabLandingPath } from "../cityCabPaths";
 
 const BLOCKED_PREFIXES = [
   "/api",
@@ -48,7 +49,10 @@ export function pathsFromSeoCityPage(record = {}) {
   const city = slug(record.citySlug);
   if (!city) return [];
   const pageType = record.pageType === "acting-driver" ? "acting-driver" : "cab-booking";
-  return cap([`/${pageType}/${city}`]);
+  const paths = [`/${pageType}/${city}`];
+  if (pageType === "cab-booking") paths.push(cityCabLandingPath(city));
+  if (pageType === "acting-driver" && city === "chennai") paths.push("/call-drivers-chennai");
+  return cap(paths);
 }
 
 export function pathsFromSeoService(record = {}) {
@@ -78,8 +82,12 @@ export function pathsFromSiteSettings(record = {}) {
   return cap(paths);
 }
 
+export function pathsFromHomeCard() {
+  return cap(["/"]);
+}
+
 export function pathsFromCab(record = {}, id = "") {
-  const paths = ["/cabs"];
+  const paths = ["/", "/cabs"];
   const cabSlug = slug(record.slug);
   const cabId = slug(id || record._id || record.id);
   if (cabSlug) paths.push(`/cabs/${cabSlug}`);
@@ -116,6 +124,9 @@ export function pathsFromKind(kind, record = {}, extra = {}) {
       return pathsFromSeoRoute(record);
     case "site-settings":
       return pathsFromSiteSettings(record);
+    case "offer":
+    case "home-card":
+      return pathsFromHomeCard();
     case "cab":
       return pathsFromCab(record, extra.id);
     case "package":

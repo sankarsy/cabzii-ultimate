@@ -42,15 +42,14 @@ export default function ShowcaseCard({ card: o, section = "offers", layout = "ca
           <h3 className="home-showcase-title mt-1 text-base font-extrabold leading-snug text-white!">{o.title}</h3>
         </div>
         {o.code ? (
-          <button
-            type="button"
+          <span
             data-promo-code={o.code}
-            className="relative mt-auto inline-flex items-center gap-1.5 self-start rounded border-[1.5px] border-dashed border-white/60 bg-white/20 px-2.5 py-1 text-xs font-bold tracking-wider text-white backdrop-blur-sm transition hover:bg-white/30"
-            aria-label={`Copy promo code ${o.code}`}
+            className="relative mt-auto inline-flex items-center gap-1.5 self-start rounded border-[1.5px] border-dashed border-white/60 bg-white/20 px-2.5 py-1 text-xs font-bold tracking-wider text-white backdrop-blur-sm"
+            aria-label={`Promo code ${o.code}`}
           >
             {o.code}
             <Copy className="h-3.5 w-3.5 pointer-events-none" strokeWidth={2} aria-hidden />
-          </button>
+          </span>
         ) : o.fare ? (
           <span className="relative mt-auto inline-flex items-center self-start rounded border-[1.5px] border-dashed border-white/60 bg-white/20 px-2.5 py-1 text-xs font-bold tracking-wider text-white backdrop-blur-sm">
             {o.fare}

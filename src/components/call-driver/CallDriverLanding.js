@@ -93,7 +93,7 @@ export default function CallDriverLanding({
             <h2 className="text-lg font-bold text-slate-900">Related Chennai bookings</h2>
             <p className="mt-2">
               Need a Cabzii vehicle as well? Use{" "}
-              <Link href="/cab-booking/chennai" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
+              <Link href="/car-rental/chennai-city-cabs" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
                 cab booking Chennai
               </Link>{" "}
               or{" "}
@@ -101,7 +101,7 @@ export default function CallDriverLanding({
                 Chennai airport taxi
               </Link>
               . City guide for chauffeur / driver-on-hire wording:{" "}
-              <Link href="/acting-driver/chennai" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
+              <Link href="/call-drivers-chennai" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
                 acting driver in Chennai
               </Link>
               . Published cab rates:{" "}

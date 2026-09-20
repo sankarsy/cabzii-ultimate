@@ -98,7 +98,7 @@ export default function AdminHomeCards({ token, section = "offers" }) {
     }
     setForm(emptyCard(section));
     setEditId("");
-    setMessage(`${copy.title} card saved. It will show on the homepage.`);
+    setMessage(`${copy.title} card saved. Homepage cache was refreshed — reload cabzii.in to see the new price.`);
     await load();
   };
 

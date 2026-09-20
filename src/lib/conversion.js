@@ -56,8 +56,18 @@ export function bookingWhatsappMessage({
     }
   }
 
-  if (path.includes("/cab-booking/tirupati") || path.includes("/acting-driver/tirupati")) {
+  if (path.includes("/car-rental/tirupati-city-cabs") || path.includes("/cab-booking/tirupati") || path.includes("/acting-driver/tirupati")) {
     return "Hi Cabzii, I want to book a Tirupati cab. Pickup: ___. Date: ___. Passengers: ___. Please share sedan/SUV fare and availability.";
+  }
+
+  if (path.includes("/call-drivers-chennai")) {
+    return "Hi Cabzii, I want to book a Call Driver / acting driver in Chennai. Pickup: ___. Date: ___. Please share fare and availability.";
+  }
+
+  const cityCabsPage = path.match(/\/car-rental\/([a-z0-9-]+)-city-cabs/);
+  if (cityCabsPage) {
+    const place = titleFromSlug(cityCabsPage[1]);
+    return `Hi Cabzii, I want to book a cab in ${place}. Pickup: ___. Date: ___. Please share fare and availability.`;
   }
 
   const cityPage = path.match(/\/(?:cab-booking|acting-driver)\/([a-z0-9-]+)/);
@@ -94,7 +104,7 @@ export function bookingWhatsappMessage({
     return `Hi Cabzii, I want to book a holiday package from ${cityName}. Date: ${dateQ}. Please share options and fare.`;
   }
 
-  if (path.startsWith("/drivers") || path.startsWith("/call-driver") || path.startsWith("/acting-driver")) {
+  if (path.startsWith("/drivers") || path === "/call-driver" || path.startsWith("/call-driver/") || path.startsWith("/acting-driver")) {
     return `Hi Cabzii, I want to book a Call Driver service in ${cityName}. Date: ${dateQ}. Please share local, outstation or airport driver rates.`;
   }
 

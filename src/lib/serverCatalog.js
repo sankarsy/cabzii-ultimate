@@ -3,6 +3,7 @@ import { getBackendUrl } from "./seo";
 import { SHOWCASE_FALLBACKS } from "./homeShowcase";
 import { mergeCallDriverServices } from "./callDriver";
 import { SEO_REVALIDATE_SECONDS } from "./revalidation/constants";
+import { normalizeCabList } from "./catalogNormalize";
 
 const FETCH_CACHE_MS = 60 * 1000;
 const fetchCache = new Map();
@@ -78,6 +79,30 @@ export async function fetchCatalogForCity(resource, cityName, limit = 8) {
   return fallback;
 }
 
+/** Same cab query as /cabs/results so SEO route pages can render live fares without a Get Fare click. */
+export async function fetchCabsForTrip(trip, limit = 50) {
+  const city = String(trip?.from || trip?.city || "").split(",")[0].trim();
+  const q = new URLSearchParams({
+    limit: String(limit),
+    page: "1"
+  });
+  if (city) {
+    q.set("priorityCity", city);
+    q.set("city", city);
+  }
+  if (trip?.date) q.set("date", trip.date);
+  if (trip?.time) q.set("time", trip.time);
+  if (trip?.packageHours) q.set("packageHours", String(trip.packageHours));
+  if (trip?.packageId) q.set("packageId", trip.packageId);
+  if (trip?.tripType) q.set("serviceTripType", trip.tripType);
+  if (trip?.roundTrip) q.set("roundTrip", "true");
+
+  const data = await fetchJson(`/cabs?${q.toString()}`, SEO_REVALIDATE_SECONDS);
+  const list = normalizeCabList(Array.isArray(data) ? data : []);
+  if (list.length) return list;
+  return normalizeCabList(await fetchCatalogForCity("cabs", city, limit));
+}
+
 export async function fetchBlogBySlug(slug) {
   if (!slug) return null;
   return fetchJson(`/blogs/${encodeURIComponent(slug)}`, SEO_REVALIDATE_SECONDS);
@@ -104,9 +129,20 @@ export async function fetchSeoMenuLinks() {
   return Array.isArray(data) ? data : [];
 }
 
+function uniqueShowcaseCards(rows = []) {
+  const seen = new Set();
+  return rows.filter((row) => {
+    if (!row?.title) return false;
+    const key = `${String(row.section || "").toLowerCase()}|${String(row.title).trim().toLowerCase()}|${String(row.href || "").trim().toLowerCase()}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
 export async function fetchHomeShowcase(section) {
   const data = await fetchJson(`/offers?section=${encodeURIComponent(section)}`, SEO_REVALIDATE_SECONDS);
-  const rows = Array.isArray(data) ? data.filter((o) => o?.title && o.published !== false) : [];
+  const rows = uniqueShowcaseCards(Array.isArray(data) ? data.filter((o) => o.published !== false) : []);
   if (rows.length) return rows;
   return SHOWCASE_FALLBACKS[section] || SHOWCASE_FALLBACKS.offers || [];
 }

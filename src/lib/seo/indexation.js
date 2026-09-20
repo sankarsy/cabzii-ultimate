@@ -10,6 +10,7 @@ import { isMainPageCity, isPrimaryFocusCity, isTamilNaduCity, SEO_CITIES } from 
 import { SEO_SERVICES } from "./services";
 import { SEO_ROUTES } from "./routes";
 import { cityHasCommercialAirport } from "./airports";
+import { cityCabLandingPath } from "../cityCabPaths";
 
 /** A keep index · B improve while indexed · C noindex,follow · D do not generate (unused for live URLs) */
 export const SEO_CLASS = {
@@ -302,12 +303,12 @@ export function isSeoIndexable(policyRow) {
 /** Highest-priority existing money pages (internal score, not rankings). */
 export function highestCommercialPages() {
   return [
-    { path: "/cab-booking/chennai", commercialScore: 100, intent: "cab" },
+    { path: cityCabLandingPath("chennai"), commercialScore: 100, intent: "cab" },
     { path: "/services/airport-taxi/chennai", commercialScore: 98, intent: "airport" },
     { path: "/routes/chennai-to-tirupati-cab", commercialScore: 99, intent: "route" },
     { path: "/services/outstation-cab/chennai", commercialScore: 96, intent: "outstation" },
     { path: "/services/one-way-cab/chennai", commercialScore: 95, intent: "one-way" },
-    { path: "/acting-driver/chennai", commercialScore: 96, intent: "driver" },
+    { path: "/call-drivers-chennai", commercialScore: 96, intent: "driver" },
     { path: "/call-driver", commercialScore: 94, intent: "book-driver" },
     { path: "/tariff", commercialScore: 90, intent: "pricing" },
     { path: "/services/hourly-rental/chennai", commercialScore: 90, intent: "local" },
@@ -336,8 +337,11 @@ export function summarizeIndexationPolicy() {
   }));
 
   const all = [
-    ...cabHubs.map((row, i) => ({ path: `/cab-booking/${SEO_CITIES[i].slug}`, ...row })),
-    ...driverHubs.map((row, i) => ({ path: `/acting-driver/${SEO_CITIES[i].slug}`, ...row })),
+    ...cabHubs.map((row, i) => ({ path: cityCabLandingPath(SEO_CITIES[i].slug), ...row })),
+    ...driverHubs.map((row, i) => ({
+      path: SEO_CITIES[i].slug === "chennai" ? "/call-drivers-chennai" : `/acting-driver/${SEO_CITIES[i].slug}`,
+      ...row
+    })),
     ...services,
     ...routes
   ];

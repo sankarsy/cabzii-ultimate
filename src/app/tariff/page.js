@@ -54,7 +54,7 @@ export default function TariffPage() {
         Cabzii tariff is for <strong>chauffeur-driven</strong> cab, van and mini-bus hire in Chennai — not self-drive.
         Book with the published rate card. Compare packages, then{" "}
         <Link href="/cabs">search live cabs</Link> or{" "}
-        <Link href="/cab-booking/chennai">book a cab in Chennai</Link>. Vehicle model is subject to
+        <Link href="/car-rental/chennai-city-cabs">book a cab in Chennai</Link>. Vehicle model is subject to
         availability.
       </p>
       <div className="not-prose my-6">

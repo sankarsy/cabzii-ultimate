@@ -41,7 +41,7 @@ export const FLEET_MODELS = [
   }
 ];
 
-const BOOKING = "/cab-booking/chennai";
+const BOOKING = "/car-rental/chennai-city-cabs";
 const CAR_RENTAL = "/services/car-rental/chennai";
 const CAB_RENTAL = "/services/cab-rental/chennai";
 const CABS = "/cabs";

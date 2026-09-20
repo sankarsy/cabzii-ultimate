@@ -10,6 +10,7 @@ import {
 } from "../lib/seo";
 import { SEO_REVALIDATE_SECONDS } from "../lib/revalidation/constants";
 import { classifyCityHub, classifyRoute, classifyServiceCity } from "../lib/seo/indexation";
+import { cityCabLandingPath } from "../lib/cityCabPaths";
 import { catalogPublicPath } from "../lib/catalogProduct";
 import { isLiveApiHostProtected } from "../lib/liveApiHostGuard";
 import { resolveProductImageSeo } from "../lib/dynamicImageSeo";
@@ -54,8 +55,10 @@ export default async function sitemap() {
     { url: `${base}/cabs`, lastModified: now, changeFrequency: "daily", priority: 0.95, images: [HERO_IMAGE] },
     { url: `${base}/tariff`, lastModified: now, changeFrequency: "weekly", priority: 0.9, images: [HERO_IMAGE] },
     { url: `${base}/call-driver`, lastModified: now, changeFrequency: "weekly", priority: 0.95, images: [HERO_IMAGE] },
+    { url: `${base}/call-drivers-chennai`, lastModified: now, changeFrequency: "weekly", priority: 0.95, images: [HERO_IMAGE] },
     { url: `${base}/acting-driver`, lastModified: now, changeFrequency: "weekly", priority: 0.9, images: [HERO_IMAGE] },
     { url: `${base}/cab-booking`, lastModified: now, changeFrequency: "weekly", priority: 0.88, images: [HERO_IMAGE] },
+    { url: `${base}/car-rental`, lastModified: now, changeFrequency: "weekly", priority: 0.9, images: [HERO_IMAGE] },
     { url: `${base}/drivers`, lastModified: now, changeFrequency: "weekly", priority: 0.7, images: [HERO_IMAGE] },
     { url: `${base}/holidays`, lastModified: now, changeFrequency: "daily", priority: 0.92, images: [HERO_IMAGE] },
     { url: `${base}/services`, lastModified: now, changeFrequency: "weekly", priority: 0.88, images: [HERO_IMAGE] },
@@ -80,13 +83,13 @@ export default async function sitemap() {
     const rows = [];
     if (cabPolicy.indexable) {
       rows.push({
-        url: `${base}/cab-booking/${city.slug}`,
+        url: `${base}${cityCabLandingPath(city.slug)}`,
         lastModified: now,
         changeFrequency: cabPolicy.changeFrequency,
         priority: cabPolicy.sitemapPriority
       });
     }
-    if (driverPolicy.indexable) {
+    if (driverPolicy.indexable && city.slug !== "chennai") {
       rows.push({
         url: `${base}/acting-driver/${city.slug}`,
         lastModified: now,

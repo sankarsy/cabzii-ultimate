@@ -21,6 +21,7 @@ import {
 } from "../../../../lib/seo";
 import { serviceSerpBadges } from "../../../../lib/seo/serpRichData";
 import { resolveMediaUrl } from "../../../../lib/media";
+import { cityCabLandingPath } from "../../../../lib/cityCabPaths";
 
 import { SEO_REVALIDATE_SECONDS } from "../../../../lib/revalidation/constants";
 
@@ -82,7 +83,7 @@ export default async function ServiceCityPage({ params }) {
   const jsonLd = [
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
-      { name: city.name, path: `/cab-booking/${city.slug}` },
+      { name: city.name, path: cityCabLandingPath(city.slug) },
       { name: service.name, path }
     ]),
     servicePageJsonLd({

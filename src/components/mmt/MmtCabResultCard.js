@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { Star, ShieldCheck } from "lucide-react";
 import { buildFareSlabs, formatRating } from "../../lib/cabFare";
 import { resolveCabTripFare } from "../../lib/distanceFare";
 import { catalogPublicPath } from "../../lib/catalogProduct";
@@ -14,6 +13,7 @@ import {
   vehiclePhotoAlt
 } from "../../lib/catalogDisplay";
 import { formatCabSeatLabel, inferPassengerSeats } from "../../lib/cabSeats";
+import { cabFuelBadgeClass, cabFuelLabel } from "../../lib/cabListing";
 import { resolveCabImage } from "../../lib/vehicleImages";
 import { cabSlabForTrip, tripToSearchQuery } from "../../lib/mmtTrip";
 import { FuelIcon, LuggageIcon, PersonIcon, SnowflakeIcon } from "../icons";
@@ -41,9 +41,7 @@ export default function MmtCabResultCard({ cab, trip, layout = "row", catalogMod
   const vehicleName = getCabVehicleName(cab);
   const imageAlt = cab.imageAlt || vehiclePhotoAlt(cab);
   const ratingText = formatRating(cab);
-  const reviewCountRaw = cab.reviewCount ?? cab.reviews;
-  const reviewCount =
-    reviewCountRaw != null && Number.isFinite(Number(reviewCountRaw)) ? Number(reviewCountRaw) : null;
+  const fuelLabel = cabFuelLabel(cab);
 
   const href = catalogMode
     ? catalogPublicPath(cab, "/cabs")
@@ -100,81 +98,51 @@ export default function MmtCabResultCard({ cab, trip, layout = "row", catalogMod
     );
   }
 
-  const tags = [
-    cab.type || "Cab",
-    `${seatLabel} Seats`,
-    `${bags} Bags`,
-    "AC",
-    "Fuel included"
-  ];
-
   return (
-    <article className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-      <div className="flex flex-wrap items-center gap-2 border-b border-indigo-100 bg-indigo-50 px-4 py-1.5 text-[11px] font-semibold text-indigo-900">
-        <span className="inline-flex items-center gap-1 rounded bg-[var(--cabzii-brand)] px-1.5 py-0.5 text-[10px] font-bold text-white">
-          <ShieldCheck className="h-3 w-3" /> Cabzii Assured
-        </span>
-        <span>{cab.vendor || "Cabzii Partner"} · verified listing</span>
-      </div>
-
-      <div className="grid gap-4 p-4 lg:grid-cols-[112px_minmax(0,1.2fr)_minmax(0,1fr)_160px] lg:items-center">
-        <div className="relative h-20 w-28 overflow-hidden rounded-lg bg-slate-100 sm:h-24 sm:w-32 lg:h-[5.5rem] lg:w-28">
-          <CatalogCardImage src={imageSrc} alt={imageAlt} product={cab} sizes="128px" className="object-cover" />
-        </div>
-
-        <div className="min-w-0">
-          <p className="text-base font-extrabold text-slate-900">{title}</p>
-          <p className="mt-0.5 text-xs font-medium text-slate-500">{subtitle}</p>
-          {ratingText ? (
-            <div className="mt-2 flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-0.5 rounded bg-emerald-600 px-1.5 py-0.5 text-[11px] font-bold text-white">
-                <Star className="h-3 w-3 fill-white" /> {ratingText}
-              </span>
-              {reviewCount != null ? <span className="text-[11px] text-slate-500">{reviewCount} ratings</span> : null}
-            </div>
+    <Link
+      href={href}
+      onClick={trackSelect}
+      className="block overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_1px_4px_rgba(15,23,42,0.06)]"
+    >
+      <div className="flex items-center gap-3 p-3 sm:gap-5 sm:p-4">
+        <div className="relative flex h-[72px] w-[96px] shrink-0 items-center justify-center overflow-hidden rounded-lg bg-slate-50 sm:h-[88px] sm:w-[148px]">
+          <CatalogCardImage
+            src={imageSrc}
+            alt={imageAlt}
+            product={cab}
+            sizes="148px"
+            className="object-contain p-1"
+          />
+          {fuelLabel ? (
+            <span
+              className={`absolute bottom-1 left-1 rounded px-1.5 py-0.5 text-[10px] font-bold tracking-wide text-white ${cabFuelBadgeClass(fuelLabel)}`}
+            >
+              {fuelLabel}
+            </span>
           ) : null}
-          <div className="mt-2 flex flex-wrap gap-1.5">
-            {tags.map((t) => (
-              <span key={t} className="rounded border border-slate-200 px-1.5 py-0.5 text-[10px] font-semibold text-slate-600">
-                {t}
-              </span>
-            ))}
+        </div>
+
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+            <h3 className="text-[15px] font-extrabold leading-tight text-slate-900 sm:text-[17px]">{vehicleName}</h3>
+            {ratingText ? (
+              <span className="text-[13px] font-bold text-[#1a73e8]">{ratingText}/5</span>
+            ) : null}
           </div>
+          <p className="mt-0.5 text-[12px] text-slate-500 sm:text-[13px]">or similar</p>
+          <p className="mt-1 text-[12px] font-medium text-slate-600 sm:text-[13px]">AC · {passengerSeats} Seats</p>
         </div>
 
-        <div className="hidden text-xs text-slate-500 lg:block">
-          {usesDistance ? (
-            <>
-              <p className="font-semibold text-slate-700">{Math.ceil(Number(fare.distanceKm) || 0)} km trip</p>
-              <p className="mt-1">₹{fare.perKmRate}/km{trip?.roundTrip ? " · round trip" : ""}</p>
-              <p className="mt-1 text-slate-400">Driver, fuel &amp; parking as per package</p>
-            </>
-          ) : (
-            <>
-              <p className="font-semibold text-slate-700">{slab?.label || "Package fare"}</p>
-              <p className="mt-1">Extra km ₹{slab?.extraKm || 12}/km</p>
-              <p className="mt-1">Extra hr ₹{slab?.extraHr || 250}/hr</p>
-            </>
-          )}
-        </div>
-
-        <div className="flex flex-col items-stretch gap-2 lg:items-end">
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">From</p>
-          <p className="text-lg font-extrabold text-slate-900">{formatINR(total)}</p>
-          {catalogMode && catalogPerKm?.perKmRate ? (
-            <p className="text-[11px] text-slate-500">₹{catalogPerKm.perKmRate}/km</p>
-          ) : (
-            <p className="text-[11px] text-slate-500">package fare</p>
-          )}
-          <Link
-            href={href}
-            onClick={trackSelect}
-            className="rounded-full bg-[var(--cabzii-cta)] px-4 py-2 text-center text-sm font-bold text-white shadow-[0_4px_12px_rgba(249,115,22,0.3)] hover:bg-[var(--cabzii-cta-hover)]"
-          >
+        <div className="flex shrink-0 flex-col items-end gap-2 pl-1">
+          <p className="text-[18px] font-extrabold leading-none text-slate-900 sm:text-[22px]">{formatINR(total)}</p>
+          <p className="hidden max-w-[9rem] text-right text-[11px] text-slate-500 sm:block">
+            Tolls, parking &amp; GST extra if applicable
+          </p>
+          <span className="hidden min-w-[9.5rem] items-center justify-center rounded-lg bg-[#1a73e8] px-5 py-2.5 text-[13px] font-extrabold uppercase tracking-wide text-white sm:inline-flex">
             {catalogMode ? "View Cab" : "Select Cab"}
-          </Link>
+          </span>
         </div>
       </div>
-    </article>
+    </Link>
   );
 }

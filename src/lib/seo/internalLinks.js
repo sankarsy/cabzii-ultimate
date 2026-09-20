@@ -1,4 +1,5 @@
 import { SEO_CITIES, MAIN_PAGE_CITY_SLUGS, cityBySlug } from "./cities";
+import { cityCabLandingPath, actingDriverLandingPath } from "../cityCabPaths";
 import { SEO_ROUTES, routesForCity } from "./routes";
 import { SEO_SERVICES, servicePath } from "./services";
 import { cityHasCommercialAirport } from "./airports";
@@ -10,7 +11,6 @@ export const CORE_INTERNAL_LINKS = [
   { href: "/holidays?category=pilgrimage", label: "Pilgrimage tours", desc: "Tirupati, Rameswaram, Shirdi & more" },
   { href: "/call-driver", label: "Call Driver", desc: "Acting driver for your own car" },
   { href: "/acting-driver", label: "Acting driver cities", desc: "City chauffeur-on-hire pages" },
-  { href: "/cabs", label: "Local & outstation cabs", desc: "Transparent fares online" },
   { href: "/locations", label: "Service locations", desc: "Pickup points by city" },
   { href: "/blogs", label: "Travel blog", desc: "Tips & route guides" }
 ];
@@ -48,7 +48,7 @@ export function cabBookingLinks(limit = INTERNAL_LINK_CITIES.length) {
   return citiesBySlugs(INTERNAL_LINK_CITIES)
     .slice(0, limit)
     .map((city) => ({
-      href: `/cab-booking/${city.slug}`,
+      href: cityCabLandingPath(city.slug),
       label: `Cab booking ${city.name}`,
       city: city.name
     }));
@@ -58,7 +58,7 @@ export function actingDriverLinks(limit = INTERNAL_LINK_CITIES.length) {
   return citiesBySlugs(INTERNAL_LINK_CITIES)
     .slice(0, limit)
     .map((city) => ({
-      href: `/acting-driver/${city.slug}`,
+      href: actingDriverLandingPath(city.slug),
       label: `Acting driver ${city.name}`,
       city: city.name
     }));
@@ -159,13 +159,13 @@ export function relatedLinksForPage(page, citySlug = "") {
   if (page === "cabs") {
     return [
       ...base,
-      { href: `/cab-booking/${city.slug}`, label: `Cab booking ${city.name}` },
+      { href: cityCabLandingPath(city.slug), label: `Cab booking ${city.name}` },
       cityServiceLink(city, "outstation-cab", "Outstation cab"),
       { href: `/services/airport-taxi/${city.slug}`, label: airportLabel },
       cityServiceLink(city, "one-way-cab", "One way cab"),
       cityServiceLink(city, "car-rental", "Car rental"),
       cityServiceLink(city, "cab-rental", "Cab rental"),
-      { href: `/acting-driver/${city.slug}`, label: `Acting driver ${city.name}` },
+      { href: actingDriverLandingPath(city.slug), label: `Acting driver ${city.name}` },
       ...(sameCity ? routeLinksForCity(city.slug, 6) : routeLinks(6))
     ].filter(Boolean);
   }
@@ -173,7 +173,7 @@ export function relatedLinksForPage(page, citySlug = "") {
     return [
       ...base,
       { href: `/services/tour-packages/${city.slug}`, label: `Holiday packages ${city.name}` },
-      { href: `/cab-booking/${city.slug}`, label: `Cab to tour pickup — ${city.name}` },
+      { href: cityCabLandingPath(city.slug), label: `Cab to tour pickup — ${city.name}` },
       ...cabBookingLinks(6),
       ...routeLinks(4)
     ];
@@ -181,10 +181,12 @@ export function relatedLinksForPage(page, citySlug = "") {
   if (page === "drivers") {
     return [
       ...base,
-      { href: `/acting-driver/${city.slug}`, label: `Acting driver ${city.name}` },
+      { href: actingDriverLandingPath(city.slug), label: `Acting driver ${city.name}` },
       cityServiceLink(city, "driver-on-hire", "Driver on hire"),
       cityServiceLink(city, "chauffeur-service", "Chauffeur service"),
-      ...(sameCity ? actingDriverLinks(8).filter((l) => !l.href.endsWith(`/${city.slug}`)).slice(0, 8) : actingDriverLinks(8)),
+      ...(sameCity
+        ? actingDriverLinks(8).filter((l) => l.href !== actingDriverLandingPath(city.slug)).slice(0, 8)
+        : actingDriverLinks(8)),
       ...serviceLinks(city.slug, 4)
     ].filter(Boolean);
   }

@@ -40,6 +40,7 @@ import {
 } from "../../lib/bookingStats";
 import { normalizeStoredImagePath, resolveMediaUrl } from "../../lib/media";
 import { IMAGE_UPLOAD_RULES } from "../../lib/imageUploadRules";
+import { seoCityPublicPath } from "../../lib/cityCabPaths";
 import imageCompression from "browser-image-compression";
 import AdminBookingEditor from "./AdminBookingEditor";
 import { AdminSeoCityPageForm, AdminSeoRouteForm, AdminSeoServiceForm } from "./AdminSeoForm";
@@ -124,7 +125,7 @@ function itemSubtitle(item, tabKey) {
       : `${base} · ${item.fromCitySlug || "—"} → ${item.toCitySlug || "—"} · ${item.published === false ? "Draft" : "Published"}`;
   }
   if (tabKey === "seoCityPages") {
-    const base = item.publicPath || `/${item.pageType}/${item.citySlug}`;
+    const base = item.publicPath || seoCityPublicPath(item.pageType, item.citySlug);
     return `${base} · ${item.published === false ? "Draft" : "Published"}`;
   }
   return item.vendor || item.experience || item.type || "N/A";
@@ -1641,8 +1642,8 @@ export default function AdminCatalogPanel({
           <p className="font-semibold">These are the city pages Google ranks — not the Cabs catalog.</p>
           <p className="mt-1">
             Click <strong>Create</strong>, choose <em>Cab booking city</em>, city slug <code>chennai</code>. That publishes{" "}
-            <a className="font-semibold underline" href="/cab-booking/chennai" target="_blank" rel="noreferrer">
-              /cab-booking/chennai
+            <a className="font-semibold underline" href="/car-rental/chennai-city-cabs" target="_blank" rel="noreferrer">
+              /car-rental/chennai-city-cabs
             </a>
             . For a Dzire Tour S product page, use Catalog → Cabs instead.
           </p>

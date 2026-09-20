@@ -227,9 +227,9 @@ export default function MmtCabSearchWidget({
       <div className="relative min-h-[2.75rem]">
         <HydrateSafeDate
           iso={date}
-          className="pointer-events-none text-base font-bold leading-tight text-slate-900 sm:text-xl"
+          className="pointer-events-none block text-base font-bold leading-tight text-slate-900 sm:text-xl"
         />
-        <p className="pointer-events-none text-sm font-medium text-slate-500">{formatTime12(time)}</p>
+        <span className="pointer-events-none block text-sm font-medium text-slate-500">{formatTime12(time)}</span>
         <input
           type="date"
           min={today || undefined}
@@ -328,9 +328,9 @@ export default function MmtCabSearchWidget({
           <div className="relative min-h-[2.75rem]">
             <HydrateSafeDate
               iso={returnDate || nextDayStr(date)}
-              className="pointer-events-none truncate text-base font-bold text-slate-900 sm:text-xl"
+              className="pointer-events-none block truncate text-base font-bold text-slate-900 sm:text-xl"
             />
-            <p className="pointer-events-none text-sm font-medium text-slate-500">Select Time</p>
+            <span className="pointer-events-none block text-sm font-medium text-slate-500">Select Time</span>
             <input
               type="date"
               min={date}

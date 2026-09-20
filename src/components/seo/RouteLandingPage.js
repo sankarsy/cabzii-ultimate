@@ -1,19 +1,17 @@
 import Link from "next/link";
-import { routeToCabSearchHref, routeToDriverSearchHref, routeToTrip } from "../../lib/routeTrip";
+import { routeToDriverSearchHref, routeToTrip } from "../../lib/routeTrip";
 import Breadcrumbs from "./Breadcrumbs";
-import BookingCtaBar from "./BookingCtaBar";
 import FaqSection from "./FaqSection";
-import SeoTripBookingSection from "./SeoTripBookingSection";
+import SeoRouteCabListing from "./SeoRouteCabListing";
 import { tunedRouteDescription, tunedRouteH1 } from "../../lib/seo/metadataTuning";
 import { servicePath, SEO_SERVICES } from "../../lib/seo/services";
-import { formatSerpPrice } from "../../lib/seo/serpRichData";
 import ChennaiClusterLinks from "./ChennaiClusterLinks";
 import SeoPageView from "./SeoPageView";
+import { cityCabLandingPath } from "../../lib/cityCabPaths";
 
 export default function RouteLandingPage({ route, faqs, extraBody = "", cabs = [] }) {
   const { fromCity, toCity, distance, duration, sedanFrom, suvFrom, slug } = route;
   const path = `/routes/${slug}`;
-  const searchHref = routeToCabSearchHref(route);
   const driverHref = routeToDriverSearchHref(route);
   const trip = routeToTrip(route);
   const reverseSlug = `${toCity.slug}-to-${fromCity.slug}-cab`;
@@ -22,58 +20,34 @@ export default function RouteLandingPage({ route, faqs, extraBody = "", cabs = [
   const outstationSvc = SEO_SERVICES.find((s) => s.slug === "outstation-cab");
 
   return (
-    <article className="section-shell cabzii-seo-landing">
-      <SeoPageView
-        pageType="route"
-        city={fromCity.slug}
-        origin={fromCity.slug}
-        destination={toCity.slug}
-        route={slug}
-      />
-      <Breadcrumbs
-        items={[
-          { name: "Home", path: "/" },
-          { name: fromCity.name, path: `/cab-booking/${fromCity.slug}` },
-          { name: `${fromCity.name} to ${toCity.name}`, path }
-        ]}
-      />
+    <div>
+      <article className="section-shell cabzii-seo-landing pb-3">
+        <SeoPageView
+          pageType="route"
+          city={fromCity.slug}
+          origin={fromCity.slug}
+          destination={toCity.slug}
+          route={slug}
+        />
+        <Breadcrumbs
+          items={[
+            { name: "Home", path: "/" },
+            { name: fromCity.name, path: cityCabLandingPath(fromCity.slug) },
+            { name: `${fromCity.name} to ${toCity.name}`, path }
+          ]}
+        />
 
-      <p className="cabzii-seo-kicker">One way cab · Cabzii</p>
-      <h1>{tunedRouteH1(route)}</h1>
-      <p className="cabzii-seo-lead">
-        {tunedRouteDescription(route)} ({distance}, {duration})
-      </p>
+        <p className="cabzii-seo-kicker">One way cab · Cabzii</p>
+        <h1>{tunedRouteH1(route)}</h1>
+        <p className="cabzii-seo-lead">
+          {tunedRouteDescription(route)} ({distance}, {duration}). Fares below — select a cab to book.
+        </p>
+      </article>
 
-      <SeoTripBookingSection
-        title={`${fromCity.name} → ${toCity.name}`}
-        pickup={fromCity.name}
-        drop={toCity.name}
-        priceFrom={sedanFrom}
-        priceLabel={formatSerpPrice(sedanFrom)}
-        distance={distance}
-        duration={duration}
-        cabSearchHref={searchHref}
-        cabs={cabs}
-        trip={trip}
-        showCabWidget
-        showDriverCta={false}
-        widgetDefaultCity={fromCity.name}
-        widgetInitialTrip={trip}
-        allowedTripTypes={["outstation"]}
-      />
+      <SeoRouteCabListing initialTrip={trip} initialCabs={cabs} />
 
-      <BookingCtaBar
-        bookHref={searchHref}
-        bookLabel="Book Now"
-        quoteLabel="Get Quote"
-        callLabel="Call Now"
-        availabilityLabel="Check Availability"
-        routeFrom={fromCity.name}
-        routeTo={toCity.name}
-        variant="compact"
-      />
-
-      <section className="cabzii-seo-block">
+      <article className="section-shell cabzii-seo-landing pt-2">
+        <section className="cabzii-seo-block">
         <h2>Distance &amp; travel time</h2>
         <div className="mt-2 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
           <table className="w-full text-left text-[11px] sm:text-xs">
@@ -141,7 +115,6 @@ export default function RouteLandingPage({ route, faqs, extraBody = "", cabs = [
             `Highway-experienced drivers on ${fromCity.name} – ${toCity.name}`,
             "Sedan, SUV, Innova and tempo for groups",
             "WhatsApp support before and during your trip",
-            "WhatsApp support before and during your trip",
             "Upfront fare breakdown before you pay"
           ].map((item) => (
             <li
@@ -158,7 +131,7 @@ export default function RouteLandingPage({ route, faqs, extraBody = "", cabs = [
         <h2>Related services &amp; links</h2>
         <ul className="mt-2.5 flex flex-wrap gap-1.5">
           <li>
-            <Link href={`/cab-booking/${fromCity.slug}`} className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:text-[var(--cabzii-brand)]">
+            <Link href={cityCabLandingPath(fromCity.slug)} className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:text-[var(--cabzii-brand)]">
               Cab booking {fromCity.name}
             </Link>
           </li>
@@ -175,7 +148,7 @@ export default function RouteLandingPage({ route, faqs, extraBody = "", cabs = [
             </Link>
           </li>
           <li>
-            <Link href={`/cab-booking/${toCity.slug}`} className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:text-[var(--cabzii-brand)]">
+            <Link href={cityCabLandingPath(toCity.slug)} className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:text-[var(--cabzii-brand)]">
               Cabs in {toCity.name}
             </Link>
           </li>
@@ -224,10 +197,10 @@ export default function RouteLandingPage({ route, faqs, extraBody = "", cabs = [
         </p>
         <div className="mt-2.5 flex flex-wrap gap-1.5">
           <Link
-            href={searchHref}
+            href="#cabs"
             className="cabzii-btn cabzii-btn-sm cabzii-tap rounded-full bg-white font-bold text-[var(--cabzii-brand)] hover:bg-slate-100"
           >
-            Get quote &amp; book
+            Select a cab above
           </Link>
           <a
             href={`https://wa.me/9944197416?text=${encodeURIComponent(`Hi Cabzii, I need a cab from ${fromCity.name} to ${toCity.name}. Please share fare.`)}`}
@@ -239,6 +212,7 @@ export default function RouteLandingPage({ route, faqs, extraBody = "", cabs = [
           </a>
         </div>
       </section>
-    </article>
+      </article>
+    </div>
   );
 }

@@ -16,6 +16,7 @@ import { todayStr } from "../../lib/mmtTrip";
 import RelatedSeoLinks from "./RelatedSeoLinks";
 import ChennaiClusterLinks from "./ChennaiClusterLinks";
 import SeoPageView from "./SeoPageView";
+import { cityCabLandingPath } from "../../lib/cityCabPaths";
 
 /** Map SEO service slug → search widget trip type so the right tab is pre-selected */
 const SERVICE_TRIP_TYPES = {
@@ -84,7 +85,7 @@ export default function ServiceLandingPage({
       <Breadcrumbs
         items={[
           { name: "Home", path: "/" },
-          { name: city.name, path: `/cab-booking/${city.slug}` },
+          { name: city.name, path: cityCabLandingPath(city.slug) },
           { name: service.name, path }
         ]}
       />
@@ -98,7 +99,7 @@ export default function ServiceLandingPage({
       {city.slug === "chennai" && DRIVER_FOCUS_SLUGS.has(service.slug) ? (
         <p className="mt-3 text-sm text-slate-700">
           The main Chennai page for chauffeur / driver-on-hire is{" "}
-          <Link href="/acting-driver/chennai" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
+          <Link href="/call-drivers-chennai" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
             acting driver in Chennai
           </Link>
           . Book from{" "}
@@ -192,7 +193,7 @@ export default function ServiceLandingPage({
       />
       <div className="mt-2">
         <Link
-          href={isTourPackages ? "/holidays" : `/cab-booking/${city.slug}`}
+          href={isTourPackages ? "/holidays" : cityCabLandingPath(city.slug)}
           className="text-[11px] font-semibold text-[var(--cabzii-brand)] hover:underline sm:text-xs"
         >
           {isTourPackages ? "All holiday packages →" : `All cabs in ${city.name} →`}

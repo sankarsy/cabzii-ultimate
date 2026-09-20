@@ -1,6 +1,7 @@
 import { cityBySlug } from "./seo/cities";
 import { lookupRouteTripData } from "./seo/routeCatalog";
 import { driverTripToSearchQuery } from "./driverTrip";
+import { coordsForPlaceLabel } from "./indiaCityCoords";
 import { todayStr, tripToSearchQuery } from "./mmtTrip";
 
 /** Parse km from route row or lookup hub matrix (e.g. Chennai → Tirupati ≈ 135 km). */
@@ -32,6 +33,9 @@ export function routeToTrip(route, { roundTrip = false } = {}) {
   const toName = toCity?.name || toSlug || "";
   const distanceKm = parseRouteDistanceKm(route);
 
+  const fromCoords = coordsForPlaceLabel(fromName);
+  const toCoords = coordsForPlaceLabel(toName);
+
   return {
     tripType: "outstation",
     from: fromName,
@@ -43,7 +47,9 @@ export function routeToTrip(route, { roundTrip = false } = {}) {
     packageHours: 8,
     packageId: roundTrip ? "outstation_twoway" : "outstation_oneway",
     city: fromName,
-    ...(distanceKm > 0 ? { distanceKm } : {})
+    ...(distanceKm > 0 ? { distanceKm } : {}),
+    ...(fromCoords ? { fromLat: fromCoords.lat, fromLng: fromCoords.lng } : {}),
+    ...(toCoords ? { toLat: toCoords.lat, toLng: toCoords.lng } : {})
   };
 }
 

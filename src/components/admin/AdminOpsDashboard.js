@@ -301,10 +301,6 @@ export default function AdminOpsDashboard({ token, isSuperAdmin }) {
             <Link href="/admin?tab=seoPagesHub" className="font-semibold underline">
               Content → Google SEO pages
             </Link>
-            . City pages:{" "}
-            <Link href="/admin?tab=seoCityPages" className="font-semibold underline">
-              City landing pages
-            </Link>
             . Vehicle SEO (Dzire Tour S):{" "}
             <Link href="/admin?tab=cabs" className="font-semibold underline">
               Catalog → Cabs

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import CabziiLogo from "../brand/CabziiLogo";
 import { BRAND } from "../../lib/brand";
@@ -96,9 +96,8 @@ function SiteHeader({ loggedIn, logout, menuOpen, setMenuOpen, pathname }) {
 }
 
 /** Same logo + search + login navbar on every page. */
-export default function MmtHeader() {
+export default function MmtHeader({ hideOnMobile = false, hidden = false }) {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const router = useRouter();
   const [loggedIn, setLoggedIn] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -137,15 +136,17 @@ export default function MmtHeader() {
 
   const showHeader = headerVisible || menuOpen;
   const hero = useHeroSearch();
-  const activeHeroTab = hero?.activeTab || searchParams.get("tab") || "cabs";
+  const activeHeroTab = hero?.activeTab || "cabs";
   const onLoginPage = pathname === "/login" || pathname.startsWith("/login/");
+
+  if (hidden) return null;
 
   return (
     <>
       <header
         className={`fixed left-0 right-0 top-0 z-[100] border-b border-slate-200 bg-white text-slate-900 shadow-sm transition-transform duration-300 ease-out will-change-transform ${
           showHeader ? "translate-y-0" : "-translate-y-full"
-        }`}
+        } ${hideOnMobile ? "max-lg:hidden" : ""}`}
       >
         <SiteHeader
           loggedIn={loggedIn}

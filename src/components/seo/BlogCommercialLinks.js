@@ -1,7 +1,8 @@
 import Link from "next/link";
+import { cityHasCommercialAirport } from "../../lib/seo/airports";
 import { detectCitySlugFromText } from "../../lib/seo/internalLinks";
 import { cityBySlug } from "../../lib/seo/cities";
-import { cityHasCommercialAirport } from "../../lib/seo/airports";
+import { cityCabLandingPath, actingDriverLandingPath } from "../../lib/cityCabPaths";
 
 export default function BlogCommercialLinks({ title = "", slug = "", excerpt = "" }) {
   const citySlug = detectCitySlugFromText(title, slug, excerpt);
@@ -9,7 +10,7 @@ export default function BlogCommercialLinks({ title = "", slug = "", excerpt = "
 
   const links = city
     ? [
-        { href: `/cab-booking/${city.slug}`, label: `Cab booking ${city.name}` },
+        { href: cityCabLandingPath(city.slug), label: `Cab booking ${city.name}` },
         {
           href: `/services/airport-taxi/${city.slug}`,
           label: cityHasCommercialAirport(city.slug)
@@ -17,7 +18,7 @@ export default function BlogCommercialLinks({ title = "", slug = "", excerpt = "
             : `Airport transfer from ${city.name}`
         },
         { href: `/services/outstation-cab/${city.slug}`, label: `Outstation cab ${city.name}` },
-        { href: `/acting-driver/${city.slug}`, label: `Acting driver ${city.name}` },
+        { href: actingDriverLandingPath(city.slug), label: `Acting driver ${city.name}` },
         { href: "/cabs", label: "Browse all cabs" }
       ]
     : [

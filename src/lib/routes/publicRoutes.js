@@ -1,4 +1,6 @@
 /** Canonical redirects for marketing-friendly URLs (prompt spec + SEO). */
+import { cityCabLandingPath } from "../cityCabPaths";
+
 export const PUBLIC_ROUTE_REDIRECTS = {
   "/cars": "/cabs",
   "/blog": "/blogs",
@@ -9,6 +11,8 @@ export const PUBLIC_ROUTE_REDIRECTS = {
   "/local-rental": "/services/hourly-rental/chennai",
   "/one-way-cabs": "/services/one-way-cab/chennai",
   "/driver-service": "/call-driver",
+  "/call-driver-chennai": "/call-drivers-chennai",
+  "/acting-driver-chennai": "/call-drivers-chennai",
   "/chennai-airport-taxi": "/services/airport-taxi/chennai",
   "/chennai-to-tirupati-cab": "/routes/chennai-to-tirupati-cab",
   "/chennai-to-pondicherry-cab": "/routes/chennai-to-pondicherry-cab",
@@ -56,8 +60,8 @@ export function resolvePublicRouteRedirect(pathname) {
     return `/cabs?vehicle=${encodeURIComponent(query)}`;
   }
   const locationMatch = pathname.match(/^\/location\/([^/]+)\/?$/);
-  if (locationMatch) return `/cab-booking/${locationMatch[1].toLowerCase()}`;
+  if (locationMatch) return cityCabLandingPath(locationMatch[1].toLowerCase());
   const cityMatch = pathname.match(/^\/city\/([^/]+)\/?$/);
-  if (cityMatch) return `/cab-booking/${cityMatch[1]}`;
+  if (cityMatch) return cityCabLandingPath(cityMatch[1].toLowerCase());
   return null;
 }

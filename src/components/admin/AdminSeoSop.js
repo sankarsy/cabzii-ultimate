@@ -55,18 +55,18 @@ export default function AdminSeoSop() {
                 <td className="py-2 pr-3">tour s, dezire, wagon r, bolero, innova taxi booking</td>
                 <td className="py-2 pr-3 font-semibold">City cab booking</td>
                 <td className="py-2 pr-3">
-                  <Link href="/admin?tab=seoCityPages" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
-                    City landing pages
+                  <Link href="/admin?tab=seoPagesHub" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
+                    Google SEO pages
                   </Link>
                 </td>
-                <td className="py-2 font-mono">/cab-booking/chennai</td>
+                <td className="py-2 font-mono">/car-rental/chennai-city-cabs</td>
               </tr>
               <tr className="border-b border-slate-100">
                 <td className="py-2 pr-3">innova car rental, dzire car rental, wagon r rental</td>
                 <td className="py-2 pr-3 font-semibold">Car rental</td>
                 <td className="py-2 pr-3">
-                  <Link href="/admin?tab=seoServices" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
-                    Service landing pages
+                  <Link href="/admin?tab=seoPagesHub" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
+                    Google SEO pages
                   </Link>
                 </td>
                 <td className="py-2 font-mono">/services/car-rental/chennai</td>
@@ -75,8 +75,8 @@ export default function AdminSeoSop() {
                 <td className="py-2 pr-3">cab rental, taxi rental, hourly cab</td>
                 <td className="py-2 pr-3 font-semibold">Cab rental</td>
                 <td className="py-2 pr-3">
-                  <Link href="/admin?tab=seoServices" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
-                    Service landing pages
+                  <Link href="/admin?tab=seoPagesHub" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
+                    Google SEO pages
                   </Link>
                 </td>
                 <td className="py-2 font-mono">/services/cab-rental/chennai</td>
@@ -85,11 +85,11 @@ export default function AdminSeoSop() {
                 <td className="py-2 pr-3">acting driver in vellore / madurai / chennai</td>
                 <td className="py-2 pr-3 font-semibold">Acting driver city</td>
                 <td className="py-2 pr-3">
-                  <Link href="/admin?tab=seoCityPages" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
-                    City landing pages (acting-driver)
+                  <Link href="/admin?tab=seoPagesHub" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
+                    Google SEO pages
                   </Link>
                 </td>
-                <td className="py-2 font-mono">/acting-driver/{"{city}"}</td>
+                <td className="py-2 font-mono">/acting-driver/{"{city}"} or /call-drivers-chennai</td>
               </tr>
               <tr className="border-b border-slate-100">
                 <td className="py-2 pr-3">one specific car (your Dzire Tour S listing)</td>

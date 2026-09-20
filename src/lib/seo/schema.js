@@ -1,6 +1,7 @@
 import { HOME_PAGE_FAQS } from "./content";
 import { badgesToSchemaProperties, SITE_SITELINKS } from "./serpRichData";
 import { absoluteImageUrl } from "../imageOptimize";
+import { cityCabLandingPath } from "../cityCabPaths";
 import {
   SITE_URL,
   SITE_NAME,
@@ -646,7 +647,7 @@ export function locationsIndexJsonLd(cities) {
       "@type": "ListItem",
       position: i + 1,
       name: `Cab booking ${city.name}`,
-      url: `${SITE_URL}/cab-booking/${city.slug}`
+      url: `${SITE_URL}${cityCabLandingPath(city.slug)}`
     }))
   };
 }

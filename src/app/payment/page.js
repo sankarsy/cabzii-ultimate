@@ -13,7 +13,7 @@ import OffersSheet from "../../components/payment/OffersSheet";
 import { authHeaders, buildLoginHref, getToken, getUser, normalizeMobileInput } from "../../lib/auth";
 import { fetchJson } from "../../lib/apiClient";
 import { clearCheckoutDraft, loadCheckoutDraft } from "../../lib/checkoutStorage";
-import { isPaymentMethodEnabled } from "../../lib/paymentMethods";
+import { couponDiscountAmount, isPaymentMethodEnabled } from "../../lib/paymentMethods";
 import { readTripCoords } from "../../lib/tripCoords";
 import { parseTripSearchParams } from "../../lib/mmtTrip";
 import { callDriverServiceById } from "../../lib/callDriver";
@@ -39,7 +39,10 @@ export default function PaymentPage({ searchParams }) {
   const method = "cash";
   const [paymentOpen, setPaymentOpen] = useState(false);
   const [offersOpen, setOffersOpen] = useState(false);
-  const [appliedCoupon, setAppliedCoupon] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState(() => {
+    const code = firstParam(searchParams?.coupon).toUpperCase();
+    return code === "CABZII500" || code === "FIRST100" || code === "WEEKEND10" ? code : "";
+  });
   const [customerName, setCustomerName] = useState(firstParam(searchParams?.passengerName));
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -59,9 +62,11 @@ export default function PaymentPage({ searchParams }) {
   const taxes = Number(searchParams?.taxes ?? 0);
   const baseFare = Number(searchParams?.baseFare ?? 0);
   const totalParam = Number(searchParams?.total ?? 0);
-  const couponDiscount = appliedCoupon === "CABZII500" ? 500 : appliedCoupon === "FIRST100" ? 100 : appliedCoupon === "WEEKEND10" ? Math.round(baseFare * 0.1) : 0;
+  const couponDiscount = couponDiscountAmount(appliedCoupon, baseFare);
   const totalBeforeCoupon = totalParam > 0 ? totalParam : baseFare + taxes;
-  const total = Math.max(0, totalBeforeCoupon - couponDiscount);
+  const netAfterCoupon = Math.max(0, totalBeforeCoupon - couponDiscount);
+  const payMode = firstParam(searchParams?.payMode);
+  const total = payMode === "advance" ? Math.round(netAfterCoupon * 0.5) : netAfterCoupon;
   const listPrice = Number(searchParams?.listPrice ?? baseFare);
   const discountPct = Number(searchParams?.discountPct ?? 0);
   const discountAmount = Number(searchParams?.discountAmount ?? Math.max(0, listPrice - baseFare));

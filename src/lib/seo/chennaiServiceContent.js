@@ -44,10 +44,10 @@ const CHENNAI_AIRPORT = `
 <li>Compare the package shown — local hour/km slab or the live airport quote</li>
 <li>Confirm — driver details follow by SMS or WhatsApp</li>
 </ol>
-<p>Need a chauffeur in <em>your</em> car instead of a Cabzii taxi? That is <a href="/acting-driver/chennai">acting driver Chennai</a>, booked at <a href="/call-driver">Call Driver</a> — not this airport-taxi page.</p>
+<p>Need a chauffeur in <em>your</em> car instead of a Cabzii taxi? That is <a href="/call-drivers-chennai">acting driver Chennai</a>, booked at <a href="/call-driver">Call Driver</a> — not this airport-taxi page.</p>
 
 <h2>Related Chennai services</h2>
-<p><a href="/cab-booking/chennai">Cab booking Chennai</a> · <a href="/services/hourly-rental/chennai">Hourly / full-day taxi</a> · <a href="/services/one-way-cab/chennai">One-way cab</a> · <a href="/tariff">Tariff</a></p>
+<p><a href="/car-rental/chennai-city-cabs">Cab booking Chennai</a> · <a href="/services/hourly-rental/chennai">Hourly / full-day taxi</a> · <a href="/services/one-way-cab/chennai">One-way cab</a> · <a href="/tariff">Tariff</a></p>
 `;
 
 const CHENNAI_OUTSTATION = `
@@ -119,12 +119,12 @@ const CHENNAI_LOCAL = `
 const CHENNAI_CAR_RENTAL = `
 <h2>Car rental in Chennai is chauffeur-driven</h2>
 <p>Cabzii <strong>does not offer self-drive car rental</strong>. “Car rental Chennai” here means <strong>chauffeur-driven</strong> local hire — a cab with a professional driver on a local hour/km package — the same fleet as cab booking: Dzire, Amaze, Ertiga, Carens, Innova, Innova Crysta and other models on the <a href="/tariff">published tariff</a>.</p>
-<p>Use this page for full-day city hire. Related products: <a href="/cab-booking/chennai">cab booking</a>, <a href="/services/outstation-cab/chennai">outstation</a>, <a href="/services/airport-taxi/chennai">airport taxi</a>, <a href="/acting-driver/chennai">acting driver</a> (your car), <a href="/services/tempo-traveller/chennai">Tempo Traveller</a>.</p>
+<p>Use this page for full-day city hire. Related products: <a href="/car-rental/chennai-city-cabs">cab booking</a>, <a href="/services/outstation-cab/chennai">outstation</a>, <a href="/services/airport-taxi/chennai">airport taxi</a>, <a href="/call-drivers-chennai">acting driver</a> (your car), <a href="/services/tempo-traveller/chennai">Tempo Traveller</a>.</p>
 `;
 
 const CHENNAI_CAB_RENTAL = `
 <h2>Cab rental in Chennai</h2>
-<p>Cab rental is the hourly and full-day <strong>chauffeur-driven</strong> city product. It is not a self-drive desk. Airport and outstation use their own tabs on <a href="/cab-booking/chennai">cab booking Chennai</a>. Rates: <a href="/tariff">tariff</a>. Same-intent wording as <a href="/services/car-rental/chennai">car rental Chennai</a> — one fleet, two search phrases.</p>
+<p>Cab rental is the hourly and full-day <strong>chauffeur-driven</strong> city product. It is not a self-drive desk. Airport and outstation use their own tabs on <a href="/car-rental/chennai-city-cabs">cab booking Chennai</a>. Rates: <a href="/tariff">tariff</a>. Same-intent wording as <a href="/services/car-rental/chennai">car rental Chennai</a> — one fleet, two search phrases.</p>
 `;
 
 const CHENNAI_TEMPO = `
@@ -136,17 +136,17 @@ const CHENNAI_TEMPO = `
 
 <h2>When groups book Tempo from Chennai</h2>
 <p><strong>Local:</strong> weddings, airport group pickup, corporate outings. <strong>Outstation:</strong> family highway trips. <strong>Pilgrimage:</strong> Tirupati, Kanchipuram, Tiruvannamalai, Rameswaram circuits — use existing route pages plus this vehicle class. <strong>Multi-day:</strong> holiday packages on <a href="/holidays">holidays</a> when a vendor has listed a tour; otherwise book outstation van days.</p>
-<p>Related: <a href="/cab-booking/chennai">cab booking</a>, <a href="/services/outstation-cab/chennai">outstation</a>, <a href="/holidays?category=pilgrimage">pilgrimage packages</a>.</p>
+<p>Related: <a href="/car-rental/chennai-city-cabs">cab booking</a>, <a href="/services/outstation-cab/chennai">outstation</a>, <a href="/holidays?category=pilgrimage">pilgrimage packages</a>.</p>
 `;
 
 const CHENNAI_DRIVER_ON_HIRE = `
 <h2>Driver on hire is the same service as acting driver</h2>
-<p>This URL matches searches for “driver on hire Chennai”. The full Chennai guide is <a href="/acting-driver/chennai">acting driver in Chennai</a>. Booking starts at <a href="/call-driver">Call Driver</a>. Do not create a second booking — one confirmation assigns a chauffeur for your own car (local, airport or outstation).</p>
+<p>This URL matches searches for “driver on hire Chennai”. The full Chennai guide is <a href="/call-drivers-chennai">acting driver in Chennai</a>. Booking starts at <a href="/call-driver">Call Driver</a>. Do not create a second booking — one confirmation assigns a chauffeur for your own car (local, airport or outstation).</p>
 `;
 
 const CHENNAI_CHAUFFEUR = `
 <h2>Chauffeur service in Chennai</h2>
-<p>Corporate days, wedding cars and multi-stop driving use the same Call Driver assignment as acting driver. City guide: <a href="/acting-driver/chennai">acting driver in Chennai</a>. Book: <a href="/call-driver">Call Driver</a>. A Cabzii taxi (vehicle included) is <a href="/cab-booking/chennai">cab booking</a>, not this page.</p>
+<p>Corporate days, wedding cars and multi-stop driving use the same Call Driver assignment as acting driver. City guide: <a href="/call-drivers-chennai">acting driver in Chennai</a>. Book: <a href="/call-driver">Call Driver</a>. A Cabzii taxi (vehicle included) is <a href="/car-rental/chennai-city-cabs">cab booking</a>, not this page.</p>
 `;
 
 const CHENNAI_TOURS = `

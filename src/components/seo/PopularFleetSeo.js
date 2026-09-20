@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { FLEET_MODELS } from "../../lib/seo/vehicleKeywordMap";
+import { cityCabLandingPath } from "../../lib/cityCabPaths";
 
 export default function PopularFleetSeo({ cityName = "Chennai", citySlug = "chennai" }) {
-  const bookingHref = `/cab-booking/${citySlug}`;
+  const bookingHref = cityCabLandingPath(citySlug);
   const carRentalHref = `/services/car-rental/${citySlug}`;
   const cabRentalHref = `/services/cab-rental/${citySlug}`;
 

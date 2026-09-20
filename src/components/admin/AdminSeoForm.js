@@ -1,6 +1,7 @@
 "use client";
 
 import { previewCatalogSlug } from "../../lib/catalogProduct";
+import { seoCityPublicPath } from "../../lib/cityCabPaths";
 import ImageUploadField from "./ImageUploadField";
 
 function inputCls() {
@@ -164,14 +165,14 @@ export function AdminSeoServiceForm({ form, onChange, authToken = "" }) {
 
 export function AdminSeoCityPageForm({ form, onChange }) {
   const set = (patch) => onChange((prev) => ({ ...prev, ...patch }));
-  const previewPath = `/${form.pageType || "cab-booking"}/${(form.citySlug || "…").toLowerCase().replace(/[^a-z0-9-…]/g, "")}`;
+  const previewPath = seoCityPublicPath(form.pageType || "cab-booking", form.citySlug || "chennai");
 
   return (
     <div className="mt-3 space-y-4">
       <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-900">
         <p className="font-semibold">City landing pages — this is the Google result for “cab booking Chennai”</p>
         <ul className="mt-1 list-inside list-disc space-y-0.5 text-emerald-800">
-          <li>Live URL is always /cab-booking/&#123;city&#125; or /acting-driver/&#123;city&#125; — city must already exist on the site</li>
+          <li>Live URL is /car-rental/&#123;city&#125;-city-cabs (cabs) or /acting-driver/&#123;city&#125; (Chennai acting driver is /call-drivers-chennai)</li>
           <li>Click <strong>Create</strong>, set page type + city slug (chennai), then save SEO title and body</li>
           <li>Leave a field empty to keep the website&apos;s auto-generated copy</li>
           <li>One entry per page type + city. Super admin only (Admin Login, not Travel Partner)</li>
@@ -182,8 +183,8 @@ export function AdminSeoCityPageForm({ form, onChange }) {
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
           <Field label="Page type *">
             <select className={inputCls()} value={form.pageType || "cab-booking"} onChange={(e) => set({ pageType: e.target.value })}>
-              <option value="cab-booking">Cab booking city (/cab-booking/…)</option>
-              <option value="acting-driver">Acting driver city (/acting-driver/…)</option>
+              <option value="cab-booking">Cab booking city (/car-rental/…-city-cabs)</option>
+              <option value="acting-driver">Acting driver city (/acting-driver/…, Chennai → /call-drivers-chennai)</option>
             </select>
           </Field>
           <Field label="City slug *" hint="e.g. chennai, bengaluru, madurai">

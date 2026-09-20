@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import JsonLd from "../../../components/seo/JsonLd";
 import RouteLandingPage from "../../../components/seo/RouteLandingPage";
 import { resolveRouteBySlug } from "../../../lib/seo/cmsResolve";
-import { fetchCatalogForCity } from "../../../lib/serverCatalog";
+import { fetchCabsForTrip } from "../../../lib/serverCatalog";
 import {
   allRouteSlugsForBuild,
   breadcrumbJsonLd,
@@ -15,6 +15,8 @@ import {
   tunedRouteTitle
 } from "../../../lib/seo";
 import { classifyRoute } from "../../../lib/seo/indexation";
+import { cityCabLandingPath } from "../../../lib/cityCabPaths";
+import { routeToTrip } from "../../../lib/routeTrip";
 
 import { SEO_REVALIDATE_SECONDS } from "../../../lib/revalidation/constants";
 
@@ -62,11 +64,12 @@ export default async function RoutePage({ params }) {
 
   const path = `/routes/${route.slug}`;
   const faqs = getRouteFaqs(route);
-  const cabs = await fetchCatalogForCity("cabs", route.fromCity?.name, 12);
+  const trip = routeToTrip(route);
+  const cabs = await fetchCabsForTrip(trip, 50);
   const jsonLd = [
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
-      { name: route.fromCity.name, path: `/cab-booking/${route.fromCity.slug}` },
+      { name: route.fromCity.name, path: cityCabLandingPath(route.fromCity.slug) },
       { name: `${route.fromCity.name} to ${route.toCity.name}`, path }
     ]),
     routeServiceJsonLd({

@@ -2,7 +2,7 @@
  * SEO foundation QA — run with:
  * node --experimental-vm-modules scripts/qa-seo-foundation.mjs
  */
-import { relatedLinksForPage } from "../src/lib/seo/internalLinks.js";
+import { relatedLinksForPage, actingDriverLinks } from "../src/lib/seo/internalLinks.js";
 import { cityAreas, getCityFaqs, getServiceFaqs } from "../src/lib/seo/content.js";
 import { cityHasCommercialAirport, airportInfoForCity } from "../src/lib/seo/airports.js";
 import { getServiceH1, getCabBookingMeta, clampDescription, getServiceMeta } from "../src/lib/seo/programmaticMeta.js";
@@ -28,6 +28,11 @@ import { SEO_REVALIDATE_SECONDS } from "../src/lib/revalidation/constants.js";
 import { isSafeSeoPath, pathsFromKind } from "../src/lib/revalidation/paths.js";
 import { MAIN_PAGE_CITY_SLUGS } from "../src/lib/seo/cities.js";
 import { MAIN_PAGE_SERVICE_SLUGS } from "../src/lib/seo/services.js";
+import { cityCabLandingPath } from "../src/lib/cityCabPaths.js";
+import { getCityCabData } from "../src/data/city-cabs.js";
+import { buildCityCabJsonLd, buildCallDriversChennaiJsonLd } from "../src/lib/schema.js";
+import { resolveSeoAliasPath } from "../src/lib/seo/urlAliases.js";
+import { CALL_DRIVERS_CHENNAI } from "../src/data/call-drivers-chennai.js";
 
 const failures = [];
 
@@ -50,8 +55,12 @@ assert(airportInfoForCity("vellore")?.type === "nearest", "Vellore airport copy 
 
 const velloreLinks = relatedLinksForPage("cabs", "vellore").map((l) => l.href);
 assert(
-  velloreLinks.includes("/cab-booking/vellore"),
-  "Vellore hub related links must include /cab-booking/vellore"
+  velloreLinks.includes(cityCabLandingPath("vellore")),
+  "Vellore hub related links must include Vellore city cabs landing"
+);
+assert(
+  !velloreLinks.includes(cityCabLandingPath("chennai")),
+  "Vellore hub related links must not include Chennai city cabs landing"
 );
 assert(
   !velloreLinks.includes("/cab-booking/chennai"),
@@ -63,7 +72,8 @@ assert(
 );
 
 const trichyLinks = relatedLinksForPage("cabs", "trichy").map((l) => l.href);
-assert(trichyLinks.includes("/cab-booking/trichy"), "Trichy related links stay in Trichy");
+assert(trichyLinks.includes(cityCabLandingPath("trichy")), "Trichy related links stay in Trichy");
+assert(!trichyLinks.includes(cityCabLandingPath("chennai")), "Trichy related links must not force Chennai hub");
 assert(!trichyLinks.includes("/cab-booking/chennai"), "Trichy related links must not force Chennai hub");
 
 const velloreAirportH1 = getServiceH1(airportTaxi, vellore);
@@ -154,12 +164,17 @@ assert(MAIN_PAGE_CITY_SLUGS.includes("trichy"), "Trichy stays a main SEO city");
 assert(MAIN_PAGE_CITY_SLUGS.includes("madurai"), "Madurai stays a main SEO city");
 assert(MAIN_PAGE_CITY_SLUGS.includes("tirupati"), "Tirupati stays a main SEO city");
 assert(MAIN_PAGE_SERVICE_SLUGS.includes("airport-taxi"), "Airport taxi stays a main SEO service");
-assert(isSafeSeoPath("/cab-booking/chennai"), "City hub paths are safe to revalidate");
+assert(isSafeSeoPath("/cab-booking/chennai"), "Legacy city hub paths are safe to revalidate");
+assert(isSafeSeoPath(cityCabLandingPath("chennai")), "City cab landing paths are safe to revalidate");
 assert(!isSafeSeoPath("/api/revalidate"), "Open revalidate APIs are not safe paths");
 assert(!isSafeSeoPath("/payment"), "Payment paths must not be revalidated as SEO");
 assert(
   pathsFromKind("seo-city-page", { pageType: "cab-booking", citySlug: "madurai" }).includes("/cab-booking/madurai"),
-  "City CMS updates revalidate only that city page"
+  "City CMS updates revalidate the legacy city page"
+);
+assert(
+  pathsFromKind("seo-city-page", { pageType: "cab-booking", citySlug: "madurai" }).includes(cityCabLandingPath("madurai")),
+  "City CMS updates revalidate the city cab landing"
 );
 assert(
   pathsFromKind("seo-route", { slug: "chennai-to-tirupati-cab" }).includes("/routes/chennai-to-tirupati-cab"),
@@ -213,6 +228,89 @@ assert(report.bookingDataAvailable === false, "Do not invent booking conversion 
 assert(report.revenueDataAvailable === false, "Do not invent GMV/revenue");
 assert(report.tnCities.length >= 10, "TN city ranking must exist");
 assert(report.nationalExpansion.length >= 8, "National expansion is a report, not new URLs");
+
+const chennaiCab = getCityCabData("chennai");
+assert(chennaiCab, "Chennai city cab landing data exists");
+assert(chennaiCab.title.length <= 60, "City cab title must be max 60 chars");
+assert(chennaiCab.description.length <= 155, "City cab description must be max 155 chars");
+assert(/outstation/i.test(chennaiCab.description) && /airport/i.test(chennaiCab.description), "City cab description mentions outstation and airport");
+assert(/full-day/i.test(chennaiCab.description), "City cab description mentions full-day cabs");
+assert(/50%/.test(chennaiCab.description), "City cab description uses real 50% advance");
+assert(!/pay 20%/i.test(chennaiCab.description), "Do not claim 20% advance");
+assert(!/free cancellation/i.test(chennaiCab.description), "Do not claim free cancellation");
+assert(chennaiCab.path === "/car-rental/chennai-city-cabs", "Chennai landing path is city-cabs URL");
+assert(chennaiCab.cabTypes.map((c) => c.id).join(",") === "hatchback,sedan,suv,tempo", "Four published cab types");
+assert(chennaiCab.faqs.length >= 4, "City cab FAQs exist");
+assert(chennaiCab.faqs.every((f) => f.question && f.answer), "FAQ questions and answers are paired");
+assert(!resolveSeoAliasPath("/car-rental/chennai-city-cabs"), "City cab landing is not aliased away");
+assert(resolveSeoAliasPath("/car-rental/chennai") === "/services/car-rental/chennai", "Bare /car-rental/{city} still maps to the service page");
+
+const graph = buildCityCabJsonLd({
+  cityName: "Chennai",
+  pageUrl: "https://www.cabzii.in/car-rental/chennai-city-cabs",
+  path: "/car-rental/chennai-city-cabs",
+  telephone: "+91-9944197416",
+  priceRange: "₹₹",
+  cabTypes: chennaiCab.cabTypes,
+  faqs: chennaiCab.faqs,
+  description: chennaiCab.description
+});
+const types = (graph["@graph"] || []).map((node) => node["@type"]);
+assert(types.includes("TaxiService"), "JSON-LD includes TaxiService");
+assert(types.includes("BreadcrumbList"), "JSON-LD includes BreadcrumbList");
+assert(types.includes("FAQPage"), "JSON-LD includes FAQPage");
+assert(types.includes("WebPage"), "JSON-LD includes WebPage");
+assert(types.includes("Organization"), "JSON-LD includes Organization");
+const taxiNode = graph["@graph"].find((node) => node["@type"] === "TaxiService");
+assert(!taxiNode.aggregateRating, "Do not emit aggregateRating without real review stats");
+assert(taxiNode.hasOfferCatalog.itemListElement.length === 4, "Offer catalog lists four cab types");
+const faqNode = graph["@graph"].find((node) => node["@type"] === "FAQPage");
+assert(faqNode.mainEntity[0].name === chennaiCab.faqs[0].question, "FAQ schema uses the same array as the page");
+
+for (const slug of MAIN_PAGE_CITY_SLUGS) {
+  const landing = getCityCabData(slug);
+  assert(landing, `City cab data exists for ${slug}`);
+  assert(landing.title.length <= 60, `Title <= 60 for ${slug} (${landing.title.length})`);
+  assert(landing.description.length <= 155, `Description <= 155 for ${slug} (${landing.description.length})`);
+  assert(landing.h1.startsWith("Taxi Services in "), `H1 pattern for ${slug}`);
+}
+
+const driverLanding = CALL_DRIVERS_CHENNAI;
+assert(driverLanding.path === "/call-drivers-chennai", "Acting driver landing URL");
+assert(
+  actingDriverLinks().some((link) => link.href === "/call-drivers-chennai"),
+  "Internal acting-driver links send Chennai to /call-drivers-chennai"
+);
+assert(driverLanding.title.length <= 60, `Acting driver title <= 60 (${driverLanding.title.length})`);
+assert(driverLanding.description.length >= 140 && driverLanding.description.length <= 160, "Acting driver description 140-160");
+assert(!/chennaitravels/i.test(JSON.stringify(driverLanding)), "Do not publish Chennai Travels branding on Cabzii");
+assert(driverLanding.faqs.length >= 8 && driverLanding.faqs.length <= 10, "8-10 acting driver FAQs");
+assert(driverLanding.related.length <= 6, "Related services max 6");
+assert(driverLanding.tariffRows[0].standard === 500, "City 4hr min uses published ₹500");
+assert(resolveSeoAliasPath("/acting-driver-chennai") === "/call-drivers-chennai", "acting-driver-chennai alias");
+assert(resolveSeoAliasPath("/call-drivers-chennai") == null, "Canonical call-drivers-chennai is not aliased away");
+assert(isSafeSeoPath("/call-drivers-chennai"), "Call drivers landing is safe to revalidate");
+assert(
+  pathsFromKind("seo-city-page", { pageType: "acting-driver", citySlug: "chennai" }).includes("/call-drivers-chennai"),
+  "Acting-driver CMS for Chennai revalidates the new landing"
+);
+const driverGraph = buildCallDriversChennaiJsonLd({
+  pageUrl: "https://www.cabzii.in/call-drivers-chennai",
+  name: driverLanding.h1,
+  description: driverLanding.description,
+  telephone: driverLanding.telephoneSchema,
+  email: driverLanding.email,
+  sameAs: [],
+  logoUrl: "https://www.cabzii.in/android-chrome-512x512.png",
+  address: driverLanding.address,
+  offers: [{ name: "City call driver", price: 500 }],
+  faqs: driverLanding.faqs
+});
+const driverTypes = (driverGraph["@graph"] || []).map((node) => node["@type"]);
+assert(driverTypes.includes("LocalBusiness") && driverTypes.includes("Service") && driverTypes.includes("FAQPage"), "Call driver graph types");
+const driverFaq = driverGraph["@graph"].find((node) => node["@type"] === "FAQPage");
+assert(driverFaq.mainEntity[0].name === driverLanding.faqs[0].question, "Driver FAQ schema matches page data");
+assert(!JSON.stringify(driverGraph).includes("aggregateRating"), "No fake driver ratings in schema");
 
 if (failures.length) {
   console.error(`SEO foundation QA FAILED (${failures.length}):`);

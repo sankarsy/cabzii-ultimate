@@ -5,6 +5,7 @@ import { airportInfoForCity } from "./airports";
 import { cityHubContext, driverCityContext } from "./cityHubCopy";
 import { chennaiCabUniqueHtml, chennaiDriverUniqueHtml, chennaiServiceUniqueHtml } from "./chennaiCluster";
 import { featuredRouteUniqueHtml } from "./featuredRouteContent";
+import { cityCabLandingPath, actingDriverLandingPath } from "../cityCabPaths";
 
 function link(href, label) {
   return `<a href="${href}">${label}</a>`;
@@ -151,10 +152,10 @@ ${benefitsList([
 ])}
 
 <h2>Acting driver in ${name}</h2>
-<p>Need a driver for your own car? Visit ${link(`/acting-driver/${city.slug}`, `acting driver ${name}`)} for hourly, daily and outstation chauffeur packages. Cabzii assigns a professional driver after you book — this is not a public driver directory.</p>
+<p>Need a driver for your own car? Visit ${link(actingDriverLandingPath(city.slug), `acting driver ${name}`)} for hourly, daily and outstation chauffeur packages. Cabzii assigns a professional driver after you book — this is not a public driver directory.</p>
 
 <h2>Book your ${name} cab now</h2>
-<p>Use the search widget above or browse ${link(`/cab-booking/${city.slug}`, `cab booking ${name}`)}, ${link("/cabs", "all cabs")} and ${link("/blogs", "travel guides")}. For same-day outstation departures, book early on festival weekends.</p>
+<p>Use the search widget above or browse ${link(cityCabLandingPath(city.slug), `cab booking ${name}`)}, ${link("/cabs", "all cabs")} and ${link("/blogs", "travel guides")}. For same-day outstation departures, book early on festival weekends.</p>
 `;
 }
 
@@ -182,7 +183,7 @@ function buildServiceBody(service, city) {
     "outstation-cab": `<p><strong>Outstation cab ${name}</strong> is for trips that leave city limits — family visits, temple pilgrimages, factory audits and multi-day tours. Packages include base km and driver allowance rules so highway pricing is clear before you pay.</p>`,
     "one-way-cab": `<p><strong>One way taxi ${name}</strong> drops you in another city without paying for an empty return. Use it for relocations, temple visits and business transfers. Route pages: ${routes || "see Cabzii routes"}.</p>`,
     "cab-rental": `<p><strong>Cab rental in ${name}</strong> is chauffeur-driven local hire — 4hr/40km and 8hr/80km slabs — not a self-drive desk. You book a Cabzii cab with driver for weddings, city tours and corporate days across ${areaText}.</p>
-<p>Compare this with ${link(servicePath(SEO_SERVICES.find((s) => s.slug === "car-rental") || { slug: "car-rental" }, city), `car rental ${name}`)} when you want the same hourly model described as car hire, and with ${link(`/cab-booking/${city.slug}`, `cab booking ${name}`)} for airport or outstation tabs.</p>`,
+<p>Compare this with ${link(servicePath(SEO_SERVICES.find((s) => s.slug === "car-rental") || { slug: "car-rental" }, city), `car rental ${name}`)} when you want the same hourly model described as car hire, and with ${link(cityCabLandingPath(city.slug), `cab booking ${name}`)} for airport or outstation tabs.</p>`,
     "car-rental": `<p><strong>Car rental in ${name}</strong> on Cabzii is a driver-included car for local packages. It is not a vendor-branded self-drive fleet page. Search hourly or full-day Innova, Dzire, Wagon R or Ertiga packages, then confirm.</p>
 <p>For taxi-style city packages see ${link(servicePath(SEO_SERVICES.find((s) => s.slug === "cab-rental") || { slug: "cab-rental" }, city), `cab rental ${name}`)}. For outstation, use ${link(`/services/outstation-cab/${city.slug}`, `outstation cab ${name}`)}.</p>`
   };
@@ -338,7 +339,7 @@ ${benefitsList([
 <p>Highway trips from ${from} to ${to} may include toll plazas — keep FASTag-ready vehicles or confirm cash toll handling with your vendor. Carry water, light snacks and confirmation of drop landmark pin. For round-trip needs, you can book ${link(`/routes/${reverse}`, `${to} to ${from} cab`)} as a separate one-way or choose a round-trip outstation package from ${link(`/services/outstation-cab/${fromCity.slug}`, `outstation cab ${from}`)}.</p>
 
 <h2>Related services in ${from}</h2>
-<p>Planning more travel from ${from}? Explore ${link(`/cab-booking/${fromCity.slug}`, `cab booking ${from}`)}, ${link(`/services/airport-taxi/${fromCity.slug}`, `airport taxi ${from}`)}, ${link(`/services/one-way-cab/${fromCity.slug}`, `one way cab ${from}`)} and ${link(`/services/outstation-cab/${fromCity.slug}`, `outstation cab ${from}`)} on Cabzii.</p>
+<p>Planning more travel from ${from}? Explore ${link(cityCabLandingPath(fromCity.slug), `cab booking ${from}`)}, ${link(`/services/airport-taxi/${fromCity.slug}`, `airport taxi ${from}`)}, ${link(`/services/one-way-cab/${fromCity.slug}`, `one way cab ${from}`)} and ${link(`/services/outstation-cab/${fromCity.slug}`, `outstation cab ${from}`)} on Cabzii.</p>
 
 <h2>What is included in ${from} to ${to} one-way fare?</h2>
 <p>Typical inclusions: base one-way fare for selected vehicle class, driver charges for the forward journey, and standard highway driving time. Extras that may apply: toll plazas (FASTag or cash), state border permits for certain routes, parking at destination, and driver night allowance for late departures. Cabzii shows these line items before you pay — no surprise add-ons at drop point.</p>
@@ -366,7 +367,7 @@ function buildCityDriverBody(city) {
 
 <h2>How acting driver booking works in ${name}</h2>
 <ol>
-<li>Open ${link(`/acting-driver/${city.slug}`, `acting driver ${name}`)} or ${link("/call-driver", "Call Driver")}</li>
+<li>Open ${link(actingDriverLandingPath(city.slug), `acting driver ${name}`)} or ${link("/call-driver", "Call Driver")}</li>
 <li>Choose local, outstation or chauffeur package and enter date, time and pickup</li>
 <li>Add your vehicle details where asked</li>
 <li>Confirm — Cabzii assigns an available driver</li>
@@ -376,7 +377,7 @@ function buildCityDriverBody(city) {
 <p>Drivers reach you across ${areaText}. ${airport.pickupNote}</p>
 
 <h2>Related ${name} travel</h2>
-<p>Need a Cabzii cab instead of your own car? Use ${link(`/cab-booking/${city.slug}`, `cab booking ${name}`)}, ${link(`/services/cab-rental/${city.slug}`, `cab rental ${name}`)} or ${link(`/services/outstation-cab/${city.slug}`, `outstation cab ${name}`)}.</p>
+<p>Need a Cabzii cab instead of your own car? Use ${link(cityCabLandingPath(city.slug), `cab booking ${name}`)}, ${link(`/services/cab-rental/${city.slug}`, `cab rental ${name}`)} or ${link(`/services/outstation-cab/${city.slug}`, `outstation cab ${name}`)}.</p>
 `;
 }
 

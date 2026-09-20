@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import CitySeoPage from "../../../components/CitySeoPage";
 import JsonLd from "../../../components/seo/JsonLd";
 import {
@@ -22,6 +22,7 @@ import { getCityLandingBody } from "../../../lib/seo/landingContent";
 import { resolveMediaUrl } from "../../../lib/media";
 
 import { SEO_REVALIDATE_SECONDS } from "../../../lib/revalidation/constants";
+import { CALL_DRIVERS_CHENNAI_PATH } from "../../../data/call-drivers-chennai";
 
 export const revalidate = SEO_REVALIDATE_SECONDS;
 export const dynamicParams = true;
@@ -40,6 +41,9 @@ export async function generateMetadata({ params }) {
       noindex: true,
       follow: false
     });
+  }
+  if (city.slug === "chennai") {
+    permanentRedirect(CALL_DRIVERS_CHENNAI_PATH);
   }
   const path = `/acting-driver/${city.slug}`;
   const cms = await fetchSeoCityPage("acting-driver", city.slug);
@@ -62,6 +66,9 @@ export async function generateMetadata({ params }) {
 export default async function ActingDriverCityPage({ params }) {
   const city = cityBySlug(params.city);
   if (!city) notFound();
+  if (city.slug === "chennai") {
+    permanentRedirect(CALL_DRIVERS_CHENNAI_PATH);
+  }
 
   const path = `/acting-driver/${city.slug}`;
   const cms = await fetchSeoCityPage("acting-driver", city.slug);
@@ -90,7 +97,7 @@ export default async function ActingDriverCityPage({ params }) {
   return (
     <>
       <JsonLd data={jsonLd} />
-      <CitySeoPage city={city} variant="driver" extraBody={extraBody} headingOverride={cms?.h1 || ""} />
+      <CitySeoPage city={city} extraBody={extraBody} headingOverride={cms?.h1 || ""} />
     </>
   );
 }

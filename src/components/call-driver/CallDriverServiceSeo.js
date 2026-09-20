@@ -52,7 +52,7 @@ export default function CallDriverServiceSeo({ serviceId, compact = false, admin
             All Call Driver services
           </Link>
           {" · "}
-          <Link href="/acting-driver/chennai" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
+          <Link href="/call-drivers-chennai" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
             Acting driver Chennai
           </Link>
           {" · "}

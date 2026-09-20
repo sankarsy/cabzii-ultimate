@@ -8,13 +8,13 @@
 export { chennaiServiceUniqueHtml } from "./chennaiServiceContent";
 
 export const CHENNAI_MONEY_LINKS = [
-  { href: "/cab-booking/chennai", label: "Cab booking in Chennai", intent: "cab" },
+  { href: "/car-rental/chennai-city-cabs", label: "Cab booking in Chennai", intent: "cab" },
   { href: "/services/airport-taxi/chennai", label: "Chennai airport taxi", intent: "airport" },
   { href: "/services/hourly-rental/chennai", label: "Hourly / full-day taxi", intent: "local" },
   { href: "/services/outstation-cab/chennai", label: "Outstation cab Chennai", intent: "outstation" },
   { href: "/services/one-way-cab/chennai", label: "One-way cab from Chennai", intent: "one-way" },
   { href: "/services/car-rental/chennai", label: "Car rental (with driver)", intent: "rental" },
-  { href: "/acting-driver/chennai", label: "Acting driver in Chennai", intent: "driver" },
+  { href: "/call-drivers-chennai", label: "Acting driver in Chennai", intent: "driver" },
   { href: "/call-driver", label: "Book Call Driver", intent: "book-driver" },
   { href: "/services/tempo-traveller/chennai", label: "Tempo Traveller Chennai", intent: "tempo" },
   { href: "/tariff", label: "Chennai cab tariff", intent: "tariff" },
@@ -28,8 +28,8 @@ export const CHENNAI_MONEY_LINKS = [
 ];
 
 export const CHENNAI_KEYWORD_URL_MAP = [
-  { keyword: "cab booking Chennai", url: "/cab-booking/chennai" },
-  { keyword: "taxi booking Chennai", url: "/cab-booking/chennai" },
+  { keyword: "cab booking Chennai", url: "/car-rental/chennai-city-cabs" },
+  { keyword: "taxi booking Chennai", url: "/car-rental/chennai-city-cabs" },
   { keyword: "local taxi Chennai", url: "/services/local-taxi/chennai" },
   { keyword: "hourly cab Chennai", url: "/services/hourly-rental/chennai" },
   { keyword: "full day taxi Chennai", url: "/services/hourly-rental/chennai" },
@@ -44,9 +44,9 @@ export const CHENNAI_KEYWORD_URL_MAP = [
   { keyword: "round trip cab Chennai", url: "/services/outstation-cab/chennai" },
   { keyword: "outstation cab Chennai", url: "/services/outstation-cab/chennai" },
   { keyword: "one way cab Chennai", url: "/services/one-way-cab/chennai" },
-  { keyword: "acting driver Chennai", url: "/acting-driver/chennai" },
-  { keyword: "call driver Chennai", url: "/call-driver" },
-  { keyword: "driver on hire Chennai", url: "/acting-driver/chennai" },
+  { keyword: "acting driver Chennai", url: "/call-drivers-chennai" },
+  { keyword: "call driver Chennai", url: "/call-drivers-chennai" },
+  { keyword: "driver on hire Chennai", url: "/call-drivers-chennai" },
   { keyword: "tempo traveller Chennai", url: "/services/tempo-traveller/chennai" },
   { keyword: "cab fare Chennai", url: "/tariff" },
   { keyword: "Chennai to Tirupati cab", url: "/routes/chennai-to-tirupati-cab" },
@@ -79,7 +79,7 @@ export function chennaiCabUniqueHtml() {
 <p>12, 13, 14 and 18 seater Tempo Travellers are used for family pilgrimages, corporate groups and wedding guest movement. Local van packages start from the published 5 Hrs / 50 Km slab. Book via <a href="/services/tempo-traveller/chennai">Tempo Traveller Chennai</a> or compare rates on the tariff page.</p>
 
 <h2>Acting driver for your own car</h2>
-<p>If you already have a car, Cabzii Call Driver assigns a professional to drive it — local, airport chauffeur, outstation highway days, monthly/corporate quotes and valet for functions. The Chennai guide is <a href="/acting-driver/chennai">acting driver in Chennai</a>; booking starts at <a href="/call-driver">Call Driver</a>.</p>
+<p>If you already have a car, Cabzii Call Driver assigns a professional to drive it — local, airport chauffeur, outstation highway days, monthly/corporate quotes and valet for functions. The Chennai guide is <a href="/call-drivers-chennai">acting driver in Chennai</a>; booking starts at <a href="/call-driver">Call Driver</a>.</p>
 
 <h2>Pilgrimage and holiday packages from Chennai</h2>
 <p>Cabzii holiday packages include pilgrimage circuits (Tirupati, Rameswaram–Madurai) and hill/family trips such as Ooty–Kodaikanal. Transport origin is typically Chennai. Browse <a href="/holidays?category=pilgrimage">pilgrimage packages</a> or all <a href="/holidays">holiday packages</a>. Cab-only temple runs stay on existing route pages — there is no /pilgrimage URL tree.</p>
@@ -113,7 +113,7 @@ export function chennaiDriverUniqueHtml() {
 <p>Night bookings after 10 pm may include a night charge. Availability depends on a driver being free in Chennai at that hour — Cabzii does not promise a guaranteed emergency dispatch product.</p>
 
 <h2>Book an acting driver</h2>
-<p>The booking CTA is <a href="/call-driver">Call Driver</a>. Synonym searches (chauffeur, driver on hire, airport chauffeur, outstation driver) stay on this city guide plus Call Driver — they are not separate thin pages. Need a Cabzii vehicle as well? Use <a href="/cab-booking/chennai">cab booking Chennai</a>.</p>
+<p>The booking CTA is <a href="/call-driver">Call Driver</a>. Synonym searches (chauffeur, driver on hire, airport chauffeur, outstation driver) stay on this city guide plus Call Driver — they are not separate thin pages. Need a Cabzii vehicle as well? Use <a href="/car-rental/chennai-city-cabs">cab booking Chennai</a>.</p>
 `;
 }
 

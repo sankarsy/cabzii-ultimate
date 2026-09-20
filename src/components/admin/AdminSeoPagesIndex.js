@@ -200,7 +200,7 @@ export default function AdminSeoPagesIndex({ token = "" }) {
             <strong>/cabs</strong> — cab listing. This is the page Google ranked #2 for “tour s taxi booking”. Edit it here: filter <em>Home &amp; listings</em>, row <em>Cabs listing</em>.
           </li>
           <li>
-            <strong>/cab-booking/chennai</strong> — city landing for “cab booking chennai” and “tour s taxi booking chennai”. Create/edit under <em>City landing pages</em> (page type Cab booking + city slug <code>chennai</code>).
+            <strong>/car-rental/chennai-city-cabs</strong> — city taxi landing (cab booking Chennai). Create/edit from this list (City hubs). Legacy <code>/cab-booking/chennai</code> 301s here.
           </li>
           <li>
             <strong>/cabs/your-vehicle-slug</strong> — one car (e.g. Dzire Tour S). Create the vehicle in <em>Catalog → Cabs</em>, then fill the SEO tab (title must include “Tour S taxi booking Chennai”).

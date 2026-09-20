@@ -18,6 +18,7 @@ import {
 import { featuredRouteUniqueHtml } from "./featuredRouteContent";
 import { chennaiServiceUniqueHtml } from "./chennaiServiceContent";
 import { chennaiCabUniqueHtml, chennaiDriverUniqueHtml } from "./chennaiCluster";
+import { cityCabLandingPath, actingDriverLandingPath } from "../cityCabPaths";
 
 export const BOOKING_DATA_AVAILABLE = false;
 export const REVENUE_DATA_AVAILABLE = false;
@@ -109,7 +110,7 @@ function scoreRow(base) {
 function auditCityHub(city, variant) {
   const policy = classifyCityHub(city.slug, variant === "acting-driver" ? "acting-driver" : "cab-booking");
   const pageType = variant === "acting-driver" ? "acting-driver" : "city-hub";
-  const path = variant === "acting-driver" ? `/acting-driver/${city.slug}` : `/cab-booking/${city.slug}`;
+  const path = variant === "acting-driver" ? actingDriverLandingPath(city.slug) : cityCabLandingPath(city.slug);
   const hqBoost = city.slug === "chennai" ? 3 : 0;
   return scoreRow({
     url: path,
@@ -216,7 +217,7 @@ const STATIC_MONEY_PAGES = [
     vendorSupplyLabel: "HQ market — supply assumed stronger",
     bookingPath: "/call-driver",
     cta: "Choose Call Driver service",
-    duplicateRisk: "same intent as /acting-driver/chennai (guide vs book)",
+    duplicateRisk: "same intent as /call-drivers-chennai (guide vs book)",
     searchIntent: 8,
     commercialIntent: 9,
     bookingPotential: 9,
@@ -348,7 +349,7 @@ export function revenueSeoReport() {
     { url: "/routes/madurai-to-rameswaram-cab", note: "Same-day temple pairing" },
     { url: "/routes/chennai-to-madurai-cab", note: "Meenakshi + onward south" },
     { url: "/routes/chennai-to-kanyakumari-cab", note: "Long coastal/temple highway" },
-    { url: "/cab-booking/tirupati", note: "Destination hub — keep, do not spawn temple URLs" },
+    { url: "/car-rental/tirupati-city-cabs", note: "Destination hub — keep, do not spawn temple URLs" },
     { url: "/services/tour-packages/chennai", note: "Chennai origin tour landing only" }
   ];
 
@@ -456,7 +457,7 @@ export function revenueSeoReport() {
     competitorIntentGaps: [
       "Airport pickup + drop + city transfer mapped to one Chennai URL (done) — other cities still template",
       "Round-trip intent must stay on outstation pages (no /round-trip-cab)",
-      "Acting driver synonyms stay on /acting-driver/{city} + /call-driver",
+      "Acting driver synonyms stay on /acting-driver/{city} (Chennai: /call-drivers-chennai) + /call-driver",
       "Pilgrimage intent: holidays filter + temple routes — no /pilgrimage tree",
       "Self-drive SERPs should not be chased; Cabzii is chauffeur-driven",
       "National airport pages exist but supply/content are weak — do not scale copy until supply is known"

@@ -67,14 +67,14 @@ export default async function RootLayout({ children }) {
   const structuredData = await sitewideStructuredData();
 
   return (
-    <html lang="en-IN">
+    <html lang="en-IN" suppressHydrationWarning>
       <head>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
       </head>
-      <body className={inter.variable}>
+      <body className={inter.variable} suppressHydrationWarning>
         <SiteSettingsProvider initialSettings={siteSettings}>
           {children}
           <StickyBookingBar />

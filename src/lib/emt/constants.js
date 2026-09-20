@@ -9,7 +9,7 @@ export const HERO_TABS = [
 ];
 
 export const TRENDING_SEARCHES = [
-  { label: "Cab Booking Chennai", href: "/cab-booking/chennai" },
+  { label: "Cab Booking Chennai", href: "/car-rental/chennai-city-cabs" },
   { label: "Airport Taxi Chennai", href: "/services/airport-taxi/chennai" },
   { label: "Chennai → Bengaluru", slug: "chennai-to-bangalore-cab" },
   { label: "Chennai → Pondicherry", slug: "chennai-to-pondicherry-cab" },

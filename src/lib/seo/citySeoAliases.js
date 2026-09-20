@@ -3,6 +3,7 @@
  * Maps keyword slugs → canonical paths (301 via middleware).
  */
 import { SEO_CITIES } from "./cities";
+import { cityCabLandingPath } from "../cityCabPaths";
 
 /** Alternate URL tokens (e.g. bangalore → bengaluru canonical slug). */
 const CITY_URL_TOKENS = {
@@ -34,7 +35,7 @@ export function buildCitySeoKeywordAliases() {
 
   for (const city of SEO_CITIES) {
     const canonical = city.slug;
-    const hub = `/cab-booking/${canonical}`;
+    const hub = cityCabLandingPath(canonical);
 
     for (const token of tokensForCity(city)) {
       // Cab booking hub — GSC queries like "cab booking chennai", "chennai cabs"

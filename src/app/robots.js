@@ -44,7 +44,7 @@ export default function robots() {
       },
       {
         userAgent: "Googlebot",
-        allow: ["/", "/_next/static/", "/_next/image", "/images/", "/uploads/"],
+        allow: ["/", "/_next/static/", "/_next/image", "/images/", "/uploads/", "/car-rental", "/call-drivers-chennai"],
         disallow: DISALLOW
       },
       {

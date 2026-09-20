@@ -14,8 +14,12 @@ export default function HomeShowcaseCarousel({ section = "offers", cards: cardsP
         viewAllLabel={copy.viewAllLabel}
         ariaLabel={copy.ariaLabel}
       >
-        {cards.map((o) => (
-          <ShowcaseCard key={o._id || `${section}-${o.tag}-${o.title}`} card={o} section={section} />
+        {cards.map((o, index) => (
+          <ShowcaseCard
+            key={o._id || `${section}-${o.href || o.tag || "card"}-${o.title}-${index}`}
+            card={o}
+            section={section}
+          />
         ))}
       </HomeShowcaseInteractive>
     </section>

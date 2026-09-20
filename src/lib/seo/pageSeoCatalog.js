@@ -84,6 +84,17 @@ export const STATIC_PAGE_SEO_LIST = [
       "call driver Chennai, acting driver Chennai, driver for own car Chennai, outstation driver Chennai, airport call driver Chennai, monthly driver Chennai, corporate driver service Chennai"
   },
   {
+    id: "site:call-drivers-chennai",
+    path: "/call-drivers-chennai",
+    type: "site",
+    typeLabel: "Acting drivers Chennai",
+    productName: "Acting Drivers in Chennai",
+    seoTitle: "Acting Drivers in Chennai | Book Call Drivers 24/7 | Cabzii",
+    seoDescription:
+      "Hire professional acting drivers in Chennai for city, airport and outstation trips. Book call drivers 24/7 at hourly or daily rates. Call or WhatsApp now.",
+    seoKeywords: "acting drivers in Chennai, call drivers Chennai, hire drivers Chennai"
+  },
+  {
     id: "site:holidays",
     path: "/holidays",
     type: "site",

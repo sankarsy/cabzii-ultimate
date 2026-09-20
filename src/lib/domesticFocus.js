@@ -65,14 +65,6 @@ export const PILGRIMAGE_PACKAGES = [
   }
 ];
 
-export const SEO_CITY_TARGETS = [
-  { city: "Chennai", slug: "chennai", href: "/cab-booking/chennai" },
-  { city: "Madurai", slug: "madurai", href: "/cab-booking/madurai" },
-  { city: "Bangalore", slug: "bengaluru", href: "/cab-booking/bengaluru" },
-  { city: "Tirupati", slug: "tirupati", href: "/cab-booking/tirupati" },
-  { city: "Rameswaram", slug: "rameswaram", href: "/cab-booking/rameswaram" }
-];
-
 export const CRM_PIPELINE_STAGES = [
   { id: "new", label: "New Lead", color: "bg-blue-100 text-blue-700" },
   { id: "contacted", label: "Contacted", color: "bg-sky-100 text-sky-700" },

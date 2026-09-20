@@ -99,6 +99,28 @@ export function getPaymentLabel(methodId) {
   return "Cash";
 }
 
-export function isPayLaterMethod(methodId) {
-  return isPaymentMethodEnabled(methodId) && methodId === "cash";
+export function couponDiscountAmount(code, baseFare) {
+  if (code === "CABZII500") return 500;
+  if (code === "FIRST100") return 100;
+  if (code === "WEEKEND10") return Math.round(Number(baseFare) * 0.1) || 0;
+  return 0;
+}
+
+function isWeekendIso(iso) {
+  const m = String(iso || "").match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (!m) return false;
+  const d = new Date(`${m[1]}-${m[2]}-${m[3]}T12:00:00+05:30`);
+  if (Number.isNaN(d.getTime())) return false;
+  const wd = new Intl.DateTimeFormat("en-US", { weekday: "short", timeZone: "Asia/Kolkata" }).format(d);
+  return wd === "Sat" || wd === "Sun";
+}
+
+/** Coupons that actually apply to this trip — no leftover airport/weekend codes on outstation. */
+export function couponsForTrip(trip) {
+  const type = trip?.tripType;
+  const list = [];
+  if (type === "outstation") list.push(OFFER_COUPONS.find((c) => c.code === "CABZII500"));
+  if (type === "local") list.push(OFFER_COUPONS.find((c) => c.code === "FIRST100"));
+  if (type === "airport" && isWeekendIso(trip?.date)) list.push(OFFER_COUPONS.find((c) => c.code === "WEEKEND10"));
+  return list.filter(Boolean);
 }

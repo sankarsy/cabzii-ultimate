@@ -1,6 +1,8 @@
 import { cityBySlug, SEO_CITIES } from "./cities";
 import { SEO_ROUTES } from "./routes";
 import { SEO_SERVICES } from "./services";
+import { cityCabLandingPath } from "../cityCabPaths";
+import { CALL_DRIVERS_CHENNAI_PATH } from "../../data/call-drivers-chennai";
 
 /**
  * Flat list of all programmatic SEO landing URLs for admin index & sitemap tooling.
@@ -13,8 +15,8 @@ export function listProgrammaticSeoPages() {
       id: `city:${city.slug}`,
       type: "city",
       typeLabel: "City hub",
-      title: `Cab booking ${city.name}`,
-      path: `/cab-booking/${city.slug}`,
+          title: `Cab booking ${city.name}`,
+      path: cityCabLandingPath(city.slug),
       citySlug: city.slug,
       pageType: "cab-booking",
       adminTab: "seoCityPages",
@@ -26,7 +28,7 @@ export function listProgrammaticSeoPages() {
       type: "acting-driver",
       typeLabel: "Acting driver",
       title: `Acting driver ${city.name}`,
-      path: `/acting-driver/${city.slug}`,
+      path: city.slug === "chennai" ? CALL_DRIVERS_CHENNAI_PATH : `/acting-driver/${city.slug}`,
       citySlug: city.slug,
       pageType: "acting-driver",
       adminTab: "seoCityPages",

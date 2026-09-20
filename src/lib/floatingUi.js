@@ -5,6 +5,7 @@ export const FLOATING_UI_HIDDEN_PREFIXES = [
   "/payment",
   "/login",
   "/cabs/passenger",
+  "/cabs/results",
   "/drivers/passenger"
 ];
 
@@ -21,6 +22,7 @@ export function isCatalogDetailPage(pathname) {
   if (/^\/tour-packages\/[^/]+$/.test(pathname)) return true;
   if (/^\/holidays\/[^/]+$/.test(pathname)) return true;
   if (pathname.startsWith("/call-driver/book")) return true;
+  if (pathname === "/call-drivers-chennai") return true;
   return false;
 }
 

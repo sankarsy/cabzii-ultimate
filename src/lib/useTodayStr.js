@@ -21,20 +21,17 @@ export function useTodayStr() {
   return mounted ? todayStr() : "";
 }
 
-/** Date label that never hydrates a live calendar string. */
-export function HydrateSafeDate({
-  iso,
-  as: Tag = "p",
-  className,
-  empty = "\u00a0",
-  weekday = false
-}) {
+/**
+ * Date label that never hydrates a live calendar string.
+ * Always a span — a <p> here is invalid next to inputs and breaks hydration.
+ */
+export function HydrateSafeDate({ iso, className, empty = "\u00a0", weekday = false }) {
   const mounted = useHasMounted();
   const formatted = weekday ? formatDayName(iso) : formatEmtDate(iso);
   const text = mounted && formatted ? formatted : empty;
   return (
-    <Tag suppressHydrationWarning className={className}>
+    <span suppressHydrationWarning className={className}>
       {text}
-    </Tag>
+    </span>
   );
 }

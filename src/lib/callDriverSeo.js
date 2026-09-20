@@ -16,7 +16,7 @@ export const DEFAULT_CALL_DRIVER_SEO = {
 <li>You prefer not to drive in traffic but want to use your own car</li>
 <li>You need a driver for a few hours, not a full outstation day</li>
 </ul>
-<p>Need a Cabzii vehicle instead? Open <a href="/cab-booking/chennai">cab booking Chennai</a> or the <a href="/tariff">Chennai tariff</a>. For a driver on a highway trip in your car, use <a href="/call-driver/book?service=outstation">outstation Call Driver</a>.</p>`,
+<p>Need a Cabzii vehicle instead? Open <a href="/car-rental/chennai-city-cabs">cab booking Chennai</a> or the <a href="/tariff">Chennai tariff</a>. For a driver on a highway trip in your car, use <a href="/call-driver/book?service=outstation">outstation Call Driver</a>.</p>`,
     faqs: [
       ["How many hours is a local Call Driver booking?", "The local package starts at 4 hours. Extra hours are billed as shown when you calculate the fare."],
       ["Do I get a Cabzii car with this booking?", "No. Call Driver is chauffeur-only. You provide the car. For a cab with driver, book on Cabzii Cabs."]
@@ -44,7 +44,7 @@ export const DEFAULT_CALL_DRIVER_SEO = {
     heading: "Airport call driver — your car at Chennai airport",
     html: `<p>Airport Call Driver is <strong>driver-only</strong> pickup or drop at Chennai International Airport (MAA) in <em>your</em> vehicle. It is not an airport taxi and not a Cabzii cab waiting at the terminal.</p>
 <p>Use this when someone should collect your car from home, drive to the airport, or bring the car to arrivals. Minimum hours follow the airport Call Driver tariff (usually 4 hours).</p>
-<p>If you need a Cabzii taxi to or from the airport, book <a href="/services/airport-taxi/chennai">Chennai airport taxi</a> instead. Acting-driver city guide: <a href="/acting-driver/chennai">acting driver in Chennai</a>.</p>`,
+<p>If you need a Cabzii taxi to or from the airport, book <a href="/services/airport-taxi/chennai">Chennai airport taxi</a> instead. Acting-driver city guide: <a href="/call-drivers-chennai">acting driver in Chennai</a>.</p>`,
     faqs: [
       ["Is this the same as airport taxi?", "No. Airport taxi is a Cabzii cab. Airport Call Driver is a chauffeur for the car you already own."],
       ["Which airport is covered?", "Chennai International Airport (MAA) is the default. Enter the exact terminal or pickup note in the form."]
@@ -70,7 +70,7 @@ export const DEFAULT_CALL_DRIVER_SEO = {
     heading: "Corporate call driver for offices and events",
     html: `<p>Corporate Call Driver covers <strong>office travel, staff cars and event fleets</strong> using your vehicles. Pricing is quoted from the number of drivers, days and working hours you enter. Cabzii assigns professionals after you confirm — there is no public driver marketplace.</p>
 <p>Enter company name, contact person and the requirement (daily office, visiting guests, or a one-day event). Our team replies with a quote.</p>
-<p>Related: <a href="/call-driver/book?service=valet">valet drivers for functions</a> and <a href="/cab-booking/chennai">cab booking Chennai</a> if you also need Cabzii vehicles.</p>`,
+<p>Related: <a href="/call-driver/book?service=valet">valet drivers for functions</a> and <a href="/car-rental/chennai-city-cabs">cab booking Chennai</a> if you also need Cabzii vehicles.</p>`,
     faqs: [
       ["How fast is the quote?", "Submit the form with company contact details. Cabzii follows up during operating hours on phone or WhatsApp."],
       ["Can you supply several drivers on one date?", "Yes. Set drivers needed and days, then send the request. Assignment is confirmed after the quote."]

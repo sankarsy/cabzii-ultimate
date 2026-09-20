@@ -3,9 +3,8 @@
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import CabResultsModifyBar from "../../../components/mmt/CabResultsModifyBar";
 import MmtCabResults from "../../../components/mmt/MmtCabResults";
-import MmtCabSearchWidget from "../../../components/mmt/MmtCabSearchWidget";
-import TripRoutePanel from "../../../components/maps/TripRoutePanel";
 import { mergeTripDistance } from "../../../lib/mergeTripDistance";
 import { parseTripSearchParams, isValidTripSearch } from "../../../lib/mmtTrip";
 import { useSelectedCity } from "../../../lib/useSelectedCity";
@@ -78,17 +77,10 @@ function ResultsContent() {
   }, [searchParams.toString(), selectedCity, trip.from, trip.to, trip.tripType, router]);
 
   return (
-    <div className="bg-[#f4f5f7] pb-10">
-      <div className="border-b border-slate-200 bg-white py-3 shadow-sm">
-        <div className="section-shell">
-          <MmtCabSearchWidget compact initialTrip={tripWithDistance} />
-        </div>
-      </div>
+    <div className="bg-[#eef1f6] pb-4 lg:pb-10">
+      <CabResultsModifyBar initialTrip={tripWithDistance} />
 
-      <div className="section-shell py-5">
-        <div className="mb-4">
-          <TripRoutePanel trip={tripWithDistance} compact />
-        </div>
+      <div className="section-shell py-3 lg:py-5">
         {loading ? (
           <div className="rounded-xl border border-slate-200 bg-white p-12 text-center text-slate-500">
             Finding best cabs for you…
@@ -101,7 +93,7 @@ function ResultsContent() {
           <div className="rounded-xl border border-dashed border-slate-200 bg-white p-12 text-center text-slate-500">
             No cabs found for this route.
             <div className="mt-3">
-              <Link href="/cabs" className="text-sm font-bold text-[#d84e55] hover:underline">
+              <Link href="/cabs" className="text-sm font-bold text-[#1a73e8] hover:underline">
                 Modify search
               </Link>
             </div>
