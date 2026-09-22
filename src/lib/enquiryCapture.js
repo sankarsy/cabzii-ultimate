@@ -36,7 +36,8 @@ function attribution() {
     referrer: typeof document !== "undefined" ? document.referrer || "" : "",
     utmSource: utm.utm_source || "",
     utmMedium: utm.utm_medium || "",
-    utmCampaign: utm.utm_campaign || ""
+    utmCampaign: utm.utm_campaign || "",
+    gclid: utm.gclid || ""
   };
 }
 

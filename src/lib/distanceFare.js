@@ -9,14 +9,22 @@ export function shouldUseDistanceFare(trip) {
   return false;
 }
 
-/** Per-km rate from package slab or catalog base price. */
+/** Per-km rate from admin Price per KM, then package slab, then catalog base. */
 export function resolvePerKmRate(slab, catalogItem = {}) {
+  const fromVehicle = num(catalogItem?.pricePerKm);
+  if (fromVehicle > 0) return fromVehicle;
+
   const fromSlab = num(slab?.extraKm);
   if (fromSlab > 0) return fromSlab;
 
   const pkgKey = slab?.id === "outstation_twoway" ? "outstationRoundTrip" : "outstationOneWay";
   const pkgRate = num(catalogItem?.farePackages?.[pkgKey]?.extraKmRate);
   if (pkgRate > 0) return pkgRate;
+
+  const fromPackages = Array.isArray(catalogItem?.packages)
+    ? catalogItem.packages.map((p) => num(p?.extraKmRate)).find((n) => n > 0)
+    : 0;
+  if (fromPackages > 0) return fromPackages;
 
   const base = num(catalogItem?.price);
   if (base > 0 && base <= 30) return base;

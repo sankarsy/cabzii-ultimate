@@ -71,6 +71,10 @@ export default function CabReviewBooking({
     setLoggedIn(isLoggedIn());
   }, []);
 
+  useEffect(() => {
+    if (payMode !== "advance") onPayMode?.("advance");
+  }, [payMode, onPayMode]);
+
   const vehicleName = getCabVehicleName(cab);
   const ratingText = formatRating(cab);
   const typeLabel = String(cabTypeBucket(cab) || cab.type || "Cab").toUpperCase();
@@ -125,10 +129,10 @@ export default function CabReviewBooking({
 
   return (
     <div className="min-h-screen bg-[#f4f5f7]">
-      <header className="bg-[#0b1b3a] text-white">
-        <div className="section-shell flex items-center justify-between py-3.5">
-          <h1 className="text-[20px] font-semibold tracking-tight sm:text-[22px]">Review booking</h1>
-          <Link href={resultsHref} className="text-[13px] font-semibold text-sky-200 hover:text-white">
+      <header className="cabzii-review-bar bg-[#0b1b3a]">
+        <div className="mx-auto flex w-full max-w-[var(--cabzii-content-max)] items-center justify-between px-4 py-3.5 sm:px-6">
+          <h1 className="text-[20px] font-semibold tracking-tight text-white sm:text-[22px]">Review booking</h1>
+          <Link href={resultsHref} className="text-[13px] font-semibold text-sky-300 hover:text-white">
             Modify
           </Link>
         </div>
@@ -331,38 +335,16 @@ export default function CabReviewBooking({
           <section className="rounded-xl bg-white p-4">
             <h2 className="text-[15px] font-bold text-slate-900">Payment options</h2>
             <p className="mt-1 text-[11px] text-slate-500">50% advance is required at booking. Balance at pickup, cash.</p>
-            <label className="mt-3 flex cursor-pointer items-center justify-between gap-3 py-2">
+            <div className="mt-3 flex items-center justify-between gap-3 py-2">
               <span className="flex items-center gap-2.5">
-                <input
-                  type="radio"
-                  name="payMode"
-                  checked={payMode === "advance"}
-                  onChange={() => onPayMode("advance")}
-                  className="accent-[#1a73e8]"
-                />
+                <input type="radio" name="payMode" checked readOnly className="accent-[#1a73e8]" aria-label="Pay 50% now" />
                 <span>
                   <span className="block text-[14px] font-semibold text-slate-800">Pay 50% now</span>
                   <span className="text-[12px] text-slate-500">Pay rest to the driver</span>
                 </span>
               </span>
               <span className="text-[14px] font-bold text-slate-900">{formatInrCurrency(advanceAmt)}</span>
-            </label>
-            <label className="flex cursor-pointer items-center justify-between gap-3 py-2">
-              <span className="flex items-center gap-2.5">
-                <input
-                  type="radio"
-                  name="payMode"
-                  checked={payMode === "full"}
-                  onChange={() => onPayMode("full")}
-                  className="accent-[#1a73e8]"
-                />
-                <span>
-                  <span className="block text-[14px] font-semibold text-slate-800">Pay full amount</span>
-                  <span className="text-[12px] text-slate-500">Package fare</span>
-                </span>
-              </span>
-              <span className="text-[14px] font-bold text-slate-900">{formatInrCurrency(netTotal)}</span>
-            </label>
+            </div>
             <button
               type="button"
               disabled={submitting}
@@ -414,7 +396,7 @@ export default function CabReviewBooking({
         <div className="mx-auto flex max-w-lg items-center gap-3">
           <div className="min-w-0">
             <p className="text-[16px] font-extrabold text-slate-900">{formatInrCurrency(payable)}</p>
-            <p className="text-[11px] text-slate-500">{payMode === "advance" ? "50% now · rest at pickup" : "Full package"}</p>
+            <p className="text-[11px] text-slate-500">50% now · rest at pickup</p>
           </div>
           <button
             type="button"

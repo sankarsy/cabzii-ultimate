@@ -242,7 +242,7 @@ export default function DriverDetailPage({ driverId, initialDriver = null }) {
                       <p className="mt-1 capitalize">{selection?.serviceTab || "local"} · {driver.vendor || "Cabzii Partner"}</p>
                     </div>
                     <p className="text-center text-[10px] text-slate-500">
-                      Need help? Call our 24/7 support line from the website header.
+                      Need help? Call or WhatsApp Cabzii from the buttons on this page.
                     </p>
                   </div>
                 </aside>

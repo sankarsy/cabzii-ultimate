@@ -185,7 +185,7 @@ export default function CabziiChatbot() {
         const ready = botMessage(ONBOARDING.ready(userName));
         withReady.push(ready);
         setMessages(withReady);
-        setSuggestions(["Book a cab", "Airport taxi fare", "Chennai to Bangalore", "24/7 support"]);
+        setSuggestions(["Book a cab", "Airport taxi fare", "Chennai to Bangalore", "Talk to support"]);
         persist(withReady, userName, userMobile);
       }, 600);
 

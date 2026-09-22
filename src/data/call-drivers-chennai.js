@@ -1,5 +1,5 @@
 import { ORG_EMAIL, ORG_PHONE, SITE_NAME, SITE_URL } from "../lib/seo/constants";
-import { CABZII_PHONE_DIGITS } from "../lib/conversion";
+import { CABZII_PHONE_DIGITS, whatsappBookingUrl } from "../lib/conversion";
 import { cityCabLandingPath, CALL_DRIVERS_CHENNAI_PATH } from "../lib/cityCabPaths";
 
 export { CALL_DRIVERS_CHENNAI_PATH };
@@ -53,12 +53,15 @@ export const CALL_DRIVERS_CHENNAI = {
   phones: [ORG_PHONE],
   telephoneSchema: [ORG_PHONE],
   email: ORG_EMAIL,
-  whatsappHref: `https://wa.me/${CABZII_PHONE_DIGITS}`,
+  whatsappHref: whatsappBookingUrl({
+    phone: CABZII_PHONE_DIGITS,
+    message: "Hi Cabzii, I need a Call Driver / acting driver in Chennai.\nPickup:\nDate:\nHours:\nVehicle:"
+  }),
   telHref: `tel:${ORG_PHONE}`,
-  title: "Acting Drivers in Chennai | Book Call Drivers 24/7 | Cabzii",
+  title: "Acting Drivers in Chennai | Call Driver for Your Car | Cabzii",
   description:
-    "Hire professional acting drivers in Chennai for city, airport and outstation trips. Book call drivers 24/7 at hourly or daily rates. Call or WhatsApp now.",
-  h1: "Hire Acting Drivers in Chennai – Verified Call Drivers, 24/7",
+    "Hire a professional acting driver in Chennai for city, airport and outstation trips. Hourly and daily rates. Call or WhatsApp to book.",
+  h1: "Hire Acting Drivers in Chennai — Call Driver for Your Own Car",
   intro: [
     "Cabzii Call Driver is a chauffeur for your own car in Chennai — city hours, MAA airport pickup or drop, and outstation days.",
     "Call or WhatsApp to book. A professional driver is assigned after you confirm. Availability depends on a driver being free at that hour."

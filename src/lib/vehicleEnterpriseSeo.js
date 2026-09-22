@@ -21,7 +21,7 @@ export const SEO_KEYWORD_SUGGESTIONS = [
 
 export const HIGHLIGHT_PRESETS = [
   "Verified Drivers",
-  "24x7 Support",
+  "WhatsApp Support",
   "Sanitized Vehicles",
   "No Hidden Charges",
   "Fast Booking",

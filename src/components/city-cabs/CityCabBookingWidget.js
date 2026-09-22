@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import PlaceAutocomplete from "../PlaceAutocomplete";
-import { tripToSearchQuery } from "../../lib/mmtTrip";
+import { HOURLY_PACKAGES, tripToSearchQuery } from "../../lib/mmtTrip";
 import { useTodayStr } from "../../lib/useTodayStr";
 
 const TRIP_TYPES = [
@@ -13,12 +13,21 @@ const TRIP_TYPES = [
   { id: "local", label: "Local" }
 ];
 
-function toEngineTrip({ tripKind, from, to, date, cityName }) {
+function toEngineTrip({ tripKind, from, to, date, cityName, packageHours }) {
   if (tripKind === "airport") {
     return { tripType: "airport", from, to, date, time: "09:00", roundTrip: false, city: cityName, direction: "pickup" };
   }
   if (tripKind === "local") {
-    return { tripType: "hourly", from, to: cityName, date, time: "09:00", roundTrip: false, city: cityName, packageHours: 8 };
+    return {
+      tripType: "hourly",
+      from,
+      to: cityName,
+      date,
+      time: "09:00",
+      roundTrip: false,
+      city: cityName,
+      packageHours
+    };
   }
   return {
     tripType: "outstation",
@@ -38,6 +47,7 @@ export default function CityCabBookingWidget({ cityName, defaultFrom, airportLab
   const [from, setFrom] = useState(defaultFrom || cityName);
   const [to, setTo] = useState("");
   const [date, setDate] = useState("");
+  const [packageHours, setPackageHours] = useState(8);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -64,7 +74,8 @@ export default function CityCabBookingWidget({ cityName, defaultFrom, airportLab
       from: pickup,
       to: drop || cityName,
       date: date || today,
-      cityName
+      cityName,
+      packageHours
     });
     router.push(`/cabs/results?${tripToSearchQuery(trip).toString()}`);
   }
@@ -120,8 +131,21 @@ export default function CityCabBookingWidget({ cityName, defaultFrom, airportLab
           />
         ) : (
           <div>
-            <label className="text-xs font-semibold uppercase tracking-wide text-slate-500">Local package</label>
-            <p className="mt-2 text-sm font-semibold text-slate-800">Full-day 8 Hrs / 80 Km</p>
+            <label htmlFor="city-cab-package" className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+              Local package
+            </label>
+            <select
+              id="city-cab-package"
+              value={packageHours}
+              onChange={(event) => setPackageHours(Number(event.target.value))}
+              className="mt-1 min-h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-900"
+            >
+              {HOURLY_PACKAGES.map((pkg) => (
+                <option key={pkg.hours} value={pkg.hours}>
+                  {pkg.label}
+                </option>
+              ))}
+            </select>
           </div>
         )}
       </div>

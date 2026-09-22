@@ -62,7 +62,7 @@ function PassengerContent() {
       router.replace("/");
       return;
     }
-    fetch(`/api/cabs/${cabId}`)
+    fetch(`/api/cabs/${cabId}`, { cache: "no-store" })
       .then((r) => r.json())
       .then((json) => {
         if (json?.data) {

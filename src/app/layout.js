@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import SiteSettingsProvider from "../components/SiteSettingsProvider";
 import DeferredSiteChrome from "../components/DeferredSiteChrome";
 import StickyBookingBar from "../components/StickyBookingBar";
+import AnalyticsTags from "../components/AnalyticsTags";
 import ServiceWorkerRegister from "../components/ServiceWorkerRegister";
 import { fetchSiteSettings } from "../lib/serverSiteSettings";
 import { fetchSiteReviewStats } from "../lib/serverReviewStats";
@@ -80,6 +81,7 @@ export default async function RootLayout({ children }) {
           <StickyBookingBar />
           <DeferredSiteChrome />
         </SiteSettingsProvider>
+        <AnalyticsTags />
         <ServiceWorkerRegister />
       </body>
     </html>

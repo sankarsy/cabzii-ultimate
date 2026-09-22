@@ -9,11 +9,11 @@ import { useSiteSettings } from "./SiteSettingsProvider";
 import { HERO_TAB_ICONS } from "./icons/heroIcons";
 import { telUrl, whatsappBookingUrl, contactPhoneFromSettings, whatsappDigitsFromSettings } from "../lib/conversion";
 import { shouldHideStickyBookingBar } from "../lib/floatingUi";
-import { trackEvent } from "../lib/analytics";
+import { trackEvent, trackLead } from "../lib/analytics";
 
 const CabIcon = HERO_TAB_ICONS.cabs;
 
-/** Mobile-only sticky bottom bar — Call · WhatsApp · Book now. */
+/** Mobile-only sticky bottom bar — Call · WhatsApp · Get Quote. */
 export default function StickyBookingBar() {
   const pathname = usePathname();
   const settings = useSiteSettings();
@@ -44,19 +44,19 @@ export default function StickyBookingBar() {
         <a
           href={telUrl(phone)}
           className="cabzii-sticky-bar-item cabzii-tap text-[var(--cabzii-brand)]"
-          aria-label="Call Cabzii now"
-          onClick={() => trackEvent("call_clicked", { source_page: pathname, cta_location: "sticky_bar" })}
+          aria-label="Call Cabzii"
+          onClick={() => trackLead("phone", { source_page: pathname, cta_location: "sticky_bar" })}
         >
           <Phone className="h-3.5 w-3.5" strokeWidth={2} aria-hidden />
-          <span>Call Now</span>
+          <span>Call</span>
         </a>
         <a
           href={waHref}
           target="_blank"
           rel="noreferrer"
           className="cabzii-sticky-bar-item cabzii-tap text-[#1da851]"
-          aria-label="Get instant quote on WhatsApp"
-          onClick={() => trackEvent("whatsapp_clicked", { source_page: pathname, cta_location: "sticky_bar" })}
+          aria-label="Get quote on WhatsApp"
+          onClick={() => trackLead("whatsapp", { source_page: pathname, cta_location: "sticky_bar" })}
         >
           <WhatsAppIcon className="h-3.5 w-3.5" />
           <span>WhatsApp</span>
@@ -65,11 +65,11 @@ export default function StickyBookingBar() {
           href="/cabs"
           className="cabzii-sticky-bar-item cabzii-tap text-white"
           style={{ background: "var(--cabzii-gradient-brand)" }}
-          aria-label="Book a cab now"
-          onClick={() => trackEvent("book_clicked", { source_page: pathname, cta_location: "sticky_bar" })}
+          aria-label="Get a cab quote"
+          onClick={() => trackEvent("quote_request", { source_page: pathname, cta_location: "sticky_bar" })}
         >
           <CabIcon className="h-3.5 w-3.5" aria-hidden />
-          <span>Book</span>
+          <span>Get Quote</span>
         </Link>
       </nav>
     </>

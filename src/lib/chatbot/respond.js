@@ -39,8 +39,8 @@ export function generateChatReply(message, { name = "there", history = [] } = {}
   if (pick(text, ["airport", "flight", "terminal", "maa", "chennai airport"])) {
     return {
       reply:
-        "Cabzii offers 24/7 airport taxi in Chennai and other cities — sedan, Innova & SUV with fixed pickup charges. Share your terminal and time for the best vehicle match.",
-      suggestions: ["Book airport cab", "Fare estimate", "24/7 support"]
+        "Cabzii airport taxi in Chennai — sedan, Innova and SUV. Share your terminal and landing time for a quote.",
+      suggestions: ["Book airport cab", "Fare estimate", "Talk to support"]
     };
   }
 
@@ -125,7 +125,7 @@ export function generateChatReply(message, { name = "there", history = [] } = {}
 
   if (pick(text, ["support", "help", "call", "phone", "whatsapp", "contact", "human", "agent"])) {
     return {
-      reply: `Our team is available 24/7. Use the Call or WhatsApp buttons on the site, or visit ${QUICK_LINKS.locations} for local support details.`,
+      reply: `Use the Call or WhatsApp buttons on the site, or visit ${QUICK_LINKS.locations} for local contact details.`,
       suggestions: ["Book a cab", "Airport taxi"]
     };
   }
@@ -159,6 +159,6 @@ export function generateChatReply(message, { name = "there", history = [] } = {}
 
   return {
     reply: `I'm here to help with Cabzii bookings — cabs, airport transfers, outstation trips, acting drivers & tours. Try asking about a route, fare, or how to book.\n\nOr start booking: ${QUICK_LINKS.cabs}`,
-    suggestions: ["Book a cab", "Airport taxi", "Outstation fare", "24/7 support"]
+    suggestions: ["Book a cab", "Airport taxi", "Outstation fare", "Talk to support"]
   };
 }

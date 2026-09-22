@@ -19,9 +19,11 @@ function resolvePackageFare(pkg, cab, fallbackList) {
           ? num(pkg.list)
           : Math.max(num(fallbackList), 0);
   const extraKm =
-    num(pkg?.extraKmRate) > 0
-      ? num(pkg.extraKmRate)
-      : Math.max(12, Math.floor(num(cab.price) / 10) || 12);
+    num(cab.pricePerKm) > 0
+      ? num(cab.pricePerKm)
+      : num(pkg?.extraKmRate) > 0
+        ? num(pkg.extraKmRate)
+        : Math.max(12, Math.floor(num(cab.price) / 10) || 12);
   const extraHr =
     num(pkg?.extraHourRate) > 0
       ? num(pkg.extraHourRate)

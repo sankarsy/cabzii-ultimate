@@ -3,6 +3,9 @@ import Link from "next/link";
 import CityCabBookingWidget from "./CityCabBookingWidget";
 import CityCabFaqAccordion from "./CityCabFaqAccordion";
 import Breadcrumbs from "../seo/Breadcrumbs";
+import TrackedLeadCtas from "../conversion/TrackedLeadCtas";
+import DynamicPageHub from "../seo/DynamicPageHub";
+import { actingDriverLandingPath } from "../../lib/cityCabPaths";
 
 function LinkGrid({ items }) {
   if (!items?.length) return null;
@@ -39,17 +42,28 @@ export default function CityCabLandingPage({ data }) {
         <div>
           <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">{data.h1}</h1>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-600">{data.description}</p>
-          <div className="relative mt-4 aspect-[1200/630] w-full overflow-hidden rounded-2xl bg-slate-100">
-            <Image
-              src={data.heroSrc}
-              alt={data.heroAlt}
-              width={1200}
-              height={630}
-              priority
-              unoptimized={data.heroSrc.endsWith(".svg")}
-              className="h-full w-full object-cover"
-              sizes="(max-width: 1024px) 100vw, 640px"
+          <div className="mt-3">
+            <TrackedLeadCtas
+              source="city_cab_hero"
+              message={`Hi Cabzii, I need a cab in ${city.name}.\nPickup:\nDrop:\nDate:\nPassengers:\nVehicle:`}
             />
+          </div>
+          <div className="mt-4 grid grid-cols-2 gap-2">
+            {[
+              { href: `/services/airport-taxi/${city.slug}`, label: "Airport taxi", hint: "Pickup and drop" },
+              { href: `/services/outstation-cab/${city.slug}`, label: "Outstation cab", hint: "One-way and round-trip" },
+              { href: `/services/hourly-rental/${city.slug}`, label: "Local package", hint: "4 hr / 8 hr hire" },
+              { href: actingDriverLandingPath(city.slug), label: "Acting driver", hint: "Driver for your car" }
+            ].map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 hover:border-[var(--cabzii-brand)]"
+              >
+                <span className="block text-sm font-bold text-slate-900">{item.label}</span>
+                <span className="mt-0.5 block text-xs text-slate-500">{item.hint}</span>
+              </Link>
+            ))}
           </div>
         </div>
         <CityCabBookingWidget
@@ -60,37 +74,27 @@ export default function CityCabLandingPage({ data }) {
       </header>
 
       <section className="mt-10">
-        <h2 className="text-xl font-bold text-slate-900">Top Cab Routes from {city.name}</h2>
-        <LinkGrid items={data.fromRoutes} />
-      </section>
-
-      <section className="mt-10">
-        <h2 className="text-xl font-bold text-slate-900">Top Cab Routes to {city.name}</h2>
-        <LinkGrid items={data.toRoutes} />
-      </section>
-
-      <section className="mt-10">
         <h2 className="text-xl font-bold text-slate-900">Cab Types</h2>
-        <ul className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <ul className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {data.cabTypes.map((cab) => (
-            <li key={cab.id} className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
-              <div className="relative aspect-[16/9] bg-slate-50">
+            <li key={cab.id} className="flex gap-3 rounded-xl border border-slate-200 bg-white p-3">
+              <div className="relative h-16 w-20 shrink-0 overflow-hidden rounded-lg bg-slate-100">
                 <Image
                   src={cab.image}
                   alt={cab.imageAlt}
-                  width={640}
-                  height={360}
+                  width={80}
+                  height={64}
                   loading="lazy"
                   unoptimized={cab.image.endsWith(".svg")}
-                  className="h-full w-full object-contain p-6"
+                  className="h-full w-full object-cover"
                 />
               </div>
-              <div className="p-4">
-                <h3 className="text-base font-bold text-slate-900">{cab.name}</h3>
-                <p className="mt-1 text-sm leading-relaxed text-slate-600">{cab.subtitle}</p>
-                <p className="mt-3 text-sm font-semibold text-slate-900">{cab.fareLabel}</p>
-                <p className="mt-1 text-xs text-slate-500">
-                  Capacity {cab.capacity} · Luggage {cab.luggage}
+              <div className="min-w-0">
+                <h3 className="text-sm font-bold text-slate-900">{cab.name}</h3>
+                <p className="mt-0.5 line-clamp-2 text-xs leading-relaxed text-slate-600">{cab.subtitle}</p>
+                <p className="mt-1.5 text-xs font-semibold text-slate-900">{cab.fareLabel}</p>
+                <p className="mt-0.5 text-[11px] text-slate-500">
+                  {cab.capacity} · {cab.luggage}
                 </p>
               </div>
             </li>
@@ -124,6 +128,24 @@ export default function CityCabLandingPage({ data }) {
       </section>
 
       <section className="mt-10">
+        <h2 className="text-xl font-bold text-slate-900">Why Book With Cabzii</h2>
+        <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+          {data.whyBook.map((item) => (
+            <li key={item.title} className="rounded-2xl border border-slate-200 bg-white p-4">
+              <h3 className="text-sm font-bold text-slate-900">{item.title}</h3>
+              <p className="mt-1 text-sm text-slate-600">{item.subtitle}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="mt-10">
+        <h2 className="text-xl font-bold text-slate-900">{data.airportHeading}</h2>
+        <p className="mt-2 text-sm text-slate-600">{data.airportIntro}</p>
+        <LinkGrid items={data.airportLinks} />
+      </section>
+
+      <section className="mt-10">
         <h2 className="text-xl font-bold text-slate-900">Places to Visit with {city.name} Outstation Cabs</h2>
         <ul className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {data.places.map((place) => (
@@ -138,18 +160,6 @@ export default function CityCabLandingPage({ data }) {
       </section>
 
       <section className="mt-10">
-        <h2 className="text-xl font-bold text-slate-900">Why Book With Cabzii</h2>
-        <ul className="mt-4 grid gap-3 sm:grid-cols-2">
-          {data.whyBook.map((item) => (
-            <li key={item.title} className="rounded-2xl border border-slate-200 bg-white p-4">
-              <h3 className="text-sm font-bold text-slate-900">{item.title}</h3>
-              <p className="mt-1 text-sm text-slate-600">{item.subtitle}</p>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section className="mt-10">
         <h2 className="text-xl font-bold text-slate-900">Frequently Asked Questions</h2>
         <div className="mt-4">
           <CityCabFaqAccordion faqs={data.faqs} />
@@ -157,15 +167,21 @@ export default function CityCabLandingPage({ data }) {
       </section>
 
       <section className="mt-10">
-        <h2 className="text-xl font-bold text-slate-900">{data.airportHeading}</h2>
-        <p className="mt-2 text-sm text-slate-600">{data.airportIntro}</p>
-        <LinkGrid items={data.airportLinks} />
+        <h2 className="text-xl font-bold text-slate-900">Top Cab Routes from {city.name}</h2>
+        <LinkGrid items={data.fromRoutes} />
+      </section>
+
+      <section className="mt-10">
+        <h2 className="text-xl font-bold text-slate-900">Top Cab Routes to {city.name}</h2>
+        <LinkGrid items={data.toRoutes} />
       </section>
 
       <section className="mt-10 mb-4">
         <h2 className="text-xl font-bold text-slate-900">Nearby City Taxi Services</h2>
         <LinkGrid items={data.nearby} />
       </section>
+
+      <DynamicPageHub bare onlyIfStored className="mt-10 mb-4" fallbackPage="cabs" citySlug={city.slug} path={data.path} />
     </article>
   );
 }

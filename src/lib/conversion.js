@@ -52,7 +52,7 @@ export function bookingWhatsappMessage({
     if (fromSlug && toSlug) {
       const from = titleFromSlug(fromSlug);
       const to = titleFromSlug(toSlug);
-      return `Hi Cabzii, I want to book a ${from} to ${to} cab. Date: ${dateQ}. Passengers: ___. Please share sedan and SUV fare.`;
+      return `Hi Cabzii, I need a ${from} to ${to} cab.\nDate:\nPassengers:\nVehicle:\nPickup location:`;
     }
   }
 
@@ -116,7 +116,7 @@ export function bookingWhatsappMessage({
     return `Hi Cabzii, I want to book a cab from ${fromQ} to ${toQ}. Date: ${dateQ}. Passengers: ___. Please share sedan and SUV fare.`;
   }
 
-  return `Hi Cabzii, I want to book a cab in ${cityName}. Pickup: ___. Drop: ___. Date: ${dateQ}. Please share fare and availability.`;
+  return `Hi Cabzii, I need a cab.\nPickup:\nDrop:\nDate:\nPassengers:\nVehicle:`;
 }
 
 export function whatsappQuoteMessage({
@@ -227,14 +227,23 @@ export function telUrl(phone = CABZII_PHONE) {
   return `tel:${normalized.startsWith("+") ? normalized : `+91${normalized.replace(/^91/, "")}`}`;
 }
 
-/** Phone shown in Call CTAs — site settings first, then the shared org number. */
-export function contactPhoneFromSettings(settings) {
-  const fromSettings = String(settings?.contact?.phone || "").trim();
-  return fromSettings || CABZII_PHONE;
+function envPhone() {
+  return String(process.env.NEXT_PUBLIC_PHONE || "").trim();
 }
 
-/** WhatsApp digits for wa.me links — FAB number, then contact.whatsapp, then shared org number. */
+function envWhatsappDigits() {
+  return String(process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "").replace(/\D/g, "");
+}
+
+/** Phone shown in Call CTAs — env, then site settings, then the shared org number. */
+export function contactPhoneFromSettings(settings) {
+  return envPhone() || String(settings?.contact?.phone || "").trim() || CABZII_PHONE;
+}
+
+/** WhatsApp digits for wa.me links — env, FAB number, contact.whatsapp, then shared org number. */
 export function whatsappDigitsFromSettings(settings) {
+  const env = envWhatsappDigits();
+  if (env) return env;
   const raw = settings?.whatsappFab?.number || settings?.contact?.whatsapp || CABZII_WHATSAPP;
   return String(raw).replace(/\D/g, "");
 }
@@ -247,9 +256,10 @@ export function airportTaxiWhatsappUrl(direction = "pickup", city = "Chennai") {
   return whatsappBookingUrl({ message: msg });
 }
 
-export function routeQuoteWhatsappUrl(from, to) {
+export function routeQuoteWhatsappUrl(from, to, { phone } = {}) {
   return whatsappBookingUrl({
-    message: `Hi Cabzii, I want to book a one-way cab from ${from} to ${to}. Date: ___. Passengers: ___. Please share fare for sedan and SUV.`
+    phone,
+    message: `Hi Cabzii, I need a ${from} to ${to} cab.\nDate:\nPassengers:\nVehicle:\nPickup location:`
   });
 }
 

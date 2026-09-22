@@ -154,7 +154,7 @@ export default function AdminHomeCards({ token, section = "offers" }) {
                 <input className={inputCls()} value={form.code} onChange={(e) => setForm((p) => ({ ...p, code: e.target.value }))} placeholder="CHNAIR" />
               </Field>
               <Field label="Valid till">
-                <input className={inputCls()} value={form.validTill} onChange={(e) => setForm((p) => ({ ...p, validTill: e.target.value }))} placeholder="31st Jul, 2026" />
+                <input className={inputCls()} value={form.validTill} onChange={(e) => setForm((p) => ({ ...p, validTill: e.target.value }))} placeholder="2026-12-31" />
               </Field>
             </>
           ) : (

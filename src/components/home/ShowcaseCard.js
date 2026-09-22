@@ -2,9 +2,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { Copy } from "lucide-react";
 import { getOfferIcon } from "../icons/heroIcons";
+import { formatOfferValidUntil } from "../../lib/offers";
 
 export default function ShowcaseCard({ card: o, section = "offers", layout = "carousel" }) {
   const OfferIcon = getOfferIcon(o.iconKey);
+  const validUntilLabel = formatOfferValidUntil(o);
   const layoutClass =
     layout === "grid"
       ? "h-full w-full"
@@ -61,7 +63,7 @@ export default function ShowcaseCard({ card: o, section = "offers", layout = "ca
         <p className="line-clamp-2 text-[13px] leading-relaxed text-slate-600">{o.desc}</p>
         <div className="mt-auto flex items-center justify-between border-t border-slate-100 pt-3">
           <span className="text-[11px] font-medium text-slate-400">
-            {o.validTill ? `Valid till ${o.validTill}` : "Fares shown before you confirm"}
+            {validUntilLabel ? `Valid till ${validUntilLabel}` : "Fares shown before you confirm"}
           </span>
           <span className="inline-flex items-center gap-1 text-xs font-extrabold tracking-wide text-[var(--cabzii-brand)]">
             BOOK NOW

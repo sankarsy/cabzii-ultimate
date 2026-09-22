@@ -6,6 +6,7 @@ import { SITE_URL } from "../lib/seo";
  * Hotels/flights/trains remain blocked.
  */
 const DISALLOW = [
+  "/driver/",
   "/admin",
   "/api/",
   "/account",

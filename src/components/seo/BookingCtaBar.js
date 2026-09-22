@@ -1,6 +1,10 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { airportTaxiWhatsappUrl, routeQuoteWhatsappUrl, telUrl, whatsappBookingUrl } from "../../lib/conversion";
 import WhatsAppIcon from "../WhatsAppIcon";
+import { trackEvent, trackLead } from "../../lib/analytics";
 
 /**
  * Crawlable booking CTAs — Book Now, WhatsApp, Call, Get Quote, Check Availability.
@@ -9,13 +13,14 @@ export default function BookingCtaBar({
   bookHref = "/cabs",
   bookLabel = "Book Now",
   quoteLabel = "Get Quote on WhatsApp",
-  callLabel = "Call Now",
+  callLabel = "Call Cabzii",
   availabilityLabel = "Check Availability",
   variant = "default",
   routeFrom,
   routeTo,
   airportDirection
 }) {
+  const pathname = usePathname();
   const whatsappHref = routeFrom && routeTo
     ? routeQuoteWhatsappUrl(routeFrom, routeTo)
     : airportDirection
@@ -27,13 +32,18 @@ export default function BookingCtaBar({
     ? "cabzii-btn cabzii-btn-sm cabzii-tap justify-center max-sm:w-full"
     : "cabzii-btn cabzii-tap justify-center max-sm:w-full";
   const iconClass = isCompact ? "h-3.5 w-3.5 shrink-0 text-white" : "h-4 w-4 shrink-0 text-white";
+  const leadParams = { source_page: pathname, cta_location: "booking_cta_bar" };
 
   return (
     <nav
       className={`cabzii-btn-stack ${isCompact ? "mt-4 gap-1.5 sm:gap-2" : "mt-6"}`}
       aria-label="Book cab online"
     >
-      <Link href={bookHref} className={`${btn} cabzii-btn-primary min-w-0`}>
+      <Link
+        href={bookHref}
+        className={`${btn} cabzii-btn-primary min-w-0`}
+        onClick={() => trackEvent("quote_request", leadParams)}
+      >
         <span className="truncate">{bookLabel}</span>
       </Link>
       <a
@@ -41,11 +51,16 @@ export default function BookingCtaBar({
         target="_blank"
         rel="noopener noreferrer"
         className={`${btn} cabzii-btn-whatsapp`}
+        onClick={() => trackLead("whatsapp", leadParams)}
       >
         <WhatsAppIcon className={iconClass} />
         <span className="min-w-0 text-center">{isCompact ? "WhatsApp" : "WhatsApp Booking"}</span>
       </a>
-      <a href={telUrl()} className={`${btn} cabzii-btn-secondary`}>
+      <a
+        href={telUrl()}
+        className={`${btn} cabzii-btn-secondary`}
+        onClick={() => trackLead("phone", leadParams)}
+      >
         {isCompact ? "Call" : callLabel}
       </a>
       <a
@@ -53,6 +68,7 @@ export default function BookingCtaBar({
         target="_blank"
         rel="noopener noreferrer"
         className={`${btn} cabzii-btn-secondary ${isCompact ? "max-sm:hidden" : ""}`}
+        onClick={() => trackLead("whatsapp", { ...leadParams, cta_location: "booking_cta_bar_quote" })}
       >
         {isCompact ? "Get quote" : quoteLabel}
       </a>

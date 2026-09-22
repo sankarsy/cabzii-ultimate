@@ -42,7 +42,7 @@ function BusesLandingContent() {
             {[
               { icon: Armchair, title: "Live seat map", desc: "Choose seater, lower or upper berth before you pay" },
               { icon: Ticket, title: "Boarding & drop", desc: "Select the stop nearest to you — like RedBus" },
-              { icon: ShieldCheck, title: "Instant confirm", desc: "SMS ticket after booking · 24×7 WhatsApp support" }
+              { icon: ShieldCheck, title: "Instant confirm", desc: "SMS ticket after booking · WhatsApp support" }
             ].map((f) => (
               <div key={f.title} className="rdb-card p-4">
                 <f.icon className="mb-2 h-5 w-5 text-[#d84e55]" aria-hidden />

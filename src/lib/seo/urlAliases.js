@@ -1,6 +1,7 @@
 import { CITY_SEO_KEYWORD_ALIASES } from "./citySeoAliases";
 import { SEO_ROUTES } from "./routes";
 import { VEHICLE_KEYWORD_ALIASES } from "./vehicleKeywordMap";
+import { cityBySlug } from "./cities";
 import { cityCabLandingPath, parseCityCabLandingSlug } from "../cityCabPaths";
 
 /** Short URL prefixes → canonical /services/{service}/{city} */
@@ -62,7 +63,12 @@ export function resolveSeoAliasPath(pathname) {
     }
     if (SERVICE_URL_PREFIXES.has(prefix)) {
       const serviceSlug = prefix === "holiday-packages" ? "tour-packages" : prefix;
-      return `/services/${serviceSlug}/${resolveCitySlug(city)}`;
+      const citySlug = resolveCitySlug(city);
+      /* Package SEO landings live at /tour-packages/{package-slug}. Only city hubs alias. */
+      if ((prefix === "tour-packages" || prefix === "holiday-packages") && !cityBySlug(citySlug)) {
+        return null;
+      }
+      return `/services/${serviceSlug}/${citySlug}`;
     }
     if (TRAVELS_URL_PREFIXES.has(prefix)) {
       return cityCabLandingPath(resolveCitySlug(city));

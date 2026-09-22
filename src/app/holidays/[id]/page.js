@@ -1,4 +1,4 @@
-import { notFound, redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import TourBookingPage from "../../../components/TourBookingPage";
 import JsonLd from "../../../components/seo/JsonLd";
 import SerpRichBar from "../../../components/seo/SerpRichBar";
@@ -20,7 +20,9 @@ export async function generateMetadata({ params }) {
 
 export default async function HolidayDetailPage({ params }) {
   const pkg = await fetchPackageById(params.id);
-  if (!pkg) notFound();
+  if (!pkg) {
+    return <TourBookingPage searchParams={{ id: params.id }} />;
+  }
 
   /* Pretty URL: /holidays/{mongoId} → /holidays/{slug} */
   if (MONGO_ID_RE.test(String(params.id)) && pkg.slug) {

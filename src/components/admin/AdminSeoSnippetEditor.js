@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import AdminPageLinksEditor from "./AdminPageLinksEditor";
+import { defaultPageLinkGroups, normalizePageLinkGroups } from "../../lib/seo/pageLinks";
 
 function inputCls() {
   return "w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-sky-600";
@@ -17,21 +19,33 @@ function Field({ label, children, hint, count }) {
   );
 }
 
+function editorPageKind(row) {
+  if (!row) return "cabs";
+  if (row.path === "/") return "home";
+  if (row.type === "driver" || row.type === "acting-driver") return "drivers";
+  if (row.type === "tour") return "packages";
+  return "cabs";
+}
+
 export default function AdminSeoSnippetEditor({ row, open, onClose, onSave, saving = false }) {
   const [form, setForm] = useState({
     productName: "",
     seoTitle: "",
     seoDescription: "",
-    seoKeywords: ""
+    seoKeywords: "",
+    pageLinks: []
   });
 
   useEffect(() => {
     if (!row || !open) return;
+    const kind = editorPageKind(row);
+    const storedLinks = normalizePageLinkGroups(row.pageLinks);
     setForm({
       productName: row.productName || "",
       seoTitle: row.seoTitle || "",
       seoDescription: row.seoDescription || "",
-      seoKeywords: row.seoKeywords || ""
+      seoKeywords: row.seoKeywords || "",
+      pageLinks: storedLinks.length ? storedLinks : defaultPageLinkGroups(row.path, kind, row.citySlug || "")
     });
   }, [row, open]);
 
@@ -39,17 +53,17 @@ export default function AdminSeoSnippetEditor({ row, open, onClose, onSave, savi
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSave(form);
+    onSave({ ...form, pageLinks: normalizePageLinkGroups(form.pageLinks) });
   };
 
   return (
     <div className="fixed inset-0 z-[100] flex items-end justify-center bg-slate-900/50 p-4 sm:items-center" role="dialog" aria-modal="true">
-      <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow-2xl">
-        <div className="sticky top-0 border-b border-slate-100 bg-white px-5 py-4">
+      <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow-2xl">
+        <div className="sticky top-0 z-10 border-b border-slate-100 bg-white px-5 py-4">
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{row.typeLabel}</p>
-              <h3 className="text-lg font-bold text-slate-900">Edit Google snippet</h3>
+              <h3 className="text-lg font-bold text-slate-900">Edit Google snippet &amp; page links</h3>
               <code className="mt-1 block text-xs text-sky-800">{row.path}</code>
             </div>
             <button type="button" onClick={onClose} className="rounded-lg px-2 py-1 text-sm font-semibold text-slate-500 hover:bg-slate-100">
@@ -79,13 +93,24 @@ export default function AdminSeoSnippetEditor({ row, open, onClose, onSave, savi
             <p className="mt-1 text-sm text-slate-600">{form.seoDescription || "Meta description appears here."}</p>
           </div>
 
+          <AdminPageLinksEditor
+            groups={form.pageLinks}
+            onChange={(pageLinks) => setForm((p) => ({ ...p, pageLinks }))}
+            onLoadDefaults={() =>
+              setForm((p) => ({
+                ...p,
+                pageLinks: defaultPageLinkGroups(row.path, editorPageKind(row), row.citySlug || "")
+              }))
+            }
+          />
+
           <div className="flex flex-wrap gap-2 border-t border-slate-100 pt-4">
             <button
               type="submit"
               disabled={saving}
               className="rounded-lg bg-[var(--cabzii-brand)] px-4 py-2 text-sm font-semibold text-white hover:bg-[var(--cabzii-brand-hover)] disabled:opacity-60"
             >
-              {saving ? "Saving…" : "Save SEO"}
+              {saving ? "Saving…" : "Save SEO & links"}
             </button>
             <button type="button" onClick={onClose} className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">
               Cancel

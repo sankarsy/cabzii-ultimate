@@ -1,4 +1,5 @@
 import { CATALOG_TABS } from "../adminCatalogConfig";
+import { normalizePageLinkGroups } from "../seo/pageLinks";
 
 const API_MAP = {
   cab: "cabs",
@@ -100,24 +101,38 @@ function createPayload(form, row) {
   return seo;
 }
 
+function pageSeoFields(form, extra = {}) {
+  return {
+    productName: form.productName?.trim() || extra.productName || "",
+    seoTitle: form.seoTitle?.trim() || extra.seoTitle || "",
+    seoDescription: form.seoDescription?.trim() || extra.seoDescription || "",
+    seoKeywords: form.seoKeywords?.trim() || extra.seoKeywords || "",
+    pageLinks: normalizePageLinkGroups(form.pageLinks)
+  };
+}
+
+async function savePageSeoMap({ token, pageSeo, path, fields }) {
+  const nextPageSeo = {
+    ...pageSeo,
+    [path]: {
+      ...(pageSeo[path] || {}),
+      ...fields
+    }
+  };
+  const res = await fetch("/api/site-settings", {
+    method: "PUT",
+    headers: authHeaders(token),
+    body: JSON.stringify({ pageSeo: nextPageSeo })
+  });
+  const data = await parseJson(res);
+  return { data: data?.data, pageSeo: nextPageSeo };
+}
+
 export async function saveSeoSnippet({ row, form, token, pageSeo = {} }) {
+  const fields = pageSeoFields(form);
+
   if (row.type === "site") {
-    const nextPageSeo = {
-      ...pageSeo,
-      [row.path]: {
-        productName: form.productName?.trim() || "",
-        seoTitle: form.seoTitle?.trim() || "",
-        seoDescription: form.seoDescription?.trim() || "",
-        seoKeywords: form.seoKeywords?.trim() || ""
-      }
-    };
-    const res = await fetch("/api/site-settings", {
-      method: "PUT",
-      headers: authHeaders(token),
-      body: JSON.stringify({ pageSeo: nextPageSeo })
-    });
-    const data = await parseJson(res);
-    return { data: data?.data, pageSeo: nextPageSeo };
+    return savePageSeoMap({ token, pageSeo, path: row.path, fields });
   }
 
   const tabKey = API_MAP[row.type] || row.adminTab;
@@ -131,7 +146,9 @@ export async function saveSeoSnippet({ row, form, token, pageSeo = {} }) {
       headers: authHeaders(token),
       body: JSON.stringify(createPayload(form, row))
     });
-    return parseJson(res);
+    const created = await parseJson(res);
+    const links = await savePageSeoMap({ token, pageSeo, path: row.path, fields });
+    return { ...created, pageSeo: links.pageSeo };
   }
 
   const existing = await fetchRecord(row, token);
@@ -143,7 +160,9 @@ export async function saveSeoSnippet({ row, form, token, pageSeo = {} }) {
     headers: authHeaders(token),
     body: JSON.stringify(merged)
   });
-  return parseJson(res);
+  const updated = await parseJson(res);
+  const links = await savePageSeoMap({ token, pageSeo, path: row.path, fields });
+  return { ...updated, pageSeo: links.pageSeo };
 }
 
 export async function deleteSeoSnippet({ row, token }) {

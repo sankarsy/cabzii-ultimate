@@ -20,9 +20,17 @@ function isWeakSeoTitle(title) {
 }
 
 function resolveSeoTitle(storedTitle, defaultTitle, path) {
-  if (!isWeakSeoTitle(storedTitle)) return String(storedTitle).trim();
-  if (!isWeakSeoTitle(defaultTitle)) return String(defaultTitle).trim();
-  return path === "/" ? HOME_SEO_TITLE : "Cab Booking Online | Cabzii";
+  const stored = String(storedTitle || "").trim();
+  const fallback = String(defaultTitle || "").trim();
+  let title = !isWeakSeoTitle(stored)
+    ? stored
+    : !isWeakSeoTitle(fallback)
+      ? fallback
+      : path === "/"
+        ? HOME_SEO_TITLE
+        : "Cab Booking Online | Cabzii";
+  if (path === "/" && title.length > 60) return HOME_SEO_TITLE;
+  return title;
 }
 
 /** Merge DB pageSeo with built-in defaults for a path. */

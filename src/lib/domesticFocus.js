@@ -23,7 +23,7 @@ export const PILGRIMAGE_PACKAGES = [
   {
     name: "Tirupati Darshan",
     slug: "tirupati",
-    href: "/holidays?category=pilgrimage&q=tirupati",
+    href: "/tour-packages/tirupati-balaji-darshan-tirupati",
     image: "/images/hero-banner.png",
     fromPrice: "₹4,999",
     tag: "Most booked"

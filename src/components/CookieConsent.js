@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { COOKIE_CONSENT_KEY } from "../lib/analytics";
 
-const STORAGE_KEY = "cabzii_cookie_consent";
+const STORAGE_KEY = COOKIE_CONSENT_KEY;
 
 export default function CookieConsent() {
   const [visible, setVisible] = useState(false);
@@ -21,6 +22,11 @@ export default function CookieConsent() {
       document.cookie = `${STORAGE_KEY}=${choice}; path=/; max-age=${60 * 60 * 24 * 180}; SameSite=Lax`;
     } catch {
       /* storage unavailable — dismiss anyway */
+    }
+    try {
+      window.dispatchEvent(new CustomEvent("cabzii-cookie-consent", { detail: choice }));
+    } catch {
+      /* ignore */
     }
     setVisible(false);
   };

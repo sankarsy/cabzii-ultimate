@@ -7,6 +7,13 @@ import SocialLinks from "../ui/SocialLinks";
 import { getTrustIcon, TRUST_ICON_STYLES } from "../icons/heroIcons";
 import { BRAND } from "../../lib/brand";
 
+const NAP = {
+  phone: "+91-9944197416",
+  email: "support@cabzii.com",
+  maps: "https://www.google.com/maps/search/?api=1&query=Cabzii+Maduravoyal+Chennai+600095",
+  line: "Maduravoyal, Chennai, Tamil Nadu 600095"
+};
+
 function footerRouteLink(slug, label) {
   return { label, href: `/routes/${slug}` };
 }
@@ -71,6 +78,24 @@ export default function MmtFooter() {
             <p className="mt-1.5 max-w-sm text-[11px] leading-relaxed text-slate-600 sm:mt-2 sm:text-sm">
               Premium cab booking for airport transfers, outstation trips, and local hire across South India.
             </p>
+            <address className="mt-3 not-italic text-[11px] leading-relaxed text-slate-600 sm:text-sm">
+              <a
+                href={NAP.maps}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-slate-800 hover:text-[var(--cabzii-brand)]"
+              >
+                {NAP.line}
+              </a>
+              <span className="mt-1 flex flex-wrap gap-x-3 gap-y-1">
+                <a href={`tel:${NAP.phone}`} className="hover:text-[var(--cabzii-brand)]">
+                  {NAP.phone}
+                </a>
+                <a href={`mailto:${NAP.email}`} className="hover:text-[var(--cabzii-brand)]">
+                  {NAP.email}
+                </a>
+              </span>
+            </address>
             <SocialLinks className="mt-3 sm:mt-4" />
           </div>
           <div className="flex flex-wrap gap-1.5 sm:gap-2">

@@ -11,12 +11,12 @@ import CabResultsSearchSheet from "./CabResultsSearchSheet";
 import { shortPlace, TRIP_OPTIONS, useCabModifySearch } from "./useCabModifySearch";
 
 const PLACE_INPUT =
-  "h-auto min-h-[1.35rem] w-full border-0 bg-transparent p-0 text-[15px] font-bold leading-tight text-white outline-none ring-0 placeholder:font-semibold placeholder:text-white/40 focus:border-0 focus:bg-transparent focus:ring-0";
+  "h-auto min-h-[1.15rem] w-full border-0 bg-transparent p-0 text-[13px] font-bold leading-tight text-white outline-none ring-0 placeholder:font-semibold placeholder:text-white/40 focus:border-0 focus:bg-transparent focus:ring-0";
 
 function Cell({ label, children, className = "" }) {
   return (
-    <div className={`min-w-0 rounded-2xl bg-[#1a2d52] px-3.5 py-2.5 ${className}`}>
-      <span className="pointer-events-none block text-[10px] font-bold uppercase tracking-[0.12em] text-white/55">
+    <div className={`min-w-0 rounded-xl bg-[#1a2d52] px-3 py-1.5 ${className}`}>
+      <span className="pointer-events-none block text-[9px] font-bold uppercase tracking-[0.12em] text-white/55">
         {label}
       </span>
       {children}
@@ -37,23 +37,23 @@ export default function CabResultsModifyBar({ initialTrip }) {
 
   return (
     <>
-      <div className="sticky top-0 z-30 border-b border-slate-200 bg-white px-3 py-2 pt-[max(0.5rem,env(safe-area-inset-top))] lg:hidden">
+      <div className="sticky top-0 z-30 border-b border-slate-200 bg-white px-3 py-1.5 pt-[max(0.4rem,env(safe-area-inset-top))] lg:hidden">
         <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={() => router.back()}
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-slate-700"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-slate-700"
             aria-label="Go back"
           >
-            <ChevronLeft className="h-6 w-6" strokeWidth={2} />
+            <ChevronLeft className="h-5 w-5" strokeWidth={2} />
           </button>
           <button
             type="button"
             onClick={() => setSheetOpen(true)}
-            className="min-w-0 flex-1 rounded-2xl bg-[#f4f6fa] px-3 py-2 text-left"
+            className="min-w-0 flex-1 rounded-xl bg-[#f4f6fa] px-3 py-1.5 text-left"
           >
-            <span className="block truncate text-[14px] font-bold leading-tight text-slate-900">{routeLabel}</span>
-            <span suppressHydrationWarning className="block text-[11px] text-slate-500">
+            <span className="block truncate text-[13px] font-bold leading-tight text-slate-900">{routeLabel}</span>
+            <span suppressHydrationWarning className="block text-[10px] text-slate-500">
               {stamp}
             </span>
           </button>
@@ -71,14 +71,14 @@ export default function CabResultsModifyBar({ initialTrip }) {
       <CabResultsSearchSheet open={sheetOpen} onClose={() => setSheetOpen(false)} search={search} />
 
       <div className="hidden bg-[#0b1b3a] lg:block">
-        <div className="section-shell py-3">
-          <div className="flex flex-row items-end gap-2">
+        <div className="section-shell py-2">
+          <div className="flex flex-row items-end gap-1.5">
             <Cell label="Trip Type" className="w-44 shrink-0">
               <div className="relative">
                 <select
                   value={search.optionId}
                   onChange={(e) => search.setOptionId(e.target.value)}
-                  className="w-full appearance-none bg-transparent pr-5 text-[15px] font-bold text-white outline-none"
+                  className="w-full appearance-none bg-transparent pr-5 text-[13px] font-bold text-white outline-none"
                   aria-label="Trip type"
                 >
                   {TRIP_OPTIONS.map((o) => (
@@ -124,7 +124,7 @@ export default function CabResultsModifyBar({ initialTrip }) {
                 <select
                   value={search.packageHours}
                   onChange={(e) => search.setPackageHours(Number(e.target.value))}
-                  className="w-full bg-transparent text-[15px] font-bold text-white outline-none"
+                  className="w-full bg-transparent text-[13px] font-bold text-white outline-none"
                   aria-label="Hourly package"
                 >
                   {HOURLY_PACKAGES.map((p) => (
@@ -137,8 +137,8 @@ export default function CabResultsModifyBar({ initialTrip }) {
             ) : null}
 
             <Cell label="Pick-up Date" className="w-44 shrink-0">
-              <div className="relative min-h-[1.35rem]">
-                <span suppressHydrationWarning className="pointer-events-none block text-[15px] font-bold text-white">
+              <div className="relative min-h-[1.15rem]">
+                <span suppressHydrationWarning className="pointer-events-none block text-[13px] font-bold text-white">
                   {mounted && search.date ? formatMmtBarDate(search.date) : "\u00a0"}
                 </span>
                 <input
@@ -154,8 +154,8 @@ export default function CabResultsModifyBar({ initialTrip }) {
             </Cell>
 
             <Cell label="Pick-up Time" className="w-32 shrink-0">
-              <div className="relative min-h-[1.35rem]">
-                <span className="pointer-events-none block text-[15px] font-bold text-white">{formatTime12(search.time)}</span>
+              <div className="relative min-h-[1.15rem]">
+                <span className="pointer-events-none block text-[13px] font-bold text-white">{formatTime12(search.time)}</span>
                 <input
                   type="time"
                   value={search.time}
@@ -171,7 +171,7 @@ export default function CabResultsModifyBar({ initialTrip }) {
               type="button"
               onClick={search.handleSearch}
               disabled={search.searching}
-              className="h-[3.25rem] min-w-32 shrink-0 rounded-2xl bg-[#1e88e5] px-8 text-sm font-extrabold uppercase tracking-wide text-white shadow-md hover:bg-[#1877cc] disabled:opacity-70"
+              className="h-11 min-w-28 shrink-0 rounded-xl bg-[#1e88e5] px-6 text-xs font-extrabold uppercase tracking-wide text-white shadow-md hover:bg-[#1877cc] disabled:opacity-70"
             >
               {search.searching ? "…" : "Search"}
             </button>

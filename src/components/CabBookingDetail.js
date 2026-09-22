@@ -246,7 +246,7 @@ function TrustGrid({ compact = false }) {
   const items = [
     { label: "Secure Booking", sub: "Your safety our priority", icon: ShieldIcon },
     { label: "Transparent Pricing", sub: "No hidden charges", icon: TagIcon },
-    { label: "24/7 Support", sub: "Always here to help", icon: HeadsetIcon },
+    { label: "WhatsApp Support", sub: "Call or chat to book", icon: HeadsetIcon },
     { label: "Easy Cancellation", sub: "Flexible policies", icon: CalendarIcon }
   ];
   return (

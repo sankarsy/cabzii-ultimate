@@ -6,7 +6,8 @@ import CallDriverHomeSection from "./CallDriverHomeSection";
 import FaqSection from "../seo/FaqSection";
 import { HOME_PAGE_FAQS } from "../../lib/seo/content";
 import { DEFAULT_HQ_CITY } from "../../lib/vehicleAdminConfig";
-import HomeSeoDiscover from "../seo/HomeSeoDiscover";
+import DynamicPageHub from "../seo/DynamicPageHub";
+import HomeHowToBook from "./HomeHowToBook";
 import HomeShowcaseCarousel from "./HomeShowcaseCarousel";
 import HomeBlogTeasers from "./HomeBlogTeasers";
 import HomeFleetLoader from "./HomeFleetLoader";
@@ -61,10 +62,11 @@ export default function HomeBelowFold({
       {cabs.length ? <HomeFleetGrid cabs={cabs} /> : <HomeFleetLoader />}
 
       <CallDriverHomeSection services={callDriverServices} />
+      <HomeHowToBook />
       <EmtWhyChooseUs settings={siteSettings} />
       <TestimonialsSection />
       <HomeBlogTeasers posts={blogs} />
-      <HomeSeoDiscover />
+      <DynamicPageHub fallbackPage="home" path="/" />
 
       <section className="border-t border-slate-200 bg-white py-8 sm:py-10">
         <div className="section-shell">

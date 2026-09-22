@@ -203,6 +203,9 @@ export default function AdminSeoPagesIndex({ token = "" }) {
             <strong>/car-rental/chennai-city-cabs</strong> — city taxi landing (cab booking Chennai). Create/edit from this list (City hubs). Legacy <code>/cab-booking/chennai</code> 301s here.
           </li>
           <li>
+            <strong>Page links</strong> — Edit SEO on any row to add/remove FastTrack-style city, route and service hubs for that URL. Nested destinations sit under a city card. Changes show on the live page after save.
+          </li>
+          <li>
             <strong>/cabs/your-vehicle-slug</strong> — one car (e.g. Dzire Tour S). Create the vehicle in <em>Catalog → Cabs</em>, then fill the SEO tab (title must include “Tour S taxi booking Chennai”).
           </li>
           <li>
@@ -264,7 +267,7 @@ export default function AdminSeoPagesIndex({ token = "" }) {
       {loading ? <p className="mt-4 text-sm text-slate-500">Loading all products and SEO pages…</p> : null}
 
       <p className="mt-3 text-xs text-slate-500">
-        Showing {filtered.length} of {rows.length} entries — click <strong>Edit SEO</strong> to update Google snippet fields inline
+        Showing {filtered.length} of {rows.length} entries — click <strong>Edit SEO</strong> to update Google snippet fields and page hub links
       </p>
 
       <div className="mt-3 overflow-x-auto rounded-lg border border-slate-200">

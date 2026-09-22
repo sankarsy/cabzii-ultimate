@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { resolvePublicRouteRedirect } from "./lib/routes/publicRoutes";
 import { resolveSeoAliasPath } from "./lib/seo/urlAliases";
 import { cityCabLandingPath } from "./lib/cityCabPaths";
+import { resolveHolidayQueryHref } from "./lib/holidayQuery";
 
 const PROTECTED_PREFIXES = ["/payment", "/booking", "/my-bookings"];
 
@@ -17,6 +18,13 @@ const SERVICE_SLUG_REDIRECTS = {
 
 export function middleware(request) {
   const { pathname } = request.nextUrl;
+
+  if (pathname === "/holidays") {
+    const canonical = resolveHolidayQueryHref(request.nextUrl.searchParams.get("q"));
+    if (canonical) {
+      return NextResponse.redirect(new URL(canonical, request.url), 301);
+    }
+  }
 
   if (pathname !== pathname.toLowerCase() && !pathname.startsWith("/api")) {
     const lower = new URL(pathname.toLowerCase(), request.url);

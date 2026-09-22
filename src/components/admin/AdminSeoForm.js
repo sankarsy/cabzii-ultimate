@@ -66,7 +66,7 @@ export function AdminSeoServiceForm({ form, onChange, authToken = "" }) {
                 className={inputCls()}
                 value={form.seoTitle || ""}
                 onChange={(e) => set({ seoTitle: e.target.value })}
-                placeholder="Airport Taxi Chennai: Book Online, Fares & 24×7 Pickup"
+                placeholder="Airport Taxi Chennai: Book Online & Fares"
               />
             </Field>
           </div>

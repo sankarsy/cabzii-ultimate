@@ -1,6 +1,8 @@
 import Link from "next/link";
 import MarketingPageShell, { marketingMetadata } from "../../components/marketing/MarketingPageShell";
 import { ORG_EMAIL, ORG_PHONE, contactPageJsonLd } from "../../lib/seo";
+import { telUrl, whatsappBookingUrl } from "../../lib/conversion";
+import TrackedLeadCtas from "../../components/conversion/TrackedLeadCtas";
 
 export const metadata = marketingMetadata({
   title: "Contact Cabzii — Call, WhatsApp & Email",
@@ -19,13 +21,15 @@ export default function ContactPage() {
       jsonLdExtra={[contactPageJsonLd()]}
     >
       <div className="not-prose grid gap-4 sm:grid-cols-2">
-        <a href={`tel:${ORG_PHONE.replace(/\s/g, "")}`} className="cabzii-card cabzii-card-interactive block p-5">
+        <a href={telUrl(ORG_PHONE)} className="cabzii-card cabzii-card-interactive block p-5">
           <p className="text-xs font-bold uppercase tracking-wide text-sky-600">Phone</p>
           <p className="mt-2 text-lg font-bold text-slate-900">{ORG_PHONE}</p>
           <p className="mt-1 text-sm text-slate-600">Tap to call</p>
         </a>
         <a
-          href="https://wa.me/919944197416?text=Hi%20Cabzii%2C%20I%20need%20help%20with%20a%20cab%20booking."
+          href={whatsappBookingUrl({
+            message: "Hi Cabzii, I need a cab.\nPickup:\nDrop:\nDate:\nPassengers:\nVehicle:"
+          })}
           target="_blank"
           rel="noreferrer"
           className="cabzii-card cabzii-card-interactive block p-5"
@@ -41,6 +45,9 @@ export default function ContactPage() {
               {ORG_EMAIL}
             </a>
           </p>
+          <div className="mt-4">
+            <TrackedLeadCtas source="contact_page" />
+          </div>
           <p className="mt-3 text-sm text-slate-600">
             For bookings use{" "}
             <Link href="/cabs" className="font-semibold text-sky-700 hover:underline">

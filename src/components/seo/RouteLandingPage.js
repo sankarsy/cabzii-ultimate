@@ -8,6 +8,7 @@ import { servicePath, SEO_SERVICES } from "../../lib/seo/services";
 import ChennaiClusterLinks from "./ChennaiClusterLinks";
 import SeoPageView from "./SeoPageView";
 import { cityCabLandingPath } from "../../lib/cityCabPaths";
+import TrackedLeadCtas from "../conversion/TrackedLeadCtas";
 
 export default function RouteLandingPage({ route, faqs, extraBody = "", cabs = [] }) {
   const { fromCity, toCity, distance, duration, sedanFrom, suvFrom, slug } = route;
@@ -21,14 +22,14 @@ export default function RouteLandingPage({ route, faqs, extraBody = "", cabs = [
 
   return (
     <div>
-      <article className="section-shell cabzii-seo-landing pb-3">
-        <SeoPageView
-          pageType="route"
-          city={fromCity.slug}
-          origin={fromCity.slug}
-          destination={toCity.slug}
-          route={slug}
-        />
+      <SeoPageView
+        pageType="route"
+        city={fromCity.slug}
+        origin={fromCity.slug}
+        destination={toCity.slug}
+        route={slug}
+      />
+      <div className="sr-only">
         <Breadcrumbs
           items={[
             { name: "Home", path: "/" },
@@ -36,13 +37,11 @@ export default function RouteLandingPage({ route, faqs, extraBody = "", cabs = [
             { name: `${fromCity.name} to ${toCity.name}`, path }
           ]}
         />
-
-        <p className="cabzii-seo-kicker">One way cab · Cabzii</p>
         <h1>{tunedRouteH1(route)}</h1>
-        <p className="cabzii-seo-lead">
+        <p>
           {tunedRouteDescription(route)} ({distance}, {duration}). Fares below — select a cab to book.
         </p>
-      </article>
+      </div>
 
       <SeoRouteCabListing initialTrip={trip} initialCabs={cabs} />
 
@@ -96,8 +95,11 @@ export default function RouteLandingPage({ route, faqs, extraBody = "", cabs = [
           </table>
         </div>
         <p className="mt-1.5 text-[10px] text-slate-500">
-          Indicative one-way fares — exact quote on Cabzii before booking. Tolls and state taxes may apply.
+          Indicative one-way starting fares for the smallest listed vehicle. Exact quote depends on date, vehicle and tolls — shown on Cabzii before you pay. Tolls, parking and state taxes are extra unless listed.
         </p>
+        <div className="mt-3">
+          <TrackedLeadCtas from={fromCity.name} to={toCity.name} source="route_fare" compact />
+        </div>
       </section>
 
       {extraBody ? (
@@ -202,14 +204,7 @@ export default function RouteLandingPage({ route, faqs, extraBody = "", cabs = [
           >
             Select a cab above
           </Link>
-          <a
-            href={`https://wa.me/9944197416?text=${encodeURIComponent(`Hi Cabzii, I need a cab from ${fromCity.name} to ${toCity.name}. Please share fare.`)}`}
-            target="_blank"
-            rel="noreferrer"
-            className="cabzii-btn cabzii-btn-sm cabzii-tap rounded-full border border-white/40 bg-transparent font-semibold text-white hover:bg-white/10"
-          >
-            WhatsApp
-          </a>
+          <TrackedLeadCtas from={fromCity.name} to={toCity.name} source="route_footer" compact />
         </div>
       </section>
       </article>

@@ -2,15 +2,15 @@
 
 import { Phone } from "lucide-react";
 import WhatsAppIcon from "../WhatsAppIcon";
-import { trackEvent } from "../../lib/analytics";
+import { trackLead } from "../../lib/analytics";
 
 export default function CallDriversCtaBar({ telHref, whatsappHref, phoneDisplay }) {
   function onCall() {
-    trackEvent("call_clicked", { source_page: "/call-drivers-chennai", cta_location: "acting_driver_landing" });
+    trackLead("phone", { source_page: "/call-drivers-chennai", cta_location: "acting_driver_landing" });
   }
 
   function onWhatsapp() {
-    trackEvent("whatsapp_clicked", { source_page: "/call-drivers-chennai", cta_location: "acting_driver_landing" });
+    trackLead("whatsapp", { source_page: "/call-drivers-chennai", cta_location: "acting_driver_landing" });
   }
 
   return (

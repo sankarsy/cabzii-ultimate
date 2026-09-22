@@ -1,4 +1,4 @@
-import { HOME_SEO_TITLE } from "./constants";
+import { HOME_SEO_DESCRIPTION, HOME_SEO_KEYWORDS, HOME_SEO_TITLE } from "./constants";
 import { formatSerpTitle } from "./programmaticMeta";
 
 /** Admin-managed static pages for Google / Meta ads campaigns. */
@@ -10,10 +10,8 @@ export const STATIC_PAGE_SEO_LIST = [
     typeLabel: "Homepage",
     productName: "Cabzii Home",
     seoTitle: HOME_SEO_TITLE,
-    seoDescription:
-      "Book cabs from Chennai and across Tamil Nadu with Cabzii — airport taxi, local packages, outstation and one-way trips. Transparent fares and WhatsApp support.",
-    seoKeywords:
-      "cab booking chennai, taxi service chennai, airport taxi chennai, outstation cab chennai, cab rental tariff chennai, cab booking tamil nadu, cabzii, cabzii.in"
+    seoDescription: HOME_SEO_DESCRIPTION,
+    seoKeywords: HOME_SEO_KEYWORDS.join(", ")
   },
   {
     id: "site:cabs",
@@ -89,9 +87,9 @@ export const STATIC_PAGE_SEO_LIST = [
     type: "site",
     typeLabel: "Acting drivers Chennai",
     productName: "Acting Drivers in Chennai",
-    seoTitle: "Acting Drivers in Chennai | Book Call Drivers 24/7 | Cabzii",
+    seoTitle: "Acting Drivers in Chennai | Call Driver for Your Car | Cabzii",
     seoDescription:
-      "Hire professional acting drivers in Chennai for city, airport and outstation trips. Book call drivers 24/7 at hourly or daily rates. Call or WhatsApp now.",
+      "Hire a professional acting driver in Chennai for city, airport and outstation trips. Hourly and daily rates. Call or WhatsApp to book.",
     seoKeywords: "acting drivers in Chennai, call drivers Chennai, hire drivers Chennai"
   },
   {

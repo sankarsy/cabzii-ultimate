@@ -71,7 +71,7 @@ function CabPaymentPanel({ cab, selection, payHref, onProceed }) {
         </p>
         <p className="mt-2 text-[10px] text-slate-500">Toll, parking and extra km/hr are billed as per the package card.</p>
       </div>
-      <p className="text-center text-[10px] text-slate-500">Secure payment · Verified drivers · 24/7 support</p>
+      <p className="text-center text-[10px] text-slate-500">Secure payment · Verified drivers · WhatsApp support</p>
     </div>
   );
 }

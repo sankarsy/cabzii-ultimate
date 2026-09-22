@@ -114,7 +114,14 @@ function BottomSheet({ open, title, onClose, children }) {
   );
 }
 
-export default function MmtCabResults({ cabs, trip, embedded = false, catalogMode = false, displayCity = "" }) {
+export default function MmtCabResults({
+  cabs,
+  trip,
+  embedded = false,
+  catalogMode = false,
+  displayCity = "",
+  listLayout
+}) {
   const [sort, setSort] = useState("price-asc");
   const [typeFilters, setTypeFilters] = useState([]);
   const [modelFilters, setModelFilters] = useState([]);
@@ -254,7 +261,8 @@ export default function MmtCabResults({ cabs, trip, embedded = false, catalogMod
     </aside>
   );
 
-  const cards = catalogMode ? (
+  const useCardGrid = catalogMode && listLayout !== "row";
+  const cards = useCardGrid ? (
     <div className="cabzii-catalog-grid pt-1">
       {filtered.map((cab) => (
         <div className="cabzii-catalog-item" key={String(cab._id ?? cab.id)}>

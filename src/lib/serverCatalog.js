@@ -1,7 +1,9 @@
 import { isLiveApiHostProtected } from "./liveApiHostGuard";
 import { getBackendUrl } from "./seo";
 import { SHOWCASE_FALLBACKS } from "./homeShowcase";
+import { filterActiveOffers } from "./offers";
 import { mergeCallDriverServices } from "./callDriver";
+import { canonicalizeHolidayHref } from "./holidayQuery";
 import { SEO_REVALIDATE_SECONDS } from "./revalidation/constants";
 import { normalizeCabList } from "./catalogNormalize";
 
@@ -11,16 +13,17 @@ const fetchInflight = new Map();
 
 async function fetchJson(path, revalidate = SEO_REVALIDATE_SECONDS) {
   if (isLiveApiHostProtected()) return null;
-  const cached = fetchCache.get(path);
-  if (cached && Date.now() - cached.at < FETCH_CACHE_MS) return cached.value;
+  const live = revalidate === 0;
+  if (!live) {
+    const cached = fetchCache.get(path);
+    if (cached && Date.now() - cached.at < FETCH_CACHE_MS) return cached.value;
+  }
   if (fetchInflight.has(path)) return fetchInflight.get(path);
 
   const pending = (async () => {
     const backend = getBackendUrl();
     try {
-      const res = await fetch(`${backend}/api/v1${path}`, {
-        next: { revalidate }
-      });
+      const res = await fetch(`${backend}/api/v1${path}`, live ? { cache: "no-store" } : { next: { revalidate } });
       if (!res.ok) return null;
       const json = await res.json();
       return json?.data ?? null;
@@ -29,7 +32,7 @@ async function fetchJson(path, revalidate = SEO_REVALIDATE_SECONDS) {
     }
   })()
     .then((value) => {
-      fetchCache.set(path, { at: Date.now(), value });
+      if (!live) fetchCache.set(path, { at: Date.now(), value });
       fetchInflight.delete(path);
       return value;
     })
@@ -97,7 +100,7 @@ export async function fetchCabsForTrip(trip, limit = 50) {
   if (trip?.tripType) q.set("serviceTripType", trip.tripType);
   if (trip?.roundTrip) q.set("roundTrip", "true");
 
-  const data = await fetchJson(`/cabs?${q.toString()}`, SEO_REVALIDATE_SECONDS);
+  const data = await fetchJson(`/cabs?${q.toString()}`, 0);
   const list = normalizeCabList(Array.isArray(data) ? data : []);
   if (list.length) return list;
   return normalizeCabList(await fetchCatalogForCity("cabs", city, limit));
@@ -143,8 +146,10 @@ function uniqueShowcaseCards(rows = []) {
 export async function fetchHomeShowcase(section) {
   const data = await fetchJson(`/offers?section=${encodeURIComponent(section)}`, SEO_REVALIDATE_SECONDS);
   const rows = uniqueShowcaseCards(Array.isArray(data) ? data.filter((o) => o.published !== false) : []);
-  if (rows.length) return rows;
-  return SHOWCASE_FALLBACKS[section] || SHOWCASE_FALLBACKS.offers || [];
+  const fallback = SHOWCASE_FALLBACKS[section] || SHOWCASE_FALLBACKS.offers || [];
+  const source = rows.length ? rows : fallback;
+  const cards = section === "offers" ? filterActiveOffers(source) : source;
+  return cards.map((card) => ({ ...card, href: canonicalizeHolidayHref(card.href) }));
 }
 
 export async function fetchHomeCallDriverServices() {

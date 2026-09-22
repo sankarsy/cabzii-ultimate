@@ -47,8 +47,7 @@ export const DOMESTIC_OFFERS = [
     color: "from-[var(--cabzii-brand)] to-blue-500",
     image: "/images/offers/offer-outstation.webp",
     href: "/cabs",
-    code: "CABOUT20",
-    validTill: "31st Jul, 2026"
+    code: "CABOUT20"
   },
   {
     tag: "TEMPLE TOURS",
@@ -57,9 +56,8 @@ export const DOMESTIC_OFFERS = [
     iconKey: "holiday",
     color: "from-rose-500 to-pink-400",
     image: "/images/offers/offer-tirupati.webp",
-    href: "/holidays?category=pilgrimage&q=tirupati",
-    code: "TIRUPATI",
-    validTill: "31st Jul, 2026"
+    href: "/tour-packages/tirupati-balaji-darshan-tirupati",
+    code: "TIRUPATI"
   },
   {
     tag: "ONE WAY",
@@ -69,8 +67,7 @@ export const DOMESTIC_OFFERS = [
     color: "from-emerald-500 to-teal-400",
     image: "/images/offers/offer-oneway.webp",
     href: "/routes/chennai-to-bangalore-cab",
-    code: "ONEWAY",
-    validTill: "31st Jul, 2026"
+    code: "ONEWAY"
   },
   {
     tag: "AIRPORT",
@@ -80,8 +77,7 @@ export const DOMESTIC_OFFERS = [
     color: "from-indigo-500 to-violet-400",
     image: "/images/offers/offer-airport.webp",
     href: "/cabs/results?serviceTripType=hourly&from=Kempegowda+International+Airport%2C+Bengaluru&to=Bengaluru&city=Bengaluru&packageHours=12",
-    code: "BLRAIR12",
-    validTill: "31st Jul, 2026"
+    code: "BLRAIR12"
   },
   {
     tag: "AIRPORT",
@@ -91,8 +87,7 @@ export const DOMESTIC_OFFERS = [
     color: "from-indigo-500 to-violet-400",
     image: "/images/offers/offer-airport-chennai.webp",
     href: "/services/airport-taxi/chennai",
-    code: "CHNAIR",
-    validTill: "31st Jul, 2026"
+    code: "CHNAIR"
   },
   {
     tag: "DRIVERS",
@@ -102,8 +97,7 @@ export const DOMESTIC_OFFERS = [
     color: "from-slate-700 to-slate-500",
     image: "/images/offers/offer-driver.webp",
     href: "/call-driver",
-    code: "DRIVER900",
-    validTill: "31st Jul, 2026"
+    code: "DRIVER900"
   },
   {
     tag: "PILGRIMAGE",
@@ -113,8 +107,7 @@ export const DOMESTIC_OFFERS = [
     color: "from-amber-500 to-orange-400",
     image: "/images/offers/offer-rameswaram.webp",
     href: "/holidays?category=pilgrimage",
-    code: "TEMPLE",
-    validTill: "31st Jul, 2026"
+    code: "TEMPLE"
   }
 ];
 

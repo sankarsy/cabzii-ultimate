@@ -19,6 +19,7 @@ import { cabSlabForTrip, tripToSearchQuery } from "../../lib/mmtTrip";
 import { FuelIcon, LuggageIcon, PersonIcon, SnowflakeIcon } from "../icons";
 import CatalogCardImage from "./CatalogCardImage";
 import CatalogVehicleCard, { FeatureChip } from "../ui/CatalogVehicleCard";
+import MmtCardPriceBlock from "./MmtCardPriceBlock";
 import { trackEvent } from "../../lib/analytics";
 import { formatInrCurrency } from "../../lib/formatInr";
 
@@ -134,10 +135,16 @@ export default function MmtCabResultCard({ cab, trip, layout = "row", catalogMod
         </div>
 
         <div className="flex shrink-0 flex-col items-end gap-2 pl-1">
-          <p className="text-[18px] font-extrabold leading-none text-slate-900 sm:text-[22px]">{formatINR(total)}</p>
-          <p className="hidden max-w-[9rem] text-right text-[11px] text-slate-500 sm:block">
-            Tolls, parking &amp; GST extra if applicable
-          </p>
+          {catalogMode ? (
+            <MmtCardPriceBlock {...priceBlockProps} compact />
+          ) : (
+            <>
+              <p className="text-[18px] font-extrabold leading-none text-slate-900 sm:text-[22px]">{formatINR(total)}</p>
+              <p className="hidden max-w-[9rem] text-right text-[11px] text-slate-500 sm:block">
+                Tolls, parking &amp; GST extra if applicable
+              </p>
+            </>
+          )}
           <span className="hidden min-w-[9.5rem] items-center justify-center rounded-lg bg-[#1a73e8] px-5 py-2.5 text-[13px] font-extrabold uppercase tracking-wide text-white sm:inline-flex">
             {catalogMode ? "View Cab" : "Select Cab"}
           </span>

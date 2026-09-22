@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360" role="img" aria-label="Cabzii Tempo Traveller">
+  <defs>
+    <linearGradient id="tempog" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0369a1"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#tempog)"/>
+  <text x="320" y="185" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="32" font-weight="700" fill="#fff">Tempo Traveller</text>
+  <text x="320" y="228" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="16" fill="#e2e8f0">Group cab fallback</text>
+</svg>

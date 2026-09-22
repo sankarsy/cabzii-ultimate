@@ -7,10 +7,10 @@ export default function CabsCategorySeo() {
   const chennaiServices = serviceLinks("chennai", 8);
 
   return (
-    <article className="section-shell space-y-6 pb-8 pt-2 text-sm text-slate-700">
+    <article className="section-shell space-y-8 pb-10 text-sm text-slate-700">
       <section>
-        <h2 className="text-lg font-bold text-slate-900">Cab booking on Cabzii</h2>
-        <p className="mt-2 leading-relaxed">
+        <h2 className="text-xl font-bold text-slate-900">Cab booking on Cabzii</h2>
+        <p className="mt-2 max-w-3xl leading-relaxed">
           Cabzii is a cab booking platform, not a vendor marketplace. Search a city or route, compare vehicle packages,
           book and pay Cabzii, then a matching partner is assigned. Use this page for live inventory, or open a city hub
           when you already know the city.
@@ -18,26 +18,33 @@ export default function CabsCategorySeo() {
       </section>
 
       <section>
-        <h2 className="text-lg font-bold text-slate-900">Vehicle and trip types</h2>
-        <ul className="mt-2 grid gap-2 sm:grid-cols-2">
-          <li className="rounded-xl border border-slate-200 bg-white p-3">
-            <strong>Local cabs</strong> — 4-hour / 8-hour city packages for meetings, hospitals and errands.
+        <h2 className="text-xl font-bold text-slate-900">Vehicle and trip types</h2>
+        <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+          <li className="rounded-2xl border border-slate-200 bg-white p-4">
+            <h3 className="text-sm font-bold text-slate-900">Local cabs</h3>
+            <p className="mt-1 text-sm text-slate-600">4-hour / 8-hour city packages for meetings, hospitals and errands.</p>
           </li>
-          <li className="rounded-xl border border-slate-200 bg-white p-3">
-            <strong>Airport taxis</strong> — pickup and drop at cities that have a commercial airport; otherwise a transfer
-            to the nearest airport.
+          <li className="rounded-2xl border border-slate-200 bg-white p-4">
+            <h3 className="text-sm font-bold text-slate-900">Airport taxis</h3>
+            <p className="mt-1 text-sm text-slate-600">
+              Pickup and drop at cities that have a commercial airport; otherwise a transfer to the nearest airport.
+            </p>
           </li>
-          <li className="rounded-xl border border-slate-200 bg-white p-3">
-            <strong>Outstation &amp; one-way</strong> — highway packages and true one-way drops without empty-return confusion.
+          <li className="rounded-2xl border border-slate-200 bg-white p-4">
+            <h3 className="text-sm font-bold text-slate-900">Outstation &amp; one-way</h3>
+            <p className="mt-1 text-sm text-slate-600">Highway packages and true one-way drops without empty-return confusion.</p>
           </li>
-          <li className="rounded-xl border border-slate-200 bg-white p-3">
-            <strong>Cab / car rental</strong> — chauffeur-driven hourly hire (not self-drive). Sedan, Ertiga, Innova, tempo.
+          <li className="rounded-2xl border border-slate-200 bg-white p-4">
+            <h3 className="text-sm font-bold text-slate-900">Cab / car rental</h3>
+            <p className="mt-1 text-sm text-slate-600">
+              Chauffeur-driven hourly hire (not self-drive). Sedan, Ertiga, Innova, tempo.
+            </p>
           </li>
         </ul>
       </section>
 
       <section>
-        <h2 className="text-lg font-bold text-slate-900">City cab hubs</h2>
+        <h2 className="text-xl font-bold text-slate-900">City cab hubs</h2>
         <ul className="mt-3 flex flex-wrap gap-2">
           {hubs.map((item) => (
             <li key={item.href}>
@@ -56,7 +63,7 @@ export default function CabsCategorySeo() {
       </section>
 
       <section>
-        <h2 className="text-lg font-bold text-slate-900">Chennai services</h2>
+        <h2 className="text-xl font-bold text-slate-900">Chennai services</h2>
         <ul className="mt-3 flex flex-wrap gap-2">
           {chennaiServices.map((item) => (
             <li key={item.href}>

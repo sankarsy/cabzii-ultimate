@@ -9,6 +9,7 @@ import PackageCard from "./PackageCard";
 import RelatedSeoLinks from "./seo/RelatedSeoLinks";
 import SeoPageView from "./seo/SeoPageView";
 import { packageBookingHref } from "../lib/holidayHome";
+import { resolveHolidayQueryHref } from "../lib/holidayQuery";
 import { HOLIDAY_CATEGORIES, categoryLabel } from "../lib/holidays";
 import { catalogPriorityParams, sortBySelectedCity } from "../lib/locationPriority";
 import { useSelectedCity } from "../lib/useSelectedCity";
@@ -18,6 +19,7 @@ export default function HolidaysListPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialCategory = searchParams.get("category") || "all";
+  const query = String(searchParams.get("q") || "").trim();
   const [packages, setPackages] = useState([]);
   const [facetRows, setFacetRows] = useState([]);
   const [meta, setMeta] = useState({ page: 1, limit: 12, total: 0, totalPages: 1 });
@@ -27,6 +29,11 @@ export default function HolidaysListPage() {
   const [category, setCategory] = useState(initialCategory);
   const [page, setPage] = useState(1);
   const { city: selectedCity } = useSelectedCity();
+
+  useEffect(() => {
+    const href = resolveHolidayQueryHref(query);
+    if (href) router.replace(href);
+  }, [query, router]);
 
   useEffect(() => {
     setCategory(initialCategory);
@@ -73,6 +80,18 @@ export default function HolidaysListPage() {
   useEffect(() => {
     setPage(1);
   }, [vendor, category, selectedCity]);
+
+  const visiblePackages = useMemo(() => {
+    const q = query.toLowerCase();
+    if (!q) return packages;
+    return packages.filter((pkg) =>
+      [pkg.name, pkg.city, pkg.slug, pkg.destination, pkg.category]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase()
+        .includes(q)
+    );
+  }, [packages, query]);
 
   const paginationLabel = useMemo(() => {
     const { total, page: pg, limit } = meta;
@@ -191,7 +210,7 @@ export default function HolidaysListPage() {
           <>
             {paginationLabel ? <p className="mb-2.5 text-[11px] text-slate-500 sm:mb-3">{paginationLabel}</p> : null}
             <div className="grid w-full grid-cols-2 gap-3 sm:gap-3.5 md:grid-cols-4 md:gap-4">
-              {packages.map((pkg) => (
+              {visiblePackages.map((pkg) => (
                 <PackageCard
                   key={String(pkg._id ?? pkg.id)}
                   pkg={pkg}
@@ -200,7 +219,7 @@ export default function HolidaysListPage() {
                 />
               ))}
             </div>
-            {!packages.length ? (
+            {!visiblePackages.length ? (
               <div className="rounded-xl border border-dashed border-slate-200 p-5 text-center text-xs text-slate-500 sm:p-6 sm:text-sm">
                 No packages in {categoryLabel(category)}. Try another category or reset filters.
               </div>

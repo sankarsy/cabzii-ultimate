@@ -21,6 +21,17 @@ export const ORG_ADDRESS = {
   addressCountry: "IN"
 };
 
+/** Maduravoyal HQ pin — used in LocalBusiness geo (not Chennai city-centre). */
+export const HQ_GEO = { lat: "13.0642", lng: "80.1715" };
+
+/** Public maps search for the HQ locality. Override with a Google Business place URL when claimed. */
+export const ORG_MAPS_URL =
+  process.env.NEXT_PUBLIC_GOOGLE_MAPS_URL ||
+  "https://www.google.com/maps/search/?api=1&query=Cabzii+Maduravoyal+Chennai+600095";
+
+/** Google Business Profile URL (maps/share link). Set after the listing is claimed. */
+export const GOOGLE_BUSINESS_URL = process.env.NEXT_PUBLIC_GOOGLE_BUSINESS_URL || "";
+
 /**
  * Verified public profiles for the Organization `sameAs` (entity reconciliation
  * for Google Knowledge Graph + AI answer engines). Update these to your real
@@ -30,7 +41,9 @@ export const SOCIAL_PROFILES = [
   ...SOCIAL_LINK_LIST.map((l) => l.href),
   process.env.NEXT_PUBLIC_TWITTER_URL || "https://x.com/cabzii",
   process.env.NEXT_PUBLIC_LINKEDIN_URL || "https://www.linkedin.com/company/cabzii",
-  process.env.NEXT_PUBLIC_YOUTUBE_URL || "https://www.youtube.com/@cabzii"
+  process.env.NEXT_PUBLIC_YOUTUBE_URL || "https://www.youtube.com/@cabzii",
+  GOOGLE_BUSINESS_URL,
+  ORG_MAPS_URL
 ].filter(Boolean);
 
 /** Wikidata entity URI for this organization, if one exists (e.g. https://www.wikidata.org/wiki/Q123). */
@@ -75,10 +88,23 @@ export function getBackendUrl() {
 }
 
 /**
- * Homepage SERP title — keywords first so Google doesn’t collapse branded mobile results to “Cabzii”.
- * Keep under ~60 chars; end with brand.
+ * Homepage SERP title — query first so Google doesn’t collapse branded mobile results to “Cabzii”.
+ * Keep under 60 characters; end with brand.
  */
-export const HOME_SEO_TITLE = "Cab Booking Chennai & Tamil Nadu Taxi | Airport & Outstation | Cabzii";
+export const HOME_SEO_TITLE = "Cab Booking in Chennai | Airport Taxi | Cabzii";
+export const HOME_SEO_DESCRIPTION =
+  "Book Cabzii cabs in Chennai for airport taxi, local packages and outstation trips. Hatchback to Innova — fares shown before you confirm, with WhatsApp support.";
+export const HOME_SEO_KEYWORDS = [
+  "cab booking chennai",
+  "airport taxi",
+  "outstation cab",
+  "one way cab",
+  "acting driver",
+  "cabzii"
+];
+export const HOME_H1 = "Cab booking in Chennai";
+export const HOME_H1_LEDE =
+  "Airport taxi, local packages, outstation and acting driver. Fares shown before you confirm.";
 
 function normalizePath(path) {
   if (!path || path === "/") return "/";
@@ -207,19 +233,9 @@ export function actingDriverDescription(cityName, state) {
 
 export const homeMetadata = buildPageMetadata({
   title: HOME_SEO_TITLE,
-  description:
-    "Book cabs from Chennai and across Tamil Nadu with Cabzii — airport taxi, local packages, outstation and one-way trips. Transparent fares and WhatsApp support.",
+  description: HOME_SEO_DESCRIPTION,
   path: "/",
   image: "/opengraph-image",
-  imageAlt: "Cabzii — Cab Booking Chennai & Tamil Nadu",
-  keywords: [
-    "cab booking chennai",
-    "airport taxi chennai",
-    "outstation cab chennai",
-    "one way cab chennai",
-    "acting driver chennai",
-    "car rental chennai",
-    "pilgrimage cab chennai",
-    ...DEFAULT_KEYWORDS
-  ]
+  imageAlt: "Cabzii — Cab booking in Chennai, airport taxi and outstation",
+  keywords: HOME_SEO_KEYWORDS
 });

@@ -1,6 +1,6 @@
-import { notFound } from "next/navigation";
 import JsonLd from "../../../components/seo/JsonLd";
 import TourPackageLanding from "../../../components/tour/TourPackageLanding";
+import TourPackageClientFallback from "../../../components/tour/TourPackageClientFallback";
 import { fetchCatalogList, fetchPackageById } from "../../../lib/serverCatalog";
 import { tourPackageLandingMetadata } from "../../../lib/metadataHelpers";
 import { breadcrumbJsonLd, faqFromPairs } from "../../../lib/seo";
@@ -16,7 +16,9 @@ export async function generateMetadata({ params }) {
 
 export default async function TourPackagePage({ params }) {
   const pkg = await fetchPackageById(params.slug);
-  if (!pkg || pkg.status === "inactive" || pkg.isDeleted) notFound();
+  if (!pkg || pkg.status === "inactive" || pkg.isDeleted) {
+    return <TourPackageClientFallback slug={params.slug} />;
+  }
 
   const all = await fetchCatalogList("packages", 12);
   const related = all

@@ -9,6 +9,8 @@ import {
   ORG_EMAIL,
   ORG_PHONE,
   ORG_ADDRESS,
+  HQ_GEO,
+  ORG_MAPS_URL,
   SOCIAL_PROFILES,
   WIKIDATA_URL,
   KNOWLEDGE_GRAPH_ID,
@@ -242,6 +244,13 @@ export function organizationJsonLd(reviewStats) {
       "@type": "PostalAddress",
       ...ORG_ADDRESS
     },
+    geo: {
+      "@type": "GeoCoordinates",
+      latitude: HQ_GEO.lat,
+      longitude: HQ_GEO.lng
+    },
+    hasMap: ORG_MAPS_URL,
+    currenciesAccepted: "INR",
     ...(sameAs.length ? { sameAs } : {}),
     ...(KNOWLEDGE_GRAPH_ID
       ? { identifier: { "@type": "PropertyValue", propertyID: "googleKnowledgeGraph", value: KNOWLEDGE_GRAPH_ID } }
@@ -293,12 +302,17 @@ export function personJsonLd({ name, url, sameAs, jobTitle }) {
 export function taxiServiceJsonLd() {
   return {
     "@context": "https://schema.org",
-    "@type": "Service",
+    "@type": "TaxiService",
     serviceType: "Taxi and Cab Booking",
-    provider: { "@type": "Organization", name: SITE_NAME, url: SITE_URL },
-    areaServed: { "@type": "Country", name: "India" },
+    provider: { "@id": ORG_ID },
+    areaServed: [
+      { "@type": "City", name: "Chennai" },
+      { "@type": "State", name: "Tamil Nadu" },
+      { "@type": "Country", name: "India" }
+    ],
+    url: SITE_URL,
     description:
-      "Online cab, taxi, airport transfer, outstation, acting driver and tour package booking across South India."
+      "Online cab, taxi, airport transfer, outstation, acting driver and tour package booking from Chennai across South India."
   };
 }
 
@@ -310,12 +324,13 @@ export function localBusinessJsonLd(cityName, cityRegion, urlPath, geo) {
   const url = urlPath ? `${SITE_URL}${urlPath}` : SITE_URL;
   const sameAs = [...SOCIAL_PROFILES];
   const isHqCity = /^chennai$/i.test(String(cityName || "").trim());
+  const pin = geo?.lat && geo?.lng ? geo : isHqCity ? HQ_GEO : null;
 
   return {
     "@context": "https://schema.org",
-    "@type": "LocalBusiness",
+    "@type": isHqCity ? ["TaxiService", "LocalBusiness"] : "LocalBusiness",
     "@id": `${url}#localbusiness`,
-    name: `${SITE_NAME} — ${cityName}`,
+    name: isHqCity ? `${SITE_NAME} Cab Booking — Chennai` : `${SITE_NAME} — ${cityName}`,
     url,
     image: DEFAULT_OG_IMAGE,
     logo: SITE_LOGO,
@@ -328,14 +343,15 @@ export function localBusinessJsonLd(cityName, cityRegion, urlPath, geo) {
       ...(cityRegion ? { containedInPlace: { "@type": "State", name: cityRegion } } : {})
     },
     priceRange: "₹₹",
+    currenciesAccepted: "INR",
     parentOrganization: { "@id": ORG_ID },
     ...(sameAs.length ? { sameAs } : {}),
-    ...(geo?.lat && geo?.lng
+    ...(pin
       ? {
           geo: {
             "@type": "GeoCoordinates",
-            latitude: String(geo.lat),
-            longitude: String(geo.lng)
+            latitude: String(pin.lat),
+            longitude: String(pin.lng)
           }
         }
       : {}),
@@ -344,7 +360,8 @@ export function localBusinessJsonLd(cityName, cityRegion, urlPath, geo) {
           address: {
             "@type": "PostalAddress",
             ...ORG_ADDRESS
-          }
+          },
+          hasMap: ORG_MAPS_URL
         }
       : {})
   };

@@ -936,7 +936,7 @@ export const CATALOG_TABS = {
     superAdminOnly: true,
     form: "seoService",
     sample: {
-      seoTitle: "Airport Taxi Chennai: Book Online, Fares & 24×7 Pickup | cabzii.in",
+      seoTitle: "Airport Taxi Chennai: Book Online & Fares | cabzii.in",
       seoDescription: "Book Chennai airport taxi with AC cabs, fixed local & outstation fares and instant confirmation on cabzii.in.",
       seo: "airport taxi chennai,chennai airport cab booking,airport pickup taxi",
       slug: "airport-taxi",

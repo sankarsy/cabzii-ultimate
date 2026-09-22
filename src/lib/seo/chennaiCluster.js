@@ -51,7 +51,7 @@ export const CHENNAI_KEYWORD_URL_MAP = [
   { keyword: "cab fare Chennai", url: "/tariff" },
   { keyword: "Chennai to Tirupati cab", url: "/routes/chennai-to-tirupati-cab" },
   { keyword: "Chennai to Pondicherry cab", url: "/routes/chennai-to-pondicherry-cab" },
-  { keyword: "Tirupati package", url: "/holidays?category=pilgrimage" }
+  { keyword: "Tirupati package", url: "/tour-packages/tirupati-balaji-darshan-tirupati" }
 ];
 
 export function chennaiCabUniqueHtml() {

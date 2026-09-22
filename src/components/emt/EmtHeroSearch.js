@@ -34,8 +34,8 @@ export default function EmtHeroSearch({
   defaultTab = "cabs",
   initialCabTrip = null,
   initialDriverTrip = null,
-  seoHeading = "Book Trusted Cabs & Drivers Across India",
-  seoSubheading = "Local hourly packages, airport taxi, outstation trips and a driver for your own car — fares shown before you confirm."
+  seoHeading = "Cab booking in Chennai",
+  seoSubheading = "Airport taxi, local packages, outstation and acting driver. Fares shown before you confirm."
 }) {
   const hero = useHeroSearch();
   const active = hero?.activeTab ?? defaultTab;
@@ -49,14 +49,17 @@ export default function EmtHeroSearch({
 
   return (
     <section className="emt-hero-section">
-      {/* Visually hidden — keeps the SEO h1 + intro copy without the headline block UI */}
-      <h1 className="sr-only">{seoHeading}</h1>
-      <p className="sr-only">{seoSubheading}</p>
-
       <div className="emt-hero-shell w-full">
         <div className="emt-hero-shell-top bg-white">
           <div className="emt-hero-inner emt-category-scroll-wrap relative">
             <EmtCategoryTabs variant="shell" activeTab={active} setActiveTab={handleTabChange} />
+          </div>
+        </div>
+
+        <div className="emt-hero-kicker bg-white">
+          <div className="emt-hero-inner">
+            <h1 className="emt-hero-kicker-title">{seoHeading}</h1>
+            <p className="emt-hero-kicker-lede">{seoSubheading}</p>
           </div>
         </div>
 

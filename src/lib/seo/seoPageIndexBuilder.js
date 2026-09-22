@@ -183,6 +183,7 @@ export function buildSeoPageIndex(data = {}) {
       seoDescription,
       seoKeywords,
       path: page.path,
+      citySlug: page.citySlug || "",
       source,
       adminTab: page.adminTab,
       editId: cmsEditId,
@@ -217,20 +218,24 @@ export function buildSeoPageIndex(data = {}) {
       editId: sitePage.path,
       createHref: `/admin?tab=seoPagesHub`,
       canDelete: false,
-      canClearOverride: Boolean(stored.seoTitle || stored.seoDescription || stored.seoKeywords),
+      canClearOverride: Boolean(stored.seoTitle || stored.seoDescription || stored.seoKeywords || stored.pageLinks?.length),
       seoStatus: seoStatus({ seoTitle, seoDescription, seo: seoKeywords }),
       sourceLabel: sourceLabel(source),
       editHref: `/admin?tab=seoPagesHub&editSeo=${encodeURIComponent(sitePage.path)}`
     });
   }
 
-  return rows.map((row) => ({
-    ...row,
-    editHref: row.editHref || adminEditHref(row.adminTab, row.editId, row.createHref),
-    seoTitleDisplay: truncate(row.seoTitle, 56),
-    seoDescriptionDisplay: truncate(row.seoDescription, 80),
-    seoKeywordsDisplay: truncate(row.seoKeywords, 48)
-  }));
+  return rows.map((row) => {
+    const storedLinks = data.pageSeo?.[row.path]?.pageLinks;
+    return {
+      ...row,
+      pageLinks: storedLinks || row.pageLinks || [],
+      editHref: row.editHref || adminEditHref(row.adminTab, row.editId, row.createHref),
+      seoTitleDisplay: truncate(row.seoTitle, 56),
+      seoDescriptionDisplay: truncate(row.seoDescription, 80),
+      seoKeywordsDisplay: truncate(row.seoKeywords, 48)
+    };
+  });
 }
 
 export function seoIndexStats(rows) {
