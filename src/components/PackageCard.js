@@ -27,7 +27,7 @@ export default function PackageCard({ pkg, actionText = "Book", onAction, action
   const BookAction = actionHref ? (
     <Link
       href={actionHref}
-      className="cabzii-btn cabzii-btn-primary cabzii-btn-sm cabzii-tap w-full justify-center !min-h-8 !text-[11px] sm:!min-h-9 sm:!text-xs"
+      className="cabzii-btn cabzii-btn-primary cabzii-btn-sm cabzii-tap w-full justify-center !min-h-11 !text-xs sm:!min-h-11 sm:!text-sm"
     >
       {actionText} <ArrowRightIcon className="h-3.5 w-3.5 text-white/90" />
     </Link>
@@ -35,7 +35,7 @@ export default function PackageCard({ pkg, actionText = "Book", onAction, action
     <button
       type="button"
       onClick={() => onAction?.(pkg)}
-      className="cabzii-btn cabzii-btn-primary cabzii-btn-sm cabzii-tap w-full justify-center !min-h-8 !text-[11px] sm:!min-h-9 sm:!text-xs"
+      className="cabzii-btn cabzii-btn-primary cabzii-btn-sm cabzii-tap w-full justify-center !min-h-11 !text-xs sm:!min-h-11 sm:!text-sm"
     >
       {actionText} <ArrowRightIcon className="h-3.5 w-3.5 text-white/90" />
     </button>

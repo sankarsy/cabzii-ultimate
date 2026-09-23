@@ -2,21 +2,26 @@
 
 import { useState } from "react";
 import { Star, X } from "lucide-react";
-import { OFFER_COUPONS } from "../../lib/paymentMethods";
+import { OFFER_COUPONS, couponsForTrip } from "../../lib/paymentMethods";
 import BottomSheet from "./BottomSheet";
 
-export default function OffersSheet({ open, onClose, onApplyCoupon, appliedCode = "" }) {
+export default function OffersSheet({ open, onClose, onApplyCoupon, appliedCode = "", trip = null }) {
   const [couponInput, setCouponInput] = useState("");
   const [message, setMessage] = useState("");
+  const coupons = trip ? couponsForTrip(trip) : OFFER_COUPONS;
 
   const tryApply = (code) => {
     const normalized = String(code || "").trim().toUpperCase();
-    const match = OFFER_COUPONS.find((c) => c.code === normalized);
+    const match = coupons.find((c) => c.code === normalized) || OFFER_COUPONS.find((c) => c.code === normalized);
     if (!match) {
       setMessage("Invalid coupon code.");
       return;
     }
-    setMessage(`Coupon ${match.code} applied!`);
+    if (trip && !coupons.some((c) => c.code === match.code)) {
+      setMessage(`${match.code} does not apply to this trip.`);
+      return;
+    }
+    setMessage(`Coupon ${match.code} applied.`);
     onApplyCoupon(match.code);
     setCouponInput("");
   };
@@ -49,13 +54,7 @@ export default function OffersSheet({ open, onClose, onApplyCoupon, appliedCode 
           </div>
         </div>
 
-        <div className="mb-4 rounded-xl bg-gradient-to-r from-amber-50 to-yellow-100 px-3 py-3">
-          <p className="text-sm font-bold text-slate-900">
-            UNLIMITED Discounts! <span className="text-rose-600">Buy Pass Now →</span>
-          </p>
-        </div>
-
-        <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Coupons</p>
+        <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Coupons for this trip</p>
         <div className="mb-4 flex gap-2">
           <input
             value={couponInput}
@@ -81,7 +80,8 @@ export default function OffersSheet({ open, onClose, onApplyCoupon, appliedCode 
         ) : null}
 
         <div className="space-y-3">
-          {OFFER_COUPONS.map((coupon) => (
+          {coupons.length ? (
+            coupons.map((coupon) => (
             <article key={coupon.code} className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
               <div className="flex items-start gap-3">
                 <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[var(--cabzii-brand)]/10 text-xs font-bold text-[var(--cabzii-brand)]">
@@ -103,7 +103,12 @@ export default function OffersSheet({ open, onClose, onApplyCoupon, appliedCode 
                 {coupon.save}
               </div>
             </article>
-          ))}
+          ))
+          ) : (
+            <p className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-3 py-4 text-sm text-slate-600">
+              No coupons apply to this trip. CABZII500 is for first outstation cab bookings of ₹1,500 or more.
+            </p>
+          )}
         </div>
       </div>
     </BottomSheet>

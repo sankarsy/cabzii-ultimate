@@ -6,6 +6,7 @@ import { clearSitePageSeo, deleteSeoSnippet, saveSeoSnippet } from "../../lib/ad
 import { buildCatalogListUrl } from "../../lib/adminCatalogConfig";
 import { buildSeoPageIndex, seoIndexStats } from "../../lib/seo/seoPageIndexBuilder";
 import AdminSeoSnippetEditor from "./AdminSeoSnippetEditor";
+import AdminSeoCreatePage from "./AdminSeoCreatePage";
 import AdminSeoSop from "./AdminSeoSop";
 
 const TYPE_FILTERS = [
@@ -18,6 +19,7 @@ const TYPE_FILTERS = [
   { id: "service", label: "Services" },
   { id: "city", label: "City hubs" },
   { id: "acting-driver", label: "Acting driver" },
+  { id: "landing", label: "Custom landings" },
   { id: "blog", label: "Blogs" }
 ];
 
@@ -48,6 +50,7 @@ export default function AdminSeoPagesIndex({ token = "" }) {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [editorRow, setEditorRow] = useState(null);
+  const [createOpen, setCreateOpen] = useState(false);
   const [saving, setSaving] = useState(false);
 
   const loadAll = useCallback(async () => {
@@ -58,7 +61,7 @@ export default function AdminSeoPagesIndex({ token = "" }) {
     setLoading(true);
     setError("");
     try {
-      const [cabs, drivers, packages, blogs, seoServices, seoRoutes, seoCityPages, settingsRes] = await Promise.all([
+      const [cabs, drivers, packages, blogs, seoServices, seoRoutes, seoCityPages, seoLandings, settingsRes] = await Promise.all([
         fetchAdminList(`${buildCatalogListUrl("cabs")}&limit=500`, token),
         fetchAdminList(`${buildCatalogListUrl("drivers")}&limit=500`, token),
         fetchAdminList(`${buildCatalogListUrl("packages")}&limit=500`, token),
@@ -66,6 +69,7 @@ export default function AdminSeoPagesIndex({ token = "" }) {
         fetchAdminList(buildCatalogListUrl("seoServices"), token),
         fetchAdminList(buildCatalogListUrl("seoRoutes"), token),
         fetchAdminList(buildCatalogListUrl("seoCityPages"), token),
+        fetchAdminList(buildCatalogListUrl("seoLandings"), token),
         fetch("/api/site-settings", { headers: { authorization: `Bearer ${token}` }, cache: "no-store" })
       ]);
       let storedPageSeo = {};
@@ -83,6 +87,7 @@ export default function AdminSeoPagesIndex({ token = "" }) {
           seoServices,
           seoRoutes,
           seoCityPages,
+          seoLandings,
           pageSeo: storedPageSeo
         })
       );
@@ -142,7 +147,8 @@ export default function AdminSeoPagesIndex({ token = "" }) {
     setError("");
     setMessage("");
     try {
-      await deleteSeoSnippet({ row, token });
+      const result = await deleteSeoSnippet({ row, token, pageSeo });
+      if (result?.pageSeo) setPageSeo(result.pageSeo);
       setMessage(`Deleted SEO override for ${row.path}.`);
       await loadAll();
     } catch (err) {
@@ -169,7 +175,7 @@ export default function AdminSeoPagesIndex({ token = "" }) {
         <div>
           <h2 className="text-lg font-bold text-slate-900">Google SEO pages</h2>
           <p className="mt-1 max-w-3xl text-sm text-slate-600">
-            This is where you edit the pages Google shows — not under Operations or Cabs list alone. Super admin only.
+            One ranking SEO type for every URL: H1, title, description, keywords, intro, body, FAQs and hub links. Create, edit or delete from this list.
           </p>
           {!loading && rows.length ? (
             <div className="mt-3 flex flex-wrap gap-2 text-xs">
@@ -181,36 +187,25 @@ export default function AdminSeoPagesIndex({ token = "" }) {
           ) : null}
         </div>
         <div className="flex flex-wrap gap-2">
-          <Link href="/admin?tab=cabs&mode=create" className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-800 hover:bg-slate-50">
-            + Cab
-          </Link>
-          <Link href="/admin?tab=seoServices&mode=create" className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-800 hover:bg-slate-50">
-            + Service
-          </Link>
-          <Link href="/admin?tab=seoCityPages&mode=create" className="rounded-lg bg-[var(--cabzii-brand)] px-3 py-2 text-xs font-semibold text-white hover:bg-[var(--cabzii-brand-hover)]">
-            + City SEO
-          </Link>
+          <button
+            type="button"
+            onClick={() => setCreateOpen(true)}
+            className="rounded-lg bg-[var(--cabzii-brand)] px-3 py-2 text-xs font-semibold text-white hover:bg-[var(--cabzii-brand-hover)]"
+          >
+            + Create SEO page
+          </button>
         </div>
       </div>
 
       <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">
-        <p className="font-semibold">How Cabzii Google pages work (you cannot create a random URL here)</p>
+        <p className="font-semibold">Same SEO type on every page</p>
         <ul className="mt-2 list-disc space-y-1 pl-5 text-xs sm:text-sm text-amber-900">
+          <li>Title 50–60 characters, visible H1, description 120–155, keywords, intro, body, FAQs, hub links.</li>
           <li>
-            <strong>/cabs</strong> — cab listing. This is the page Google ranked #2 for “tour s taxi booking”. Edit it here: filter <em>Home &amp; listings</em>, row <em>Cabs listing</em>.
+            <strong>Create SEO page</strong> adds a custom landing at <code>/pages/slug</code>, a city cab hub, an acting-driver city page, a service, or a route.
           </li>
-          <li>
-            <strong>/car-rental/chennai-city-cabs</strong> — city taxi landing (cab booking Chennai). Create/edit from this list (City hubs). Legacy <code>/cab-booking/chennai</code> 301s here.
-          </li>
-          <li>
-            <strong>Page links</strong> — Edit SEO on any row to add/remove FastTrack-style city, route and service hubs for that URL. Nested destinations sit under a city card. Changes show on the live page after save.
-          </li>
-          <li>
-            <strong>/cabs/your-vehicle-slug</strong> — one car (e.g. Dzire Tour S). Create the vehicle in <em>Catalog → Cabs</em>, then fill the SEO tab (title must include “Tour S taxi booking Chennai”).
-          </li>
-          <li>
-            <strong>/services/airport-taxi/chennai</strong> — service × city. Use <em>Service landing pages</em>. Do not invent a new path like /tour-s-taxi — it will not rank until it exists in this system.
-          </li>
+          <li>Built-in pages (home, /cabs, /call-driver) can be edited or reset — they cannot be deleted.</li>
+          <li>CMS rows (city, service, route, custom landing) can be deleted. The live URL then falls back to the template or 404s for custom landings.</li>
         </ul>
       </div>
 
@@ -309,7 +304,7 @@ export default function AdminSeoPagesIndex({ token = "" }) {
                     <a href={row.path} target="_blank" rel="noreferrer" className="text-xs font-semibold text-sky-700 hover:underline">
                       View live
                     </a>
-                    {row.type !== "site" ? (
+                    {row.type !== "site" && row.type !== "landing" ? (
                       <Link href={row.editHref} className="text-xs font-semibold text-emerald-700 hover:underline">
                         Full edit
                       </Link>
@@ -357,6 +352,18 @@ export default function AdminSeoPagesIndex({ token = "" }) {
       </div>
 
       <AdminSeoSnippetEditor row={editorRow} open={Boolean(editorRow)} onClose={() => setEditorRow(null)} onSave={handleSave} saving={saving} />
+      <AdminSeoCreatePage
+        open={createOpen}
+        token={token}
+        pageSeo={pageSeo}
+        onClose={() => setCreateOpen(false)}
+        onCreated={async (result) => {
+          if (result?.pageSeo) setPageSeo(result.pageSeo);
+          setCreateOpen(false);
+          setMessage(result?.path ? `Created ${result.path}. Edit it from the list.` : "Created SEO page.");
+          await loadAll();
+        }}
+      />
     </div>
   );
 }

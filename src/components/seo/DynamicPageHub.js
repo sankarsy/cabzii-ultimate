@@ -1,5 +1,6 @@
 import { fetchSiteSettings } from "../../lib/serverSiteSettings";
-import { resolvePageLinkGroups, normalizePageLinkGroups } from "../../lib/seo/pageLinks";
+import { resolvePageLinkGroups } from "../../lib/seo/pageLinks";
+import { normalizePageLinkGroups } from "../../lib/seo/pageLinksCore";
 import PageHubLinks from "./PageHubLinks";
 
 /**

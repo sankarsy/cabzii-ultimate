@@ -115,7 +115,7 @@ export default function CityCabBookingWidget({ cityName, defaultFrom, airportLab
         </div>
       </fieldset>
 
-      <div className="mt-3 grid gap-3 sm:grid-cols-2">
+      <div className="mt-3 grid min-w-0 gap-3 sm:grid-cols-2">
         <PlaceAutocomplete
           label="From"
           placeholder={tripKind === "airport" ? airportLabel || `${cityName} airport` : `Pickup in ${cityName}`}
@@ -160,7 +160,7 @@ export default function CityCabBookingWidget({ cityName, defaultFrom, airportLab
           min={today || undefined}
           value={date}
           onChange={(event) => setDate(event.target.value)}
-          className="mt-1 min-h-11 w-full rounded-xl border border-slate-200 px-3 text-sm font-semibold text-slate-900"
+          className="mt-1 min-h-11 w-full min-w-0 max-w-full rounded-xl border border-slate-200 px-3 text-sm font-semibold text-slate-900"
         />
       </div>
 

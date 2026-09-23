@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { readSelectedCity } from "../../lib/locationPriority";
+import { resolveSiteSearchHref } from "../../lib/siteSearch";
 
 const PLACEHOLDER = "Search cabs, buses, drivers, holidays...";
 
@@ -45,10 +45,7 @@ export default function HeaderSearchBar({
   function submit() {
     const q = query.trim();
     if (!q) return;
-    const params = new URLSearchParams({ q });
-    const city = readSelectedCity();
-    if (city) params.set("city", city);
-    router.push(`/search?${params.toString()}`);
+    router.push(resolveSiteSearchHref(q));
     onSubmitted?.();
   }
 

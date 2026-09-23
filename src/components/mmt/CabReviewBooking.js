@@ -392,7 +392,7 @@ export default function CabReviewBooking({
         </aside>
       </div>
 
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white px-4 py-3 lg:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] lg:hidden">
         <div className="mx-auto flex max-w-lg items-center gap-3">
           <div className="min-w-0">
             <p className="text-[16px] font-extrabold text-slate-900">{formatInrCurrency(payable)}</p>

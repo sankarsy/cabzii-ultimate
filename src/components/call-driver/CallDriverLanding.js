@@ -8,14 +8,18 @@ import RelatedSeoLinks from "../seo/RelatedSeoLinks";
 import CallDriverServiceGrid from "./CallDriverServiceGrid";
 import { CALL_DRIVER_SERVICES, callDriverBookHref, mergeCallDriverServices } from "../../lib/callDriver";
 import CallDriverServiceSeo from "./CallDriverServiceSeo";
+import { DEFAULT_CALL_DRIVER_PAGE } from "../../lib/callDriverPage";
 
 export default function CallDriverLanding({
   showSeoCopy = false,
-  title = "Call Driver Services",
-  subtitle = "Need a professional driver for your own car? Choose the service you need."
+  title = DEFAULT_CALL_DRIVER_PAGE.title,
+  subtitle = DEFAULT_CALL_DRIVER_PAGE.subtitle,
+  intro = DEFAULT_CALL_DRIVER_PAGE.intro,
+  sections = DEFAULT_CALL_DRIVER_PAGE.sections
 }) {
   const [services, setServices] = useState(CALL_DRIVER_SERVICES);
   const [seoMap, setSeoMap] = useState({});
+  const [pageCopy, setPageCopy] = useState({ title, subtitle, intro, sections });
 
   useEffect(() => {
     let cancelled = false;
@@ -25,18 +29,26 @@ export default function CallDriverLanding({
         if (cancelled || !json?.data) return;
         if (json.data.services) setServices(mergeCallDriverServices(json.data.services));
         if (json.data.seo && typeof json.data.seo === "object") setSeoMap(json.data.seo);
+        if (json.data.page) {
+          setPageCopy({
+            title: json.data.page.title || title,
+            subtitle: json.data.page.subtitle || subtitle,
+            intro: json.data.page.intro || intro,
+            sections: Array.isArray(json.data.page.sections) && json.data.page.sections.length ? json.data.page.sections : sections
+          });
+        }
       })
       .catch(() => {});
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [title, subtitle, intro, sections]);
 
   return (
     <>
       <CabziiBrowseHeader
-        title={title}
-        subtitle={subtitle}
+        title={pageCopy.title}
+        subtitle={pageCopy.subtitle}
         icon={UserRound}
         breadcrumbs={[
           { name: "Home", path: "/" },
@@ -45,72 +57,22 @@ export default function CallDriverLanding({
       />
 
       <div className="section-shell py-5 sm:py-8">
-        <p className="mb-4 text-[13px] leading-relaxed text-slate-600 sm:mb-5 sm:text-sm">
-          You book a Cabzii Call Driver service. A professional driver is assigned after booking — you do not pick an
-          individual driver.
-        </p>
+        <p className="mb-4 text-[13px] leading-relaxed text-slate-600 sm:mb-5 sm:text-sm">{pageCopy.intro}</p>
         <CallDriverServiceGrid services={services} />
       </div>
 
       {showSeoCopy ? (
         <div className="section-shell space-y-6 pb-10 text-sm leading-relaxed text-slate-700">
-          <section>
-            <h2 className="text-lg font-bold text-slate-900">Call driver in Chennai for your own car</h2>
-            <p className="mt-2">
-              Cabzii’s call driver and acting driver service in Chennai is for customers who already have a car and need
-              a professional driver. Book a local city driver, an outstation driver, or an airport call driver without
-              browsing a public driver list. Cabzii assigns a professional driver after you confirm the booking.
-            </p>
-          </section>
-          <section>
-            <h2 className="text-lg font-bold text-slate-900">How to book</h2>
-            <ol className="mt-2 list-decimal space-y-1 pl-5">
-              <li>Choose the Call Driver service you need</li>
-              <li>Enter date, time, pickup and vehicle details</li>
-              <li>Review the estimated fare (or request a quote for monthly and corporate work)</li>
-              <li>Confirm the booking — Cabzii assigns an available driver</li>
-            </ol>
-          </section>
-          <section>
-            <h2 className="text-lg font-bold text-slate-900">Outstation, airport, monthly and corporate</h2>
-            <p className="mt-2">
-              Outstation driver Chennai packages cover full-day highway trips in your vehicle. Airport call driver
-              Chennai is driver-only pickup or drop — not an airport taxi. Monthly driver Chennai and school pickup
-              requests are quoted by Cabzii. Corporate driver service Chennai is available for offices, events and
-              regular staff transport. Valet parking drivers can be booked for functions with automatic supervisor
-              planning.
-            </p>
-          </section>
-          <section>
-            <h2 className="text-lg font-bold text-slate-900">Safety and professional drivers</h2>
-            <p className="mt-2">
-              Drivers are operational resources managed by Cabzii. We can replace a driver if needed, cover availability
-              gaps, and keep personal driver records in the admin panel rather than on the public website. Cabzii does
-              not publish a public list of named drivers.
-            </p>
-          </section>
-          <section>
-            <h2 className="text-lg font-bold text-slate-900">Related Chennai bookings</h2>
-            <p className="mt-2">
-              Need a Cabzii vehicle as well? Use{" "}
-              <Link href="/car-rental/chennai-city-cabs" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
-                cab booking Chennai
-              </Link>{" "}
-              or{" "}
-              <Link href="/services/airport-taxi/chennai" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
-                Chennai airport taxi
-              </Link>
-              . City guide for chauffeur / driver-on-hire wording:{" "}
-              <Link href="/call-drivers-chennai" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
-                acting driver in Chennai
-              </Link>
-              . Published cab rates:{" "}
-              <Link href="/tariff" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
-                tariff
-              </Link>
-              .
-            </p>
-          </section>
+          {(pageCopy.sections || []).map((section) =>
+            section.heading || section.body ? (
+              <section key={section.heading}>
+                {section.heading ? <h2 className="text-lg font-bold text-slate-900">{section.heading}</h2> : null}
+                {section.body ? (
+                  <div className="mt-2 [&_a]:font-semibold [&_a]:text-[var(--cabzii-brand)] [&_a]:hover:underline [&_ol]:mt-2 [&_ol]:list-decimal [&_ol]:space-y-1 [&_ol]:pl-5 [&_p]:mt-2" dangerouslySetInnerHTML={{ __html: section.body }} />
+                ) : null}
+              </section>
+            ) : null
+          )}
           <div className="space-y-10 border-t border-slate-200 pt-8">
             {services.map((svc) => (
               <div key={svc.id} id={svc.id}>

@@ -118,7 +118,7 @@ export default function HolidaysListPage() {
             <Link
               key={cat.id}
               href={cat.id === "all" ? "/holidays" : `/holidays?category=${cat.id}`}
-              className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold transition ${
+              className={`inline-flex min-h-10 items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold transition ${
                 category === cat.id
                   ? "bg-[var(--cabzii-brand)] text-white shadow-sm"
                   : "border border-slate-200 bg-white text-slate-700 hover:border-[var(--cabzii-brand)]"
@@ -209,7 +209,7 @@ export default function HolidaysListPage() {
         ) : (
           <>
             {paginationLabel ? <p className="mb-2.5 text-[11px] text-slate-500 sm:mb-3">{paginationLabel}</p> : null}
-            <div className="grid w-full grid-cols-2 gap-3 sm:gap-3.5 md:grid-cols-4 md:gap-4">
+            <div className="grid w-full grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-3.5 md:grid-cols-4 md:gap-4">
               {visiblePackages.map((pkg) => (
                 <PackageCard
                   key={String(pkg._id ?? pkg.id)}

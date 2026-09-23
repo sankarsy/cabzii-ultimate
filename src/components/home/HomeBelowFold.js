@@ -1,24 +1,17 @@
-import dynamic from "next/dynamic";
 import EmtWhyChooseUs from "../emt/EmtWhyChooseUs";
 import MmtCabResultCard from "../mmt/MmtCabResultCard";
 import MmtHomeCatalogSection, { MmtHomeCatalogScroll, MmtHomeCatalogScrollItem } from "../mmt/MmtHomeCatalogSection";
 import CallDriverHomeSection from "./CallDriverHomeSection";
 import FaqSection from "../seo/FaqSection";
+import PageHubLinks from "../seo/PageHubLinks";
+import TestimonialsSection from "../reviews/TestimonialsSection";
 import { HOME_PAGE_FAQS } from "../../lib/seo/content";
+import { resolvePageLinkGroups } from "../../lib/seo/pageLinks";
 import { DEFAULT_HQ_CITY } from "../../lib/vehicleAdminConfig";
-import DynamicPageHub from "../seo/DynamicPageHub";
 import HomeHowToBook from "./HomeHowToBook";
 import HomeShowcaseCarousel from "./HomeShowcaseCarousel";
 import HomeBlogTeasers from "./HomeBlogTeasers";
 import HomeFleetLoader from "./HomeFleetLoader";
-
-const TestimonialsSection = dynamic(() => import("../reviews/TestimonialsSection"), {
-  loading: () => (
-    <section className="border-t border-slate-200 bg-white py-8 sm:py-10" aria-hidden>
-      <div className="section-shell h-24" />
-    </section>
-  )
-});
 
 const HOME_FLEET_SUBTITLE = `Sedan, hatchback, MPV & SUV taxi cars · ${DEFAULT_HQ_CITY}`;
 
@@ -53,6 +46,7 @@ export default function HomeBelowFold({
   callDriverServices,
   siteSettings
 }) {
+  const hubGroups = resolvePageLinkGroups(siteSettings?.pageSeo?.["/"]?.pageLinks, "/", "home");
   return (
     <>
       <HomeShowcaseCarousel section="offers" cards={showcase.offers} />
@@ -66,7 +60,13 @@ export default function HomeBelowFold({
       <EmtWhyChooseUs settings={siteSettings} />
       <TestimonialsSection />
       <HomeBlogTeasers posts={blogs} />
-      <DynamicPageHub fallbackPage="home" path="/" />
+      {hubGroups.length ? (
+        <section className="border-t border-slate-200 bg-slate-50 py-8 sm:py-10">
+          <div className="section-shell">
+            <PageHubLinks groups={hubGroups} />
+          </div>
+        </section>
+      ) : null}
 
       <section className="border-t border-slate-200 bg-white py-8 sm:py-10">
         <div className="section-shell">

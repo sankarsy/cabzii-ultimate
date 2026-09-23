@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import BlogCard from "../../components/BlogCard";
+import { resolveSiteSearchHref } from "../../lib/siteSearch";
 import CabCard from "../../components/CabCard";
 import SearchPageSearchBar from "../../components/search/SearchPageSearchBar";
 import PackageCard from "../../components/PackageCard";
@@ -46,6 +48,10 @@ async function fetchList(pathAndQuery) {
 
 export default async function SearchPage({ searchParams }) {
   const rawQuery = searchParams?.q ?? "";
+  const productHref = resolveSiteSearchHref(rawQuery);
+  if (productHref && !productHref.startsWith("/search")) {
+    redirect(productHref);
+  }
   const query = normalize(rawQuery);
   const cabTypeFilter = (searchParams?.cabType ?? "").trim();
   const pickup = (searchParams?.pickup ?? "").trim();

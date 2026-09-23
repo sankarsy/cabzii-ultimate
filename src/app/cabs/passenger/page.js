@@ -88,7 +88,7 @@ function PassengerContent() {
       : { listPrice: 0, total: 0, discountPct: 0, discountAmount: 0, perKmRate: 0, usesDistance: false };
   const listPrice = fare.listPrice;
   const discount = fare.discountPct;
-  const couponOff = couponDiscountAmount(coupon, fare.total);
+  const couponOff = couponDiscountAmount(coupon, fare.total, trip);
   const netTotal = Math.max(0, Number(fare.total) - couponOff);
   const payable = payMode === "full" ? netTotal : Math.round(netTotal * 0.5);
 
@@ -174,7 +174,7 @@ function PassengerContent() {
       payParams.set("listPrice", String(listPrice));
       payParams.set("discountPct", String(discount));
       payParams.set("discountAmount", String(Math.max(0, listPrice - fare.total)));
-      payParams.set("payMode", payMode);
+      payParams.set("payMode", "advance");
       if (coupon) payParams.set("coupon", coupon);
       appendTripCoords(payParams, trip);
 

@@ -3,6 +3,7 @@ import { resolvePublicRouteRedirect } from "./lib/routes/publicRoutes";
 import { resolveSeoAliasPath } from "./lib/seo/urlAliases";
 import { cityCabLandingPath } from "./lib/cityCabPaths";
 import { resolveHolidayQueryHref } from "./lib/holidayQuery";
+import { resolveSiteSearchHref } from "./lib/siteSearch";
 
 const PROTECTED_PREFIXES = ["/payment", "/booking", "/my-bookings"];
 
@@ -23,6 +24,13 @@ export function middleware(request) {
     const canonical = resolveHolidayQueryHref(request.nextUrl.searchParams.get("q"));
     if (canonical) {
       return NextResponse.redirect(new URL(canonical, request.url), 301);
+    }
+  }
+
+  if (pathname === "/search") {
+    const searchHref = resolveSiteSearchHref(request.nextUrl.searchParams.get("q"));
+    if (searchHref && !searchHref.startsWith("/search")) {
+      return NextResponse.redirect(new URL(searchHref, request.url));
     }
   }
 

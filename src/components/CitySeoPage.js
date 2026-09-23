@@ -14,10 +14,13 @@ import { servicesForCityHub } from "../lib/seo/programmaticMeta";
 import { routesForCity } from "../lib/seo/routes";
 import { servicePath } from "../lib/seo/services";
 
-export default function CitySeoPage({ city, extraBody = "", headingOverride = "" }) {
+export default function CitySeoPage({ city, extraBody = "", headingOverride = "", faqsOverride = null }) {
   const title = headingOverride || tunedActingDriverH1(city);
   const hubPath = actingDriverLandingPath(city.slug);
-  const faqs = getCityFaqs(city, "driver");
+  const faqs =
+    Array.isArray(faqsOverride) && faqsOverride.length
+      ? faqsOverride
+      : getCityFaqs(city, "driver");
   const cityRoutes = routesForCity(city.slug)
     .filter((route) => classifyRoute(route).indexable)
     .sort((a, b) => classifyRoute(b).commercialScore - classifyRoute(a).commercialScore)

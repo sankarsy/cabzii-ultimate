@@ -145,7 +145,7 @@ export default function MmtCabResultCard({ cab, trip, layout = "row", catalogMod
               </p>
             </>
           )}
-          <span className="hidden min-w-[9.5rem] items-center justify-center rounded-lg bg-[#1a73e8] px-5 py-2.5 text-[13px] font-extrabold uppercase tracking-wide text-white sm:inline-flex">
+          <span className="inline-flex min-h-11 min-w-[7.5rem] items-center justify-center rounded-lg bg-[#1a73e8] px-4 py-2 text-[12px] font-extrabold uppercase tracking-wide text-white sm:min-w-[9.5rem] sm:px-5 sm:py-2.5 sm:text-[13px]">
             {catalogMode ? "View Cab" : "Select Cab"}
           </span>
         </div>

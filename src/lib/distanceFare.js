@@ -1,12 +1,10 @@
 import { num } from "./cabFare";
 
-/** Use distance × per-km when route distance is known (outstation / point-to-point). */
+/** Use distance × per-km only for outstation. Local/hourly/airport stay on the selected package. */
 export function shouldUseDistanceFare(trip) {
   const km = num(trip?.distanceKm);
   if (km <= 0) return false;
-  if (trip?.tripType === "outstation") return true;
-  if (trip?.from?.trim() && trip?.to?.trim()) return true;
-  return false;
+  return String(trip?.tripType || "").toLowerCase() === "outstation";
 }
 
 /** Per-km rate from admin Price per KM, then package slab, then catalog base. */
@@ -83,8 +81,29 @@ export function resolveCabTripFare(cab, slab, trip) {
   const billedKm = Boolean(trip.roundTrip) ? num(trip.distanceKm) * 2 : num(trip.distanceKm);
   const extraKmCharge = includedKm > 0 ? Math.max(0, billedKm - includedKm) * perKm : 0;
   const driverBatta = trip.tripType === "outstation" ? num(cab?.driverAllowance) : 0;
-  const minFare = includedKm > 0 ? packageTotal + extraKmCharge : packageTotal;
 
+  if (includedKm > 0) {
+    const listPrice = Math.round(packageTotal + extraKmCharge + driverBatta);
+    return {
+      listPrice,
+      total: listPrice,
+      discountPct: 0,
+      discountAmount: 0,
+      perKmRate: perKm,
+      usesDistance: extraKmCharge > 0,
+      distanceKm: Math.ceil(num(trip.distanceKm)),
+      driverBatta,
+      extraKmCharge,
+      fareNote:
+        extraKmCharge > 0
+          ? `${slab?.label || "Package"} + extra km beyond ${includedKm} km at ₹${perKm}/km`
+          : slab?.label
+            ? `Package: ${slab.label}`
+            : "Package fare"
+    };
+  }
+
+  const minFare = packageTotal;
   return calculateDistanceFare({
     distanceKm: trip.distanceKm,
     perKmRate: perKm,

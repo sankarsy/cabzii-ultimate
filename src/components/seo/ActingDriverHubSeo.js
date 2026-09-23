@@ -36,7 +36,7 @@ export default function ActingDriverHubSeo() {
       <section className="cabzii-seo-block">
         <h2>What you can book</h2>
         <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-700">
-          <li>Local acting driver (4-hour minimum on the current tariff)</li>
+          <li>Local acting driver (3-hour minimum on the current tariff)</li>
           <li>Outstation driver for highway days in your car</li>
           <li>Airport chauffeur in your vehicle (not an airport taxi)</li>
           <li>Monthly and corporate drivers (quoted after you share the schedule)</li>

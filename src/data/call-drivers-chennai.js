@@ -4,45 +4,60 @@ import { cityCabLandingPath, CALL_DRIVERS_CHENNAI_PATH } from "../lib/cityCabPat
 
 export { CALL_DRIVERS_CHENNAI_PATH };
 
-/** Published Call Driver tariff defaults (backend src/config/callDriverTariff.js). */
+/** Published Call Driver tariff (backend src/config/callDriverTariff.js). Extra hour is ₹100. */
 export const CALL_DRIVER_TARIFF = {
   nightStartHour: 22,
-  nightEndHour: 6,
+  nightStartMinute: 15,
+  nightEndHour: 5,
+  nightEndMinute: 30,
+  cancelCharge: 100,
   local: {
-    minHours: 4,
-    standard: 500,
-    premium: 600,
-    extraHourStandard: 80,
+    minHours: 3,
+    standard: 450,
+    premium: 450,
+    extraHourStandard: 100,
     extraHourPremium: 100,
-    nightCharge: 100
+    nightCharge: 100,
+    dropChargeMin: 50,
+    dropCharge: 100,
+    outOfCityCharge: 100
   },
   outstation: {
     perDayHours: 12,
-    perDayStandard: 1100,
-    perDayPremium: 1200,
-    extraHourStandard: 80,
+    perDayStandard: 1500,
+    perDayPremium: 1500,
+    extraHourStandard: 100,
     extraHourPremium: 100,
-    nightCharge: 100,
-    foodStayNote: "Food and accommodation for the driver are the customer's responsibility."
+    oneWayMinKm: 250,
+    oneWayRate: 1700,
+    foodStayNote:
+      "Return trips: driver accommodation is extra (you arrange stay — not in this fare). One-way ₹1,700 includes bus fare for the driver."
   },
   airport: {
-    minHours: 4,
-    standard: 500,
-    premium: 600,
-    extraHourStandard: 80,
+    minHours: 3,
+    standard: 450,
+    premium: 450,
+    extraHourStandard: 100,
     extraHourPremium: 100,
     nightCharge: 100
   },
   valet: {
-    driverRate: 650,
+    driverRate: 600,
     minHours: 5,
-    extraHour: 70
+    extraHour: 100,
+    supervisorRate: 700,
+    driversPerSupervisor: 10
+  },
+  monthly: {
+    extraHour: 60,
+    normal10: 22000,
+    normal12: 22000,
+    luxury10: 24000,
+    luxury12: 26000
   }
 };
 
 const local = CALL_DRIVER_TARIFF.local;
-const halfDayStandard = local.standard + 4 * local.extraHourStandard;
-const halfDayPremium = local.premium + 4 * local.extraHourPremium;
 
 export const CALL_DRIVERS_CHENNAI = {
   brand: SITE_NAME,
@@ -58,18 +73,20 @@ export const CALL_DRIVERS_CHENNAI = {
     message: "Hi Cabzii, I need a Call Driver / acting driver in Chennai.\nPickup:\nDate:\nHours:\nVehicle:"
   }),
   telHref: `tel:${ORG_PHONE}`,
-  title: "Acting Drivers in Chennai | Call Driver for Your Car | Cabzii",
+  title: "Call Drivers in Chennai | Hire Acting Drivers | Cabzii",
   description:
-    "Hire a professional acting driver in Chennai for city, airport and outstation trips. Hourly and daily rates. Call or WhatsApp to book.",
-  h1: "Hire Acting Drivers in Chennai — Call Driver for Your Own Car",
+    "Hire call drivers in Chennai for your own car — city trips, outstation acting driver days and MAA airport chauffeur. Fares shown before you confirm.",
+  keywords:
+    "call drivers in Chennai, acting driver in Chennai, outstation acting driver, hire acting drivers Chennai, airport call driver Chennai, city call driver",
+  h1: "Hire Call Drivers in Chennai",
   intro: [
-    "Cabzii Call Driver is a chauffeur for your own car in Chennai — city hours, MAA airport pickup or drop, and outstation days.",
+    "Cabzii Call Driver is an acting driver for your own car in Chennai — city hours, MAA airport pickup or drop, and outstation acting driver days.",
     "Call or WhatsApp to book. A professional driver is assigned after you confirm. Availability depends on a driver being free at that hour."
   ],
   trustBadges: [
     "Driver for your own car",
-    "4-hour city minimum",
-    "Night charge after 10 pm",
+    "3-hour city minimum",
+    "Extra hour ₹100",
     "Assigned after you book"
   ],
   hero: {
@@ -78,34 +95,83 @@ export const CALL_DRIVERS_CHENNAI = {
     width: 1200,
     height: 630
   },
-  tariffCaption: "Acting Driver Tariff in Chennai — standard and premium bands on the published Call Driver rate card.",
+  tariffCaption: "Acting drivers hiring tariff in Chennai — published Call Driver rate card. Extra per hour is ₹100.",
+  tariffSections: [
+    {
+      title: "Incity tariff (normal & luxury cars)",
+      rows: [
+        { schedule: "Minimum 3 hours", amount: "₹450" },
+        { schedule: "Extra per hour", amount: "₹100" },
+        { schedule: "Night charges (10:15 PM – 5:30 AM)", amount: "₹100 extra" },
+        { schedule: "Drop charge minimum (5 km)", amount: "₹50 / ₹100" },
+        { schedule: "Out of city (more than 40 km)", amount: "₹100" },
+        { schedule: "Cancel charge (inform before 30 min)", amount: "₹100" }
+      ]
+    },
+    {
+      title: "Outstation return trip",
+      intro: "Per-day charge covers one-way and return days in your car. Accommodation for the driver is extra on return trips.",
+      rows: [
+        { schedule: "Per day (12 hrs)", amount: "₹1,500 + accommodation" },
+        { schedule: "Extra per hour", amount: "₹100" },
+        { schedule: "Cancel charge", amount: "₹100" }
+      ]
+    },
+    {
+      title: "Outstation one-way trip",
+      rows: [
+        { schedule: "Minimum 250 km", amount: "₹1,700 (including bus fare)" },
+        { schedule: "Cancel charge", amount: "₹100" }
+      ]
+    },
+    {
+      title: "Valet parking",
+      intro: "Trained Call Drivers for events. One supervisor is required for every ten drivers.",
+      rows: [
+        { schedule: "Per driver", amount: "₹600" },
+        { schedule: "Minimum hours", amount: "5" },
+        { schedule: "Extra per hour", amount: "₹100" },
+        { schedule: "Supervisor (per 10 drivers)", amount: "₹700" }
+      ]
+    },
+    {
+      title: "Monthly Call Driver plans",
+      intro: "Regular driver plans. Extra hours on monthly retainers are ₹60.",
+      rows: [
+        { schedule: "Normal · 10 hrs", amount: "₹22,000 · extra hr ₹60" },
+        { schedule: "Normal · 12 hrs", amount: "₹22,000 · extra hr ₹60" },
+        { schedule: "Luxury · 10 hrs", amount: "₹24,000 · extra hr ₹60" },
+        { schedule: "Luxury · 12 hrs", amount: "₹26,000 · extra hr ₹60" }
+      ]
+    }
+  ],
   tariffRows: [
     {
-      service: "City hourly (4 hr min)",
+      service: "City hourly (3 hr min)",
       standard: local.standard,
       premium: local.premium,
-      note: "Extra hour ₹80 standard / ₹100 premium"
+      note: "Extra hour ₹100"
     },
     {
-      service: "Half day (8 hrs)",
-      standard: halfDayStandard,
-      premium: halfDayPremium,
-      note: "4 hr package plus 4 extra hours"
-    },
-    {
-      service: "Full day / outstation per day",
+      service: "Full day / outstation return",
       standard: CALL_DRIVER_TARIFF.outstation.perDayStandard,
       premium: CALL_DRIVER_TARIFF.outstation.perDayPremium,
-      note: "12-hour day. Longer km days may use the long-run slab."
+      note: "12-hour day. Accommodation extra."
+    },
+    {
+      service: "Outstation one-way",
+      standard: CALL_DRIVER_TARIFF.outstation.oneWayRate,
+      premium: CALL_DRIVER_TARIFF.outstation.oneWayRate,
+      note: "Min 250 km, including bus fare."
     },
     {
       service: "Airport pickup or drop",
       standard: CALL_DRIVER_TARIFF.airport.standard,
       premium: CALL_DRIVER_TARIFF.airport.premium,
-      note: "4 hr min. Driver in your car at MAA — not an airport taxi."
+      note: "3 hr min. Driver in your car at MAA — not an airport taxi."
     },
     {
-      service: "Night charge (10 pm – 6 am)",
+      service: "Night charge (10:15 pm – 5:30 am)",
       standard: local.nightCharge,
       premium: local.nightCharge,
       note: "Added when pickup time falls in the night window."
@@ -116,15 +182,15 @@ export const CALL_DRIVERS_CHENNAI = {
       id: "city",
       title: "City call drivers in Chennai",
       subtitle:
-        "Local Call Driver starts at 4 hours for office days, hospitals and multi-stop city trips in your car. Book on Call Driver → Local.",
+        "Local Call Driver starts at 3 hours for office days, hospitals and multi-stop city trips in your car. Book on Call Driver → Local.",
       href: "/call-driver/book?service=local",
       image: { src: "/images/acting-driver-chennai-city.svg", alt: "City call driver for a Chennai local trip in the customer’s car", width: 640, height: 360 }
     },
     {
       id: "outstation",
-      title: "Outstation drivers from Chennai",
+      title: "Outstation acting driver from Chennai",
       subtitle:
-        "Highway days in your car to Tirupati, Pondicherry, Bengaluru and similar corridors. Billed per 12-hour day. Food and stay for the driver are yours.",
+        "Hire an outstation acting driver for highway days in your car to Tirupati, Pondicherry, Bengaluru and similar corridors. Return is ₹1,500 per 12-hour day plus accommodation. One-way is ₹1,700 (min 250 km, bus fare included).",
       href: "/call-driver/book?service=outstation",
       image: { src: "/images/call-driver-chennai-outstation.svg", alt: "Outstation acting driver for a Chennai highway trip in a family SUV", width: 640, height: 360 }
     },
@@ -148,7 +214,7 @@ export const CALL_DRIVERS_CHENNAI = {
       id: "event",
       title: "Party, wedding and night-out drivers",
       subtitle:
-        "Valet Call Driver covers functions and guest parking. Minimum 5 hours; extra hours follow the valet tariff. Night charge may apply after 10 pm.",
+        "Valet Call Driver covers functions and guest parking. Minimum 5 hours; extra hours ₹100. One supervisor (₹700) for every ten drivers.",
       href: "/call-driver/book?service=valet",
       image: { src: "/images/acting-driver-chennai-event.svg", alt: "Wedding and event call drivers for guest cars in Chennai", width: 640, height: 360 }
     },
@@ -223,19 +289,24 @@ export const CALL_DRIVERS_CHENNAI = {
         "Call or WhatsApp Cabzii with pickup location, time and trip type, or book on Call Driver. Choose city, airport, outstation or valet, confirm the estimate, and a driver is assigned after booking."
     },
     {
+      question: "Do you provide an outstation acting driver from Chennai?",
+      answer:
+        "Yes. Book Outstation on Call Driver for a return 12-hour day in your own car (from ₹1,500 plus accommodation) or a one-way trip from ₹1,700 including bus fare (min 250 km)."
+    },
+    {
       question: "What are Call Driver charges in Chennai?",
       answer:
-        "Local and airport start at ₹500 for 4 hours (standard). Outstation is ₹1,100 per 12-hour day (standard). Premium bands are ₹600 city/airport and ₹1,200 outstation. Extra hours and night charge are listed on this page and on the live quote."
+        "Local and airport start at ₹450 for 3 hours. Extra hour is ₹100. Outstation return is ₹1,500 per 12-hour day plus accommodation. One-way is ₹1,700 (min 250 km, bus fare included). Night charge ₹100 from 10:15 pm to 5:30 am. Monthly plans from ₹22,000."
     },
     {
       question: "Do night rates apply for Chennai call drivers?",
       answer:
-        "Yes. A ₹100 night charge may apply when pickup is between 10 pm and 6 am. Night bookings depend on a driver being free — Cabzii does not run a separate emergency-driver product."
+        "Yes. A ₹100 night charge may apply when pickup is between 10:15 pm and 5:30 am. Night bookings depend on a driver being free — Cabzii does not run a separate emergency-driver product."
     },
     {
       question: "How is waiting time billed?",
       answer:
-        "Time beyond the package is extra hours: ₹80/hour standard and ₹100/hour premium on local, airport and outstation. Valet extra hours are ₹70. The quote shows extra hours before you confirm."
+        "Time beyond the package is extra hours at ₹100/hour on city, airport and outstation return trips. Valet extra hours are also ₹100. Monthly retainers use ₹60 extra hour. The quote shows extra hours before you confirm."
     },
     {
       question: "Do I need to use my own car?",
@@ -245,12 +316,12 @@ export const CALL_DRIVERS_CHENNAI = {
     {
       question: "Who pays outstation food and stay for the driver?",
       answer:
-        "You do. The published outstation tariff states that food and accommodation for the driver are the customer's responsibility."
+        "On return outstation trips, accommodation for the driver is extra. One-way outstation includes bus fare in the ₹1,700 rate."
     },
     {
       question: "What is the cancellation policy for Call Driver?",
       answer:
-        "Taxi and driver bookings: more than 24 hours before pickup is a full refund after gateway deductions; 6–24 hours may attract up to 25%; under 6 hours or no-show may be up to 100%. See the cancellation policy page."
+        "Call Driver cancel charge is ₹100 when you inform at least 30 minutes before pickup. Cab bookings follow the published time-based cancellation policy. See the cancellation policy page."
     },
     {
       question: "How much notice do I need to book?",

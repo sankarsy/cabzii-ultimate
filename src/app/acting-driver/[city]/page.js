@@ -73,7 +73,13 @@ export default async function ActingDriverCityPage({ params }) {
   const path = `/acting-driver/${city.slug}`;
   const cms = await fetchSeoCityPage("acting-driver", city.slug);
   const description = cms?.seoDescription || tunedActingDriverDescription(city);
-  const faqs = getCityFaqs(city, "driver");
+  const defaultFaqs = getCityFaqs(city, "driver");
+  const cmsFaqs = Array.isArray(cms?.faqs)
+    ? cms.faqs
+        .map((row) => [row?.question, row?.answer])
+        .filter(([q, a]) => String(q || "").trim() && String(a || "").trim())
+    : [];
+  const faqs = cmsFaqs.length ? cmsFaqs : defaultFaqs;
   const jsonLd = [
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
@@ -97,7 +103,7 @@ export default async function ActingDriverCityPage({ params }) {
   return (
     <>
       <JsonLd data={jsonLd} />
-      <CitySeoPage city={city} extraBody={extraBody} headingOverride={cms?.h1 || ""} />
+      <CitySeoPage city={city} extraBody={extraBody} headingOverride={cms?.h1 || ""} faqsOverride={faqs} />
     </>
   );
 }

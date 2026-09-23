@@ -757,10 +757,11 @@ export default function AdminSiteSettings({ token, isSuperAdmin }) {
               These rates power Call Driver fare calculation on the backend. Customers never pick an individual driver.
             </p>
             {[
-              ["local", "Local Driver", ["minHours", "standard", "premium", "extraHourStandard", "extraHourPremium", "nightCharge"]],
-              ["outstation", "Outstation", ["perDayStandard", "perDayPremium", "longKmThreshold", "perDayLongStandard", "perDayLongPremium", "extraHourStandard", "extraHourPremium", "nightCharge"]],
+              ["local", "Incity (normal & luxury)", ["minHours", "standard", "premium", "extraHourStandard", "extraHourPremium", "nightCharge", "dropChargeMin", "dropCharge", "outOfCityCharge", "outOfCityKm"]],
+              ["outstation", "Outstation", ["perDayStandard", "perDayPremium", "extraHourStandard", "extraHourPremium", "oneWayRate", "oneWayMinKm", "cancelCharge"]],
               ["airport", "Airport driver-only", ["minHours", "standard", "premium", "extraHourStandard", "extraHourPremium", "nightCharge"]],
-              ["valet", "Valet", ["driverRate", "minHours", "extraHour", "supervisorRate", "driversPerSupervisor"]]
+              ["valet", "Valet", ["driverRate", "minHours", "extraHour", "supervisorRate", "driversPerSupervisor"]],
+              ["monthly", "Monthly plans", ["normal10", "normal12", "luxury10", "luxury12", "extraHour"]]
             ].map(([group, label, keys]) => (
               <div key={group} className="rounded-xl border border-slate-200 p-3">
                 <h3 className="text-sm font-bold text-slate-900">{label}</h3>

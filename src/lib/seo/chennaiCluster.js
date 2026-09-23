@@ -98,19 +98,19 @@ export function chennaiDriverUniqueHtml() {
 <p>Typical Chennai use: OMR peak-hour office days, multi-stop wedding cars, hospital visits, and outstation darshan in a family Innova or SUV so elders are not driving the highway. Pickup areas include T. Nagar, Anna Nagar, Velachery, Tambaram, OMR, ECR, Porur, Guindy and Adyar — enter the exact landmark at booking.</p>
 
 <h2>Call Driver Service in Chennai</h2>
-<p>Call Driver is the booking product. Local city trips have a 4-hour minimum on the published driver tariff. Outstation is billed per day (typically 12 hours) with a night charge after 10 pm when it applies. Airport chauffeur is driver-only pickup or drop in your car — not an airport taxi. Monthly and corporate work is quote-only after you share the schedule.</p>
+<p>Call Driver is the booking product. Local city trips have a 3-hour minimum (₹450) on the published driver tariff. Extra hour is ₹100. Outstation return is ₹1,500 per 12-hour day plus accommodation; one-way is ₹1,700 (min 250 km, bus fare included). Night charge ₹100 from 10:15 pm to 5:30 am. Airport chauffeur is driver-only pickup or drop in your car — not an airport taxi. Monthly plans from ₹22,000.</p>
 
 <h2>Hourly and Daily Driver Hire in Chennai</h2>
-<p>Local packages start from the Call Driver local slab (from ₹500 for a 4-hour city booking on the current tariff). Extra hours and night charges are shown in the estimate before you confirm. Daily / outstation days start from the outstation per-day slab (from ₹1,100). Live price depends on hours, trip type and timing — always check the quote on <a href="/call-driver">Call Driver</a>.</p>
+<p>Local packages start from ₹450 for 3 hours. Extra hours are ₹100. Return outstation days start from ₹1,500 plus accommodation. One-way outstation is ₹1,700. Live price depends on hours, trip type and timing — always check the quote on <a href="/call-driver">Call Driver</a>.</p>
 
 <h2>Outstation Acting Driver in Chennai</h2>
-<p>Highway days in your car are common for Tirupati, Pondicherry (ECR), Bengaluru and Madurai. Food and stay for the driver on outstation trips are the customer’s responsibility, as listed on the Call Driver tariff. If you need a Cabzii cab instead of your own car, use <a href="/services/outstation-cab/chennai">outstation cab Chennai</a>.</p>
+<p>Highway days in your car are common for Tirupati, Pondicherry (ECR), Bengaluru and Madurai. Return trips include driver accommodation extra. One-way includes bus fare. If you need a Cabzii cab instead of your own car, use <a href="/services/outstation-cab/chennai">outstation cab Chennai</a>.</p>
 
 <h2>Airport Driver Service in Chennai</h2>
 <p>Airport acting driver means a chauffeur in your vehicle to or from MAA. If you need a Cabzii taxi (vehicle included), book <a href="/services/airport-taxi/chennai">Chennai airport taxi</a> instead.</p>
 
 <h2>Night bookings</h2>
-<p>Night bookings after 10 pm may include a night charge. Availability depends on a driver being free in Chennai at that hour — Cabzii does not promise a guaranteed emergency dispatch product.</p>
+<p>Night bookings from 10:15 pm to 5:30 am may include a ₹100 night charge. Availability depends on a driver being free in Chennai at that hour — Cabzii does not promise a guaranteed emergency dispatch product.</p>
 
 <h2>Book an acting driver</h2>
 <p>The booking CTA is <a href="/call-driver">Call Driver</a>. Synonym searches (chauffeur, driver on hire, airport chauffeur, outstation driver) stay on this city guide plus Call Driver — they are not separate thin pages. Need a Cabzii vehicle as well? Use <a href="/car-rental/chennai-city-cabs">cab booking Chennai</a>.</p>
@@ -151,19 +151,19 @@ export const CHENNAI_DRIVER_FAQS = [
   ],
   [
     "Can I book an acting driver for one day or a few hours?",
-    "Local bookings use a 4-hour minimum on the current tariff. Outstation is typically billed per day. The estimate is shown before you confirm."
+    "Local bookings use a 3-hour minimum on the current tariff. Outstation is billed per return day or as a one-way. The estimate is shown before you confirm."
   ],
   [
     "How much does an acting driver cost in Chennai?",
-    "Local packages typically start from ₹500 for 4 hours. Outstation days typically start from ₹1,100. Airport chauffeur typically starts from ₹500. Night bookings after 10 pm may include a night charge. Your live estimate depends on hours and trip type."
+    "Local packages start from ₹450 for 3 hours. Extra hour is ₹100. Outstation return starts from ₹1,500 per 12-hour day. One-way is ₹1,700 (min 250 km). Night bookings from 10:15 pm to 5:30 am may include a ₹100 night charge. Your live estimate depends on hours and trip type."
   ],
   [
     "Do you provide outstation acting drivers from Chennai?",
-    "Yes, via the Outstation Call Driver option. Food and accommodation for the driver are the customer’s responsibility on outstation trips."
+    "Yes. Book Outstation Call Driver for a return 12-hour day (₹1,500 plus accommodation) or a one-way from ₹1,700 including bus fare (min 250 km)."
   ],
   [
     "Can I book a driver at night?",
-    "Night bookings are possible when a driver is available. A night charge may apply after 10 pm. Cabzii does not run a separate emergency-driver product."
+    "Night bookings are possible when a driver is available. A ₹100 night charge may apply from 10:15 pm to 5:30 am. Cabzii does not run a separate emergency-driver product."
   ],
   [
     "How do I book an acting driver?",

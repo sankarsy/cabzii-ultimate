@@ -114,6 +114,12 @@ export function pathsFromBlog(record = {}, fallbackSlug = "") {
   return cap(paths);
 }
 
+export function pathsFromSeoLanding(record = {}) {
+  const landingSlug = slug(record.slug);
+  const fromPath = record.publicPath && isSafeSeoPath(record.publicPath) ? record.publicPath : "";
+  return cap([fromPath, landingSlug ? `/pages/${landingSlug}` : ""].filter(Boolean));
+}
+
 export function pathsFromKind(kind, record = {}, extra = {}) {
   switch (kind) {
     case "seo-city-page":
@@ -133,6 +139,8 @@ export function pathsFromKind(kind, record = {}, extra = {}) {
       return pathsFromPackage(record, extra.id);
     case "blog":
       return pathsFromBlog(record, extra.slug);
+    case "seo-landing":
+      return pathsFromSeoLanding(record);
     default:
       return [];
   }

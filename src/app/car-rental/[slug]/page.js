@@ -2,9 +2,10 @@ import { notFound } from "next/navigation";
 import JsonLd from "../../../components/seo/JsonLd";
 import CityCabLandingPage from "../../../components/city-cabs/CityCabLandingPage";
 import { buildPageMetadata, cityBySlug, classifyCityHub, SITE_URL } from "../../../lib/seo";
-import { getCityCabData, cityCabStaticParams } from "../../../data/city-cabs";
+import { applyCityCabCms, getCityCabData, cityCabStaticParams } from "../../../data/city-cabs";
 import { parseCityCabLandingSlug } from "../../../lib/cityCabPaths";
 import { buildCityCabJsonLd } from "../../../lib/schema";
+import { fetchSeoCityPage } from "../../../lib/serverCatalog";
 import { fetchSiteReviewStats } from "../../../lib/serverReviewStats";
 import { ORG_PHONE, SOCIAL_PROFILES, SITE_LOGO, SITE_NAME } from "../../../lib/seo/constants";
 import { SEO_REVALIDATE_SECONDS } from "../../../lib/revalidation/constants";
@@ -33,12 +34,28 @@ export async function generateMetadata({ params }) {
       follow: false
     });
   }
-  const data = getCityCabData(city.slug);
+  const base = getCityCabData(city.slug);
+  if (!base) {
+    return buildPageMetadata({
+      title: "City Cabs",
+      description: "City taxi landing on Cabzii.",
+      path: `/car-rental/${params.slug}`,
+      noindex: true,
+      follow: false
+    });
+  }
+  const cms = await fetchSeoCityPage("cab-booking", city.slug);
+  const data = applyCityCabCms(base, cms) || base;
   const indexPolicy = classifyCityHub(city.slug, "cab-booking");
+  const keywords = String(data.keywords || "")
+    .split(",")
+    .map((k) => k.trim())
+    .filter(Boolean);
   const meta = buildPageMetadata({
     title: data.title,
     description: data.description,
     path: data.path,
+    keywords,
     noindex: !indexPolicy.indexable,
     follow: indexPolicy.follow,
     image: `/car-rental/${params.slug}/opengraph-image`,
@@ -46,15 +63,17 @@ export async function generateMetadata({ params }) {
     imageWidth: 1200,
     imageHeight: 630
   });
-  return { ...meta, keywords: [] };
+  return meta;
 }
 
 export default async function CityCabLandingRoute({ params }) {
   const city = resolveCity(params.slug);
   if (!city) notFound();
 
-  const data = getCityCabData(city.slug);
-  if (!data) notFound();
+  const base = getCityCabData(city.slug);
+  if (!base) notFound();
+  const cms = await fetchSeoCityPage("cab-booking", city.slug);
+  const data = applyCityCabCms(base, cms) || base;
 
   const reviewStats = await fetchSiteReviewStats();
   const jsonLd = buildCityCabJsonLd({

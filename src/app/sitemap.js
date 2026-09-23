@@ -100,12 +100,13 @@ export default async function sitemap() {
     return rows;
   });
 
-  const [cabs, packages, blogPosts, cmsServices, cmsRoutes] = await Promise.all([
+  const [cabs, packages, blogPosts, cmsServices, cmsRoutes, cmsLandings] = await Promise.all([
     fetchAllIds("/cabs"),
     fetchAllIds("/packages"),
     fetchAllIds("/blogs"),
     fetchAllIds("/seo-services"),
-    fetchAllIds("/seo-routes")
+    fetchAllIds("/seo-routes"),
+    fetchAllIds("/seo-landings")
   ]);
 
   const cmsServiceSlugs = new Set((cmsServices || []).filter((s) => s.slug && s.published !== false).map((s) => s.slug));
@@ -247,6 +248,15 @@ export default async function sitemap() {
       };
     });
 
+  const landingRoutes = (cmsLandings || [])
+    .filter((item) => item.slug && item.published !== false)
+    .map((item) => ({
+      url: `${base}${item.publicPath || `/pages/${item.slug}`}`,
+      lastModified: item.updatedAt ? new Date(item.updatedAt) : now,
+      changeFrequency: "weekly",
+      priority: 0.8
+    }));
+
   return dedupeSitemapEntries([
     ...staticRoutes,
     ...cityRoutes,
@@ -257,6 +267,7 @@ export default async function sitemap() {
     ...cabRoutes,
     ...packageRoutes,
     ...tourPackageRoutes,
-    ...blogRoutes
+    ...blogRoutes,
+    ...landingRoutes
   ]);
 }

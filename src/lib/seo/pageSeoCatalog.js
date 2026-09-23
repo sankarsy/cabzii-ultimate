@@ -75,22 +75,23 @@ export const STATIC_PAGE_SEO_LIST = [
     type: "site",
     typeLabel: "Call Driver",
     productName: "Call Driver Service",
-    seoTitle: "Book Call Driver | Driver for Your Own Car | Cabzii",
+    seoTitle: "Book Call Driver | Acting Driver in Chennai | Cabzii",
     seoDescription:
-      "Book a Cabzii Call Driver for your own car — local, outstation, airport chauffeur, monthly quote, corporate and valet. A driver is assigned after you confirm.",
+      "Book a Cabzii Call Driver for your own car — city, outstation acting driver, airport chauffeur, monthly quote, corporate and valet. Fares before you confirm.",
     seoKeywords:
-      "call driver Chennai, acting driver Chennai, driver for own car Chennai, outstation driver Chennai, airport call driver Chennai, monthly driver Chennai, corporate driver service Chennai"
+      "call driver Chennai, acting driver in Chennai, outstation acting driver, driver for own car, airport call driver Chennai"
   },
   {
     id: "site:call-drivers-chennai",
     path: "/call-drivers-chennai",
     type: "site",
     typeLabel: "Acting drivers Chennai",
-    productName: "Acting Drivers in Chennai",
-    seoTitle: "Acting Drivers in Chennai | Call Driver for Your Car | Cabzii",
+    productName: "Call Drivers in Chennai",
+    seoTitle: "Call Drivers in Chennai | Hire Acting Drivers | Cabzii",
     seoDescription:
-      "Hire a professional acting driver in Chennai for city, airport and outstation trips. Hourly and daily rates. Call or WhatsApp to book.",
-    seoKeywords: "acting drivers in Chennai, call drivers Chennai, hire drivers Chennai"
+      "Hire call drivers in Chennai for your own car — city trips, outstation acting driver days and MAA airport chauffeur. Fares shown before you confirm.",
+    seoKeywords:
+      "call drivers in Chennai, acting driver in Chennai, outstation acting driver, hire acting drivers Chennai, airport call driver Chennai"
   },
   {
     id: "site:holidays",

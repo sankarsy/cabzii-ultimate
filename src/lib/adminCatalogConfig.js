@@ -981,6 +981,22 @@ export const CATALOG_TABS = {
       published: true
     },
     required: ["seoTitle", "pageType", "citySlug"]
+  },
+  seoLandings: {
+    label: "Custom SEO pages",
+    base: "/api/seo-landings",
+    adminList: true,
+    superAdminOnly: true,
+    form: "seoLanding",
+    sample: {
+      slug: "outstation-acting-driver-chennai",
+      h1: "Outstation acting driver from Chennai",
+      seoTitle: "Outstation Acting Driver Chennai | Cabzii",
+      seoDescription: "Hire an outstation acting driver from Chennai for your own car. Pay 50% to confirm. Fuel and driver included; tolls extra.",
+      seo: "outstation acting driver, acting driver in chennai, call driver chennai",
+      published: true
+    },
+    required: ["h1", "seoTitle"]
   }
 };
 
@@ -1100,7 +1116,8 @@ export function buildCatalogListUrl(tabKey) {
     tabKey === "buses" ||
     tabKey === "seoServices" ||
     tabKey === "seoRoutes" ||
-    tabKey === "seoCityPages"
+    tabKey === "seoCityPages" ||
+    tabKey === "seoLandings"
   ) {
     params.set("admin", "1");
   }

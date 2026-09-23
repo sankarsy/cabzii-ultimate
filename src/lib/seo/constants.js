@@ -66,7 +66,7 @@ export const SITE_REVIEW_STATS = {
 
 /** Typical fare ranges (INR) for city landing rich snippets. */
 export const CITY_CAB_PRICE_RANGE = { low: 1200, high: 16500 };
-export const CITY_DRIVER_PRICE_RANGE = { low: 500, high: 1300 };
+export const CITY_DRIVER_PRICE_RANGE = { low: 450, high: 1700 };
 
 export const DEFAULT_KEYWORDS = [
   "cab booking",
@@ -187,7 +187,7 @@ export function buildPageMetadata({
     },
     robots: noindex
       ? { index: false, follow: Boolean(follow), googleBot: { index: false, follow: Boolean(follow) } }
-      : { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large" } },
+      : { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 } },
     openGraph: {
       title,
       description,

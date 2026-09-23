@@ -17,6 +17,7 @@ import AdminReviews from "../../components/admin/AdminReviews";
 import AdminEnterprise from "../../components/admin/enterprise/AdminEnterprise";
 import AdminShell from "../../components/admin/AdminShell";
 import AdminSiteSettings from "../../components/admin/AdminSiteSettings";
+import AdminCallDriverPage from "../../components/admin/AdminCallDriverPage";
 import CabziiLogo from "../../components/brand/CabziiLogo";
 import { BRAND } from "../../lib/brand";
 import { CATALOG_TAB_KEYS, CATALOG_TABS } from "../../lib/adminCatalogConfig";
@@ -69,6 +70,7 @@ export default function AdminPage() {
         tab === "seoRevenue" ||
         tab === "reviews" ||
         tab === "seoPagesHub" ||
+        tab === "callDriverPage" ||
         CATALOG_TAB_KEYS.includes(tab))
     ) {
       setActiveTab(tab);
@@ -167,6 +169,7 @@ export default function AdminPage() {
       label: "Content",
       items: [
         { key: "seoPagesHub", label: "Google SEO pages", superAdminOnly: true },
+        { key: "callDriverPage", label: "Call Driver page", superAdminOnly: true },
         ...CATALOG_TAB_KEYS.filter((tab) => ["blogs", "testimonials"].includes(tab)).map((tab) => ({
           key: tab,
           label: CATALOG_TABS[tab].label,
@@ -283,6 +286,8 @@ export default function AdminPage() {
               <AdminEnterprise token={token} initialSection={enterpriseSection} />
             ) : activeTab === "seoPagesHub" ? (
               <AdminSeoPagesIndex token={token} />
+            ) : activeTab === "callDriverPage" ? (
+              <AdminCallDriverPage token={token} isSuperAdmin={isSuperAdmin} />
             ) : activeTab === "settings" ? (
               <AdminSiteSettings token={token} isSuperAdmin={isSuperAdmin} />
             ) : activeTab === "cabs" ? (

@@ -3,7 +3,7 @@ import Link from "next/link";
 const STEPS = [
   {
     title: "1. Decide the page type",
-    body: "Do not invent a new URL. Match the Google query to an existing type below."
+    body: "Use Create SEO page for a custom /pages/slug landing, city hub, acting-driver city, service or route. Do not invent a random path outside those types."
   },
   {
     title: "2. Create or open the record",

@@ -20,10 +20,12 @@ const SERVICES = [
 
 export default function AdminQuoteLeads({ token }) {
   const [rows, setRows] = useState([]);
+  const [meta, setMeta] = useState({ page: 1, totalPages: 1, total: 0 });
+  const [page, setPage] = useState(1);
   const [status, setStatus] = useState("");
   const [service, setService] = useState("");
   const [vehicle, setVehicle] = useState("");
-  const [source, setSource] = useState("");
+  const [search, setSearch] = useState("");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [loading, setLoading] = useState(false);
@@ -34,11 +36,11 @@ export default function AdminQuoteLeads({ token }) {
     setLoading(true);
     setError("");
     try {
-      const q = new URLSearchParams({ admin: "1", page: "1", limit: "20" });
+      const q = new URLSearchParams({ admin: "1", page: String(page), limit: "50" });
       if (status) q.set("status", status);
       if (service) q.set("service", service);
       if (vehicle.trim()) q.set("vehicle", vehicle.trim());
-      if (source.trim()) q.set("source", source.trim());
+      if (search.trim()) q.set("q", search.trim());
       if (from) q.set("from", from);
       if (to) q.set("to", to);
       const res = await fetch(`/api/quote-leads?${q}`, {
@@ -48,12 +50,13 @@ export default function AdminQuoteLeads({ token }) {
       const json = await res.json();
       if (!res.ok) throw new Error(json?.message || "Could not load leads");
       setRows(Array.isArray(json?.data) ? json.data : []);
+      setMeta(json?.meta || { page: 1, totalPages: 1, total: 0 });
     } catch (err) {
       setError(err.message || "Could not load leads");
     } finally {
       setLoading(false);
     }
-  }, [token, status, service, vehicle, source, from, to]);
+  }, [token, status, service, vehicle, search, from, to, page]);
 
   useEffect(() => {
     load();
@@ -97,13 +100,25 @@ export default function AdminQuoteLeads({ token }) {
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <div>
           <h3 className="text-sm font-bold text-slate-900">Enquiries</h3>
-          <p className="text-xs text-slate-500">Website and WhatsApp leads. Quote Ref matches the customer message. Vendor view is limited to own vehicles.</p>
+          <p className="text-xs text-slate-500">
+            WhatsApp and website quotes. Search by Quote Ref (CZQ-…) or phone. These are not confirmed bookings until payment.
+          </p>
         </div>
       </div>
-      <div className="mb-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-6">
-        <input type="date" className="rounded-lg border border-slate-300 px-2 py-1.5 text-xs" value={from} onChange={(e) => setFrom(e.target.value)} aria-label="From date" />
-        <input type="date" className="rounded-lg border border-slate-300 px-2 py-1.5 text-xs" value={to} onChange={(e) => setTo(e.target.value)} aria-label="To date" />
-        <select className="rounded-lg border border-slate-300 px-2 py-1.5 text-xs" value={service} onChange={(e) => setService(e.target.value)}>
+      <div className="mb-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-7">
+        <input
+          className="rounded-lg border border-slate-300 px-2 py-1.5 text-xs lg:col-span-2"
+          placeholder="Search quote ref or phone (CZQ-NXZ69V)"
+          value={search}
+          onChange={(e) => {
+            setPage(1);
+            setSearch(e.target.value);
+          }}
+          aria-label="Search quote ref or phone"
+        />
+        <input type="date" className="rounded-lg border border-slate-300 px-2 py-1.5 text-xs" value={from} onChange={(e) => { setPage(1); setFrom(e.target.value); }} aria-label="From date" />
+        <input type="date" className="rounded-lg border border-slate-300 px-2 py-1.5 text-xs" value={to} onChange={(e) => { setPage(1); setTo(e.target.value); }} aria-label="To date" />
+        <select className="rounded-lg border border-slate-300 px-2 py-1.5 text-xs" value={service} onChange={(e) => { setPage(1); setService(e.target.value); }}>
           <option value="">All services</option>
           {SERVICES.map((s) => (
             <option key={s.id} value={s.id}>
@@ -111,9 +126,8 @@ export default function AdminQuoteLeads({ token }) {
             </option>
           ))}
         </select>
-        <input className="rounded-lg border border-slate-300 px-2 py-1.5 text-xs" placeholder="Vehicle" value={vehicle} onChange={(e) => setVehicle(e.target.value)} />
-        <input className="rounded-lg border border-slate-300 px-2 py-1.5 text-xs" placeholder="UTM source" value={source} onChange={(e) => setSource(e.target.value)} />
-        <select className="rounded-lg border border-slate-300 px-2 py-1.5 text-xs" value={status} onChange={(e) => setStatus(e.target.value)}>
+        <input className="rounded-lg border border-slate-300 px-2 py-1.5 text-xs" placeholder="Vehicle" value={vehicle} onChange={(e) => { setPage(1); setVehicle(e.target.value); }} />
+        <select className="rounded-lg border border-slate-300 px-2 py-1.5 text-xs" value={status} onChange={(e) => { setPage(1); setStatus(e.target.value); }}>
           <option value="">All statuses</option>
           {STATUSES.map((s) => (
             <option key={s.id} value={s.id}>
@@ -131,7 +145,7 @@ export default function AdminQuoteLeads({ token }) {
               <th className="px-2 py-2">Date</th>
               <th className="px-2 py-2">Customer</th>
               <th className="px-2 py-2">Phone</th>
-              <th className="px-2 py-2">Lead ID</th>
+              <th className="px-2 py-2">Quote Ref</th>
               <th className="px-2 py-2">Service</th>
               <th className="px-2 py-2">Vehicle</th>
               <th className="px-2 py-2">Pickup / Drop</th>
@@ -208,6 +222,31 @@ export default function AdminQuoteLeads({ token }) {
           </tbody>
         </table>
       </div>
+      {meta.totalPages > 1 ? (
+        <div className="mt-3 flex items-center justify-between text-xs text-slate-600">
+          <span>
+            {meta.total || 0} enquiries · page {meta.page || page} of {meta.totalPages}
+          </span>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              className="rounded border border-slate-300 px-2 py-1 disabled:opacity-40"
+              disabled={(meta.page || page) <= 1}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+            >
+              Previous
+            </button>
+            <button
+              type="button"
+              className="rounded border border-slate-300 px-2 py-1 disabled:opacity-40"
+              disabled={(meta.page || page) >= (meta.totalPages || 1)}
+              onClick={() => setPage((p) => p + 1)}
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

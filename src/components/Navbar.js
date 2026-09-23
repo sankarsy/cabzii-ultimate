@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { clearSession, formatMobileDisplay, getUser, isLoggedIn } from "../lib/auth";
 import { isTravelShellPath } from "../lib/travelShellPaths";
+import { resolveSiteSearchHref } from "../lib/siteSearch";
 import { useSiteSettings } from "./SiteSettingsProvider";
 import { CarIcon, ChevronDownIcon, UserIcon } from "./icons";
 
@@ -59,8 +60,7 @@ export default function Navbar({ variant = "default" }) {
   const handleSearch = () => {
     const query = searchTerm.trim();
     if (!query) return;
-    const params = new URLSearchParams({ q: query });
-    router.push(`/search?${params.toString()}`);
+    router.push(resolveSiteSearchHref(query));
     setMenuOpen(false);
   };
 
@@ -126,7 +126,7 @@ export default function Navbar({ variant = "default" }) {
               <BrandIcon className="h-5 w-5" />
             </span>
             <span
-              className={`text-lg font-bold tracking-tight ${isMmt ? "text-white" : "text-slate-900"}`}
+              className={`max-w-[9rem] truncate text-lg font-bold tracking-tight sm:max-w-[14rem] ${isMmt ? "text-white" : "text-slate-900"}`}
             >
               {brandName}
             </span>
@@ -220,7 +220,7 @@ export default function Navbar({ variant = "default" }) {
 
           <button
             type="button"
-            className="inline-flex rounded-lg border border-slate-200 p-2 text-slate-700 md:hidden"
+            className="inline-flex rounded-lg border border-slate-200 p-2 text-slate-700 lg:hidden"
             onClick={() => setMenuOpen((p) => !p)}
             aria-label="Menu"
           >
@@ -236,7 +236,7 @@ export default function Navbar({ variant = "default" }) {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
-              className="border-t border-slate-100 py-3 md:hidden"
+              className="border-t border-slate-100 py-3 lg:hidden"
             >
               <div className="mb-3 flex flex-col gap-2 px-2 sm:flex-row">
                 <input
@@ -270,7 +270,15 @@ export default function Navbar({ variant = "default" }) {
                     Logout
                   </button>
                 </div>
-              ) : null}
+              ) : (
+                <Link
+                  href="/login"
+                  onClick={() => setMenuOpen(false)}
+                  className="mt-3 block rounded-lg bg-[var(--cabzii-cta)] px-3 py-2.5 text-center text-sm font-semibold text-white md:hidden"
+                >
+                  Login
+                </Link>
+              )}
             </motion.nav>
           )}
         </AnimatePresence>

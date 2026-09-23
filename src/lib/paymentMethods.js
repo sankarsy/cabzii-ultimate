@@ -26,9 +26,7 @@ export const PAYMENT_SECTIONS = [
       {
         id: "paytm",
         label: "Paytm",
-        icon: "paytm",
-        offer:
-          "Flat ₹25 Cashback | Min. payment ₹25 | Once per user | Valid on first Paytm UPI payment in 60 days."
+        icon: "paytm"
       },
       { id: "gpay", label: "GPay", icon: "gpay" },
       { id: "phonepe", label: "PhonePe", icon: "phonepe" },
@@ -99,10 +97,28 @@ export function getPaymentLabel(methodId) {
   return "Cash";
 }
 
-export function couponDiscountAmount(code, baseFare) {
-  if (code === "CABZII500") return 500;
-  if (code === "FIRST100") return 100;
-  if (code === "WEEKEND10") return Math.round(Number(baseFare) * 0.1) || 0;
+export function couponDiscountAmount(code, baseFare, trip = {}) {
+  const normalized = String(code || "").trim().toUpperCase();
+  if (!normalized) return 0;
+
+  const tripType = String(trip?.tripType || "").toLowerCase();
+  if (tripType && !couponsForTrip(trip).some((c) => c.code === normalized)) return 0;
+
+  const fare = Math.max(0, Number(baseFare) || 0);
+  if (normalized === "CABZII500") {
+    if (tripType && tripType !== "outstation") return 0;
+    if (fare < 1500) return 0;
+    return Math.min(500, fare);
+  }
+  if (normalized === "FIRST100") {
+    if (tripType && tripType !== "local" && tripType !== "hourly") return 0;
+    return Math.min(100, fare);
+  }
+  if (normalized === "WEEKEND10") {
+    if (tripType && tripType !== "airport") return 0;
+    if (trip?.date && !isWeekendIso(trip.date)) return 0;
+    return Math.min(Math.round(fare * 0.1) || 0, 400, fare);
+  }
   return 0;
 }
 
@@ -120,7 +136,7 @@ export function couponsForTrip(trip) {
   const type = trip?.tripType;
   const list = [];
   if (type === "outstation") list.push(OFFER_COUPONS.find((c) => c.code === "CABZII500"));
-  if (type === "local") list.push(OFFER_COUPONS.find((c) => c.code === "FIRST100"));
+  if (type === "local" || type === "hourly") list.push(OFFER_COUPONS.find((c) => c.code === "FIRST100"));
   if (type === "airport" && isWeekendIso(trip?.date)) list.push(OFFER_COUPONS.find((c) => c.code === "WEEKEND10"));
   return list.filter(Boolean);
 }

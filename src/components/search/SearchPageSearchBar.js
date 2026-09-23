@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
-import { readSelectedCity } from "../../lib/locationPriority";
+import { resolveSiteSearchHref } from "../../lib/siteSearch";
 
 const PLACEHOLDER = "Search cabs, buses, drivers, holidays...";
 
@@ -36,10 +36,7 @@ function SearchForm({ initialQuery = "" }) {
     e.preventDefault();
     const q = query.trim();
     if (!q) return;
-    const params = new URLSearchParams({ q });
-    const city = readSelectedCity();
-    if (city) params.set("city", city);
-    router.push(`/search?${params.toString()}`);
+    router.push(resolveSiteSearchHref(q));
   }
 
   return (

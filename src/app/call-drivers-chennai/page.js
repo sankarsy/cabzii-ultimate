@@ -15,6 +15,7 @@ export async function generateMetadata() {
     title: data.title,
     description: data.description,
     path: data.path,
+    keywords: data.keywords.split(",").map((s) => s.trim()),
     image: "/call-drivers-chennai/opengraph-image",
     imageAlt: data.hero.alt,
     imageWidth: 1200,
@@ -23,6 +24,8 @@ export async function generateMetadata() {
   });
   return {
     ...meta,
+    authors: [{ name: "Cabzii" }],
+    publisher: "Cabzii",
     robots: {
       index: true,
       follow: true,
@@ -30,7 +33,8 @@ export async function generateMetadata() {
         index: true,
         follow: true,
         "max-image-preview": "large",
-        "max-snippet": -1
+        "max-snippet": -1,
+        "max-video-preview": -1
       }
     }
   };

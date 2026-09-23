@@ -55,23 +55,31 @@ export default function PaymentPage({ searchParams }) {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [bookingId, setBookingId] = useState("");
-  const [confirmedAmount, setConfirmedAmount] = useState(null);
+  const [confirmedFare, setConfirmedFare] = useState(null);
   const type = searchParams?.type ?? "cab";
   const callDriverFlag = firstParam(searchParams?.callDriver) === "1";
   const itemId = String(searchParams?.id ?? searchParams?.cabId ?? "");
   const taxes = Number(searchParams?.taxes ?? 0);
   const baseFare = Number(searchParams?.baseFare ?? 0);
   const totalParam = Number(searchParams?.total ?? 0);
-  const couponDiscount = couponDiscountAmount(appliedCoupon, baseFare);
+  const cabTrip = useMemo(() => parseTripSearchParams(searchParams), [searchParams]);
+  const serviceTab = firstParam(searchParams?.service);
+  const couponTrip = {
+    tripType: cabTrip.tripType || firstParam(searchParams?.serviceTripType) || serviceTab || "outstation",
+    date: firstParam(searchParams?.date),
+    from: firstParam(searchParams?.from) || firstParam(searchParams?.pickup),
+    to: firstParam(searchParams?.to) || firstParam(searchParams?.drop)
+  };
+  const couponDiscount = couponDiscountAmount(appliedCoupon, baseFare, couponTrip);
   const totalBeforeCoupon = totalParam > 0 ? totalParam : baseFare + taxes;
   const netAfterCoupon = Math.max(0, totalBeforeCoupon - couponDiscount);
-  const payMode = firstParam(searchParams?.payMode);
+  const isVehicleBooking = type === "cab" || type === "driver";
+  const payMode = isVehicleBooking ? "advance" : firstParam(searchParams?.payMode);
   const total = payMode === "advance" ? Math.round(netAfterCoupon * 0.5) : netAfterCoupon;
   const listPrice = Number(searchParams?.listPrice ?? baseFare);
   const discountPct = Number(searchParams?.discountPct ?? 0);
   const discountAmount = Number(searchParams?.discountAmount ?? Math.max(0, listPrice - baseFare));
   const packageLabel = firstParam(searchParams?.package);
-  const serviceTab = firstParam(searchParams?.service);
   const tourPersons = Number(searchParams?.persons) || 1;
   const tripCoords = readTripCoords((key) => {
     const v = searchParams?.[key];
@@ -81,12 +89,12 @@ export default function PaymentPage({ searchParams }) {
 
   const [selectedItem, setSelectedItem] = useState(null);
   const today = useTodayStr();
-  const cabTrip = useMemo(() => parseTripSearchParams(searchParams), [searchParams]);
   const paymentTrip = {
-    tripType: cabTrip.tripType || firstParam(searchParams?.serviceTripType) || serviceTab || "outstation",
+    tripType: couponTrip.tripType,
     from: pickup || cabTrip.from,
     to: drop || cabTrip.to,
     roundTrip: cabTrip.roundTrip,
+    date: date || cabTrip.date,
     ...tripCoords
   };
 
@@ -138,6 +146,11 @@ export default function PaymentPage({ searchParams }) {
   }, []);
 
   useEffect(() => {
+    if (!appliedCoupon) return;
+    if (couponDiscountAmount(appliedCoupon, baseFare, couponTrip) <= 0) setAppliedCoupon("");
+  }, [appliedCoupon, baseFare, couponTrip.tripType, couponTrip.date]);
+
+  useEffect(() => {
     if (!itemId || callDriverFlag) return;
     const base =
       type === "tour"
@@ -153,13 +166,13 @@ export default function PaymentPage({ searchParams }) {
         setSelectedItem(null);
       }
     })();
-  }, [itemId, type]);
+  }, [itemId, type, callDriverFlag]);
 
   const bookingSelection = useMemo(() => {
     if (type !== "cab" && type !== "driver") return null;
     const perKmRate = Number(searchParams?.extraKm) || 0;
     const distanceKm = Number(tripCoords.distanceKm || searchParams?.distanceKm) || 0;
-    const usesDistance = firstParam(searchParams?.usesDistance) === "true" || (distanceKm > 0 && perKmRate > 0);
+    const usesDistance = firstParam(searchParams?.usesDistance) === "true" && distanceKm > 0 && perKmRate > 0;
     const roundTrip = firstParam(searchParams?.roundTrip) === "true";
     const multiplier = roundTrip ? 2 : 1;
     const distanceCharge = usesDistance ? Math.round(Math.ceil(distanceKm) * perKmRate * multiplier) : 0;
@@ -173,6 +186,9 @@ export default function PaymentPage({ searchParams }) {
       baseFare,
       taxes,
       total,
+      tripTotal: netAfterCoupon,
+      payMode,
+      couponDiscount,
       extraKm: perKmRate || undefined,
       extraHr: Number(searchParams?.extraHr) || undefined,
       driverBatta: Number(searchParams?.driverBatta) || (usesDistance ? 0 : Math.max(0, baseFare - listPrice)),
@@ -183,7 +199,7 @@ export default function PaymentPage({ searchParams }) {
       usesDistance,
       note: usesDistance ? `₹${perKmRate}/km × ${Math.ceil(distanceKm)} km${roundTrip ? " (round trip)" : ""}` : undefined
     };
-  }, [type, packageLabel, serviceTab, listPrice, discountPct, discountAmount, baseFare, taxes, total, searchParams, tripCoords.distanceKm]);
+  }, [type, packageLabel, serviceTab, listPrice, discountPct, discountAmount, baseFare, taxes, total, netAfterCoupon, payMode, couponDiscount, searchParams, tripCoords.distanceKm]);
 
   const backHref =
     type === "bus"
@@ -264,10 +280,10 @@ export default function PaymentPage({ searchParams }) {
               : type === "tour"
                 ? `${tourPersons} persons`
                 : serviceTab || firstParam(searchParams?.routeType),
-          tripType: type === "bus" ? firstParam(searchParams?.busType) || "AC Bus" : firstParam(searchParams?.tripType),
+          tripType: type === "bus" ? firstParam(searchParams?.busType) || "AC Bus" : couponTrip.tripType || firstParam(searchParams?.tripType),
           pickupTime: needsPickupTime ? toTimeInputValue(time) : firstParam(searchParams?.time),
           serviceTripType:
-            type === "bus" ? busOperator : cabTrip.tripType || firstParam(searchParams?.serviceTripType) || serviceTab,
+            type === "bus" ? busOperator : couponTrip.tripType || firstParam(searchParams?.serviceTripType) || serviceTab,
           callDriver:
             type === "driver" && callDriverFlag ? loadCheckoutDraft().callDriver || { serviceType: serviceTab } : undefined,
           busMeta:
@@ -313,8 +329,15 @@ export default function PaymentPage({ searchParams }) {
       if (!res.ok || data?.success === false) throw new Error(data?.message || "Booking failed");
       const id = data?.data?._id || data?.data?.id;
       setBookingId(String(id || ""));
-      const serverAmount = Number(data?.data?.finalAmount ?? data?.data?.amount);
-      setConfirmedAmount(Number.isFinite(serverAmount) ? serverAmount : null);
+      const tripTotal = Number(data?.data?.finalAmount ?? data?.data?.amount);
+      const advance = Number(data?.data?.advanceAmount);
+      const balance = Number(data?.data?.balanceAmount);
+      setConfirmedFare({
+        tripTotal: Number.isFinite(tripTotal) ? tripTotal : null,
+        advance: Number.isFinite(advance) ? advance : Number.isFinite(tripTotal) ? Math.round(tripTotal * 0.5) : null,
+        balance: Number.isFinite(balance) ? balance : null,
+        payMode: data?.data?.payMode || (isVehicleBooking ? "advance" : "full")
+      });
       clearCheckoutDraft();
       trackEvent("booking_completed", {
         service_type: bookingType,
@@ -347,21 +370,21 @@ export default function PaymentPage({ searchParams }) {
       <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-8">
         <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
           <h2 className="text-base font-bold text-slate-900 sm:text-lg">Your details</h2>
-          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          <div className="mt-4 grid min-w-0 gap-3 sm:grid-cols-2">
             <input
-              className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-[#0056D2]"
+              className="w-full min-w-0 rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-[#0056D2]"
               placeholder="Full name *"
               value={customerName}
               onChange={(e) => setCustomerName(e.target.value)}
             />
             <input
-              className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-[#0056D2]"
+              className="w-full min-w-0 rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-[#0056D2]"
               placeholder="Mobile number *"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
             />
             <input
-              className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-[#0056D2] sm:col-span-2"
+              className="w-full min-w-0 rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-[#0056D2] sm:col-span-2"
               placeholder="Email (optional)"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -451,8 +474,18 @@ export default function PaymentPage({ searchParams }) {
             <div className="mt-5 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-900">
               <p className="font-semibold">Booking confirmed!</p>
               <p className="mt-1">Reference: {bookingId}</p>
-              {confirmedAmount != null ? (
-                <p className="mt-1">Amount payable: ₹{confirmedAmount.toLocaleString("en-IN")}</p>
+              {confirmedFare?.tripTotal != null ? (
+                <div className="mt-2 space-y-0.5">
+                  <p>Trip total: ₹{confirmedFare.tripTotal.toLocaleString("en-IN")}</p>
+                  {confirmedFare.payMode === "advance" && confirmedFare.advance != null ? (
+                    <>
+                      <p>Pay now (50%): ₹{confirmedFare.advance.toLocaleString("en-IN")}</p>
+                      <p>Balance at pickup (cash): ₹{(confirmedFare.balance ?? confirmedFare.tripTotal - confirmedFare.advance).toLocaleString("en-IN")}</p>
+                    </>
+                  ) : (
+                    <p>Amount payable: ₹{confirmedFare.tripTotal.toLocaleString("en-IN")}</p>
+                  )}
+                </div>
               ) : null}
               <button
                 type="button"
@@ -571,6 +604,7 @@ export default function PaymentPage({ searchParams }) {
             open={offersOpen}
             onClose={() => setOffersOpen(false)}
             appliedCode={appliedCoupon}
+            trip={couponTrip}
             onApplyCoupon={(code) => {
               setAppliedCoupon(code);
               setOffersOpen(false);

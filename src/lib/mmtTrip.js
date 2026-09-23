@@ -48,7 +48,10 @@ export function parseTripSearchParams(searchParams) {
     return Array.isArray(v) ? v[0] : v ?? "";
   };
 
-  const tripType = get("serviceTripType") || get("tripType") || "outstation";
+  const tripTypeRaw = get("serviceTripType") || get("tripType") || get("service") || "outstation";
+  const tripType = ["outstation", "airport", "hourly", "local"].includes(String(tripTypeRaw).toLowerCase())
+    ? String(tripTypeRaw).toLowerCase()
+    : "outstation";
   const from = get("from") || get("pickup") || "";
   const to = get("to") || get("drop") || "";
   const date = get("date") || todayStr();

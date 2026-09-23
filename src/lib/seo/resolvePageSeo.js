@@ -40,10 +40,15 @@ export function getPageSeoEntry(settings, path) {
   if (!defaults) return stored.productName || stored.seoTitle ? { ...stored, path } : null;
 
   return {
-    productName: stored.productName || defaults.productName,
+    productName: stored.productName || stored.h1 || defaults.productName,
+    h1: stored.h1 || stored.productName || defaults.productName,
     seoTitle: resolveSeoTitle(stored.seoTitle, defaults.seoTitle, path),
     seoDescription: stored.seoDescription || defaults.seoDescription,
     seoKeywords: stored.seoKeywords || defaults.seoKeywords,
+    intro: stored.intro || "",
+    html: stored.html || "",
+    faqs: Array.isArray(stored.faqs) ? stored.faqs : [],
+    pageLinks: stored.pageLinks || [],
     path
   };
 }

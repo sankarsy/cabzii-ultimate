@@ -74,25 +74,23 @@ export default function OtpLogin({
       return;
     }
     const trip = tripForQuote();
-    if (trip.pickup || trip.drop) {
-      upsertEnquiry({
-        phone: mobileNumber,
-        name: trip.name || "",
-        pickup: trip.pickup,
-        drop: trip.drop,
-        travelDate: trip.travelDate,
-        pickupTime: trip.pickupTime,
-        vehicleId: trip.vehicleId,
-        vehicleName: trip.vehicleName,
-        estimatedFare: Number(trip.estimatedFare) || 0,
-        distanceKm: Number(trip.distanceKm) || 0,
-        tripType: trip.tripType || "",
-        packageLabel: trip.packageLabel,
-        service: trip.service === "Call Driver" ? "driver" : trip.service === "Bus" ? "bus" : trip.service === "Holiday package" ? "tour" : "cab",
-        sourcePage: nextUrl,
-        ctaLocation: "otp_login"
-      });
-    }
+    upsertEnquiry({
+      phone: mobileNumber,
+      name: trip.name || "",
+      pickup: trip.pickup,
+      drop: trip.drop,
+      travelDate: trip.travelDate,
+      pickupTime: trip.pickupTime,
+      vehicleId: trip.vehicleId,
+      vehicleName: trip.vehicleName,
+      estimatedFare: Number(trip.estimatedFare) || 0,
+      distanceKm: Number(trip.distanceKm) || 0,
+      tripType: trip.tripType || trip.service || "",
+      packageLabel: trip.packageLabel,
+      service: trip.service === "Call Driver" ? "driver" : trip.service === "Bus" ? "bus" : trip.service === "Holiday package" ? "tour" : "cab",
+      sourcePage: nextUrl,
+      ctaLocation: "otp_login"
+    });
     setLoading(true);
     try {
       const res = await fetch("/api/auth/send-otp", {
@@ -275,7 +273,8 @@ export default function OtpLogin({
         quoteRef,
         pdfUrl,
         viewUrl,
-        passengers: trip.passengers || apiTrip.passengerCount
+        passengers: trip.passengers || apiTrip.passengerCount,
+        mobile: mobileNumber
       });
       trackEvent("whatsapp_quote_clicked", {
         service_type: trip.service,
@@ -294,8 +293,8 @@ export default function OtpLogin({
       document.body.appendChild(pdfLink);
       pdfLink.click();
       pdfLink.remove();
-      window.open(whatsappBookingUrl({ message, phone: `91${mobileNumber}` }), "_blank", "noopener,noreferrer");
-      setMessage("Package PDF downloaded. WhatsApp opened with the text details for +91 " + mobileNumber + ".");
+      window.open(whatsappBookingUrl({ message }), "_blank", "noopener,noreferrer");
+      setMessage("Package PDF downloaded. WhatsApp opened to Cabzii with quote " + (quoteRef || "") + " for +91 " + mobileNumber + ".");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not send WhatsApp package");
     } finally {
@@ -368,7 +367,7 @@ export default function OtpLogin({
                   {loading ? "Preparing PDF…" : "Send package on WhatsApp (PDF + text)"}
                 </button>
                 <p className="mt-2 text-center text-[11px] text-slate-500">
-                  Downloads a PDF, then opens WhatsApp to this number with the same package details in text. Not a confirmed booking.
+                  Downloads a PDF, then opens WhatsApp to Cabzii with this quote. Not a confirmed booking — it shows under Admin → Reports → Enquiries.
                 </p>
               </div>
             ) : null}
@@ -442,7 +441,7 @@ export default function OtpLogin({
                   {loading ? "Preparing PDF…" : "Send package on WhatsApp (PDF + text)"}
                 </button>
                 <p className="mt-2 text-center text-[11px] text-slate-500">
-                  Downloads a PDF, then opens WhatsApp to this number with the same package details in text. Not a confirmed booking.
+                  Downloads a PDF, then opens WhatsApp to Cabzii with this quote. Not a confirmed booking — it shows under Admin → Reports → Enquiries.
                 </p>
               </div>
             ) : null}

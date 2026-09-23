@@ -91,6 +91,25 @@ export function todayISODate() {
   return todayStr();
 }
 
+export function inclusiveCalendarDays(startIso, endIso) {
+  const parse = (iso) => {
+    const match = String(iso || "").match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (!match) return null;
+    return Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+  };
+  const start = parse(startIso);
+  const end = parse(endIso);
+  if (start == null || end == null || end < start) return 0;
+  return Math.round((end - start) / 86400000) + 1;
+}
+
+export function addCalendarDays(iso, extraDays) {
+  const match = String(iso || "").match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (!match) return "";
+  const next = new Date(Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3]) + Number(extraDays || 0)));
+  return next.toISOString().slice(0, 10);
+}
+
 export function mergeCallDriverServices(apiServices) {
   const byId = new Map((Array.isArray(apiServices) ? apiServices : []).map((s) => [s.id, s]));
   return CALL_DRIVER_SERVICES.map((base) => {

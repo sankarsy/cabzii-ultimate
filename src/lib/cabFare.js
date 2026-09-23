@@ -72,6 +72,16 @@ const TYPE_TO_LEGACY = {
   round_trip: "outstationRoundTrip"
 };
 
+const TYPE_TO_ID = {
+  local_4hr: "local_4hr",
+  local_5hr: "local_5hr",
+  local_8hr: "local_1day",
+  local_10hr: "local_10hr",
+  local_15hr: "local_15hr",
+  one_way: "outstation_oneway",
+  round_trip: "outstation_twoway"
+};
+
 function slabsFromDynamicPackages(cab) {
   const rows = Array.isArray(cab?.packages) ? cab.packages.filter((p) => p && p.active !== false && num(p.price) > 0) : [];
   if (!rows.length) return null;
@@ -103,7 +113,7 @@ function slabsFromDynamicPackages(cab) {
           : meta?.defaultLabel || row.packageType);
 
       return {
-        id: row._id || row.id || `pkg_${index}`,
+        id: TYPE_TO_ID[row.packageType] || row.packageType || row._id || row.id || `pkg_${index}`,
         group: meta?.group || (String(row.packageType).includes("local") ? "local" : "outstation"),
         label,
         shortLabel: label,
@@ -212,12 +222,18 @@ export function buildPaymentSearchParams(cabId, selection) {
     total: String(selection.total ?? 0),
     listPrice: String(selection.listPrice ?? selection.baseFare ?? 0),
     discountPct: String(selection.discountPct ?? 0),
-    discountAmount: String(selection.discountAmount ?? 0)
+    discountAmount: String(selection.discountAmount ?? 0),
+    payMode: "advance"
   });
   if (selection.packageId) q.set("packageId", selection.packageId);
   if (selection.packageLabel) q.set("package", selection.packageLabel);
-  if (selection.serviceTab) q.set("service", selection.serviceTab);
+  if (selection.serviceTab) {
+    q.set("service", selection.serviceTab);
+    q.set("serviceTripType", selection.serviceTab);
+  }
   if (num(selection.driverBatta) > 0) q.set("driverBatta", String(selection.driverBatta));
+  if (num(selection.extraKm) > 0) q.set("extraKm", String(selection.extraKm));
+  if (num(selection.extraHr) > 0) q.set("extraHr", String(selection.extraHr));
   return q;
 }
 

@@ -67,14 +67,14 @@ export function bookingWhatsappMessage({
   const cityCabsPage = path.match(/\/car-rental\/([a-z0-9-]+)-city-cabs/);
   if (cityCabsPage) {
     const place = titleFromSlug(cityCabsPage[1]);
-    return `Hi Cabzii, I want to book a cab in ${place}. Pickup: ___. Date: ___. Please share fare and availability.`;
+    return `Hi Cabzii, I want to book a cab in ${place}. Pickup: ___. Drop: ___. Date: ___. Please share fare and availability.`;
   }
 
   const cityPage = path.match(/\/(?:cab-booking|acting-driver)\/([a-z0-9-]+)/);
   if (cityPage) {
     const place = titleFromSlug(cityPage[1]);
     const kind = path.includes("acting-driver") ? "acting driver" : "cab";
-    return `Hi Cabzii, I want to book a ${kind} in ${place}. Pickup: ___. Date: ___. Please share fare and availability.`;
+    return `Hi Cabzii, I want to book a ${kind} in ${place}. Pickup: ___. Drop: ___. Date: ___. Please share fare and availability.`;
   }
 
   const serviceMatch = path.match(/\/services\/([a-z0-9-]+)\/([a-z0-9-]+)/);
@@ -133,12 +133,14 @@ export function whatsappQuoteMessage({
   tripType = "",
   packageLabel = "",
   pdfUrl = "",
-  viewUrl = ""
+  viewUrl = "",
+  mobile = ""
 } = {}) {
   const fare =
     estimatedFare && Number(estimatedFare) > 0
       ? `₹${Number(estimatedFare).toLocaleString("en-IN")}`
       : "";
+  const mobileDigits = String(mobile || "").replace(/\D/g, "").slice(-10);
   const lines = [
     "Cabzii package quote",
     "",
@@ -153,6 +155,7 @@ export function whatsappQuoteMessage({
     distanceKm ? `Distance: ${distanceKm} km` : null,
     passengers ? `Passengers: ${passengers}` : null,
     fare ? `Quoted fare: ${fare}` : null,
+    mobileDigits ? `Customer mobile: +91 ${mobileDigits}` : null,
     "",
     "--- Package details (text) ---",
     "This is a trip package quote, not a confirmed booking.",
@@ -173,7 +176,7 @@ export function tripContextFromNextUrl(nextUrl = "") {
     if (path.includes("call-driver") || path.includes("driver")) service = "Call Driver";
     else if (path.includes("bus")) service = "Bus";
     else if (path.includes("holiday") || path.includes("package")) service = "Holiday package";
-    const tripType = q.get("serviceTripType") || q.get("tripType") || "";
+    const tripType = q.get("serviceTripType") || q.get("tripType") || q.get("service") || "";
     return {
       service,
       tripType,
@@ -182,7 +185,7 @@ export function tripContextFromNextUrl(nextUrl = "") {
       travelDate: q.get("date") || "",
       pickupTime: q.get("time") || q.get("pickupTime") || "",
       passengers: q.get("passengers") || q.get("seats") || "",
-      vehicleName: q.get("vehicle") || q.get("cabName") || "",
+      vehicleName: q.get("vehicle") || q.get("cabName") || q.get("package") || "",
       vehicleId: q.get("cabId") || q.get("cab") || q.get("id") || q.get("itemId") || "",
       distanceKm: q.get("distanceKm") || "",
       estimatedFare: q.get("total") || q.get("baseFare") || "",

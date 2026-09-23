@@ -79,6 +79,7 @@ function itemTitle(item, tabKey) {
   if (tabKey === "seoServices") return item.seoTitle || item.name || item.slug || "Service";
   if (tabKey === "seoRoutes") return item.seoTitle || item.title || item.slug || "Route";
   if (tabKey === "seoCityPages") return item.seoTitle || `${item.pageType}/${item.citySlug}` || "City page";
+  if (tabKey === "seoLandings") return item.h1 || item.seoTitle || item.slug || "SEO page";
   if (tabKey === "buses") return item.operator?.name || item.operator || `${item.fromCity} → ${item.toCity}`;
   return item.title || item.name || item.slug || "Item";
 }

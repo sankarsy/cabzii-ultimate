@@ -3,7 +3,7 @@ import Link from "next/link";
 import Breadcrumbs from "../seo/Breadcrumbs";
 import CallDriversCtaBar from "./CallDriversCtaBar";
 import CallDriversFaqAccordion from "./CallDriversFaqAccordion";
-import { CALL_DRIVERS_CHENNAI, formatInrCell } from "../../data/call-drivers-chennai";
+import { CALL_DRIVERS_CHENNAI } from "../../data/call-drivers-chennai";
 
 const data = CALL_DRIVERS_CHENNAI;
 
@@ -52,45 +52,50 @@ export default function CallDriversChennaiPage() {
       </header>
 
       <section className="mt-10">
-        <h2 className="text-xl font-bold text-slate-900">Acting Driver Tariff in Chennai</h2>
+        <h2 className="text-xl font-bold text-slate-900">Acting Drivers Hiring Tariff</h2>
         <p className="mt-2 text-sm text-slate-600">{data.tariffCaption}</p>
-        <div className="mt-4 overflow-x-auto rounded-2xl border border-slate-200 bg-white">
-          <table className="min-w-full text-left text-sm">
-            <caption className="sr-only">{data.tariffCaption}</caption>
-            <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
-              <tr>
-                <th scope="col" className="px-3 py-2.5 font-semibold">
-                  Service
-                </th>
-                <th scope="col" className="px-3 py-2.5 font-semibold">
-                  Standard
-                </th>
-                <th scope="col" className="px-3 py-2.5 font-semibold">
-                  Premium
-                </th>
-                <th scope="col" className="px-3 py-2.5 font-semibold">
-                  Notes
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.tariffRows.map((row) => (
-                <tr key={row.service} className="border-t border-slate-100">
-                  <th scope="row" className="px-3 py-2.5 font-semibold text-slate-900">
-                    {row.service}
-                  </th>
-                  <td className="px-3 py-2.5 text-slate-700">{formatInrCell(row.standard)}</td>
-                  <td className="px-3 py-2.5 text-slate-700">{formatInrCell(row.premium)}</td>
-                  <td className="px-3 py-2.5 text-xs text-slate-500">{row.note}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="mt-4 space-y-6">
+          {(data.tariffSections || []).map((section) => (
+            <div key={section.title} className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+              <h3 className="bg-slate-50 px-4 py-3 text-sm font-bold text-slate-900 sm:text-base">{section.title}</h3>
+              {section.intro ? <p className="px-4 pt-3 text-sm text-slate-600">{section.intro}</p> : null}
+              <table className="min-w-full text-left text-sm">
+                <thead className="sr-only">
+                  <tr>
+                    <th scope="col">Schedule</th>
+                    <th scope="col">Charge</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {section.rows.map((row) => (
+                    <tr key={row.schedule} className="border-t border-slate-100">
+                      <th scope="row" className="px-4 py-2.5 font-semibold text-slate-800">
+                        {row.schedule}
+                      </th>
+                      <td className="px-4 py-2.5 text-right font-medium text-slate-900 sm:text-left">{row.amount}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ))}
         </div>
       </section>
 
       <section className="mt-10">
-        <h2 className="text-xl font-bold text-slate-900">Our Acting Driver Services</h2>
+        <h2 className="text-xl font-bold text-slate-900">Call drivers in Chennai</h2>
+        <p className="mt-2 text-sm leading-relaxed text-slate-600">
+          An acting driver in Chennai drives <em>your</em> car. Cabzii Call Driver covers city hours, an outstation
+          acting driver for highway days, and chauffeur-only airport pickup or drop at MAA. You confirm the fare on the
+          booking form; a professional is assigned after you book — this is not a public list of named drivers.
+        </p>
+      </section>
+
+      <section className="mt-10">
+        <h2 className="text-xl font-bold text-slate-900">Flexible Call Driver services</h2>
+        <p className="mt-2 text-sm text-slate-600">
+          City call drivers, outstation acting driver, airport chauffeur in your car, school and corporate quotes, and valet for functions.
+        </p>
         <ul className="mt-4 grid gap-4 sm:grid-cols-2">
           {data.services.map((service) => (
             <li key={service.id} className="overflow-hidden rounded-2xl border border-slate-200 bg-white">

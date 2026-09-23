@@ -42,6 +42,12 @@ export default function CityCabLandingPage({ data }) {
         <div>
           <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">{data.h1}</h1>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-600">{data.description}</p>
+          {data.extraBody ? (
+            <div
+              className="prose prose-slate mt-4 max-w-none text-sm text-slate-700"
+              dangerouslySetInnerHTML={{ __html: data.extraBody }}
+            />
+          ) : null}
           <div className="mt-3">
             <TrackedLeadCtas
               source="city_cab_hero"

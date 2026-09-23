@@ -152,11 +152,15 @@ export function buildDriverPaymentSearchParams(driverId, selection) {
     total: String(selection.total ?? 0),
     listPrice: String(selection.listPrice ?? selection.baseFare ?? 0),
     discountPct: String(selection.discountPct ?? 0),
-    discountAmount: String(selection.discountAmount ?? 0)
+    discountAmount: String(selection.discountAmount ?? 0),
+    payMode: "advance"
   });
   if (selection.packageId) q.set("packageId", selection.packageId);
   if (selection.packageLabel) q.set("package", selection.packageLabel);
-  if (selection.serviceTab) q.set("service", selection.serviceTab);
+  if (selection.serviceTab) {
+    q.set("service", selection.serviceTab);
+    q.set("serviceTripType", selection.serviceTab);
+  }
   return q;
 }
 

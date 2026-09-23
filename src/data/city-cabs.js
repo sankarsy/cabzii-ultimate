@@ -136,7 +136,7 @@ export function buildCityCabData(city) {
     path: cityCabLandingPath(city.slug),
     title: buildTitle(name),
     description: buildDescription(name),
-    h1: `Taxi Services in ${name} – Book & Get Up to Rs 500 Off`,
+    h1: `Cab booking in ${name}`,
     heroAlt: `Chauffeur-driven taxi service in ${name} with Cabzii`,
     heroSrc: "/images/hero-banner.svg",
     bookingDefaultFrom: name,
@@ -226,4 +226,21 @@ export function getCityCabData(citySlug) {
 
 export function cityCabStaticParams() {
   return MAIN_PAGE_CITY_SLUGS.map((slug) => ({ slug: `${slug}-city-cabs` }));
+}
+
+/** Overlay admin CMS (same ranking SEO type) onto the city taxi landing. */
+export function applyCityCabCms(data, cms) {
+  if (!data || !cms) return data;
+  const cmsFaqs = Array.isArray(cms.faqs)
+    ? cms.faqs.filter((row) => String(row?.question || "").trim() && String(row?.answer || "").trim())
+    : [];
+  return {
+    ...data,
+    title: String(cms.seoTitle || "").trim() || data.title,
+    description: String(cms.seoDescription || "").trim() || data.description,
+    h1: String(cms.h1 || "").trim() || data.h1,
+    extraBody: String(cms.body || "").trim(),
+    faqs: cmsFaqs.length ? cmsFaqs : data.faqs,
+    keywords: String(cms.seo || "").trim()
+  };
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { emptyPageLink, emptyPageLinkGroup, PAGE_LINK_LAYOUTS } from "../../lib/seo/pageLinks";
+import { emptyPageLink, emptyPageLinkGroup, PAGE_LINK_LAYOUTS } from "../../lib/seo/pageLinksCore";
 
 function inputCls() {
   return "w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-sky-600";

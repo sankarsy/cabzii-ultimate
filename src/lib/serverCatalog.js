@@ -121,10 +121,21 @@ export async function fetchSeoRouteBySlug(slug) {
   return fetchJson(`/seo-routes/${encodeURIComponent(slug)}`, SEO_REVALIDATE_SECONDS);
 }
 
-/** Admin-managed meta for /cab-booking/{city} and /acting-driver/{city}. */
+/** Admin-managed meta for /car-rental/{city}-city-cabs and /acting-driver/{city}. */
 export async function fetchSeoCityPage(pageType, citySlug) {
   if (!pageType || !citySlug) return null;
   return fetchJson(`/seo-city-pages/${encodeURIComponent(pageType)}/${encodeURIComponent(citySlug)}`, SEO_REVALIDATE_SECONDS);
+}
+
+/** Admin-managed ranking landings at /pages/{slug}. */
+export async function fetchSeoLandingBySlug(slug) {
+  if (!slug) return null;
+  return fetchJson(`/seo-landings/${encodeURIComponent(slug)}`, SEO_REVALIDATE_SECONDS);
+}
+
+export async function fetchSeoLandingsPublic() {
+  const data = await fetchJson("/seo-landings?limit=100", SEO_REVALIDATE_SECONDS);
+  return Array.isArray(data) ? data : [];
 }
 
 export async function fetchSeoMenuLinks() {

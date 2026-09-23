@@ -174,10 +174,38 @@ export default function PaymentBreakdown({
       ) : null}
 
       <div className={`mt-4 rounded-xl bg-[#0056D2]/10 ${compact ? "p-3" : "p-4"}`}>
-        <div className="flex items-center justify-between">
-          <span className="font-semibold text-slate-900">Total payable now</span>
-          <span className={`font-bold text-[#0056D2] ${compact ? "text-base" : "text-xl"}`}>{inr(total)}</span>
-        </div>
+        {Number(selection?.tripTotal) > 0 && Number(selection.tripTotal) > Number(total) ? (
+          <dl className={`space-y-1 ${compact ? "text-[11px]" : "text-sm"} text-slate-700`}>
+            <div className="flex items-center justify-between">
+              <dt>Trip total</dt>
+              <dd className="font-semibold">{inr(selection.tripTotal)}</dd>
+            </div>
+            {Number(selection?.couponDiscount) > 0 ? (
+              <div className="flex items-center justify-between text-emerald-700">
+                <dt>Coupon</dt>
+                <dd className="font-semibold">− {inr(selection.couponDiscount)}</dd>
+              </div>
+            ) : null}
+            <div className="flex items-center justify-between border-t border-[#0056D2]/20 pt-2">
+              <dt className="font-semibold text-slate-900">Pay now (50%)</dt>
+              <dd className={`font-bold text-[#0056D2] ${compact ? "text-base" : "text-xl"}`}>{inr(total)}</dd>
+            </div>
+            <div className="flex items-center justify-between text-slate-600">
+              <dt>Balance at pickup</dt>
+              <dd className="font-medium">{inr(Number(selection.tripTotal) - Number(total))}</dd>
+            </div>
+          </dl>
+        ) : (
+          <>
+            <div className="flex items-center justify-between">
+              <span className="font-semibold text-slate-900">Total payable now</span>
+              <span className={`font-bold text-[#0056D2] ${compact ? "text-base" : "text-xl"}`}>{inr(total)}</span>
+            </div>
+            {Number(selection?.couponDiscount) > 0 ? (
+              <p className="mt-1 text-[10px] text-emerald-700">Coupon −{inr(selection.couponDiscount)}</p>
+            ) : null}
+          </>
+        )}
         {usesDistance && discountPct > 0 ? (
           <p className="mt-1 text-[10px] text-slate-600">
             ₹{selection.perKmRate}/km × {selection.distanceKm} km = {inr(distanceCharge)} → you pay {inr(total)}

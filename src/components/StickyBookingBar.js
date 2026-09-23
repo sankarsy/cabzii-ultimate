@@ -36,7 +36,7 @@ export default function StickyBookingBar() {
 
   return (
     <>
-      <div className="h-[3rem] sm:hidden" aria-hidden />
+      <div className="h-[calc(2.75rem+env(safe-area-inset-bottom,0px))] sm:hidden" aria-hidden />
       <nav
         className="fixed inset-x-0 bottom-0 z-50 grid grid-cols-3 gap-px border-t border-slate-200 bg-white/95 pb-[env(safe-area-inset-bottom,0px)] shadow-[0_-4px_20px_rgba(15,23,42,0.08)] backdrop-blur-sm sm:hidden"
         aria-label="Quick booking"

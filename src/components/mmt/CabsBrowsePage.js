@@ -16,7 +16,7 @@ import { extractCabList } from "../../lib/apiClient";
 
 const HQ_CITY = cityBySlug("chennai") || { slug: "chennai", name: "Chennai" };
 
-export default function CabsBrowsePage() {
+export default function CabsBrowsePage({ heading = "", intro = "", extraBody = "" }) {
   const city = HQ_CITY;
   const displayCity = city.name;
   const cabTypes = useMemo(() => buildCabTypes(city.name), [city.name]);
@@ -73,12 +73,18 @@ export default function CabsBrowsePage() {
       <header className="grid gap-5 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:items-start">
         <div>
           <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">
-            Cab booking in {city.name}
+            {heading || `Cab booking in ${city.name}`}
           </h1>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-600">
-            Airport taxi, local packages and outstation cabs. Pay 50% to confirm. Fuel and driver included. Tolls extra.
-            First outstation ₹500 off with CABZII500.
+            {intro ||
+              "Airport taxi, local packages and outstation cabs. Pay 50% to confirm. Fuel and driver included. Tolls extra. First outstation ₹500 off with CABZII500."}
           </p>
+          {extraBody ? (
+            <div
+              className="prose prose-slate mt-4 max-w-none text-sm text-slate-700"
+              dangerouslySetInnerHTML={{ __html: extraBody }}
+            />
+          ) : null}
           <div className="mt-3">
             <TrackedLeadCtas
               source="cabs_browse_hero"

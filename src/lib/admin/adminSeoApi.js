@@ -1,5 +1,6 @@
 import { CATALOG_TABS } from "../adminCatalogConfig";
-import { normalizePageLinkGroups } from "../seo/pageLinks";
+import { actingDriverLandingPath, cityCabLandingPath } from "../cityCabPaths";
+import { normalizePageLinkGroups } from "../seo/pageLinksCore";
 
 const API_MAP = {
   cab: "cabs",
@@ -9,7 +10,8 @@ const API_MAP = {
   service: "seoServices",
   route: "seoRoutes",
   city: "seoCityPages",
-  "acting-driver": "seoCityPages"
+  "acting-driver": "seoCityPages",
+  landing: "seoLandings"
 };
 
 function authHeaders(token) {
@@ -22,6 +24,16 @@ async function parseJson(res) {
     throw new Error(data?.message || data?.error || "Request failed");
   }
   return data;
+}
+
+export function normalizeFaqs(faqs) {
+  if (!Array.isArray(faqs)) return [];
+  return faqs
+    .map((row) => ({
+      question: String(row?.question || "").trim(),
+      answer: String(row?.answer || "").trim()
+    }))
+    .filter((row) => row.question);
 }
 
 /** Fetch full record before partial SEO update. */
@@ -38,28 +50,71 @@ async function fetchRecord(row, token) {
   return data?.data || data;
 }
 
-function seoPayload(form, row) {
-  const base = {
+function rankingFields(form) {
+  return {
     seoTitle: form.seoTitle?.trim() || "",
     seoDescription: form.seoDescription?.trim() || "",
-    seo: form.seoKeywords?.trim() || ""
+    seo: form.seoKeywords?.trim() || "",
+    h1: form.productName?.trim() || form.h1?.trim() || "",
+    intro: form.intro?.trim() || "",
+    body: form.html || form.body || "",
+    faqs: normalizeFaqs(form.faqs)
   };
+}
 
-  if (row.type === "cab") return { ...base, title: form.productName?.trim() || undefined };
-  if (row.type === "driver") return { ...base, name: form.productName?.trim() || undefined };
-  if (row.type === "tour") return { ...base, name: form.productName?.trim() || undefined };
-  if (row.type === "blog") return { ...base, title: form.productName?.trim() || undefined };
+function seoPayload(form, row) {
+  const base = rankingFields(form);
+
+  if (row.type === "cab") return { seoTitle: base.seoTitle, seoDescription: base.seoDescription, seo: base.seo, title: base.h1 || undefined };
+  if (row.type === "driver") return { seoTitle: base.seoTitle, seoDescription: base.seoDescription, seo: base.seo, name: base.h1 || undefined };
+  if (row.type === "tour") return { seoTitle: base.seoTitle, seoDescription: base.seoDescription, seo: base.seo, name: base.h1 || undefined };
+  if (row.type === "blog") return { seoTitle: base.seoTitle, seoDescription: base.seoDescription, seo: base.seo, title: base.h1 || undefined };
   if (row.type === "city" || row.type === "acting-driver") {
-    return { ...base, h1: form.productName?.trim() || undefined };
-  }
-  if (row.type === "service" || row.type === "route") {
     return {
-      ...base,
-      name: form.productName?.trim() || undefined,
-      title: form.productName?.trim() || undefined
+      seoTitle: base.seoTitle,
+      seoDescription: base.seoDescription,
+      seo: base.seo,
+      h1: base.h1 || undefined,
+      body: base.body,
+      faqs: base.faqs
     };
   }
-  return base;
+  if (row.type === "service") {
+    return {
+      seoTitle: base.seoTitle,
+      seoDescription: base.seoDescription,
+      seo: base.seo,
+      name: base.h1 || undefined,
+      title: base.h1 || undefined,
+      body: base.body
+    };
+  }
+  if (row.type === "route") {
+    return {
+      seoTitle: base.seoTitle,
+      seoDescription: base.seoDescription,
+      seo: base.seo,
+      title: base.h1 || undefined,
+      body: base.body,
+      faqs: base.faqs
+    };
+  }
+  if (row.type === "landing") {
+    return {
+      slug: row.landingSlug || row.path?.split("/").pop() || "",
+      h1: base.h1,
+      intro: base.intro,
+      body: base.body,
+      seoTitle: base.seoTitle,
+      seoDescription: base.seoDescription,
+      seo: base.seo,
+      faqs: base.faqs,
+      ctaHref: form.ctaHref?.trim() || "/cabs",
+      ctaLabel: form.ctaLabel?.trim() || "Book now",
+      published: form.published !== false
+    };
+  }
+  return { seoTitle: base.seoTitle, seoDescription: base.seoDescription, seo: base.seo };
 }
 
 function createPayload(form, row) {
@@ -72,6 +127,7 @@ function createPayload(form, row) {
       seoTitle: seo.seoTitle,
       seoDescription: seo.seoDescription,
       seo: seo.seo,
+      body: seo.body || "",
       published: true,
       allCities: true
     };
@@ -84,6 +140,8 @@ function createPayload(form, row) {
       seoTitle: seo.seoTitle,
       seoDescription: seo.seoDescription,
       seo: seo.seo,
+      body: seo.body || "",
+      faqs: seo.faqs || [],
       published: true
     };
   }
@@ -95,6 +153,8 @@ function createPayload(form, row) {
       seoTitle: seo.seoTitle,
       seoDescription: seo.seoDescription,
       seo: seo.seo,
+      body: seo.body || "",
+      faqs: seo.faqs || [],
       published: true
     };
   }
@@ -104,9 +164,13 @@ function createPayload(form, row) {
 function pageSeoFields(form, extra = {}) {
   return {
     productName: form.productName?.trim() || extra.productName || "",
+    h1: form.productName?.trim() || form.h1?.trim() || extra.h1 || "",
     seoTitle: form.seoTitle?.trim() || extra.seoTitle || "",
     seoDescription: form.seoDescription?.trim() || extra.seoDescription || "",
     seoKeywords: form.seoKeywords?.trim() || extra.seoKeywords || "",
+    intro: form.intro?.trim() || extra.intro || "",
+    html: form.html || form.body || extra.html || "",
+    faqs: normalizeFaqs(form.faqs),
     pageLinks: normalizePageLinkGroups(form.pageLinks)
   };
 }
@@ -133,6 +197,21 @@ export async function saveSeoSnippet({ row, form, token, pageSeo = {} }) {
 
   if (row.type === "site") {
     return savePageSeoMap({ token, pageSeo, path: row.path, fields });
+  }
+
+  if (row.type === "landing") {
+    const tab = CATALOG_TABS.seoLandings;
+    const payload = seoPayload(form, row);
+    const isNew = !row.editId || String(row.editId).startsWith("static:");
+    const res = await fetch(isNew ? tab.base : `${tab.base}/${row.editId}`, {
+      method: isNew ? "POST" : "PUT",
+      headers: authHeaders(token),
+      body: JSON.stringify(payload)
+    });
+    const saved = await parseJson(res);
+    const path = saved?.data?.publicPath || row.path;
+    const links = await savePageSeoMap({ token, pageSeo, path, fields });
+    return { ...saved, pageSeo: links.pageSeo };
   }
 
   const tabKey = API_MAP[row.type] || row.adminTab;
@@ -165,7 +244,134 @@ export async function saveSeoSnippet({ row, form, token, pageSeo = {} }) {
   return { ...updated, pageSeo: links.pageSeo };
 }
 
-export async function deleteSeoSnippet({ row, token }) {
+export async function createRankingSeoPage({ kind, form, token, pageSeo = {} }) {
+  const h1 = form.productName?.trim() || form.h1?.trim() || "";
+  const seoTitle = form.seoTitle?.trim() || "";
+  const seoDescription = form.seoDescription?.trim() || "";
+  const seoKeywords = form.seoKeywords?.trim() || "";
+  const faqs = normalizeFaqs(form.faqs);
+  const body = form.html || form.body || "";
+  const intro = form.intro?.trim() || "";
+
+  if (kind === "landing") {
+    const res = await fetch("/api/seo-landings", {
+      method: "POST",
+      headers: authHeaders(token),
+      body: JSON.stringify({
+        slug: form.slug?.trim() || "",
+        h1,
+        intro,
+        body,
+        seoTitle,
+        seoDescription,
+        seo: seoKeywords,
+        faqs,
+        ctaHref: form.ctaHref?.trim() || "/cabs",
+        ctaLabel: form.ctaLabel?.trim() || "Book now",
+        published: true
+      })
+    });
+    const created = await parseJson(res);
+    const path = created?.data?.publicPath;
+    if (!path) return created;
+    const links = await savePageSeoMap({
+      token,
+      pageSeo,
+      path,
+      fields: pageSeoFields(form, { productName: h1, h1, seoTitle, seoDescription, seoKeywords })
+    });
+    return { ...created, pageSeo: links.pageSeo, path };
+  }
+
+  if (kind === "city" || kind === "acting-driver") {
+    const citySlug = String(form.citySlug || "").trim().toLowerCase();
+    const pageType = kind === "acting-driver" ? "acting-driver" : "cab-booking";
+    const res = await fetch("/api/seo-city-pages", {
+      method: "POST",
+      headers: authHeaders(token),
+      body: JSON.stringify({
+        pageType,
+        citySlug,
+        h1,
+        seoTitle,
+        seoDescription,
+        seo: seoKeywords,
+        body,
+        faqs,
+        published: true
+      })
+    });
+    const created = await parseJson(res);
+    const path = created?.data?.publicPath || (kind === "acting-driver" ? actingDriverLandingPath(citySlug) : cityCabLandingPath(citySlug));
+    const links = await savePageSeoMap({
+      token,
+      pageSeo,
+      path,
+      fields: pageSeoFields(form, { productName: h1, h1, seoTitle, seoDescription, seoKeywords })
+    });
+    return { ...created, pageSeo: links.pageSeo, path };
+  }
+
+  if (kind === "service") {
+    const res = await fetch("/api/seo-services", {
+      method: "POST",
+      headers: authHeaders(token),
+      body: JSON.stringify({
+        slug: form.slug?.trim() || "",
+        name: h1,
+        seoTitle,
+        seoDescription,
+        seo: seoKeywords,
+        body,
+        published: true,
+        allCities: true
+      })
+    });
+    const created = await parseJson(res);
+    const slug = created?.data?.slug || form.slug;
+    const path = `/services/${slug}/chennai`;
+    const links = await savePageSeoMap({
+      token,
+      pageSeo,
+      path,
+      fields: pageSeoFields(form, { productName: h1, h1, seoTitle, seoDescription, seoKeywords })
+    });
+    return { ...created, pageSeo: links.pageSeo, path };
+  }
+
+  if (kind === "route") {
+    const res = await fetch("/api/seo-routes", {
+      method: "POST",
+      headers: authHeaders(token),
+      body: JSON.stringify({
+        slug: form.slug?.trim() || "",
+        title: h1,
+        fromCitySlug: form.fromCitySlug?.trim() || "",
+        toCitySlug: form.toCitySlug?.trim() || "",
+        seoTitle,
+        seoDescription,
+        seo: seoKeywords,
+        body,
+        faqs,
+        published: true
+      })
+    });
+    const created = await parseJson(res);
+    const slug = created?.data?.slug || form.slug;
+    const path = `/routes/${slug}`;
+    const links = await savePageSeoMap({
+      token,
+      pageSeo,
+      path,
+      fields: pageSeoFields(form, { productName: h1, h1, seoTitle, seoDescription, seoKeywords })
+    });
+    return { ...created, pageSeo: links.pageSeo, path };
+  }
+
+  throw new Error("Unknown page type.");
+}
+
+export async function deleteSeoSnippet({ row, token, pageSeo = {} }) {
   if (row.type === "site") {
     throw new Error("Homepage and listing pages cannot be deleted — clear SEO fields to use defaults.");
   }
@@ -181,7 +387,18 @@ export async function deleteSeoSnippet({ row, token }) {
     method: "DELETE",
     headers: { authorization: `Bearer ${token}` }
   });
-  return parseJson(res);
+  const deleted = await parseJson(res);
+  if (row.path && pageSeo[row.path]) {
+    const next = { ...pageSeo };
+    delete next[row.path];
+    await fetch("/api/site-settings", {
+      method: "PUT",
+      headers: authHeaders(token),
+      body: JSON.stringify({ pageSeo: next })
+    });
+    return { ...deleted, pageSeo: next };
+  }
+  return deleted;
 }
 
 export async function clearSitePageSeo({ row, token, pageSeo = {} }) {

@@ -32,7 +32,7 @@ function adminEditHref(tab, editId, createHref) {
   return createHref;
 }
 
-/** @param {{ cabs?, drivers?, packages?, blogs?, seoServices?, seoRoutes?, seoCityPages?, pageSeo? }} data */
+/** @param {{ cabs?, drivers?, packages?, blogs?, seoServices?, seoRoutes?, seoCityPages?, seoLandings?, pageSeo? }} data */
 export function buildSeoPageIndex(data = {}) {
   const rows = [];
   const cityPageMap = new Map(
@@ -179,11 +179,17 @@ export function buildSeoPageIndex(data = {}) {
       type: page.type,
       typeLabel: page.typeLabel,
       productName: cmsProductName,
+      h1: cms?.h1 || cmsProductName,
       seoTitle: seoTitle || page.title,
       seoDescription,
       seoKeywords,
+      intro: cms?.intro || "",
+      html: cms?.body || "",
+      faqs: cms?.faqs || [],
+      body: cms?.body || "",
       path: page.path,
       citySlug: page.citySlug || "",
+      pageType: page.pageType || "",
       source,
       adminTab: page.adminTab,
       editId: cmsEditId,
@@ -218,22 +224,71 @@ export function buildSeoPageIndex(data = {}) {
       editId: sitePage.path,
       createHref: `/admin?tab=seoPagesHub`,
       canDelete: false,
-      canClearOverride: Boolean(stored.seoTitle || stored.seoDescription || stored.seoKeywords || stored.pageLinks?.length),
+      canClearOverride: Boolean(stored.seoTitle || stored.seoDescription || stored.seoKeywords || stored.pageLinks?.length || stored.h1 || stored.html),
       seoStatus: seoStatus({ seoTitle, seoDescription, seo: seoKeywords }),
       sourceLabel: sourceLabel(source),
+      h1: stored.h1 || productName,
+      intro: stored.intro || "",
+      html: stored.html || "",
+      faqs: stored.faqs || [],
       editHref: `/admin?tab=seoPagesHub&editSeo=${encodeURIComponent(sitePage.path)}`
     });
   }
 
+  for (const landing of data.seoLandings || []) {
+    const id = String(landing._id || landing.id || landing.slug || "");
+    const path = landing.publicPath || `/pages/${landing.slug}`;
+    rows.push({
+      id: `landing:${id}`,
+      type: "landing",
+      typeLabel: "Custom landing",
+      productName: landing.h1 || landing.seoTitle || landing.slug,
+      h1: landing.h1 || "",
+      seoTitle: landing.seoTitle || "",
+      seoDescription: landing.seoDescription || "",
+      seoKeywords: landing.seo || "",
+      intro: landing.intro || "",
+      html: landing.body || "",
+      body: landing.body || "",
+      faqs: landing.faqs || [],
+      ctaHref: landing.ctaHref || "/cabs",
+      ctaLabel: landing.ctaLabel || "Book now",
+      landingSlug: landing.slug,
+      path,
+      source: "cms",
+      adminTab: "seoLandings",
+      editId: id,
+      createHref: `/admin?tab=seoPagesHub`,
+      canDelete: true,
+      seoStatus: seoStatus(landing),
+      sourceLabel: sourceLabel("cms"),
+      editHref: `/admin?tab=seoPagesHub`
+    });
+  }
+
   return rows.map((row) => {
-    const storedLinks = data.pageSeo?.[row.path]?.pageLinks;
+    const stored = data.pageSeo?.[row.path] || {};
+    const storedLinks = stored.pageLinks;
+    const seoTitle = stored.seoTitle || row.seoTitle;
+    const seoDescription = stored.seoDescription || row.seoDescription;
+    const seoKeywords = stored.seoKeywords || row.seoKeywords;
+    const productName = stored.productName || stored.h1 || row.productName;
     return {
       ...row,
+      productName,
+      h1: stored.h1 || row.h1 || productName,
+      seoTitle,
+      seoDescription,
+      seoKeywords,
+      intro: stored.intro || row.intro || "",
+      html: stored.html || row.html || row.body || "",
+      faqs: Array.isArray(stored.faqs) && stored.faqs.length ? stored.faqs : row.faqs || [],
       pageLinks: storedLinks || row.pageLinks || [],
       editHref: row.editHref || adminEditHref(row.adminTab, row.editId, row.createHref),
-      seoTitleDisplay: truncate(row.seoTitle, 56),
-      seoDescriptionDisplay: truncate(row.seoDescription, 80),
-      seoKeywordsDisplay: truncate(row.seoKeywords, 48)
+      seoTitleDisplay: truncate(seoTitle, 56),
+      seoDescriptionDisplay: truncate(seoDescription, 80),
+      seoKeywordsDisplay: truncate(seoKeywords, 48),
+      seoStatus: seoStatus({ seoTitle, seoDescription, seo: seoKeywords })
     };
   });
 }

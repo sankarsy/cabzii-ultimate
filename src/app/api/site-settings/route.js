@@ -9,3 +9,8 @@ export async function PUT(req) {
   const body = await req.text();
   return proxySeoMutation(req, "/site-settings", { method: "PUT", body, kind: "site-settings" });
 }
+
+export async function PATCH(req) {
+  const body = await req.text();
+  return proxySeoMutation(req, "/site-settings", { method: "PATCH", body, kind: "site-settings" });
+}
