@@ -2,6 +2,7 @@
 
 import { Sparkles } from "lucide-react";
 import { formatInrCurrency } from "../lib/formatInr";
+import { APPROX_PRICE_LABEL } from "../lib/approxPrice";
 import { ClockIcon, ICON_SOFT_CLASS, RoadIcon, TwoWayIcon } from "./icons";
 
 export default function PackageOptionCard({ pkg, selected, onSelect, compact = false }) {
@@ -44,11 +45,12 @@ export default function PackageOptionCard({ pkg, selected, onSelect, compact = f
 
       <p
         className={`shrink-0 font-extrabold leading-none text-[#0056D2] ${
-          compact ? "mt-1 text-sm" : "mt-1.5 text-lg sm:text-xl"
+          compact ? "mt-1 text-sm" : "mt-1.5 text-base sm:text-lg"
         }`}
       >
         {formatInrCurrency(youPay)}
       </p>
+      <p className={`text-slate-400 ${compact ? "mt-0.5 text-[8px]" : "mt-0.5 text-[10px]"}`}>{APPROX_PRICE_LABEL}</p>
 
       <div className={compact ? "mt-1" : "mt-1.5"}>
         {isTrip ? (

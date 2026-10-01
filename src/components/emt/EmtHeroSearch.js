@@ -1,7 +1,6 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import EmtCategoryTabs from "./EmtCategoryTabs";
 import EmtHeroFeatures from "./EmtHeroFeatures";
 import { useHeroSearch } from "./HeroSearchContext";
 import MmtCabSearchWidget from "../mmt/MmtCabSearchWidget";
@@ -39,23 +38,12 @@ export default function EmtHeroSearch({
 }) {
   const hero = useHeroSearch();
   const active = hero?.activeTab ?? defaultTab;
-
-  const handleTabChange = (id) => {
-    if (hero?.setActiveTab) hero.setActiveTab(id);
-  };
-
   const isHoliday = active === "holidays";
   const bodyClass = isHoliday ? "emt-hero-holidays" : "emt-hero-gradient";
 
   return (
     <section className="emt-hero-section">
       <div className="emt-hero-shell w-full">
-        <div className="emt-hero-shell-top bg-white">
-          <div className="emt-hero-inner emt-category-scroll-wrap relative">
-            <EmtCategoryTabs variant="shell" activeTab={active} setActiveTab={handleTabChange} />
-          </div>
-        </div>
-
         <div className="emt-hero-kicker bg-white">
           <div className="emt-hero-inner">
             <h1 className="emt-hero-kicker-title">{seoHeading}</h1>

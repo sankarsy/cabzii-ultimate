@@ -12,5 +12,7 @@ export * from "./urlAliases";
 export * from "./landingContent";
 export * from "./routeCatalog";
 export * from "./internalLinks";
+export * from "./outstationPaths";
 export * from "./indexation";
+export * from "./packageDoorways";
 export * from "./revenueAudit";

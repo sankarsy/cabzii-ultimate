@@ -1,8 +1,10 @@
 import { SEO_CITIES, MAIN_PAGE_CITY_SLUGS, cityBySlug } from "./cities";
-import { cityCabLandingPath, actingDriverLandingPath } from "../cityCabPaths";
+import { cityCabLandingPath, actingDriverLandingPath, airportTaxiPublicPath } from "../cityCabPaths";
 import { SEO_ROUTES, routesForCity } from "./routes";
 import { SEO_SERVICES, servicePath } from "./services";
+import { isPackageDoorwayService } from "./packageDoorways";
 import { cityHasCommercialAirport } from "./airports";
+import { routePublicPath } from "./outstationPaths";
 
 /** Primary catalog pages — always link from hub sections. */
 export const CORE_INTERNAL_LINKS = [
@@ -67,7 +69,9 @@ export function actingDriverLinks(limit = INTERNAL_LINK_CITIES.length) {
 /** All services for one city. */
 export function serviceLinks(citySlug = "chennai", limit = SEO_SERVICES.length) {
   const city = SEO_CITIES.find((c) => c.slug === citySlug) || SEO_CITIES[0];
-  return SEO_SERVICES.slice(0, limit).map((svc) => ({
+  return SEO_SERVICES.filter((svc) => !isPackageDoorwayService(svc.slug))
+    .slice(0, limit)
+    .map((svc) => ({
     href: servicePath(svc, city),
     label: `${svc.name} ${city.name}`,
     service: svc.name,
@@ -81,7 +85,7 @@ export function serviceLinksForCities(
   { servicesPerCity = SEO_SERVICES.length } = {}
 ) {
   const cities = citiesBySlugs(citySlugs);
-  const services = SEO_SERVICES.slice(0, servicesPerCity);
+  const services = SEO_SERVICES.filter((svc) => !isPackageDoorwayService(svc.slug)).slice(0, servicesPerCity);
   const links = [];
 
   for (const city of cities) {
@@ -100,7 +104,7 @@ export function serviceLinksForCities(
 
 export function routeLinks(limit = SEO_ROUTES.length) {
   return SEO_ROUTES.slice(0, limit).map((route) => ({
-    href: `/routes/${route.slug}`,
+    href: routePublicPath(route.slug),
     label: formatRouteLabel(route)
   }));
 }
@@ -112,7 +116,7 @@ export function routeLinksForCity(citySlug, limit = 6) {
     if (!route?.slug || seen.has(route.slug)) continue;
     seen.add(route.slug);
     out.push({
-      href: `/routes/${route.slug}`,
+      href: routePublicPath(route.slug),
       label: formatRouteLabel(route)
     });
     if (out.length >= limit) break;
@@ -161,7 +165,7 @@ export function relatedLinksForPage(page, citySlug = "") {
       ...base,
       { href: cityCabLandingPath(city.slug), label: `Cab booking ${city.name}` },
       cityServiceLink(city, "outstation-cab", "Outstation cab"),
-      { href: `/services/airport-taxi/${city.slug}`, label: airportLabel },
+      { href: airportTaxiPublicPath(city.slug), label: airportLabel },
       cityServiceLink(city, "one-way-cab", "One way cab"),
       cityServiceLink(city, "car-rental", "Car rental"),
       cityServiceLink(city, "cab-rental", "Cab rental"),

@@ -1,3 +1,5 @@
+import { airportTaxiPublicPath } from "../cityCabPaths";
+
 /** Programmatic service pages at /services/{slug}/{city}. */
 export const SEO_SERVICES = [
   {
@@ -90,16 +92,8 @@ export const SEO_SERVICES = [
   }
 ];
 
-/** Only these service landings are pre-built + indexed (rest stay on-demand / noindex). */
-export const MAIN_PAGE_SERVICE_SLUGS = [
-  "airport-taxi",
-  "outstation-cab",
-  "one-way-cab",
-  "hourly-rental",
-  "local-taxi",
-  "car-rental",
-  "tempo-traveller"
-];
+/** Only these service landings are pre-built + indexed (fare packages redirect to hubs). */
+export const MAIN_PAGE_SERVICE_SLUGS = ["airport-taxi", "outstation-cab", "one-way-cab", "tempo-traveller"];
 
 export function isMainPageService(slug) {
   return MAIN_PAGE_SERVICE_SLUGS.includes(String(slug || ""));
@@ -110,6 +104,7 @@ export function serviceBySlug(slug) {
 }
 
 export function servicePath(service, city) {
+  if (service?.slug === "airport-taxi") return airportTaxiPublicPath(city.slug);
   return `/services/${service.slug}/${city.slug}`;
 }
 

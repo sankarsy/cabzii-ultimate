@@ -26,7 +26,6 @@ export const VEHICLE_TABS = [
   { id: "pickup", label: "Pickup Locations" },
   { id: "features", label: "Features" },
   { id: "gallery", label: "Gallery" },
-  { id: "seo", label: "SEO" },
   { id: "preview", label: "Preview" }
 ];
 

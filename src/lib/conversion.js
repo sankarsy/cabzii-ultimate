@@ -56,7 +56,7 @@ export function bookingWhatsappMessage({
     }
   }
 
-  if (path.includes("/car-rental/tirupati-city-cabs") || path.includes("/cab-booking/tirupati") || path.includes("/acting-driver/tirupati")) {
+  if (path === "/tirupati" || path.startsWith("/tirupati/") || path.includes("/cab-booking/tirupati") || path.includes("/acting-driver/tirupati")) {
     return "Hi Cabzii, I want to book a Tirupati cab. Pickup: ___. Date: ___. Passengers: ___. Please share sedan/SUV fare and availability.";
   }
 
@@ -64,10 +64,22 @@ export function bookingWhatsappMessage({
     return "Hi Cabzii, I want to book a Call Driver / acting driver in Chennai. Pickup: ___. Date: ___. Please share fare and availability.";
   }
 
+  const actingHub = path.match(/^\/([a-z0-9-]+)\/acting-driver\/?$/);
+  if (actingHub) {
+    const place = titleFromSlug(actingHub[1]);
+    return `Hi Cabzii, I want to book a Call Driver / acting driver in ${place}. Pickup: ___. Date: ___. Please share fare and availability.`;
+  }
+
   const cityCabsPage = path.match(/\/car-rental\/([a-z0-9-]+)-city-cabs/);
   if (cityCabsPage) {
     const place = titleFromSlug(cityCabsPage[1]);
     return `Hi Cabzii, I want to book a cab in ${place}. Pickup: ___. Drop: ___. Date: ___. Please share fare and availability.`;
+  }
+
+  const airportHub = path.match(/^\/([a-z0-9-]+)\/airport-cab-booking/);
+  if (airportHub) {
+    const place = titleFromSlug(airportHub[1]);
+    return `Hi Cabzii, I need an airport cab in ${place}.\nAirport pickup or drop:\nFlight time:\nPassengers:\nVehicle:`;
   }
 
   const cityPage = path.match(/\/(?:cab-booking|acting-driver)\/([a-z0-9-]+)/);

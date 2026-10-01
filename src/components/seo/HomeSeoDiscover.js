@@ -15,10 +15,10 @@ const HOME_HUB_CITIES = [
 ];
 
 const CHENNAI_SERVICES = [
-  { href: "/services/airport-taxi/chennai", label: "Airport taxi Chennai", hint: "Pickup and drop" },
+  { href: "/chennai/airport-cab-booking", label: "Airport taxi Chennai", hint: "Pickup and drop" },
   { href: "/services/outstation-cab/chennai", label: "Outstation cab Chennai", hint: "One-way and round-trip" },
-  { href: "/services/hourly-rental/chennai", label: "Local package Chennai", hint: "4 hr / 8 hr hire" },
-  { href: "/call-drivers-chennai", label: "Acting driver Chennai", hint: "Driver for your car" }
+  { href: "/chennai", label: "Local package Chennai", hint: "4 hr / 8 hr hire" },
+  { href: "/chennai/acting-driver", label: "Acting driver Chennai", hint: "Driver for your car" }
 ];
 
 function HubCard({ href, title, hint }) {

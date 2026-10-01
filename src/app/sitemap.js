@@ -6,11 +6,14 @@ import {
   MAIN_PAGE_CITY_SLUGS,
   SITE_URL,
   getBackendUrl,
-  servicePath
+  servicePath,
+  routePublicPath,
+  outstationHubPath,
+  parseLegacyRouteSlug
 } from "../lib/seo";
 import { SEO_REVALIDATE_SECONDS } from "../lib/revalidation/constants";
 import { classifyCityHub, classifyRoute, classifyServiceCity } from "../lib/seo/indexation";
-import { cityCabLandingPath } from "../lib/cityCabPaths";
+import { airportCabBookingPath, cityCabLandingPath, actingDriverLandingPath, isAirportCabBookingCity, isActingDriverHubCity } from "../lib/cityCabPaths";
 import { catalogPublicPath } from "../lib/catalogProduct";
 import { isLiveApiHostProtected } from "../lib/liveApiHostGuard";
 import { resolveProductImageSeo } from "../lib/dynamicImageSeo";
@@ -55,7 +58,6 @@ export default async function sitemap() {
     { url: `${base}/cabs`, lastModified: now, changeFrequency: "daily", priority: 0.95, images: [HERO_IMAGE] },
     { url: `${base}/tariff`, lastModified: now, changeFrequency: "weekly", priority: 0.9, images: [HERO_IMAGE] },
     { url: `${base}/call-driver`, lastModified: now, changeFrequency: "weekly", priority: 0.95, images: [HERO_IMAGE] },
-    { url: `${base}/call-drivers-chennai`, lastModified: now, changeFrequency: "weekly", priority: 0.95, images: [HERO_IMAGE] },
     { url: `${base}/acting-driver`, lastModified: now, changeFrequency: "weekly", priority: 0.9, images: [HERO_IMAGE] },
     { url: `${base}/cab-booking`, lastModified: now, changeFrequency: "weekly", priority: 0.88, images: [HERO_IMAGE] },
     { url: `${base}/car-rental`, lastModified: now, changeFrequency: "weekly", priority: 0.9, images: [HERO_IMAGE] },
@@ -89,12 +91,23 @@ export default async function sitemap() {
         priority: cabPolicy.sitemapPriority
       });
     }
-    if (driverPolicy.indexable && city.slug !== "chennai") {
+    if (isAirportCabBookingCity(city.slug)) {
+      const airportPolicy = classifyServiceCity("airport-taxi", city.slug);
+      if (airportPolicy.indexable) {
+        rows.push({
+          url: `${base}${airportCabBookingPath(city.slug)}`,
+          lastModified: now,
+          changeFrequency: airportPolicy.changeFrequency,
+          priority: airportPolicy.sitemapPriority
+        });
+      }
+    }
+    if (driverPolicy.indexable) {
       rows.push({
-        url: `${base}/acting-driver/${city.slug}`,
+        url: `${base}${actingDriverLandingPath(city.slug)}`,
         lastModified: now,
         changeFrequency: driverPolicy.changeFrequency,
-        priority: driverPolicy.sitemapPriority
+        priority: isActingDriverHubCity(city.slug) ? 0.95 : driverPolicy.sitemapPriority
       });
     }
     return rows;
@@ -119,6 +132,7 @@ export default async function sitemap() {
       .map((service) => {
         const policy = classifyServiceCity(service.slug, city.slug);
         if (!policy.indexable) return null;
+        if (service.slug === "airport-taxi" && isAirportCabBookingCity(city.slug)) return null;
         return {
           url: `${base}${servicePath(service, city)}`,
           lastModified: now,
@@ -139,6 +153,7 @@ export default async function sitemap() {
         .map((city) => {
           const policy = classifyServiceCity(service.slug, city.slug);
           if (!policy.indexable) return null;
+          if (service.slug === "airport-taxi" && isAirportCabBookingCity(city.slug)) return null;
           return {
             url: `${base}/services/${service.slug}/${city.slug}`,
             lastModified: service.updatedAt ? new Date(service.updatedAt) : now,
@@ -155,10 +170,25 @@ export default async function sitemap() {
       const policy = classifyRoute(route);
       if (!policy.indexable) return null;
       return {
-        url: `${base}/routes/${slug}`,
+        url: `${base}${routePublicPath(slug)}`,
         lastModified: now,
         changeFrequency: policy.changeFrequency,
         priority: policy.sitemapPriority
+      };
+    })
+    .filter(Boolean);
+
+  const outstationHubPages = [
+    ...new Set(FEATURED_ROUTE_SLUGS.map((slug) => parseLegacyRouteSlug(slug)?.fromToken).filter(Boolean))
+  ]
+    .map((citySlug) => {
+      const policy = classifyCityHub(citySlug, "cab-booking");
+      if (!policy.indexable) return null;
+      return {
+        url: `${base}${outstationHubPath(citySlug)}`,
+        lastModified: now,
+        changeFrequency: "weekly",
+        priority: 0.86
       };
     })
     .filter(Boolean);
@@ -177,7 +207,7 @@ export default async function sitemap() {
       );
       if (!policy.indexable) return null;
       return {
-        url: `${base}/routes/${route.slug}`,
+        url: `${base}${routePublicPath(route.slug)}`,
         lastModified: route.updatedAt ? new Date(route.updatedAt) : now,
         changeFrequency: policy.changeFrequency,
         priority: policy.sitemapPriority
@@ -263,6 +293,7 @@ export default async function sitemap() {
     ...staticServiceRoutes,
     ...cmsServiceRoutes,
     ...staticRoutePages,
+    ...outstationHubPages,
     ...cmsRoutePages,
     ...cabRoutes,
     ...packageRoutes,

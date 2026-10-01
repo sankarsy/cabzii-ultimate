@@ -36,9 +36,9 @@ export default function StickyBookingBar() {
 
   return (
     <>
-      <div className="h-[calc(2.75rem+env(safe-area-inset-bottom,0px))] sm:hidden" aria-hidden />
+      <div className="h-[calc(3.65rem+env(safe-area-inset-bottom,0px))] sm:hidden" aria-hidden />
       <nav
-        className="fixed inset-x-0 bottom-0 z-50 grid grid-cols-3 gap-px border-t border-slate-200 bg-white/95 pb-[env(safe-area-inset-bottom,0px)] shadow-[0_-4px_20px_rgba(15,23,42,0.08)] backdrop-blur-sm sm:hidden"
+        className="fixed inset-x-0 bottom-0 z-50 grid grid-cols-3 gap-px border-t border-slate-200/90 bg-white/92 pb-[env(safe-area-inset-bottom,0px)] shadow-[0_-8px_30px_rgba(15,23,42,0.1)] backdrop-blur-md sm:hidden"
         aria-label="Quick booking"
       >
         <a
@@ -47,7 +47,7 @@ export default function StickyBookingBar() {
           aria-label="Call Cabzii"
           onClick={() => trackLead("phone", { source_page: pathname, cta_location: "sticky_bar" })}
         >
-          <Phone className="h-3.5 w-3.5" strokeWidth={2} aria-hidden />
+          <Phone className="h-5 w-5" strokeWidth={2.1} aria-hidden />
           <span>Call</span>
         </a>
         <a
@@ -58,7 +58,7 @@ export default function StickyBookingBar() {
           aria-label="Get quote on WhatsApp"
           onClick={() => trackLead("whatsapp", { source_page: pathname, cta_location: "sticky_bar" })}
         >
-          <WhatsAppIcon className="h-3.5 w-3.5" />
+          <WhatsAppIcon className="h-5 w-5" />
           <span>WhatsApp</span>
         </a>
         <Link
@@ -68,7 +68,7 @@ export default function StickyBookingBar() {
           aria-label="Get a cab quote"
           onClick={() => trackEvent("quote_request", { source_page: pathname, cta_location: "sticky_bar" })}
         >
-          <CabIcon className="h-3.5 w-3.5" aria-hidden />
+          <CabIcon className="h-5 w-5" aria-hidden />
           <span>Get Quote</span>
         </Link>
       </nav>

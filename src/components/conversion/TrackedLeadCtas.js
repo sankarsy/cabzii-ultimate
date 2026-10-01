@@ -34,20 +34,21 @@ export default function TrackedLeadCtas({
     : "cabzii-btn cabzii-tap inline-flex items-center justify-center gap-2";
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className={`flex w-full gap-2 ${compact ? "flex-col sm:flex-row sm:flex-wrap" : "flex-wrap"}`}>
       <a
         href={waHref}
         target="_blank"
         rel="noopener noreferrer"
-        className={`${btn} cabzii-btn-whatsapp`}
+        className={`${btn} cabzii-btn-whatsapp w-full sm:w-auto`}
         onClick={() => trackLead("whatsapp", { source_page: pathname, cta_location: source, route: from && to ? `${from}-${to}` : "" })}
       >
         <WhatsAppIcon className={compact ? "h-3.5 w-3.5" : "h-4 w-4"} />
-        Get Quote on WhatsApp
+        <span className="sm:hidden">WhatsApp</span>
+        <span className="hidden sm:inline">Get Quote on WhatsApp</span>
       </a>
       <a
         href={telUrl(phone)}
-        className={`${btn} cabzii-btn-secondary`}
+        className={`${btn} cabzii-btn-secondary w-full sm:w-auto`}
         onClick={() => trackLead("phone", { source_page: pathname, cta_location: source })}
       >
         <Phone className={compact ? "h-3.5 w-3.5" : "h-4 w-4"} strokeWidth={2} />

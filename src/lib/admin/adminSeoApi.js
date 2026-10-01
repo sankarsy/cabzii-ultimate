@@ -1,6 +1,8 @@
 import { CATALOG_TABS } from "../adminCatalogConfig";
 import { actingDriverLandingPath, cityCabLandingPath } from "../cityCabPaths";
 import { normalizePageLinkGroups } from "../seo/pageLinksCore";
+import { routePublicPath } from "../seo/outstationPaths";
+import { isRankingService } from "../seo/packageDoorways";
 
 const API_MAP = {
   cab: "cabs",
@@ -313,11 +315,15 @@ export async function createRankingSeoPage({ kind, form, token, pageSeo = {} }) 
   }
 
   if (kind === "service") {
+    const serviceSlug = form.slug?.trim() || "";
+    if (!isRankingService(serviceSlug)) {
+      throw new Error("Cab and acting-driver packages are not SEO pages. Use airport-taxi, outstation-cab, one-way-cab or tempo-traveller.");
+    }
     const res = await fetch("/api/seo-services", {
       method: "POST",
       headers: authHeaders(token),
       body: JSON.stringify({
-        slug: form.slug?.trim() || "",
+        slug: serviceSlug,
         name: h1,
         seoTitle,
         seoDescription,
@@ -328,8 +334,8 @@ export async function createRankingSeoPage({ kind, form, token, pageSeo = {} }) 
       })
     });
     const created = await parseJson(res);
-    const slug = created?.data?.slug || form.slug;
-    const path = `/services/${slug}/chennai`;
+    const createdSlug = String(created?.data?.slug || serviceSlug).trim();
+    const path = `/services/${createdSlug}/chennai`;
     const links = await savePageSeoMap({
       token,
       pageSeo,
@@ -358,7 +364,7 @@ export async function createRankingSeoPage({ kind, form, token, pageSeo = {} }) 
     });
     const created = await parseJson(res);
     const slug = created?.data?.slug || form.slug;
-    const path = `/routes/${slug}`;
+    const path = routePublicPath(slug);
     const links = await savePageSeoMap({
       token,
       pageSeo,

@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import JsonLd from "../../../../components/seo/JsonLd";
 import ServiceLandingPage from "../../../../components/seo/ServiceLandingPage";
 import { resolveServiceForCity } from "../../../../lib/seo/cmsResolve";
@@ -21,7 +21,8 @@ import {
 } from "../../../../lib/seo";
 import { serviceSerpBadges } from "../../../../lib/seo/serpRichData";
 import { resolveMediaUrl } from "../../../../lib/media";
-import { cityCabLandingPath } from "../../../../lib/cityCabPaths";
+import { cityCabLandingPath, airportCabBookingPath, isAirportCabBookingCity } from "../../../../lib/cityCabPaths";
+import { isPackageDoorwayService, packageDoorwayCanonicalPath } from "../../../../lib/seo/packageDoorways";
 
 import { SEO_REVALIDATE_SECONDS } from "../../../../lib/revalidation/constants";
 
@@ -30,11 +31,20 @@ export const dynamicParams = true;
 
 export function generateStaticParams() {
   return MAIN_PAGE_SERVICE_SLUGS.flatMap((service) =>
-    MAIN_PAGE_CITY_SLUGS.map((city) => ({ service, city }))
+    MAIN_PAGE_CITY_SLUGS.filter((city) => !(service === "airport-taxi" && isAirportCabBookingCity(city))).map((city) => ({
+      service,
+      city
+    }))
   );
 }
 
 export async function generateMetadata({ params }) {
+  if (isPackageDoorwayService(params.service)) {
+    permanentRedirect(packageDoorwayCanonicalPath(params.service, params.city));
+  }
+  if (params.service === "airport-taxi" && isAirportCabBookingCity(params.city)) {
+    permanentRedirect(airportCabBookingPath(params.city));
+  }
   const { service: serviceRow, city, cmsMeta } = await resolveServiceForCity(params.service, params.city);
   if (!serviceRow || !city) {
     return buildPageMetadata({
@@ -67,6 +77,12 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function ServiceCityPage({ params }) {
+  if (isPackageDoorwayService(params.service)) {
+    permanentRedirect(packageDoorwayCanonicalPath(params.service, params.city));
+  }
+  if (params.service === "airport-taxi" && isAirportCabBookingCity(params.city)) {
+    permanentRedirect(airportCabBookingPath(params.city));
+  }
   const { service, city } = await resolveServiceForCity(params.service, params.city);
   if (!service || !city) notFound();
 

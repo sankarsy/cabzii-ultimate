@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { Star } from "lucide-react";
 import PackageOptionCard from "./PackageOptionCard";
 import AdditionalChargesGrid from "./AdditionalChargesGrid";
+import ApproxPriceNote from "./ui/ApproxPriceNote";
 import {
   buildCabChargeItems,
   buildFareSlabs,
@@ -202,6 +203,7 @@ function PackageSection({ visiblePackages, selectedPackageId, onSelectPackage })
           </div>
         ))}
       </div>
+      <ApproxPriceNote />
     </div>
   );
 }

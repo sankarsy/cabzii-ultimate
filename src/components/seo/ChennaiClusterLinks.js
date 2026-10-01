@@ -19,7 +19,7 @@ export default function ChennaiClusterLinks({
       </p>
       <ul className="mt-2.5 flex flex-wrap gap-1.5">
         {links.map((item) => (
-          <li key={item.href}>
+          <li key={`${item.intent}-${item.href}`}>
             <Link
               href={item.href}
               className="inline-block rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:border-[var(--cabzii-brand)]/40 hover:text-[var(--cabzii-brand)]"

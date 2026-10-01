@@ -8,7 +8,7 @@ export const revalidate = SEO_REVALIDATE_SECONDS;
 export const metadata = buildPageMetadata({
   title: "Cab & Driver Services by City | Cabzii",
   description:
-    "Cab rental, car rental, airport taxi, outstation, one-way and chauffeur services on Cabzii — open the city you travel from.",
+    "Cab, airport taxi, outstation, one-way and Tempo Traveller services on Cabzii — open the city you travel from.",
   path: "/services",
   keywords: ["cab rental", "airport taxi", "outstation cab", "car rental", "cabzii services"]
 });

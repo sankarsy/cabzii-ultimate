@@ -8,7 +8,7 @@ import CityCabBookingWidget from "../city-cabs/CityCabBookingWidget";
 import Breadcrumbs from "../seo/Breadcrumbs";
 import TrackedLeadCtas from "../conversion/TrackedLeadCtas";
 import { buildCabTypes } from "../../data/cabTypes";
-import { actingDriverLandingPath } from "../../lib/cityCabPaths";
+import { actingDriverLandingPath, airportTaxiPublicPath, cityCabLandingPath } from "../../lib/cityCabPaths";
 import { cityBySlug } from "../../lib/seo/cities";
 import { sortBySelectedCity } from "../../lib/locationPriority";
 import { todayStr } from "../../lib/mmtTrip";
@@ -55,9 +55,9 @@ export default function CabsBrowsePage({ heading = "", intro = "", extraBody = "
   }, [load]);
 
   const serviceCards = [
-    { href: `/services/airport-taxi/${city.slug}`, label: "Airport taxi", hint: "Pickup and drop" },
+    { href: airportTaxiPublicPath(city.slug), label: "Airport taxi", hint: "Pickup and drop" },
     { href: `/services/outstation-cab/${city.slug}`, label: "Outstation cab", hint: "One-way and round-trip" },
-    { href: `/services/hourly-rental/${city.slug}`, label: "Local package", hint: "4 hr / 8 hr hire" },
+    { href: cityCabLandingPath(city.slug), label: "Local package", hint: "4 hr / 8 hr hire" },
     { href: actingDriverLandingPath(city.slug), label: "Acting driver", hint: "Driver for your car" }
   ];
 

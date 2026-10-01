@@ -3,17 +3,12 @@ import { airportInfoForCity, cityHasCommercialAirport } from "../lib/seo/airport
 import { cityBySlug, MAIN_PAGE_CITY_SLUGS, peerCitiesForHub } from "../lib/seo/cities";
 import { routesForCity } from "../lib/seo/routes";
 import { formatRouteLabel } from "../lib/seo/internalLinks";
-import { cityCabLandingPath, actingDriverLandingPath } from "../lib/cityCabPaths";
-import { CAR_TARIFF, VAN_TARIFF } from "../lib/publishedTariff";
+import { routePublicPath } from "../lib/seo/outstationPaths";
+import { cityCabLandingPath, actingDriverLandingPath, airportTaxiPublicPath } from "../lib/cityCabPaths";
 import { SITE_NAME } from "../lib/seo/constants";
+import { cityHubSeo } from "./cityHubSeo";
+import { todayStr } from "../lib/mmtTrip";
 import { buildCabTypes } from "./cabTypes";
-
-const DZIRE = CAR_TARIFF.find((row) => /dzire/i.test(row.name)) || CAR_TARIFF[0];
-const TEMPO = VAN_TARIFF.find((row) => /12 seater/i.test(row.name)) || VAN_TARIFF[0];
-
-function inr(n) {
-  return `₹${Number(n).toLocaleString("en-IN")}`;
-}
 
 function clampText(value, max) {
   const text = String(value || "").trim();
@@ -32,28 +27,34 @@ function pickRoutes(citySlug, direction, limit) {
     seen.add(route.slug);
     const otherSlug = direction === "from" ? route.to : route.from;
     out.push({
-      href: `/routes/${route.slug}`,
+      href: routePublicPath(route.slug),
       label: formatRouteLabel(route),
-      otherSlug
+      otherSlug,
+      distance: route.distance || "",
+      duration: route.duration || "",
+      sedanFrom: route.sedanFrom || 0,
+      suvFrom: route.suvFrom || 0,
+      innovaFrom: route.innovaFrom || 0
     });
     if (out.length >= limit) break;
   }
   return out;
 }
 
-function buildTitle(cityName) {
+function buildTitle(cityName, seeded) {
+  if (seeded?.title) return clampText(seeded.title, 60);
   const candidates = [
-    `Taxi Service in ${cityName} | Book Cabs, Fares & Offers | ${SITE_NAME}`,
-    `Taxi Service in ${cityName} | Cabs & Offers | ${SITE_NAME}`,
-    `${cityName} Taxi Service | Book Cabs | ${SITE_NAME}`,
-    `${cityName} Taxi | Cabs | ${SITE_NAME}`
+    `Best Cab Services in ${cityName} | ${SITE_NAME}`,
+    `Cab Services in ${cityName} | ${SITE_NAME}`,
+    `${cityName} Taxi | ${SITE_NAME}`
   ];
   return candidates.find((title) => title.length <= 60) || clampText(`${cityName} Taxi | ${SITE_NAME}`, 60);
 }
 
-function buildDescription(cityName) {
+function buildDescription(cityName, seeded) {
+  if (seeded?.description) return clampText(seeded.description, 155);
   return clampText(
-    `Book outstation, airport and full-day cabs in ${cityName}. Pay 50% now. Time-based cancellation. First outstation ₹500 off (CABZII500).`,
+    `Book outstation, airport and local cabs in ${cityName}. Pay 50% now. Fuel and driver included. Tolls extra unless listed.`,
     155
   );
 }
@@ -101,31 +102,37 @@ function buildFaqs(city) {
  */
 export function buildCityCabData(city) {
   const name = city.name;
+  const seeded = cityHubSeo(city.slug);
   const airport = airportInfoForCity(city.slug);
   const fromRoutes = pickRoutes(city.slug, "from", 10);
-  const toRoutes = pickRoutes(city.slug, "to", 10);
   const nearby = peerCitiesForHub(city, 8).map((peer) => ({
     href: cityCabLandingPath(peer.slug),
     label: `${peer.name} city cabs`,
     city: peer.name
   }));
-  const places = cityAreas(city.slug)
-    .slice(0, 6)
-    .map((area) => ({
-      name: area,
-      subtitle: `Use a ${name} outstation or local cab for pickups around ${area}.`,
-      href: `/cabs/results?serviceTripType=hourly&from=${encodeURIComponent(`${area}, ${name}`)}&city=${encodeURIComponent(name)}`
-    }));
+  const places = (seeded?.places?.length
+    ? seeded.places.map((place) => ({
+        name: place.title,
+        subtitle: place.body,
+        href: `/cabs/results?serviceTripType=hourly&from=${encodeURIComponent(name)}&to=${encodeURIComponent(place.title)}&city=${encodeURIComponent(name)}`
+      }))
+    : cityAreas(city.slug)
+        .slice(0, 6)
+        .map((area) => ({
+          name: area,
+          subtitle: `Use a ${name} local or outstation cab for pickups around ${area}.`,
+          href: `/cabs/results?serviceTripType=hourly&from=${encodeURIComponent(`${area}, ${name}`)}&city=${encodeURIComponent(name)}`
+        })));
 
   const airportHeading = airport?.type === "local" ? `Cabs from ${name} Airport` : `Airport taxi from ${name}`;
   const airportLinks = [
     airport?.type === "local"
-      ? { href: `/services/airport-taxi/${city.slug}`, label: `${airport.name} taxi (${airport.code})` }
+      ? { href: airportTaxiPublicPath(city.slug), label: `${airport.name} taxi (${airport.code})` }
       : airport
-        ? { href: `/services/airport-taxi/${city.slug}`, label: `${name} transfer to ${airport.name}` }
+        ? { href: airportTaxiPublicPath(city.slug), label: `${name} transfer to ${airport.name}` }
         : null,
     { href: `/services/outstation-cab/${city.slug}`, label: `Outstation cab from ${name}` },
-    { href: `/services/hourly-rental/${city.slug}`, label: `Full-day cab in ${name}` },
+    { href: cityCabLandingPath(city.slug), label: `Local / hourly cab in ${name}` },
     { href: actingDriverLandingPath(city.slug), label: `Acting driver in ${name}` },
     { href: "/call-driver", label: "Book Call Driver" },
     { href: "/tariff", label: "Published Cabzii tariff" }
@@ -134,18 +141,28 @@ export function buildCityCabData(city) {
   return {
     city,
     path: cityCabLandingPath(city.slug),
-    title: buildTitle(name),
-    description: buildDescription(name),
-    h1: `Cab booking in ${name}`,
+    title: buildTitle(name, seeded),
+    description: buildDescription(name, seeded),
+    keywords: seeded?.keywords || "",
+    h1: seeded?.h1 || `Best Cab Services in ${name} - Cabzii`,
+    lead: seeded?.lead || `Book airport, local and outstation cabs in ${name}. Fares show before you pay.`,
+    aboutCity: seeded?.aboutCity || "",
+    bookingTrip: {
+      tripType: "local",
+      from: name,
+      to: name,
+      date: todayStr(),
+      time: "09:00",
+      roundTrip: false,
+      city: name,
+      packageHours: 8
+    },
     heroAlt: `Chauffeur-driven taxi service in ${name} with Cabzii`,
-    heroSrc: "/images/hero-banner.svg",
-    bookingDefaultFrom: name,
-    airportPickupLabel: airport?.type === "local" ? airport.name : name,
     cabTypes: buildCabTypes(name),
     fromRoutes,
-    toRoutes,
     places,
     nearby,
+    localAreas: cityAreas(city.slug).slice(0, 8),
     airportHeading,
     airportIntro:
       airport?.type === "local"
@@ -170,50 +187,6 @@ export function buildCityCabData(city) {
         subtitle: "After confirmation you receive driver details on SMS or WhatsApp."
       }
     ],
-    fareItems: [
-      {
-        title: "Fuel and driver service",
-        subtitle: "Included in the published package fare for local, airport and outstation cabs."
-      },
-      {
-        title: "Tolls and parking",
-        subtitle: "Not included. Tolls, parking and permits are extra as per actuals on the quote."
-      },
-      {
-        title: "GST",
-        subtitle: "Package fares list fuel and driver service only. GST, if applicable, appears on the live quote."
-      },
-      {
-        title: "Driver allowance",
-        subtitle: `Driver batta is extra per calendar day (sedan ${inr(DZIRE.batta)}, Tempo Traveller ${inr(TEMPO.batta)}).`
-      },
-      {
-        title: "Night and overtime charges",
-        subtitle: "Late running is billed at the extra-hour rate on the tariff. Confirm night running on the quote."
-      },
-      {
-        title: "Waiting time",
-        subtitle: `Waiting beyond the package is charged as extra hours (sedan from ${inr(DZIRE.extraHr)} / hour).`
-      }
-    ],
-    whyBook: [
-      {
-        title: "Published tariff, not a hidden meter",
-        subtitle: `Local 4hr/40km, full-day and outstation km rates for ${name} are listed on the Cabzii tariff.`
-      },
-      {
-        title: "Up to Rs 500 off outstation",
-        subtitle: "First outstation booking: apply CABZII500 for ₹500 off before you confirm."
-      },
-      {
-        title: "Airport, outstation and full-day in one form",
-        subtitle: `One-way, round-trip, airport and local packages from ${name} use the same booking flow.`
-      },
-      {
-        title: "Time-based cancellation",
-        subtitle: "Refunds follow the published cancellation policy — not a blanket free-cancellation claim."
-      }
-    ],
     faqs: buildFaqs(city),
     priceRange: "₹₹"
   };
@@ -224,8 +197,8 @@ export function getCityCabData(citySlug) {
   return city ? buildCityCabData(city) : null;
 }
 
-export function cityCabStaticParams() {
-  return MAIN_PAGE_CITY_SLUGS.map((slug) => ({ slug: `${slug}-city-cabs` }));
+export function cityHubStaticParams() {
+  return MAIN_PAGE_CITY_SLUGS.map((city) => ({ city }));
 }
 
 /** Overlay admin CMS (same ranking SEO type) onto the city taxi landing. */
@@ -234,13 +207,32 @@ export function applyCityCabCms(data, cms) {
   const cmsFaqs = Array.isArray(cms.faqs)
     ? cms.faqs.filter((row) => String(row?.question || "").trim() && String(row?.answer || "").trim())
     : [];
+  const cmsPlaces = Array.isArray(cms.touristPlaces)
+    ? cms.touristPlaces
+        .filter((row) => String(row?.title || "").trim() && String(row?.body || "").trim())
+        .map((row) => ({
+          name: String(row.title).trim(),
+          subtitle: String(row.body).trim(),
+          href:
+            String(row.href || "").trim() ||
+            `/cabs/results?serviceTripType=hourly&from=${encodeURIComponent(data.city.name)}&to=${encodeURIComponent(row.title)}&city=${encodeURIComponent(data.city.name)}`
+        }))
+    : [];
+  const cmsLocations = Array.isArray(cms.popularLocations)
+    ? cms.popularLocations.map((s) => String(s).trim()).filter(Boolean)
+    : [];
   return {
     ...data,
     title: String(cms.seoTitle || "").trim() || data.title,
     description: String(cms.seoDescription || "").trim() || data.description,
     h1: String(cms.h1 || "").trim() || data.h1,
+    lead: String(cms.lead || "").trim() || data.lead,
+    aboutCity: String(cms.aboutCity || "").trim() || data.aboutCity,
     extraBody: String(cms.body || "").trim(),
+    airportIntro: String(cms.airportDetails || "").trim() || data.airportIntro,
     faqs: cmsFaqs.length ? cmsFaqs : data.faqs,
-    keywords: String(cms.seo || "").trim()
+    places: cmsPlaces.length ? cmsPlaces : data.places,
+    localAreas: cmsLocations.length ? cmsLocations : data.localAreas || [],
+    keywords: String(cms.seo || "").trim() || data.keywords
   };
 }

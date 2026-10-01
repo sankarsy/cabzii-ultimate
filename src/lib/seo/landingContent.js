@@ -5,7 +5,8 @@ import { airportInfoForCity } from "./airports";
 import { cityHubContext, driverCityContext } from "./cityHubCopy";
 import { chennaiCabUniqueHtml, chennaiDriverUniqueHtml, chennaiServiceUniqueHtml } from "./chennaiCluster";
 import { featuredRouteUniqueHtml } from "./featuredRouteContent";
-import { cityCabLandingPath, actingDriverLandingPath } from "../cityCabPaths";
+import { cityCabLandingPath, actingDriverLandingPath, airportTaxiPublicPath } from "../cityCabPaths";
+import { routePublicPath } from "./outstationPaths";
 
 function link(href, label) {
   return `<a href="${href}">${label}</a>`;
@@ -59,7 +60,7 @@ function cityRouteLinks(citySlug, limit = 6) {
     unique.push(r);
     if (unique.length >= limit) break;
   }
-  return unique.map((r) => link(`/routes/${r.slug}`, `${r.fromCity.name} to ${r.toCity.name} cab`)).join(", ");
+  return unique.map((r) => link(routePublicPath(r.slug), `${r.fromCity.name} to ${r.toCity.name} cab`)).join(", ");
 }
 
 function airportBodyBits(city) {
@@ -336,10 +337,10 @@ ${benefitsList([
 <p>Pickup anywhere in ${from} — enter society, hotel, airport or hospital name. Drop anywhere in ${to} including hotels, temples, industrial estates and residential areas. For airport-connected legs, specify terminal in notes. Cabzii shares driver contact before pickup so you can coordinate gate or security pass requirements.</p>
 
 <h2>Popular stops and travel tips</h2>
-<p>Highway trips from ${from} to ${to} may include toll plazas — keep FASTag-ready vehicles or confirm cash toll handling with your vendor. Carry water, light snacks and confirmation of drop landmark pin. For round-trip needs, you can book ${link(`/routes/${reverse}`, `${to} to ${from} cab`)} as a separate one-way or choose a round-trip outstation package from ${link(`/services/outstation-cab/${fromCity.slug}`, `outstation cab ${from}`)}.</p>
+<p>Highway trips from ${from} to ${to} may include toll plazas — keep FASTag-ready vehicles or confirm cash toll handling with your vendor. Carry water, light snacks and confirmation of drop landmark pin. For round-trip needs, you can book ${link(routePublicPath(reverse), `${to} to ${from} cab`)} as a separate one-way or choose a round-trip outstation package from ${link(`/services/outstation-cab/${fromCity.slug}`, `outstation cab ${from}`)}.</p>
 
 <h2>Related services in ${from}</h2>
-<p>Planning more travel from ${from}? Explore ${link(cityCabLandingPath(fromCity.slug), `cab booking ${from}`)}, ${link(`/services/airport-taxi/${fromCity.slug}`, `airport taxi ${from}`)}, ${link(`/services/one-way-cab/${fromCity.slug}`, `one way cab ${from}`)} and ${link(`/services/outstation-cab/${fromCity.slug}`, `outstation cab ${from}`)} on Cabzii.</p>
+<p>Planning more travel from ${from}? Explore ${link(cityCabLandingPath(fromCity.slug), `cab booking ${from}`)}, ${link(airportTaxiPublicPath(fromCity.slug), `airport taxi ${from}`)}, ${link(`/services/one-way-cab/${fromCity.slug}`, `one way cab ${from}`)} and ${link(`/services/outstation-cab/${fromCity.slug}`, `outstation cab ${from}`)} on Cabzii.</p>
 
 <h2>What is included in ${from} to ${to} one-way fare?</h2>
 <p>Typical inclusions: base one-way fare for selected vehicle class, driver charges for the forward journey, and standard highway driving time. Extras that may apply: toll plazas (FASTag or cash), state border permits for certain routes, parking at destination, and driver night allowance for late departures. Cabzii shows these line items before you pay — no surprise add-ons at drop point.</p>
@@ -348,7 +349,7 @@ ${benefitsList([
 <p>Confirm pickup pin and drop landmark a day before departure. Share passenger count and large luggage details so the right vehicle is assigned. Keep hydration and light snacks for ${duration} drives. For temple trips, plan darshan timing at ${to} before setting pickup hour. Save driver contact in WhatsApp for coordination at toll plazas and rest stops.</p>
 
 <h2>Book ${from} to ${to} cab now</h2>
-<p>Ready to travel? Use the booking button above to get your live fare for ${from} to ${to}. Compare sedan and SUV options, confirm and receive driver details before departure. Need a return leg later? Book ${link(`/routes/${reverse}`, `${to} to ${from} cab`)} separately or explore ${link(`/services/outstation-cab/${fromCity.slug}`, `round-trip outstation packages from ${from}`)}.</p>
+<p>Ready to travel? Use the booking button above to get your live fare for ${from} to ${to}. Compare sedan and SUV options, confirm and receive driver details before departure. Need a return leg later? Book ${link(routePublicPath(reverse), `${to} to ${from} cab`)} separately or explore ${link(`/services/outstation-cab/${fromCity.slug}`, `round-trip outstation packages from ${from}`)}.</p>
 `;
 }
 

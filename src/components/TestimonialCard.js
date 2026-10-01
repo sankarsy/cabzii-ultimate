@@ -7,7 +7,7 @@ export default function TestimonialCard({ item }) {
   const initials = getInitials(name);
 
   return (
-    <article className="group relative flex h-full min-h-[200px] flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
+    <article className="group relative flex h-full min-h-0 flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
       <div className="h-1 bg-[#0056D2]" />
 
       <div className="flex flex-1 flex-col p-4">

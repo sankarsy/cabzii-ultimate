@@ -2,7 +2,7 @@ import Link from "next/link";
 import { cityHasCommercialAirport } from "../../lib/seo/airports";
 import { detectCitySlugFromText } from "../../lib/seo/internalLinks";
 import { cityBySlug } from "../../lib/seo/cities";
-import { cityCabLandingPath, actingDriverLandingPath } from "../../lib/cityCabPaths";
+import { cityCabLandingPath, actingDriverLandingPath, airportTaxiPublicPath } from "../../lib/cityCabPaths";
 
 export default function BlogCommercialLinks({ title = "", slug = "", excerpt = "" }) {
   const citySlug = detectCitySlugFromText(title, slug, excerpt);
@@ -12,7 +12,7 @@ export default function BlogCommercialLinks({ title = "", slug = "", excerpt = "
     ? [
         { href: cityCabLandingPath(city.slug), label: `Cab booking ${city.name}` },
         {
-          href: `/services/airport-taxi/${city.slug}`,
+          href: airportTaxiPublicPath(city.slug),
           label: cityHasCommercialAirport(city.slug)
             ? `Airport taxi ${city.name}`
             : `Airport transfer from ${city.name}`

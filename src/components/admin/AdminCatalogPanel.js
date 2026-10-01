@@ -1260,15 +1260,13 @@ export default function AdminCatalogPanel({
 
             <FarePackagesEditor
               title="Driver fare packages"
-              hint="Edit package names and prices shown on driver cards."
+              hint="Edit package names and prices shown on driver cards. These are booking products, not Google pages."
               packageFields={DRIVER_PACKAGE_FIELDS}
               farePackages={driverForm.farePackages}
               farePackageLabels={driverForm.farePackageLabels}
               onUpdateFare={updateDriverFare}
               onUpdateLabel={updateDriverLabel}
             />
-
-            <AdminProductSeoSection form={driverForm} onChange={setDriverForm} pathPrefix="/drivers" titleField="name" cityField="city" authToken={token} />
 
             {tab.sample ? (
               <button
@@ -1643,8 +1641,8 @@ export default function AdminCatalogPanel({
           <p className="font-semibold">These are the city pages Google ranks — not the Cabs catalog.</p>
           <p className="mt-1">
             Click <strong>Create</strong>, choose <em>Cab booking city</em>, city slug <code>chennai</code>. That publishes{" "}
-            <a className="font-semibold underline" href="/car-rental/chennai-city-cabs" target="_blank" rel="noreferrer">
-              /car-rental/chennai-city-cabs
+            <a className="font-semibold underline" href="/chennai" target="_blank" rel="noreferrer">
+              /chennai
             </a>
             . For a Dzire Tour S product page, use Catalog → Cabs instead.
           </p>

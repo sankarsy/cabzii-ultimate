@@ -59,9 +59,13 @@ export default function HeaderSearchBar({
       }}
     >
       <div
-        className={`flex items-center bg-white shadow-[0_10px_28px_rgba(15,23,42,0.12)] ${
-          compact ? "h-11 gap-2 rounded-full pl-3.5 pr-1.5" : "h-14 gap-3 rounded-full pl-5 pr-1.5 sm:h-[3.75rem] sm:pl-6 sm:pr-2"
-        } ${isLight ? "ring-1 ring-slate-200/70" : "ring-1 ring-white/25"}`}
+        className={`flex items-center bg-white ${
+          compact
+            ? "h-9 gap-2 rounded-full pl-3 pr-2 shadow-none ring-1 ring-slate-200"
+            : `h-14 gap-3 rounded-full pl-5 pr-1.5 shadow-[0_10px_28px_rgba(15,23,42,0.12)] sm:h-[3.75rem] sm:pl-6 sm:pr-2 ${
+                isLight ? "ring-1 ring-slate-200/70" : "ring-1 ring-white/25"
+              }`
+        }`}
       >
         <SearchLineIcon
           className={`shrink-0 text-slate-800 ${compact ? "h-4 w-4" : "h-5 w-5"}`}
@@ -70,7 +74,7 @@ export default function HeaderSearchBar({
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder={PLACEHOLDER}
+          placeholder={compact ? "Search cabs, drivers…" : PLACEHOLDER}
           aria-label="Search cabs, drivers, holidays and more"
           className={`min-w-0 flex-1 border-0 bg-transparent text-slate-900 outline-none ring-0 placeholder:text-slate-400 focus:border-0 focus:ring-0 ${
             compact ? "text-sm" : "text-[15px] sm:text-base"

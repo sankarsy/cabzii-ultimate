@@ -6,6 +6,7 @@ import FooterSeoHub from "../seo/FooterSeoHub";
 import SocialLinks from "../ui/SocialLinks";
 import { getTrustIcon, TRUST_ICON_STYLES } from "../icons/heroIcons";
 import { BRAND } from "../../lib/brand";
+import { routePublicPath } from "../../lib/seo/outstationPaths";
 
 const NAP = {
   phone: "+91-9944197416",
@@ -15,7 +16,7 @@ const NAP = {
 };
 
 function footerRouteLink(slug, label) {
-  return { label, href: `/routes/${slug}` };
+  return { label, href: routePublicPath(slug) };
 }
 
 const FOOTER_TRUST = [
@@ -29,11 +30,11 @@ const COLUMNS = [
     title: "Book on Cabzii",
     links: [
       { label: "Outstation Cabs", href: "/cabs" },
-      { label: "Airport Taxi Chennai", href: "/services/airport-taxi/chennai" },
+      { label: "Airport Taxi Chennai", href: "/chennai/airport-cab-booking" },
       { label: "Bus tickets", href: "/buses" },
       { label: "Hire a Driver", href: "/call-driver" },
       { label: "Holiday Packages", href: "/holidays" },
-      { label: "Cab Booking Chennai", href: "/car-rental/chennai-city-cabs" },
+      { label: "Cab Booking Chennai", href: "/chennai" },
       { label: "Cab rental tariff", href: "/tariff" }
     ]
   },
@@ -70,15 +71,15 @@ const COLUMNS = [
 
 export default function MmtFooter() {
   return (
-    <footer className="border-t border-slate-200 bg-[var(--cabzii-bg-subtle)] pb-[4.5rem] sm:pb-0">
+    <footer className="border-t border-slate-200 bg-[var(--cabzii-bg-subtle)] pb-[5.5rem] sm:pb-0">
       <div className="section-shell py-6 sm:py-10">
         <div className="mb-5 flex flex-col gap-3 sm:mb-6 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
           <div>
             <CabziiLogo className="text-lg sm:text-2xl" showTagline />
-            <p className="mt-1.5 max-w-sm text-[11px] leading-relaxed text-slate-600 sm:mt-2 sm:text-sm">
+            <p className="mt-1.5 max-w-sm text-sm leading-relaxed text-slate-600 sm:mt-2">
               Premium cab booking for airport transfers, outstation trips, and local hire across South India.
             </p>
-            <address className="mt-3 not-italic text-[11px] leading-relaxed text-slate-600 sm:text-sm">
+            <address className="mt-3 not-italic text-sm leading-relaxed text-slate-600">
               <a
                 href={NAP.maps}
                 target="_blank"

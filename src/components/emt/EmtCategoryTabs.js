@@ -23,11 +23,13 @@ export default function EmtCategoryTabs({
   className = "",
   variant = "shell"
 }) {
-  const isShell = variant === "shell" || variant === "nav";
+  const isNav = variant === "nav";
+  const isShell = variant === "shell" || isNav;
   const scrollerRef = useRef(null);
   const skipScroll = useRef(true);
 
   useEffect(() => {
+    if (isNav) return;
     if (skipScroll.current) {
       skipScroll.current = false;
       return;
@@ -37,12 +39,16 @@ export default function EmtCategoryTabs({
     const active = root.querySelector("[aria-pressed='true']");
     if (!active || typeof active.scrollIntoView !== "function") return;
     active.scrollIntoView({ inline: "nearest", block: "nearest", behavior: "smooth" });
-  }, [activeTab]);
+  }, [activeTab, isNav]);
 
   return (
     <div
       ref={scrollerRef}
-      className={`emt-category-scroll flex min-w-0 gap-0 overflow-x-auto px-1 sm:px-3 ${isShell ? "emt-shell-category-scroll" : ""} ${className}`}
+      role="navigation"
+      aria-label="Book Cabs, Hire a Driver, Buses or Holidays"
+      className={`emt-category-scroll flex min-w-0 gap-0 overflow-x-auto px-1 sm:px-3 ${
+        isNav ? "emt-nav-category-scroll" : isShell ? "emt-shell-category-scroll" : ""
+      } ${className}`}
     >
       {HERO_TABS.map((tab) => {
         const isActive = activeTab === tab.id;
@@ -61,11 +67,13 @@ export default function EmtCategoryTabs({
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              if (!isActive) setActiveTab(tab.id);
+              setActiveTab(tab.id);
             }}
             aria-pressed={isActive}
+            aria-current={isActive ? "page" : undefined}
             className={cn(
               "emt-category-tab cabzii-tap shrink-0",
+              isNav && "emt-nav-category-tab",
               isShell && "emt-shell-category-tab",
               isActive && (isShell ? "emt-shell-category-tab-active" : "emt-category-tab-active")
             )}
@@ -73,12 +81,15 @@ export default function EmtCategoryTabs({
             <span className={cn("emt-category-tab-icon", iconTone)} aria-hidden>
               {TabIcon ? (
                 <TabIcon
-                  className={isShell ? "h-6 w-6" : "h-[1.0625rem] w-[1.0625rem] sm:h-[1.125rem] sm:w-[1.125rem]"}
-                  strokeWidth={isShell ? 1.6 : 1.5}
+                  className={isNav ? "h-5 w-5" : isShell ? "h-6 w-6" : "h-[1.0625rem] w-[1.0625rem] sm:h-[1.125rem] sm:w-[1.125rem]"}
+                  strokeWidth={isNav ? 1.7 : isShell ? 1.6 : 1.5}
                 />
               ) : null}
             </span>
-            <span>{tab.label}</span>
+            <span className="emt-category-tab-label">
+              <span className="lg:hidden">{tab.shortLabel || tab.label}</span>
+              <span className="hidden lg:inline">{tab.label}</span>
+            </span>
           </button>
         );
       })}

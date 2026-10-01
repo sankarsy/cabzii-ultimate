@@ -69,7 +69,7 @@ export default function AdminCallDriverPage({ token, isSuperAdmin }) {
         seoDescription: stored.seoDescription || "",
         seoKeywords: stored.seoKeywords || ""
       });
-      const chennai = data.pageSeo?.["/call-drivers-chennai"] || {};
+      const chennai = data.pageSeo?.["/chennai/acting-driver"] || data.pageSeo?.["/call-drivers-chennai"] || {};
       setChennaiSnippet({
         productName: chennai.productName || "Call Drivers in Chennai",
         seoTitle: chennai.seoTitle || "",
@@ -110,6 +110,12 @@ export default function AdminCallDriverPage({ token, isSuperAdmin }) {
               seoTitle: chennaiSnippet.seoTitle,
               seoDescription: chennaiSnippet.seoDescription,
               seoKeywords: chennaiSnippet.seoKeywords
+            },
+            "/chennai/acting-driver": {
+              productName: chennaiSnippet.productName,
+              seoTitle: chennaiSnippet.seoTitle,
+              seoDescription: chennaiSnippet.seoDescription,
+              seoKeywords: chennaiSnippet.seoKeywords
             }
           }
         })
@@ -145,12 +151,12 @@ export default function AdminCallDriverPage({ token, isSuperAdmin }) {
             <Link href="/call-driver" className="font-semibold text-sky-700 hover:underline" target="_blank">
               /call-driver
             </Link>
-            . Rates stay in Settings → Call Driver tariff. Booking-form SEO is Settings → Call Driver SEO.
+            . Rates stay in Settings → Call Driver tariff. Google copy for this hub is Google SEO pages → Call Driver.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
           <Link href="/admin?tab=settings" className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50">
-            Tariff & booking SEO
+            Call Driver tariff
           </Link>
           <Link href="/admin?tab=seoPagesHub" className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50">
             All Google pages
@@ -294,8 +300,8 @@ export default function AdminCallDriverPage({ token, isSuperAdmin }) {
           </div>
           </div>
           <div className="space-y-4">
-            <h3 className="text-sm font-bold text-slate-900">Ranking page · /call-drivers-chennai</h3>
-            <p className="text-xs text-slate-500">This URL is the acting-driver landing — same role as the Chennai Travels page that ranks for “outstation acting driver”.</p>
+            <h3 className="text-sm font-bold text-slate-900">Ranking page · /chennai/acting-driver</h3>
+            <p className="text-xs text-slate-500">City acting-driver landings (Chennai, Trichy, Madurai, Coimbatore) use SEO city pages. H1, FAQs and body: Admin → SEO city pages, type Acting driver. This snippet still stores Google title/description for the Chennai URL.</p>
             <Field label="Product / H1 name">
               <input className={inputCls()} value={chennaiSnippet.productName} onChange={(e) => setChennaiSnippet((p) => ({ ...p, productName: e.target.value }))} />
             </Field>
@@ -311,7 +317,7 @@ export default function AdminCallDriverPage({ token, isSuperAdmin }) {
             <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
               <p className="text-xs font-semibold text-slate-700">Google preview</p>
               <p className="mt-2 text-base font-medium text-[#1a0dab]">{chennaiSnippet.seoTitle || "Meta title"}</p>
-              <p className="text-xs text-[#006621]">cabzii.in/call-drivers-chennai</p>
+              <p className="text-xs text-[#006621]">cabzii.in/chennai/acting-driver</p>
               <p className="mt-1 text-sm text-slate-600">{chennaiSnippet.seoDescription || "Meta description appears here."}</p>
             </div>
           </div>

@@ -43,7 +43,7 @@ export default function CallDriverHomeSection({ services: servicesProp }) {
         <div className="relative mb-5 sm:mb-6">
           <div className="text-center">
             <p className="text-xs font-bold uppercase tracking-wider text-[var(--cabzii-brand)]">Call Driver</p>
-            <h2 className="mt-1 text-xl font-extrabold tracking-tight text-slate-900 sm:text-[1.75rem]">
+            <h2 className="mt-1 text-base font-bold tracking-tight text-slate-900 sm:text-xl">
               Need a driver for your own car?
             </h2>
             <p className="mt-1 text-sm text-slate-600">

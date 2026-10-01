@@ -45,51 +45,6 @@ export function buildSeoPageIndex(data = {}) {
   const routeRows = mergeStaticSeoRoutes(data.seoRoutes || []);
   const routeBySlug = new Map(routeRows.map((r) => [r.slug, r]));
 
-  for (const cab of data.cabs || []) {
-    const id = String(cab._id || cab.id || "");
-    const slug = cab.slug || previewCatalogSlug(cab, "title", "city") || id;
-    rows.push({
-      id: `cab:${id}`,
-      type: "cab",
-      typeLabel: "Cab",
-      productName: cab.title || cab.name || "Cab",
-      seoTitle: cab.seoTitle || cab.title || "",
-      seoDescription: cab.seoDescription || "",
-      seoKeywords: cab.seo || "",
-      path: `/cabs/${slug}`,
-      source: cab.seoTitle || cab.seo ? "catalog" : "auto",
-      adminTab: "cabs",
-      editId: id,
-      createHref: `/admin?tab=cabs&mode=create`,
-      canDelete: true,
-      seoStatus: seoStatus(cab),
-      sourceLabel: sourceLabel(cab.seoTitle || cab.seo ? "catalog" : "auto"),
-      editHref: adminEditHref("cabs", id, `/admin?tab=cabs&mode=create`)
-    });
-  }
-
-  for (const driver of data.drivers || []) {
-    const id = String(driver._id || driver.id || "");
-    const slug = driver.slug || previewCatalogSlug(driver, "name", "city") || id;
-    rows.push({
-      id: `driver:${id}`,
-      type: "driver",
-      typeLabel: "Driver",
-      productName: driver.name || driver.serviceTitle || "Driver",
-      seoTitle: driver.seoTitle || driver.name || "",
-      seoDescription: driver.seoDescription || "",
-      seoKeywords: driver.seo || "",
-      path: `/drivers/${slug}`,
-      source: driver.seoTitle || driver.seo ? "catalog" : "auto",
-      adminTab: "drivers",
-      editId: id,
-      createHref: `/admin?tab=drivers&mode=create`,
-      canDelete: true,
-      seoStatus: seoStatus(driver),
-      sourceLabel: sourceLabel(driver.seoTitle || driver.seo ? "catalog" : "auto")
-    });
-  }
-
   for (const pkg of data.packages || []) {
     const id = String(pkg._id || pkg.id || "");
     const slug = pkg.slug || previewCatalogSlug(pkg, "name", "city") || id;

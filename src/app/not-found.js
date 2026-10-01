@@ -20,7 +20,7 @@ export default function NotFound() {
         <Link href="/" className="cabzii-btn cabzii-btn-primary">
           Go to homepage
         </Link>
-        <Link href="/routes/chennai-to-tirupati-cab" className="cabzii-btn cabzii-btn-secondary">
+        <Link href="/chennai/outstation/chennai-to-tirupati" className="cabzii-btn cabzii-btn-secondary">
           Chennai to Tirupati cab
         </Link>
         <Link href="/cabs" className="cabzii-btn cabzii-btn-secondary">

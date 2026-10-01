@@ -74,13 +74,21 @@ export function buildCityCabJsonLd(input) {
   };
   if (rating) taxiService.aggregateRating = rating;
 
+  const crumbSource =
+    Array.isArray(input.breadcrumbItems) && input.breadcrumbItems.length
+      ? input.breadcrumbItems
+      : [
+          { name: "Home", item: `${siteUrl}/` },
+          { name: `${input.cityName} Cabs`, item: pageUrl }
+        ];
   const breadcrumb = {
     "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: `${siteUrl}/` },
-      { "@type": "ListItem", position: 2, name: "Car Rental", item: `${siteUrl}/car-rental` },
-      { "@type": "ListItem", position: 3, name: `${input.cityName} Cabs`, item: pageUrl }
-    ]
+    itemListElement: crumbSource.map((row, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: row.name,
+      item: row.item
+    }))
   };
 
   const faqPage = {

@@ -28,11 +28,11 @@ const UNIQUE = {
 <p>Book a <strong>one-way cab</strong> when you will stay in Tirupati or return by another vehicle. Book a <strong>round-trip outstation package</strong> when the same cab should wait or bring you back to Chennai — that product lives on <a href="/services/outstation-cab/chennai">outstation cab Chennai</a>, not as a second URL.</p>
 
 <h2>Pickup, drop and vehicle choice</h2>
-<p>Pickup can be a Chennai home, hotel, OMR office or <a href="/services/airport-taxi/chennai">MAA airport</a>. Drop landmarks in Tirupati include Alipiri, city hotels and the railway station — enter the exact pin at booking. Sedan (Dzire / Amaze) suits 1–3 passengers; Ertiga and Innova are common when elders and luggage travel together. Group darshan with more seats: <a href="/services/tempo-traveller/chennai">Tempo Traveller Chennai</a>.</p>
+<p>Pickup can be a Chennai home, hotel, OMR office or <a href="/chennai/airport-cab-booking">MAA airport</a>. Drop landmarks in Tirupati include Alipiri, city hotels and the railway station — enter the exact pin at booking. Sedan (Dzire / Amaze) suits 1–3 passengers; Ertiga and Innova are common when elders and luggage travel together. Group darshan with more seats: <a href="/services/tempo-traveller/chennai">Tempo Traveller Chennai</a>.</p>
 <p>Tolls, parking and driver batta treatment are listed in the fare breakdown before you pay. Do not assume they are always included.</p>
 
 <h2>Related pilgrimage travel</h2>
-<p>Same-intent searches (Tirupati taxi, Chennai Tirupati car rental, one-way darshan cab) stay on this URL. Temple packages with itinerary: <a href="/holidays?category=pilgrimage">pilgrimage packages</a>. Acting driver in your own car: <a href="/call-drivers-chennai">acting driver Chennai</a>.</p>
+<p>Same-intent searches (Tirupati taxi, Chennai Tirupati car rental, one-way darshan cab) stay on this URL. Temple packages with itinerary: <a href="/holidays?category=pilgrimage">pilgrimage packages</a>. Acting driver in your own car: <a href="/chennai/acting-driver">acting driver Chennai</a>.</p>
 `,
 
   "chennai-to-pondicherry-cab": (route) => `
@@ -47,7 +47,7 @@ const UNIQUE = {
   "chennai-to-bangalore-cab": (route) => `
 <h2>Chennai to Bengaluru (Bangalore) cab</h2>
 <p>This is a business and family highway corridor, not a sightseeing hop. Distance on this page: <strong>${route.distance}</strong>, typically <strong>${route.duration}</strong> on NH48 via Krishnagiri, excluding long meal stops. ${fareLine(route)}</p>
-<p>One-way suits office transfers and one-way relocation. If the cab must return or wait, use <a href="/services/outstation-cab/chennai">outstation cab Chennai</a>. Airport connections: <a href="/services/airport-taxi/chennai">MAA</a> and <a href="/services/airport-taxi/bengaluru">BLR airport taxi</a>.</p>
+<p>One-way suits office transfers and one-way relocation. If the cab must return or wait, use <a href="/services/outstation-cab/chennai">outstation cab Chennai</a>. Airport connections: <a href="/chennai/airport-cab-booking">MAA</a> and <a href="/services/airport-taxi/bengaluru">BLR airport taxi</a>.</p>
 <p>Innova is common for corporate luggage. Toll plazas apply — see the quote line items. The canonical slug uses “bangalore”; chennai-to-bengaluru-cab 301s here.</p>
 `,
 
@@ -72,7 +72,7 @@ const UNIQUE = {
   "chennai-to-madurai-cab": (route) => `
 <h2>Chennai to Madurai cab</h2>
 <p>Meenakshi temple and family visits: <strong>${route.distance}</strong>, typically <strong>${route.duration}</strong>. ${fareLine(route)} Festival weeks are slower; leave early from Chennai.</p>
-<p>Continue to Rameswaram or Kanyakumari from Madurai on the existing route pages rather than inventing extra URLs. Airport at either end: MAA or <a href="/services/airport-taxi/madurai">Madurai airport taxi</a>.</p>
+<p>Continue to Rameswaram or Kanyakumari from Madurai on the existing route pages rather than inventing extra URLs. Airport at either end: MAA or <a href="/madurai/airport-cab-booking">Madurai airport taxi</a>.</p>
 `,
 
   "chennai-to-kanyakumari-cab": (route) => `
@@ -90,37 +90,37 @@ const UNIQUE = {
   "madurai-to-rameswaram-cab": (route) => `
 <h2>Madurai to Rameswaram cab</h2>
 <p>Same-day temple pairing is the commercial intent: <strong>${route.distance}</strong>, typically <strong>${route.duration}</strong> one way. ${fareLine(route)} Pamban bridge traffic can add time; this is not a city hop.</p>
-<p>Start from Chennai instead: <a href="/routes/chennai-to-rameswaram-cab">Chennai to Rameswaram</a>. Madurai airport: <a href="/services/airport-taxi/madurai">airport taxi Madurai</a>.</p>
+<p>Start from Chennai instead: <a href="/routes/chennai-to-rameswaram-cab">Chennai to Rameswaram</a>. Madurai airport: <a href="/madurai/airport-cab-booking">airport taxi Madurai</a>.</p>
 `,
 
   "madurai-to-kanyakumari-cab": (route) => `
 <h2>Madurai to Kanyakumari cab</h2>
 <p>Temple-to-coast: <strong>${route.distance}</strong>, typically <strong>${route.duration}</strong>. ${fareLine(route)} Useful after Meenakshi darshan when you do not want a Chennai-origin full run.</p>
-<p>Related: <a href="/routes/chennai-to-kanyakumari-cab">Chennai to Kanyakumari</a>, <a href="/car-rental/madurai-city-cabs">cab booking Madurai</a>.</p>
+<p>Related: <a href="/routes/chennai-to-kanyakumari-cab">Chennai to Kanyakumari</a>, <a href="/madurai">cab booking Madurai</a>.</p>
 `,
 
   "coimbatore-to-ooty-cab": (route) => `
 <h2>Coimbatore to Ooty cab</h2>
 <p>The usual hill transfer from CJB / city: <strong>${route.distance}</strong>, typically <strong>${route.duration}</strong> including ghat. ${fareLine(route)} Mettupalayam is a common approach; exact timing depends on weather and tourist traffic.</p>
-<p>Coimbatore airport taxi: <a href="/services/airport-taxi/coimbatore">CJB airport</a>. Longer origin: <a href="/routes/chennai-to-ooty-cab">Chennai to Ooty</a>.</p>
+<p>Coimbatore airport taxi: <a href="/coimbatore/airport-cab-booking">CJB airport</a>. Longer origin: <a href="/routes/chennai-to-ooty-cab">Chennai to Ooty</a>.</p>
 `,
 
   "bengaluru-to-tirupati-cab": (route) => `
 <h2>Bengaluru to Tirupati cab</h2>
 <p>Darshan corridor from Karnataka: <strong>${route.distance}</strong>, typically <strong>${route.duration}</strong>. ${fareLine(route)} Early starts are common, same as the Chennai origin trip.</p>
-<p>Chennai origin: <a href="/routes/chennai-to-tirupati-cab">Chennai to Tirupati</a>. Bengaluru airport: <a href="/services/airport-taxi/bengaluru">BLR taxi</a>. Cab hub: <a href="/car-rental/bengaluru-city-cabs">cab booking Bengaluru</a>.</p>
+<p>Chennai origin: <a href="/routes/chennai-to-tirupati-cab">Chennai to Tirupati</a>. Bengaluru airport: <a href="/services/airport-taxi/bengaluru">BLR taxi</a>. Cab hub: <a href="/bengaluru">cab booking Bengaluru</a>.</p>
 `,
 
   "bengaluru-to-mysore-cab": (route) => `
 <h2>Bengaluru to Mysore cab</h2>
 <p>A short, high-frequency leisure and family route: <strong>${route.distance}</strong>, typically <strong>${route.duration}</strong>. ${fareLine(route)}</p>
-<p>One-way drop vs same-cab return: use this page for one-way; round-trip wait is <a href="/services/outstation-cab/bengaluru">outstation cab Bengaluru</a>. Related: <a href="/car-rental/mysore-city-cabs">cab booking Mysore</a>.</p>
+<p>One-way drop vs same-cab return: use this page for one-way; round-trip wait is <a href="/services/outstation-cab/bengaluru">outstation cab Bengaluru</a>. Related: <a href="/mysore">cab booking Mysore</a>.</p>
 `,
 
   "chennai-to-trichy-cab": (route) => `
 <h2>Chennai to Trichy (Tiruchirappalli) cab</h2>
 <p>Srirangam, Rock Fort and hospital visits: <strong>${route.distance}</strong>, typically <strong>${route.duration}</strong>. ${fareLine(route)}</p>
-<p>Trichy airport: <a href="/services/airport-taxi/trichy">TRZ taxi</a>. Continue south: <a href="/routes/chennai-to-madurai-cab">Chennai to Madurai</a>. Tirupati from Trichy: <a href="/routes/trichy-to-tirupati-cab">Trichy to Tirupati cab</a>.</p>
+<p>Trichy airport: <a href="/trichy/airport-cab-booking">TRZ taxi</a>. Continue south: <a href="/routes/chennai-to-madurai-cab">Chennai to Madurai</a>. Tirupati from Trichy: <a href="/routes/trichy-to-tirupati-cab">Trichy to Tirupati cab</a>.</p>
 `,
 
   "chennai-to-palani-cab": (route) => `
@@ -132,13 +132,13 @@ const UNIQUE = {
   "chennai-to-chidambaram-cab": (route) => `
 <h2>Chennai to Chidambaram cab</h2>
 <p>Nataraja temple visits: <strong>${route.distance}</strong>, typically <strong>${route.duration}</strong>. ${fareLine(route)} Often combined with coastal temple stops — mention extra waiting if the same cab should wait.</p>
-<p>Nearby devotion: <a href="/routes/chennai-to-velankanni-cab">Chennai to Velankanni</a>, <a href="/car-rental/chidambaram-city-cabs">cab booking Chidambaram</a>.</p>
+<p>Nearby devotion: <a href="/routes/chennai-to-velankanni-cab">Chennai to Velankanni</a>, <a href="/chidambaram">cab booking Chidambaram</a>.</p>
 `,
 
   "chennai-to-velankanni-cab": (route) => `
 <h2>Chennai to Velankanni cab</h2>
 <p>Basilica pilgrimage: <strong>${route.distance}</strong>, typically <strong>${route.duration}</strong>. ${fareLine(route)} Festival weeks fill vehicles early; book the date you travel.</p>
-<p>Related pilgrimage: <a href="/routes/chennai-to-chidambaram-cab">Chennai to Chidambaram</a>. Airport origin: <a href="/services/airport-taxi/chennai">MAA taxi</a>. Cab hub: <a href="/car-rental/velankanni-city-cabs">cab booking Velankanni</a>.</p>
+<p>Related pilgrimage: <a href="/routes/chennai-to-chidambaram-cab">Chennai to Chidambaram</a>. Airport origin: <a href="/chennai/airport-cab-booking">MAA taxi</a>. Cab hub: <a href="/velankanni">cab booking Velankanni</a>.</p>
 `,
 
   "chennai-to-thiruchendur-cab": (route) => `
@@ -150,43 +150,43 @@ const UNIQUE = {
   "chennai-to-kumbakonam-cab": (route) => `
 <h2>Chennai to Kumbakonam cab</h2>
 <p>Temple-town corridor: <strong>${route.distance}</strong>, typically <strong>${route.duration}</strong>. ${fareLine(route)} Mahamaham and festival dates are slower; leave early from Chennai.</p>
-<p>Pair with <a href="/routes/chennai-to-thanjavur-cab">Chennai to Thanjavur</a> rather than extra URLs. Acting driver in your car: <a href="/call-drivers-chennai">acting driver Chennai</a>.</p>
+<p>Pair with <a href="/routes/chennai-to-thanjavur-cab">Chennai to Thanjavur</a> rather than extra URLs. Acting driver in your car: <a href="/chennai/acting-driver">acting driver Chennai</a>.</p>
 `,
 
   "chennai-to-thanjavur-cab": (route) => `
 <h2>Chennai to Thanjavur (Tanjore) cab</h2>
 <p>Brihadeeswarar and family visits: <strong>${route.distance}</strong>, typically <strong>${route.duration}</strong>. ${fareLine(route)}</p>
-<p>Related: <a href="/routes/chennai-to-kumbakonam-cab">Chennai to Kumbakonam</a>, <a href="/routes/chennai-to-trichy-cab">Chennai to Trichy</a> for Srirangam. Cab hub: <a href="/car-rental/thanjavur-city-cabs">cab booking Thanjavur</a>.</p>
+<p>Related: <a href="/routes/chennai-to-kumbakonam-cab">Chennai to Kumbakonam</a>, <a href="/routes/chennai-to-trichy-cab">Chennai to Trichy</a> for Srirangam. Cab hub: <a href="/thanjavur">cab booking Thanjavur</a>.</p>
 `,
 
   "trichy-to-tirupati-cab": (route) => `
 <h2>Trichy (Tiruchirappalli) to Tirupati cab</h2>
 <p>Darshan corridor from central Tamil Nadu: <strong>${route.distance}</strong>, typically <strong>${route.duration}</strong>. ${fareLine(route)} Early starts are common so families can reach queue complexes in time.</p>
-<p>TRZ airport pickup: <a href="/services/airport-taxi/trichy">Trichy airport taxi</a>. Other origins: <a href="/routes/chennai-to-tirupati-cab">Chennai to Tirupati</a>, <a href="/routes/madurai-to-tirupati-cab">Madurai to Tirupati</a>. Return: <a href="/routes/tirupati-to-chennai-cab">Tirupati to Chennai</a> if you are heading to the coast, not back to Trichy.</p>
+<p>TRZ airport pickup: <a href="/trichy/airport-cab-booking">Trichy airport taxi</a>. Other origins: <a href="/routes/chennai-to-tirupati-cab">Chennai to Tirupati</a>, <a href="/routes/madurai-to-tirupati-cab">Madurai to Tirupati</a>. Return: <a href="/routes/tirupati-to-chennai-cab">Tirupati to Chennai</a> if you are heading to the coast, not back to Trichy.</p>
 `,
 
   "madurai-to-tirupati-cab": (route) => `
 <h2>Madurai to Tirupati cab</h2>
 <p>Temple-to-temple highway: <strong>${route.distance}</strong>, typically <strong>${route.duration}</strong>. ${fareLine(route)} Meenakshi visitors who continue to Tirumala use this one-way rather than a Chennai-origin run.</p>
-<p>Madurai airport: <a href="/services/airport-taxi/madurai">IXM taxi</a>. Related: <a href="/routes/chennai-to-tirupati-cab">Chennai to Tirupati</a>, <a href="/routes/madurai-to-rameswaram-cab">Madurai to Rameswaram</a>.</p>
+<p>Madurai airport: <a href="/madurai/airport-cab-booking">IXM taxi</a>. Related: <a href="/routes/chennai-to-tirupati-cab">Chennai to Tirupati</a>, <a href="/routes/madurai-to-rameswaram-cab">Madurai to Rameswaram</a>.</p>
 `,
 
   "coimbatore-to-tirupati-cab": (route) => `
 <h2>Coimbatore to Tirupati cab</h2>
 <p>West Tamil Nadu darshan corridor: <strong>${route.distance}</strong>, typically <strong>${route.duration}</strong>. ${fareLine(route)}</p>
-<p>CJB airport: <a href="/services/airport-taxi/coimbatore">Coimbatore airport taxi</a>. Hill split: <a href="/routes/coimbatore-to-ooty-cab">Coimbatore to Ooty</a> is a different product. Reverse Karnataka origin: <a href="/routes/bengaluru-to-tirupati-cab">Bengaluru to Tirupati</a>.</p>
+<p>CJB airport: <a href="/coimbatore/airport-cab-booking">Coimbatore airport taxi</a>. Hill split: <a href="/routes/coimbatore-to-ooty-cab">Coimbatore to Ooty</a> is a different product. Reverse Karnataka origin: <a href="/routes/bengaluru-to-tirupati-cab">Bengaluru to Tirupati</a>.</p>
 `,
 
   "salem-to-tirupati-cab": (route) => `
 <h2>Salem to Tirupati cab</h2>
 <p>NH corridor for darshan: <strong>${route.distance}</strong>, typically <strong>${route.duration}</strong>. ${fareLine(route)} Useful when you fly into Salem (SXV) or start from the city rather than Chennai.</p>
-<p>Salem airport taxi: <a href="/services/airport-taxi/salem">SXV taxi</a>. Nearby: <a href="/routes/vellore-to-tirupati-cab">Vellore to Tirupati</a>, <a href="/car-rental/salem-city-cabs">cab booking Salem</a>.</p>
+<p>Salem airport taxi: <a href="/services/airport-taxi/salem">SXV taxi</a>. Nearby: <a href="/routes/vellore-to-tirupati-cab">Vellore to Tirupati</a>, <a href="/salem">cab booking Salem</a>.</p>
 `,
 
   "vellore-to-tirupati-cab": (route) => `
 <h2>Vellore to Tirupati cab</h2>
 <p>A short pilgrimage hop: <strong>${route.distance}</strong>, typically <strong>${route.duration}</strong>. ${fareLine(route)} Vellore has no commercial passenger airport — most air arrivals use MAA or TIR then this road.</p>
-<p>Related: <a href="/routes/chennai-to-tirupati-cab">Chennai to Tirupati</a>, <a href="/car-rental/vellore-city-cabs">cab booking Vellore</a>, <a href="/services/airport-taxi/tirupati">Tirupati airport taxi</a>.</p>
+<p>Related: <a href="/routes/chennai-to-tirupati-cab">Chennai to Tirupati</a>, <a href="/vellore">cab booking Vellore</a>, <a href="/services/airport-taxi/tirupati">Tirupati airport taxi</a>.</p>
 `,
 
   "pondicherry-to-tirupati-cab": (route) => `
@@ -204,7 +204,7 @@ const UNIQUE = {
   "tirupati-to-chennai-cab": (route) => `
 <h2>Tirupati to Chennai cab</h2>
 <p>Return darshan corridor: <strong>${route.distance}</strong>, typically <strong>${route.duration}</strong>. ${fareLine(route)} Book this one-way when you arrived by another vehicle or flight into TIR and need a drop in Chennai city, OMR or MAA.</p>
-<p>Opposite direction: <a href="/routes/chennai-to-tirupati-cab">Chennai to Tirupati</a>. Airports: <a href="/services/airport-taxi/tirupati">TIR taxi</a>, <a href="/services/airport-taxi/chennai">MAA taxi</a>.</p>
+<p>Opposite direction: <a href="/routes/chennai-to-tirupati-cab">Chennai to Tirupati</a>. Airports: <a href="/services/airport-taxi/tirupati">TIR taxi</a>, <a href="/chennai/airport-cab-booking">MAA taxi</a>.</p>
 `,
 
   "tirupati-to-bengaluru-cab": (route) => `

@@ -21,18 +21,6 @@ import VehiclePackageEditor from "./VehiclePackageEditor";
 import VehicleGalleryEditor from "./VehicleGalleryEditor";
 import VehicleSeoPreview from "./VehicleSeoPreview";
 
-const VehicleSeoPanel = dynamic(() => import("./VehicleSeoPanel"), {
-  ssr: false,
-  loading: () => (
-    <div className="animate-pulse space-y-3 rounded-2xl border border-slate-200 bg-white p-4">
-      <div className="h-4 w-48 rounded bg-slate-200" />
-      <div className="h-28 rounded bg-slate-100" />
-      <div className="h-28 rounded bg-slate-100" />
-      <div className="h-28 rounded bg-slate-100" />
-    </div>
-  )
-});
-
 const SeoRichTextEditor = dynamic(() => import("./SeoRichTextEditor"), {
   ssr: false,
   loading: () => <div className="h-40 animate-pulse rounded-lg border border-slate-200 bg-slate-50" />
@@ -72,6 +60,7 @@ export default function VehicleForm({
   brandOptions = BRAND_OPTIONS,
   isSuperAdmin = false
 }) {
+  void onRequestSave;
   const { register, watch, setValue } = useFormContext();
   const form = watch();
 
@@ -175,7 +164,7 @@ export default function VehicleForm({
             <div>
               <p className="text-sm font-bold text-slate-900">Page content</p>
               <p className="mt-0.5 text-[11px] text-slate-600">
-                Shown on the public cab package page. Write unique copy for this exact vehicle — do not reuse Force Traveller #1 text on #2 or Urbania.
+                Optional copy on the public vehicle page. City, airport and acting-driver ranking lives on Google SEO pages — not on each cab package.
               </p>
             </div>
             <Field label="Short description" hint="1–2 lines under the heading">
@@ -438,10 +427,6 @@ export default function VehicleForm({
 
       {activeTab === "gallery" && (
         <VehicleGalleryEditor images={form.images || []} onChange={(images) => patch({ images })} disabled={disabled} authToken={authToken} />
-      )}
-
-      {activeTab === "seo" && (
-        <VehicleSeoPanel form={form} patch={patch} disabled={disabled} pathPrefix="/cabs" onRequestSave={onRequestSave} authToken={authToken} />
       )}
 
       {activeTab === "preview" && (

@@ -231,16 +231,6 @@ export default function VehicleAdminPanel({
         Object.values(packs).some((p) => Number(p?.price || p?.originalPrice || 0) > 0);
       if (!hasFare) return "Pricing is required before setting Active";
     }
-    // Enterprise SEO required fields (skip for drafts so vendors can save incomplete inventory)
-    if (!silent && form.status === "active") {
-      if (!form.seoTitle?.trim()) return "SEO Title is required — open the SEO tab";
-      if (!form.seoDescription?.trim()) return "Meta Description is required — open the SEO tab";
-      if (!form.slug?.trim()) return "Slug is required — open the SEO tab";
-      if (!form.canonicalUrl?.trim()) return "Canonical URL is required — open the SEO tab";
-      if (!form.h1?.trim()) return "H1 is required — fill Page content on Basic Info or SEO tab";
-      if ((form.seoTitle || "").length > 70) return "SEO Title is too long (keep under 70 characters)";
-      if ((form.seoDescription || "").length > 180) return "Meta Description is too long (keep under 180 characters)";
-    }
     return null;
   };
 

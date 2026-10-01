@@ -3,31 +3,27 @@ import Link from "next/link";
 const STEPS = [
   {
     title: "1. Decide the page type",
-    body: "Use Create SEO page for a custom /pages/slug landing, city hub, acting-driver city, service or route. Do not invent a random path outside those types."
+    body: "Rank city hubs, airport taxi, acting-driver cities, outstation/one-way/tempo services, routes, and holiday packages. Do not create SEO pages for cab fare slabs or Call Driver packages."
   },
   {
     title: "2. Create or open the record",
-    body: "New car → Catalog → Cabs → Create. Existing car → search the list → Edit. City query → City landing pages. Car rental query → Service landing pages (slug car-rental)."
+    body: "City / airport / acting driver → Google SEO pages → Create. Route → Create route. Holiday → Catalog → Holidays. Do not open Cabs or Call Driver tariff to write ranking copy."
   },
   {
     title: "3. Fill SEO the same way every time",
-    body: "SEO title 50–60 chars. Description 120–155 chars. Admin SEO Title becomes the live <title>. Admin SEO Description becomes meta description. If both are empty, the site uses tuned fallbacks in metadataTuning.js (not a second CMS)."
+    body: "SEO title 50–60 chars. Description 120–155 chars. One H1. Honest copy. Empty fields keep the site’s built-in fallback."
   },
   {
-    title: "4. Set city image and vehicle name",
-    body: "City landing image is used as Open Graph when filled — otherwise the city OG card (not the Chennai default). Vehicle model = name customers search (Dzire Tour S, Wagon R, Bolero, Innova Crysta)."
+    title: "4. Book path must match the page",
+    body: "City hub books cabs. Acting-driver city books Call Driver. Airport page books airport taxi. Packages stay as cards on those hubs."
   },
   {
-    title: "5. Review checklist before save",
-    body: "Unique title, unique description, one H1, city-specific body, no fake airport, related links stay in the same city, reviews only if real customers."
+    title: "5. Save and check live",
+    body: "Click Save. Open View live. Confirm one H1 and a working Book button."
   },
   {
-    title: "6. Save and check live",
-    body: "Click Save. Open View live. Confirm one H1, Book button, and the vehicle name appears in title and first paragraph."
-  },
-  {
-    title: "7. Google",
-    body: "In Search Console, request indexing for that URL. Rankings take days/weeks. #1 is never guaranteed — unique title + real booking page is the SOP."
+    title: "6. Google",
+    body: "In Search Console, request indexing for that URL. Rankings take days/weeks. Unique title + real booking page is the SOP."
   }
 ];
 
@@ -36,9 +32,7 @@ export default function AdminSeoSop() {
     <div className="mt-4 space-y-4">
       <div className="rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
         <h3 className="text-base font-bold text-slate-900">SEO guiding map (SOP)</h3>
-        <p className="mt-1 text-sm text-slate-600">
-          Follow this for every new or existing entry. Super admin only.
-        </p>
+        <p className="mt-1 text-sm text-slate-600">Follow this for every new or existing ranking page. Super admin only.</p>
 
         <div className="mt-4 overflow-x-auto">
           <table className="min-w-full text-left text-xs text-slate-800">
@@ -52,91 +46,73 @@ export default function AdminSeoSop() {
             </thead>
             <tbody className="align-top">
               <tr className="border-b border-slate-100">
-                <td className="py-2 pr-3">tour s, dezire, wagon r, bolero, innova taxi booking</td>
-                <td className="py-2 pr-3 font-semibold">City cab booking</td>
+                <td className="py-2 pr-3">cab booking Chennai, taxi Chennai</td>
+                <td className="py-2 pr-3 font-semibold">City cab hub</td>
                 <td className="py-2 pr-3">
                   <Link href="/admin?tab=seoPagesHub" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
                     Google SEO pages
                   </Link>
                 </td>
-                <td className="py-2 font-mono">/car-rental/chennai-city-cabs</td>
+                <td className="py-2 font-mono">/chennai</td>
               </tr>
               <tr className="border-b border-slate-100">
-                <td className="py-2 pr-3">innova car rental, dzire car rental, wagon r rental</td>
-                <td className="py-2 pr-3 font-semibold">Car rental</td>
+                <td className="py-2 pr-3">airport taxi Chennai</td>
+                <td className="py-2 pr-3 font-semibold">Airport cab</td>
                 <td className="py-2 pr-3">
                   <Link href="/admin?tab=seoPagesHub" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
                     Google SEO pages
                   </Link>
                 </td>
-                <td className="py-2 font-mono">/services/car-rental/chennai</td>
+                <td className="py-2 font-mono">/chennai/airport-cab-booking</td>
               </tr>
               <tr className="border-b border-slate-100">
-                <td className="py-2 pr-3">cab rental, taxi rental, hourly cab</td>
-                <td className="py-2 pr-3 font-semibold">Cab rental</td>
-                <td className="py-2 pr-3">
-                  <Link href="/admin?tab=seoPagesHub" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
-                    Google SEO pages
-                  </Link>
-                </td>
-                <td className="py-2 font-mono">/services/cab-rental/chennai</td>
-              </tr>
-              <tr className="border-b border-slate-100">
-                <td className="py-2 pr-3">acting driver in vellore / madurai / chennai</td>
+                <td className="py-2 pr-3">acting driver, call driver, chauffeur</td>
                 <td className="py-2 pr-3 font-semibold">Acting driver city</td>
                 <td className="py-2 pr-3">
                   <Link href="/admin?tab=seoPagesHub" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
                     Google SEO pages
                   </Link>
                 </td>
-                <td className="py-2 font-mono">/acting-driver/{"{city}"} or /call-drivers-chennai</td>
+                <td className="py-2 font-mono">/{"{city}"}/acting-driver</td>
               </tr>
               <tr className="border-b border-slate-100">
-                <td className="py-2 pr-3">one specific car (your Dzire Tour S listing)</td>
-                <td className="py-2 pr-3 font-semibold">Vehicle product</td>
-                <td className="py-2 pr-3">
-                  <Link href="/admin?tab=cabs" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
-                    Catalog → Cabs
-                  </Link>
-                </td>
-                <td className="py-2 font-mono">/cabs/your-slug</td>
-              </tr>
-              <tr>
-                <td className="py-2 pr-3">generic “taxi booking” / all cars</td>
-                <td className="py-2 pr-3 font-semibold">Cabs listing</td>
+                <td className="py-2 pr-3">outstation / one-way / tempo traveller</td>
+                <td className="py-2 pr-3 font-semibold">Service landing</td>
                 <td className="py-2 pr-3">
                   <Link href="/admin?tab=seoPagesHub" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
-                    Google SEO pages → Home &amp; listings
+                    Google SEO pages
                   </Link>
                 </td>
-                <td className="py-2 font-mono">/cabs</td>
+                <td className="py-2 font-mono">/services/outstation-cab/chennai</td>
+              </tr>
+              <tr className="border-b border-slate-100">
+                <td className="py-2 pr-3">Chennai to Tirupati cab</td>
+                <td className="py-2 pr-3 font-semibold">Route</td>
+                <td className="py-2 pr-3">
+                  <Link href="/admin?tab=seoPagesHub" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
+                    Google SEO pages
+                  </Link>
+                </td>
+                <td className="py-2 font-mono">/chennai/outstation/chennai-to-tirupati</td>
+              </tr>
+              <tr className="border-b border-slate-100">
+                <td className="py-2 pr-3">Tirupati package, Rameswaram tour</td>
+                <td className="py-2 pr-3 font-semibold">Holiday package</td>
+                <td className="py-2 pr-3">
+                  <Link href="/admin?tab=packages" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
+                    Catalog → Holidays
+                  </Link>
+                </td>
+                <td className="py-2 font-mono">/holidays/…</td>
+              </tr>
+              <tr>
+                <td className="py-2 pr-3">4 hr / 8 hr cab, local Call Driver package</td>
+                <td className="py-2 pr-3 font-semibold">Not an SEO page</td>
+                <td className="py-2 pr-3">Cabs packages / Call Driver tariff</td>
+                <td className="py-2">Book on the hub — no extra URL</td>
               </tr>
             </tbody>
           </table>
-        </div>
-      </div>
-
-      <div className="grid gap-3 md:grid-cols-2">
-        <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-950">
-          <p className="font-bold">New entry</p>
-          <ol className="mt-2 list-decimal space-y-1.5 pl-4 text-xs sm:text-sm">
-            <li>Catalog → Cabs → Create</li>
-            <li>Title + Vehicle model = search name (e.g. Dzire Tour S)</li>
-            <li>City = Chennai (not All India)</li>
-            <li>SEO tab: title like <span className="font-mono">Wagon R Taxi Booking Chennai | Cabzii</span></li>
-            <li>Keywords: correct name, misspelling, city, cab booking, car rental</li>
-            <li>Save → View live → book button must work</li>
-          </ol>
-        </div>
-        <div className="rounded-xl border border-sky-200 bg-sky-50 p-4 text-sm text-sky-950">
-          <p className="font-bold">Change an existing entry</p>
-          <ol className="mt-2 list-decimal space-y-1.5 pl-4 text-xs sm:text-sm">
-            <li>Open Google SEO pages and search the car or URL</li>
-            <li>Click Edit SEO (quick title/description) or Full edit (prices + SEO tab)</li>
-            <li>Keep the same live URL / slug unless the slug is wrong</li>
-            <li>Add missing keywords (dezire, wegon r, boliro) without stuffing the title</li>
-            <li>Save. Do not create a second cab for the same car — edit the old one</li>
-          </ol>
         </div>
       </div>
 

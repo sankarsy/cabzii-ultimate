@@ -10,7 +10,8 @@ import { isMainPageCity, isPrimaryFocusCity, isTamilNaduCity, SEO_CITIES } from 
 import { SEO_SERVICES } from "./services";
 import { SEO_ROUTES } from "./routes";
 import { cityHasCommercialAirport } from "./airports";
-import { cityCabLandingPath } from "../cityCabPaths";
+import { actingDriverLandingPath, cityCabLandingPath } from "../cityCabPaths";
+import { isPackageDoorwayService } from "./packageDoorways";
 
 /** A keep index · B improve while indexed · C noindex,follow · D do not generate (unused for live URLs) */
 export const SEO_CLASS = {
@@ -57,15 +58,7 @@ export const TOUR_PACKAGE_ORIGIN_SLUGS = [
   "vellore"
 ];
 
-const CORE_SERVICES = new Set([
-  "airport-taxi",
-  "outstation-cab",
-  "one-way-cab",
-  "hourly-rental",
-  "local-taxi",
-  "car-rental",
-  "tempo-traveller"
-]);
+const CORE_SERVICES = new Set(["airport-taxi", "outstation-cab", "one-way-cab", "tempo-traveller"]);
 
 const DRIVER_OVERLAP_SERVICES = new Set(["driver-on-hire", "chauffeur-service"]);
 
@@ -175,6 +168,18 @@ export function classifyServiceCity(serviceSlug, citySlug) {
   const service = String(serviceSlug || "");
   const city = String(citySlug || "");
 
+  if (isPackageDoorwayService(service)) {
+    return policy({
+      classification: SEO_CLASS.C,
+      indexable: false,
+      commercialScore: 12,
+      searchIntent: service,
+      contentQuality: "package-doorway",
+      vendorRequired: false,
+      reason: "Cab/acting-driver fare package — 301 to city hub, not a ranking page"
+    });
+  }
+
   if (!isMainPageCity(city)) {
     return policy({
       classification: SEO_CLASS.C,
@@ -192,14 +197,7 @@ export function classifyServiceCity(serviceSlug, citySlug) {
       "airport-taxi": 98,
       "outstation-cab": 96,
       "one-way-cab": 95,
-      "hourly-rental": 90,
-      "car-rental": 88,
-      "tempo-traveller": 86,
-      "local-taxi": 84,
-      "cab-rental": 82,
-      "tour-packages": 80,
-      "driver-on-hire": 70,
-      "chauffeur-service": 68
+      "tempo-traveller": 86
     };
     return policy({
       classification: SEO_CLASS.A,
@@ -304,18 +302,16 @@ export function isSeoIndexable(policyRow) {
 export function highestCommercialPages() {
   return [
     { path: cityCabLandingPath("chennai"), commercialScore: 100, intent: "cab" },
-    { path: "/services/airport-taxi/chennai", commercialScore: 98, intent: "airport" },
-    { path: "/routes/chennai-to-tirupati-cab", commercialScore: 99, intent: "route" },
+    { path: "/chennai/airport-cab-booking", commercialScore: 98, intent: "airport" },
+    { path: "/chennai/outstation/chennai-to-tirupati", commercialScore: 99, intent: "route" },
     { path: "/services/outstation-cab/chennai", commercialScore: 96, intent: "outstation" },
     { path: "/services/one-way-cab/chennai", commercialScore: 95, intent: "one-way" },
-    { path: "/call-drivers-chennai", commercialScore: 96, intent: "driver" },
+    { path: "/chennai/acting-driver", commercialScore: 96, intent: "driver" },
     { path: "/call-driver", commercialScore: 94, intent: "book-driver" },
     { path: "/tariff", commercialScore: 90, intent: "pricing" },
-    { path: "/services/hourly-rental/chennai", commercialScore: 90, intent: "local" },
-    { path: "/services/car-rental/chennai", commercialScore: 88, intent: "rental" },
     { path: "/services/tempo-traveller/chennai", commercialScore: 86, intent: "tempo" },
-    { path: "/routes/chennai-to-pondicherry-cab", commercialScore: 94, intent: "route" },
-    { path: "/routes/chennai-to-bangalore-cab", commercialScore: 94, intent: "route" }
+    { path: "/chennai/outstation/chennai-to-pondicherry", commercialScore: 94, intent: "route" },
+    { path: "/chennai/outstation/chennai-to-bangalore", commercialScore: 94, intent: "route" }
   ];
 }
 
@@ -339,7 +335,7 @@ export function summarizeIndexationPolicy() {
   const all = [
     ...cabHubs.map((row, i) => ({ path: cityCabLandingPath(SEO_CITIES[i].slug), ...row })),
     ...driverHubs.map((row, i) => ({
-      path: SEO_CITIES[i].slug === "chennai" ? "/call-drivers-chennai" : `/acting-driver/${SEO_CITIES[i].slug}`,
+      path: actingDriverLandingPath(SEO_CITIES[i].slug),
       ...row
     })),
     ...services,

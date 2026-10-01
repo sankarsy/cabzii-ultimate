@@ -4,6 +4,8 @@ import { parseStops, stopsToLines } from "./busBooking";
 import { cancellationToText, parseCancellationText, parseRestStopsText, restStopsToText } from "./busExperience";
 import { SEO_ROUTES } from "./seo/routes";
 import { SEO_SERVICES } from "./seo/services";
+import { isPackageDoorwayService, isRankingService } from "./seo/packageDoorways";
+import { routePublicPath } from "./seo/outstationPaths";
 
 export const CAB_PACKAGE_FIELDS = [
   { key: "local4hr", defaultLabel: "Local — 4 Hrs / 40 Km" },
@@ -1004,8 +1006,9 @@ export const CATALOG_TAB_KEYS = Object.keys(CATALOG_TABS);
 
 /** Built-in service pages (shown in admin until overridden by a saved CMS row with same slug). */
 export function mergeStaticSeoServices(cmsItems = []) {
-  const cmsSlugs = new Set((cmsItems || []).map((row) => row.slug).filter(Boolean));
-  const staticRows = SEO_SERVICES.filter((s) => s.slug && !cmsSlugs.has(s.slug)).map((s) => ({
+  const liveCms = (cmsItems || []).filter((row) => !isPackageDoorwayService(row.slug));
+  const cmsSlugs = new Set(liveCms.map((row) => row.slug).filter(Boolean));
+  const staticRows = SEO_SERVICES.filter((s) => isRankingService(s.slug) && s.slug && !cmsSlugs.has(s.slug)).map((s) => ({
     _id: `static:${s.slug}`,
     id: `static:${s.slug}`,
     slug: s.slug,
@@ -1022,7 +1025,7 @@ export function mergeStaticSeoServices(cmsItems = []) {
     source: "static",
     publicPath: `/services/${s.slug}/chennai`
   }));
-  return [...(cmsItems || []), ...staticRows];
+  return [...liveCms, ...staticRows];
 }
 
 /** Built-in route pages (shown in admin until overridden by a saved CMS row with same slug). */
@@ -1044,7 +1047,7 @@ export function mergeStaticSeoRoutes(cmsItems = []) {
     showInMenu: false,
     isStatic: true,
     source: "static",
-    publicPath: `/routes/${r.slug}`
+    publicPath: routePublicPath(r.slug)
   }));
   return [...(cmsItems || []), ...staticRows];
 }
@@ -1057,7 +1060,11 @@ export function emptySeoCityPageForm() {
     seoDescription: "",
     seo: "",
     h1: "",
+    lead: "",
+    aboutCity: "",
     body: "",
+    faqsText: "",
+    touristPlacesText: "",
     airportDetails: "",
     popularLocations: "",
     popularRoutes: "",
@@ -1073,12 +1080,34 @@ export function seoCityPageFormFromItem(item) {
     seoDescription: item?.seoDescription || "",
     seo: item?.seo || "",
     h1: item?.h1 || "",
+    lead: item?.lead || "",
+    aboutCity: item?.aboutCity || "",
     body: item?.body || "",
+    faqsText: Array.isArray(item?.faqs)
+      ? item.faqs.map((row) => `${row.question || ""} | ${row.answer || ""}`.trim()).filter(Boolean).join("\n")
+      : "",
+    touristPlacesText: Array.isArray(item?.touristPlaces)
+      ? item.touristPlaces.map((row) => `${row.title || ""} | ${row.body || ""}`.trim()).filter(Boolean).join("\n")
+      : "",
     airportDetails: item?.airportDetails || "",
     popularLocations: Array.isArray(item?.popularLocations) ? item.popularLocations.join(", ") : "",
     popularRoutes: Array.isArray(item?.popularRoutes) ? item.popularRoutes.join(", ") : "",
     published: item?.published !== false
   };
+}
+
+function parsePipeLines(text, keys) {
+  return String(text || "")
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const idx = line.indexOf("|");
+      const left = (idx === -1 ? line : line.slice(0, idx)).trim();
+      const right = (idx === -1 ? "" : line.slice(idx + 1)).trim();
+      return { [keys[0]]: left, [keys[1]]: right };
+    })
+    .filter((row) => row[keys[0]]);
 }
 
 export function seoCityPageFormToPayload(form) {
@@ -1089,7 +1118,11 @@ export function seoCityPageFormToPayload(form) {
     seoDescription: String(form.seoDescription || "").trim(),
     seo: String(form.seo || "").trim(),
     h1: String(form.h1 || "").trim(),
+    lead: String(form.lead || "").trim(),
+    aboutCity: String(form.aboutCity || "").trim(),
     body: form.body || "",
+    faqs: parsePipeLines(form.faqsText, ["question", "answer"]),
+    touristPlaces: parsePipeLines(form.touristPlacesText, ["title", "body"]),
     airportDetails: String(form.airportDetails || "").trim(),
     popularLocations: String(form.popularLocations || "")
       .split(",")

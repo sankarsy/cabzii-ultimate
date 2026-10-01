@@ -13,6 +13,7 @@ import { tunedActingDriverH1 } from "../lib/seo/metadataTuning";
 import { servicesForCityHub } from "../lib/seo/programmaticMeta";
 import { routesForCity } from "../lib/seo/routes";
 import { servicePath } from "../lib/seo/services";
+import { routePublicPath } from "../lib/seo/outstationPaths";
 
 export default function CitySeoPage({ city, extraBody = "", headingOverride = "", faqsOverride = null }) {
   const title = headingOverride || tunedActingDriverH1(city);
@@ -97,7 +98,7 @@ export default function CitySeoPage({ city, extraBody = "", headingOverride = ""
             {cityRoutes.map((route) => (
               <li key={route.slug}>
                 <Link
-                  href={`/routes/${route.slug}`}
+                  href={routePublicPath(route.slug)}
                   className="inline-block rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:text-[var(--cabzii-brand)]"
                 >
                   {route.fromCity.name} → {route.toCity.name}

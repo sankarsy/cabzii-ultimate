@@ -13,10 +13,10 @@ export const SERVICE_FLEET_BY_SLUG = {
 };
 
 export const SITE_SITELINKS = [
-  { name: "Cab Booking", path: "/car-rental/chennai-city-cabs" },
+  { name: "Cab Booking", path: "/chennai" },
   { name: "Car Rental", path: "/services/car-rental/chennai" },
   { name: "Cab Rental", path: "/services/cab-rental/chennai" },
-  { name: "Airport Taxi", path: "/services/airport-taxi/chennai" },
+  { name: "Airport Taxi", path: "/chennai/airport-cab-booking" },
   { name: "Innova Crysta", path: "/cabs/mpv-toyota-innova-crysta" },
   { name: "All Cabs", path: "/cabs" }
 ];

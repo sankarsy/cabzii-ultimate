@@ -1,10 +1,18 @@
 import { formatInrCurrency } from "../../lib/formatInr";
+import { APPROX_PRICE_LABEL } from "../../lib/approxPrice";
 
 function formatINR(n) {
   return formatInrCurrency(n);
 }
 
 const MIN_DISPLAY_PRICE = 1;
+
+function withApprox(text) {
+  const t = String(text || "").trim();
+  if (!t) return APPROX_PRICE_LABEL;
+  if (/approx/i.test(t)) return t;
+  return `${t} · ${APPROX_PRICE_LABEL}`;
+}
 
 export default function MmtCardPriceBlock({
   originalPrice,
@@ -25,7 +33,7 @@ export default function MmtCardPriceBlock({
     return (
       <div className={compact ? "min-w-0" : "min-w-0 text-right"}>
         <p
-          className={`font-extrabold leading-none text-slate-900 ${compact ? "text-base sm:text-lg" : "text-lg sm:text-2xl"}`}
+          className={`font-extrabold leading-none text-slate-900 ${compact ? "text-sm sm:text-base" : "text-base sm:text-xl"}`}
         >
           {formatINR(hrRate)}
           <span className={`font-bold text-slate-600 ${compact ? "text-xs sm:text-sm" : "text-sm sm:text-base"}`}>
@@ -33,7 +41,7 @@ export default function MmtCardPriceBlock({
           </span>
         </p>
         <p className={`leading-tight text-slate-500 ${compact ? "hidden text-[10px] sm:block" : "text-[10px]"}`}>
-          {fareNote || "per hour · chauffeur"}
+          {withApprox(fareNote || "per hour · chauffeur")}
         </p>
       </div>
     );
@@ -46,12 +54,12 @@ export default function MmtCardPriceBlock({
     return (
       <div className={compact ? "min-w-0" : "min-w-0 text-right"}>
         <p
-          className={`font-extrabold leading-none text-slate-900 ${compact ? "text-base sm:text-lg" : "text-lg sm:text-2xl"}`}
+          className={`font-extrabold leading-none text-slate-900 ${compact ? "text-sm sm:text-base" : "text-base sm:text-xl"}`}
         >
           {formatINR(final)}
         </p>
         <p className={`leading-tight text-slate-500 ${compact ? "text-[10px] sm:text-xs" : "text-xs"}`}>
-          {km} km · {tripLabel} · {kmFormula}
+          {km} km · {tripLabel} · {kmFormula} · {APPROX_PRICE_LABEL}
         </p>
         {fareNote ? (
           <p className={`leading-tight text-slate-400 ${compact ? "text-[10px]" : "text-[10px]"}`}>{fareNote}</p>
@@ -64,7 +72,7 @@ export default function MmtCardPriceBlock({
     return (
       <div className={compact ? "min-w-0" : "min-w-0 text-right"}>
         <p
-          className={`font-extrabold leading-none text-slate-900 ${compact ? "text-base sm:text-lg" : "text-lg sm:text-2xl"}`}
+          className={`font-extrabold leading-none text-slate-900 ${compact ? "text-sm sm:text-base" : "text-base sm:text-xl"}`}
         >
           {formatINR(kmRate)}
           <span className={`font-bold text-slate-600 ${compact ? "text-xs sm:text-sm" : "text-sm sm:text-base"}`}>
@@ -72,7 +80,7 @@ export default function MmtCardPriceBlock({
           </span>
         </p>
         <p className={`leading-tight text-slate-500 ${compact ? "hidden text-[10px] sm:block" : "text-[10px]"}`}>
-          {fareNote || "per km · enter route for total"}
+          {withApprox(fareNote || "per km · enter route for total")}
         </p>
       </div>
     );
@@ -91,11 +99,11 @@ export default function MmtCardPriceBlock({
 
   return (
     <div className={compact ? "min-w-0" : "min-w-0 text-right"}>
-      <p className={`font-extrabold leading-tight text-slate-900 ${compact ? "text-sm sm:text-base" : "text-lg sm:text-xl"}`}>
+      <p className={`font-extrabold leading-tight text-slate-900 ${compact ? "text-sm sm:text-base" : "text-base sm:text-lg"}`}>
         {formatINR(final)}
       </p>
       <p className={`leading-tight text-slate-500 ${compact ? "text-[10px]" : "text-[10px]"}`}>
-        {fareNote || "package fare"}
+        {fareNote ? `${fareNote} · ${APPROX_PRICE_LABEL}` : `package fare · ${APPROX_PRICE_LABEL}`}
       </p>
     </div>
   );

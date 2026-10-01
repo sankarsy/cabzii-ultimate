@@ -7,7 +7,7 @@ import { resolveSiteSearchHref } from "./lib/siteSearch";
 
 const PROTECTED_PREFIXES = ["/payment", "/booking", "/my-bookings"];
 
-/** Prefix redirects: /taxi-booking/chennai → /car-rental/chennai-city-cabs */
+/** Prefix redirects: /taxi-booking/chennai → /chennai */
 const SEO_PREFIX_REDIRECTS = {
   "/taxi-booking": "/cab-booking"
 };

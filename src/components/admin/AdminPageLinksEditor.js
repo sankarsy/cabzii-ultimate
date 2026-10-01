@@ -100,7 +100,7 @@ export default function AdminPageLinksEditor({ groups = [], onChange, onLoadDefa
                     className={inputCls()}
                     value={link.href || ""}
                     onChange={(e) => updateLink(groupIndex, linkIndex, { href: e.target.value })}
-                    placeholder="/car-rental/chennai-city-cabs"
+                    placeholder="/chennai"
                   />
                   <input
                     className={`sm:col-span-2 ${inputCls()}`}

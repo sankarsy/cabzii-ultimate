@@ -2,7 +2,8 @@ import { CITY_SEO_KEYWORD_ALIASES } from "./citySeoAliases";
 import { SEO_ROUTES } from "./routes";
 import { VEHICLE_KEYWORD_ALIASES } from "./vehicleKeywordMap";
 import { cityBySlug } from "./cities";
-import { cityCabLandingPath, parseCityCabLandingSlug } from "../cityCabPaths";
+import { actingDriverLandingPath, cityCabLandingPath, parseCityCabLandingSlug, airportTaxiPublicPath } from "../cityCabPaths";
+import { routePublicPath, parseLegacyRoutesPathname } from "./outstationPaths";
 
 /** Short URL prefixes → canonical /services/{service}/{city} */
 export const SERVICE_URL_PREFIXES = new Set([
@@ -20,7 +21,7 @@ export const SERVICE_URL_PREFIXES = new Set([
   "holiday-packages"
 ]);
 
-/** /travels/{city} or /travel/{city} → /car-rental/{city}-city-cabs */
+/** /travels/{city} or /travel/{city} → /{city} */
 export const TRAVELS_URL_PREFIXES = new Set(["travels", "travel", "travel-agency"]);
 
 /** Google search aliases → canonical city slug */
@@ -48,8 +49,9 @@ function resolveCitySlug(raw) {
  * Resolve SEO alias path to canonical path (301 target), or null.
  * Examples:
  *   /car-rental/chennai → /services/car-rental/chennai
- *   /travels/chennai → /car-rental/chennai-city-cabs
- *   /travels-in-chennai → /car-rental/chennai-city-cabs
+ *   /travels/chennai → /chennai
+ *   /travels-in-chennai → /chennai
+ *   /car-rental/chennai-city-cabs → /chennai
  *   /car-rental-in-chennai → /services/car-rental/chennai
  */
 export function resolveSeoAliasPath(pathname) {
@@ -59,7 +61,15 @@ export function resolveSeoAliasPath(pathname) {
   if (parts.length === 2) {
     const [prefix, city] = parts;
     if (prefix === "car-rental" && parseCityCabLandingSlug(city)) {
-      return null;
+      return cityCabLandingPath(parseCityCabLandingSlug(city));
+    }
+    if (prefix === "cab-booking") {
+      return cityCabLandingPath(resolveCitySlug(city));
+    }
+    if (prefix === "acting-driver") {
+      const citySlug = resolveCitySlug(city);
+      const next = actingDriverLandingPath(citySlug);
+      return next === `/acting-driver/${citySlug}` ? null : next;
     }
     if (SERVICE_URL_PREFIXES.has(prefix)) {
       const serviceSlug = prefix === "holiday-packages" ? "tour-packages" : prefix;
@@ -68,6 +78,7 @@ export function resolveSeoAliasPath(pathname) {
       if ((prefix === "tour-packages" || prefix === "holiday-packages") && !cityBySlug(citySlug)) {
         return null;
       }
+      if (prefix === "airport-taxi") return airportTaxiPublicPath(citySlug);
       return `/services/${serviceSlug}/${citySlug}`;
     }
     if (TRAVELS_URL_PREFIXES.has(prefix)) {
@@ -84,11 +95,11 @@ export function resolveSeoAliasPath(pathname) {
       "cab-booking-chennai": cityCabLandingPath("chennai"),
       "taxi-service-chennai": cityCabLandingPath("chennai"),
       "online-cab-booking-chennai": cityCabLandingPath("chennai"),
-      "chennai-airport-taxi": "/services/airport-taxi/chennai",
-      "chennai-airport-transfer": "/services/airport-taxi/chennai",
-      "airport-taxi-chennai": "/services/airport-taxi/chennai",
-      "chennai-airport-pickup-taxi": "/services/airport-taxi/chennai",
-      "chennai-airport-drop-taxi": "/services/airport-taxi/chennai",
+      "chennai-airport-taxi": "/chennai/airport-cab-booking",
+      "chennai-airport-transfer": "/chennai/airport-cab-booking",
+      "airport-taxi-chennai": "/chennai/airport-cab-booking",
+      "chennai-airport-pickup-taxi": "/chennai/airport-cab-booking",
+      "chennai-airport-drop-taxi": "/chennai/airport-cab-booking",
       "chennai-local-taxi": "/services/local-taxi/chennai",
       "chennai-outstation-cab": "/services/outstation-cab/chennai",
       "chennai-one-way-taxi": "/services/one-way-cab/chennai",
@@ -110,10 +121,11 @@ export function resolveSeoAliasPath(pathname) {
       "madurai-to-rameswaram-cab": "/routes/madurai-to-rameswaram-cab",
       "coimbatore-to-ooty-cab": "/routes/coimbatore-to-ooty-cab",
       "coimbatore-to-ooty-taxi": "/routes/coimbatore-to-ooty-cab",
-      "acting-driver-chennai": "/call-drivers-chennai",
-      "call-driver-chennai": "/call-drivers-chennai",
-      "hire-drivers-chennai": "/call-drivers-chennai",
-      "hire-acting-drivers-chennai": "/call-drivers-chennai",
+      "acting-driver-chennai": "/chennai/acting-driver",
+      "call-driver-chennai": "/chennai/acting-driver",
+      "hire-drivers-chennai": "/chennai/acting-driver",
+      "hire-acting-drivers-chennai": "/chennai/acting-driver",
+      "call-drivers-chennai": "/chennai/acting-driver",
       "tirupati-cab-booking": cityCabLandingPath("tirupati"),
       "taxi-in-tirupati": cityCabLandingPath("tirupati"),
       "chennai-to-pondicherry-cab": "/routes/chennai-to-pondicherry-cab",
@@ -129,16 +141,14 @@ export function resolveSeoAliasPath(pathname) {
       "dzire-tour-s-taxi-booking-chennai": cityCabLandingPath("chennai")
     };
     const keywordAliases = { ...CITY_SEO_KEYWORD_ALIASES, ...VEHICLE_KEYWORD_ALIASES, ...manualKeywordAliases };
-    if (keywordAliases[slug]) return keywordAliases[slug];
+    if (keywordAliases[slug]) return parseLegacyRoutesPathname(keywordAliases[slug]) || keywordAliases[slug];
 
     const cabBookingIn = slug.match(/^cab-booking-in-(.+)$/i);
     if (cabBookingIn) return cityCabLandingPath(resolveCitySlug(cabBookingIn[1]));
 
     const actingDriverIn = slug.match(/^acting-driver-in-(.+)$/i);
     if (actingDriverIn) {
-      const citySlug = resolveCitySlug(actingDriverIn[1]);
-      if (citySlug === "chennai") return "/call-drivers-chennai";
-      return `/acting-driver/${citySlug}`;
+      return actingDriverLandingPath(resolveCitySlug(actingDriverIn[1]));
     }
 
     const travelsIn = slug.match(/^travels-in-(.+)$/i);
@@ -157,13 +167,13 @@ export function resolveSeoAliasPath(pathname) {
     const routeCab = slug.match(/^([a-z]+)-to-([a-z]+)-cab$/i);
     if (routeCab) {
       const routeSlug = `${resolveCitySlug(routeCab[1])}-to-${resolveCitySlug(routeCab[2])}-cab`;
-      if (SEO_ROUTES.some((r) => r.slug === routeSlug)) return `/routes/${routeSlug}`;
+      if (SEO_ROUTES.some((r) => r.slug === routeSlug)) return routePublicPath(routeSlug);
     }
 
     const routeTaxi = slug.match(/^([a-z]+)-to-([a-z]+)-taxi$/i);
     if (routeTaxi) {
       const routeSlug = `${resolveCitySlug(routeTaxi[1])}-to-${resolveCitySlug(routeTaxi[2])}-cab`;
-      if (SEO_ROUTES.some((r) => r.slug === routeSlug)) return `/routes/${routeSlug}`;
+      if (SEO_ROUTES.some((r) => r.slug === routeSlug)) return routePublicPath(routeSlug);
     }
   }
 

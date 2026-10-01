@@ -1,8 +1,9 @@
 import { cityBySlug, SEO_CITIES } from "./cities";
 import { SEO_ROUTES } from "./routes";
 import { SEO_SERVICES } from "./services";
-import { cityCabLandingPath } from "../cityCabPaths";
-import { CALL_DRIVERS_CHENNAI_PATH } from "../../data/call-drivers-chennai";
+import { airportCabBookingPath, cityCabLandingPath, actingDriverLandingPath, isAirportCabBookingCity } from "../cityCabPaths";
+import { routePublicPath } from "./outstationPaths";
+import { isPackageDoorwayService } from "./packageDoorways";
 
 /**
  * Flat list of all programmatic SEO landing URLs for admin index & sitemap tooling.
@@ -23,12 +24,26 @@ export function listProgrammaticSeoPages() {
       cmsKey: `cab-booking:${city.slug}`
     });
 
+    if (isAirportCabBookingCity(city.slug)) {
+      pages.push({
+        id: `airport:${city.slug}`,
+        type: "city",
+        typeLabel: "Airport cab",
+        title: `${city.name} airport cab booking`,
+        path: airportCabBookingPath(city.slug),
+        citySlug: city.slug,
+        pageType: "airport-cab-booking",
+        adminTab: "seoCityPages",
+        cmsKey: `airport-cab-booking:${city.slug}`
+      });
+    }
+
     pages.push({
       id: `acting-driver:${city.slug}`,
       type: "acting-driver",
       typeLabel: "Acting driver",
       title: `Acting driver ${city.name}`,
-      path: city.slug === "chennai" ? CALL_DRIVERS_CHENNAI_PATH : `/acting-driver/${city.slug}`,
+      path: actingDriverLandingPath(city.slug),
       citySlug: city.slug,
       pageType: "acting-driver",
       adminTab: "seoCityPages",
@@ -36,6 +51,8 @@ export function listProgrammaticSeoPages() {
     });
 
     for (const service of SEO_SERVICES) {
+      if (isPackageDoorwayService(service.slug)) continue;
+      if (service.slug === "airport-taxi" && isAirportCabBookingCity(city.slug)) continue;
       pages.push({
         id: `service:${service.slug}:${city.slug}`,
         type: "service",
@@ -61,7 +78,7 @@ export function listProgrammaticSeoPages() {
       type: "route",
       typeLabel: "Route",
       title: `${fromLabel} → ${toLabel}`,
-      path: `/routes/${route.slug}`,
+      path: routePublicPath(route.slug),
       routeSlug: route.slug,
       adminTab: "seoRoutes",
       cmsKey: route.slug

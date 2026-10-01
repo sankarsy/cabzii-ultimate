@@ -155,7 +155,7 @@ const preservedAliases =
   SERVICE_URL_PREFIXES.size * SEO_CITIES.length +
   TRAVELS_URL_PREFIXES.size * SEO_CITIES.length;
 assert(preservedAliases > 100, "Existing 301 alias patterns must remain in code");
-assert(PUBLIC_ROUTE_REDIRECTS["/airport-taxi"] === "/services/airport-taxi/chennai", "Bare /airport-taxi remains a 301");
+assert(PUBLIC_ROUTE_REDIRECTS["/airport-taxi"] === "/chennai/airport-cab-booking", "Bare /airport-taxi remains a 301");
 
 assert(SEO_REVALIDATE_SECONDS === 86400, "SEO ISR must be 24 hours, not 10 minutes");
 assert(typeof isLiveApiHostProtected === "function", "Live API guard must remain exported");
@@ -234,21 +234,20 @@ assert(chennaiCab, "Chennai city cab landing data exists");
 assert(chennaiCab.title.length <= 60, "City cab title must be max 60 chars");
 assert(chennaiCab.description.length <= 155, "City cab description must be max 155 chars");
 assert(/outstation/i.test(chennaiCab.description) && /airport/i.test(chennaiCab.description), "City cab description mentions outstation and airport");
-assert(/full-day/i.test(chennaiCab.description), "City cab description mentions full-day cabs");
 assert(/50%/.test(chennaiCab.description), "City cab description uses real 50% advance");
 assert(!/pay 20%/i.test(chennaiCab.description), "Do not claim 20% advance");
 assert(!/free cancellation/i.test(chennaiCab.description), "Do not claim free cancellation");
-assert(chennaiCab.path === "/car-rental/chennai-city-cabs", "Chennai landing path is city-cabs URL");
+assert(chennaiCab.path === "/chennai", "Chennai landing path is city-cabs URL");
 assert(chennaiCab.cabTypes.map((c) => c.id).join(",") === "hatchback,sedan,suv,tempo", "Four published cab types");
 assert(chennaiCab.faqs.length >= 4, "City cab FAQs exist");
 assert(chennaiCab.faqs.every((f) => f.question && f.answer), "FAQ questions and answers are paired");
-assert(!resolveSeoAliasPath("/car-rental/chennai-city-cabs"), "City cab landing is not aliased away");
+assert(resolveSeoAliasPath("/car-rental/chennai-city-cabs") === "/chennai", "Legacy city-cabs URL aliases to /{city}");
 assert(resolveSeoAliasPath("/car-rental/chennai") === "/services/car-rental/chennai", "Bare /car-rental/{city} still maps to the service page");
 
 const graph = buildCityCabJsonLd({
   cityName: "Chennai",
-  pageUrl: "https://www.cabzii.in/car-rental/chennai-city-cabs",
-  path: "/car-rental/chennai-city-cabs",
+  pageUrl: "https://www.cabzii.in/chennai",
+  path: "/chennai",
   telephone: "+91-9944197416",
   priceRange: "₹₹",
   cabTypes: chennaiCab.cabTypes,
@@ -276,10 +275,10 @@ for (const slug of MAIN_PAGE_CITY_SLUGS) {
 }
 
 const driverLanding = CALL_DRIVERS_CHENNAI;
-assert(driverLanding.path === "/call-drivers-chennai", "Acting driver landing URL");
+assert(driverLanding.path === "/chennai/acting-driver", "Acting driver landing URL");
 assert(
-  actingDriverLinks().some((link) => link.href === "/call-drivers-chennai"),
-  "Internal acting-driver links send Chennai to /call-drivers-chennai"
+  actingDriverLinks().some((link) => link.href === "/chennai/acting-driver"),
+  "Internal acting-driver links send Chennai to /chennai/acting-driver"
 );
 assert(driverLanding.title.length <= 60, `Acting driver title <= 60 (${driverLanding.title.length})`);
 assert(driverLanding.description.length >= 140 && driverLanding.description.length <= 160, "Acting driver description 140-160");
@@ -287,15 +286,15 @@ assert(!/chennaitravels/i.test(JSON.stringify(driverLanding)), "Do not publish C
 assert(driverLanding.faqs.length >= 8 && driverLanding.faqs.length <= 10, "8-10 acting driver FAQs");
 assert(driverLanding.related.length <= 6, "Related services max 6");
 assert(driverLanding.tariffRows[0].standard === 500, "City 4hr min uses published ₹500");
-assert(resolveSeoAliasPath("/acting-driver-chennai") === "/call-drivers-chennai", "acting-driver-chennai alias");
-assert(resolveSeoAliasPath("/call-drivers-chennai") == null, "Canonical call-drivers-chennai is not aliased away");
-assert(isSafeSeoPath("/call-drivers-chennai"), "Call drivers landing is safe to revalidate");
+assert(resolveSeoAliasPath("/acting-driver-chennai") === "/chennai/acting-driver", "acting-driver-chennai alias");
+assert(resolveSeoAliasPath("/call-drivers-chennai") === "/chennai/acting-driver", "call-drivers-chennai aliases to city hub");
+assert(isSafeSeoPath("/chennai/acting-driver"), "Acting driver city hub is safe to revalidate");
 assert(
-  pathsFromKind("seo-city-page", { pageType: "acting-driver", citySlug: "chennai" }).includes("/call-drivers-chennai"),
+  pathsFromKind("seo-city-page", { pageType: "acting-driver", citySlug: "chennai" }).includes("/chennai/acting-driver"),
   "Acting-driver CMS for Chennai revalidates the new landing"
 );
 const driverGraph = buildCallDriversChennaiJsonLd({
-  pageUrl: "https://www.cabzii.in/call-drivers-chennai",
+  pageUrl: "https://www.cabzii.in/chennai/acting-driver",
   name: driverLanding.h1,
   description: driverLanding.description,
   telephone: driverLanding.telephoneSchema,

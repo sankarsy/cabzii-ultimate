@@ -5,6 +5,7 @@ import { Star } from "lucide-react";
 import { resolveMediaUrl } from "../lib/media";
 import PackageOptionCard from "./PackageOptionCard";
 import AdditionalChargesGrid from "./AdditionalChargesGrid";
+import ApproxPriceNote from "./ui/ApproxPriceNote";
 import {
   buildDriverChargeItems,
   buildDriverFareSlabs,
@@ -204,6 +205,7 @@ function PackageSection({ visiblePackages, selectedPackageId, onSelectPackage })
           </div>
         ))}
       </div>
+      <ApproxPriceNote />
     </div>
   );
 }

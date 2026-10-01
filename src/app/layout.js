@@ -54,7 +54,8 @@ export const metadata = {
 export const viewport = {
   themeColor: "#1E40AF",
   width: "device-width",
-  initialScale: 1
+  initialScale: 1,
+  viewportFit: "cover"
 };
 
 /** Sitewide schema only — page-level FAQ/Product markup lives on individual routes. */

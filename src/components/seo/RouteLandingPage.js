@@ -3,20 +3,19 @@ import { routeToDriverSearchHref, routeToTrip } from "../../lib/routeTrip";
 import Breadcrumbs from "./Breadcrumbs";
 import FaqSection from "./FaqSection";
 import SeoRouteCabListing from "./SeoRouteCabListing";
-import { tunedRouteDescription, tunedRouteH1 } from "../../lib/seo/metadataTuning";
 import { servicePath, SEO_SERVICES } from "../../lib/seo/services";
 import ChennaiClusterLinks from "./ChennaiClusterLinks";
 import SeoPageView from "./SeoPageView";
 import { cityCabLandingPath } from "../../lib/cityCabPaths";
 import TrackedLeadCtas from "../conversion/TrackedLeadCtas";
+import { outstationHubPath, reverseRoutePublicPath, routePublicPath } from "../../lib/seo/outstationPaths";
 
-export default function RouteLandingPage({ route, faqs, extraBody = "", cabs = [] }) {
+export default function RouteLandingPage({ route, faqs, extraBody = "", cabs = [], path: pathProp }) {
   const { fromCity, toCity, distance, duration, sedanFrom, suvFrom, slug } = route;
-  const path = `/routes/${slug}`;
+  const path = pathProp || routePublicPath(slug);
   const driverHref = routeToDriverSearchHref(route);
   const trip = routeToTrip(route);
-  const reverseSlug = `${toCity.slug}-to-${fromCity.slug}-cab`;
-  const reversePath = `/routes/${reverseSlug}`;
+  const reversePath = reverseRoutePublicPath(fromCity.slug, toCity.slug);
   const airportSvc = SEO_SERVICES.find((s) => s.slug === "airport-taxi");
   const outstationSvc = SEO_SERVICES.find((s) => s.slug === "outstation-cab");
 
@@ -29,17 +28,22 @@ export default function RouteLandingPage({ route, faqs, extraBody = "", cabs = [
         destination={toCity.slug}
         route={slug}
       />
+
       <div className="sr-only">
         <Breadcrumbs
           items={[
             { name: "Home", path: "/" },
             { name: fromCity.name, path: cityCabLandingPath(fromCity.slug) },
+            { name: "Outstation", path: outstationHubPath(fromCity.slug) },
             { name: `${fromCity.name} to ${toCity.name}`, path }
           ]}
         />
-        <h1>{tunedRouteH1(route)}</h1>
+        <h1>
+          {fromCity.name} To {toCity.name} Taxi Service
+        </h1>
         <p>
-          {tunedRouteDescription(route)} ({distance}, {duration}). Fares below — select a cab to book.
+          {fromCity.name} to {toCity.name} taxi distance: {distance}. Typical travel time {duration}. Tolls extra unless
+          listed.
         </p>
       </div>
 

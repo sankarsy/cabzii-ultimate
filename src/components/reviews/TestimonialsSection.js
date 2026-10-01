@@ -42,7 +42,7 @@ export default function TestimonialsSection() {
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
             <p className="text-[11px] font-bold uppercase tracking-wider text-[var(--cabzii-brand)]">Reviews</p>
-            <h2 className="mt-1 text-lg font-extrabold text-slate-900 sm:text-xl">What riders say</h2>
+            <h2 className="mt-1 text-base font-bold text-slate-900 sm:text-lg">What riders say</h2>
           </div>
           <Link href="/testimonials#write-review" className="text-sm font-semibold text-[var(--cabzii-brand)] hover:underline">
             Leave a review

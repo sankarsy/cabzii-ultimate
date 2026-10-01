@@ -77,14 +77,17 @@ export function callDriverServiceById(id) {
   return CALL_DRIVER_SERVICES.find((s) => s.id === String(id || "")) || null;
 }
 
-export function callDriverBookHref(serviceId) {
-  return `/call-driver/book?service=${encodeURIComponent(serviceId)}`;
+export function callDriverBookHref(serviceId, extras = {}) {
+  const q = new URLSearchParams();
+  q.set("service", String(serviceId || ""));
+  if (extras.pickup) q.set("pickup", String(extras.pickup));
+  return `/call-driver/book?${q.toString()}`;
 }
 
 export function formatFromPrice(fromPrice) {
   const n = Number(fromPrice);
   if (!Number.isFinite(n) || n <= 0) return "";
-  return `From ₹${formatInr(n)}`;
+  return `Approx. from ₹${formatInr(n)}`;
 }
 
 export function todayISODate() {

@@ -92,7 +92,7 @@ export default function SimilarPackages({ currentPackageId, category, vendor }) 
                   <p className="text-[11px] text-slate-500">by {pkg.vendor}</p>
                   <p className="mt-2 text-sm font-bold text-[#0056D2]">
                     ₹{youPay.toLocaleString("en-IN")}
-                    <span className="text-[10px] font-normal text-slate-500"> onwards</span>
+                    <span className="text-[10px] font-normal text-slate-500"> onwards · approx.</span>
                   </p>
                 </div>
               </Link>

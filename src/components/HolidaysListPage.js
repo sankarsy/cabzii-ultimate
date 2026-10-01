@@ -171,7 +171,7 @@ export default function HolidaysListPage() {
             <p className="mt-2">
               These are Cabzii holiday packages with a pilgrimage category — not a separate temple URL tree. Cab-only
               temple runs stay on existing routes:{" "}
-              <Link href="/routes/chennai-to-tirupati-cab" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
+              <Link href="/chennai/outstation/chennai-to-tirupati" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
                 Chennai to Tirupati
               </Link>
               ,{" "}

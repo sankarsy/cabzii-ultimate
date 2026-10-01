@@ -30,7 +30,7 @@ export default function SeoPackageBookingSection({
           </p>
           {priceText ? (
             <p className="ml-auto text-sm font-bold text-slate-900">
-              From {priceText}
+              Approx. from {priceText}
             </p>
           ) : null}
         </div>
@@ -85,7 +85,7 @@ export default function SeoPackageBookingSection({
                     </p>
                     <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
                       {pay > 0 ? (
-                        <span className="text-xs font-extrabold text-[var(--cabzii-brand)]">{inr(pay)}</span>
+                        <span className="text-xs font-extrabold text-[var(--cabzii-brand)]">{inr(pay)} approx.</span>
                       ) : null}
                       <Link
                         href={packageBookingHref(pkg)}

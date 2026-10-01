@@ -343,7 +343,7 @@ const ROUTE_META_OVERRIDES = {
     )
   },
   "chennai-to-tirupati-cab": {
-    title: formatSerpTitle("Chennai to Tirupati Cab", "One-Way & Round Trip Taxi"),
+    title: formatSerpTitle("Chennai To Tirupati Taxi Service"),
     description: clampDescription(
       "Chennai to Tirupati cab on Cabzii — sedan from ₹3,250, Ertiga from ₹4,500. Swift Dzire, Honda Amaze and Innova. 135 km, 3–4 hrs. Fare shown before you confirm."
     )

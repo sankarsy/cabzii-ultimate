@@ -95,7 +95,7 @@ export default function PackageCard({ pkg, actionText = "Book", onAction, action
 
         <div className="mt-2.5 flex items-end justify-between gap-2 border-t border-slate-100 pt-2">
           <div className="min-w-0">
-            <p className="text-[10px] font-bold uppercase tracking-wide text-slate-400">From</p>
+            <p className="text-[10px] font-bold uppercase tracking-wide text-slate-400">Approx. from</p>
             <p className="text-base font-extrabold tracking-tight text-slate-900 sm:text-lg">
               ₹{packagePay.toLocaleString("en-IN")}
             </p>

@@ -12,7 +12,6 @@ import {
   inclusiveCalendarDays,
   todayISODate
 } from "../../lib/callDriver";
-import CallDriverServiceSeo from "./CallDriverServiceSeo";
 import { authHeaders, buildLoginHref, getToken, isLoggedIn } from "../../lib/auth";
 import { loadCheckoutDraft, saveCheckoutDraft } from "../../lib/checkoutStorage";
 import { upsertEnquiry } from "../../lib/enquiryCapture";
@@ -31,12 +30,12 @@ const HOUR_CHIPS = {
 const DAY_CHIPS = [1, 2, 3, 4, 5];
 const EXTRA_HOUR_CHIPS = [0, 1, 2, 3, 4];
 const SERVICE_HINTS = {
-  local: "From ₹450 · 3 hrs min · extra ₹100/hr · night ₹100 after 10:15 PM",
-  outstation: "Return ₹1,500/day + stay · One-way ₹1,700 including bus fare",
-  airport: "From ₹450 · 3 hrs min · extra ₹100/hr · your car at the airport",
+  local: "Approx. from ₹450 · 3 hrs min · extra ₹100/hr · night ₹100 after 10:15 PM",
+  outstation: "Return approx. ₹1,500/day + stay · One-way approx. ₹1,700 including bus fare",
+  airport: "Approx. from ₹450 · 3 hrs min · extra ₹100/hr · your car at the airport",
   school: "Monthly from ₹22,000 · Cabzii sends a quote after you submit",
   corporate: "Office and event drivers · quoted from your schedule",
-  valet: "From ₹600 / driver · 5 hrs min · 1 supervisor per 10 drivers"
+  valet: "Approx. from ₹600 / driver · 5 hrs min · 1 supervisor per 10 drivers"
 };
 
 function Field({ label, children, className = "", hint = "" }) {
@@ -1035,12 +1034,6 @@ export default function CallDriverBookingFlow() {
             </aside>
           </div>
 
-          <details className="mx-auto mt-8 max-w-3xl rounded-2xl border border-slate-200 bg-white px-4 py-3">
-            <summary className="cursor-pointer text-sm font-semibold text-slate-800">About this Call Driver service</summary>
-            <div className="mt-4">
-              <CallDriverServiceSeo serviceId={serviceId} compact />
-            </div>
-          </details>
         </div>
       </div>
 

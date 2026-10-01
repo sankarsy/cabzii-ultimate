@@ -5,6 +5,7 @@
  */
 
 import { FEATURED_ROUTE_SLUGS } from "./featuredRoutes";
+import { routePublicPath } from "./outstationPaths";
 import { cityBySlug, isPrimaryFocusCity, isTamilNaduCity, SEO_CITIES } from "./cities";
 import { SEO_SERVICES } from "./services";
 import { SEO_ROUTES } from "./routes";
@@ -177,7 +178,7 @@ function auditRoute(route) {
   const policy = classifyRoute(route);
   const featured = FEATURED_ROUTE_SLUGS.includes(route.slug);
   return scoreRow({
-    url: `/routes/${route.slug}`,
+    url: routePublicPath(route.slug),
     pageType: "route",
     city: route.from,
     service: "one-way-cab",
@@ -217,7 +218,7 @@ const STATIC_MONEY_PAGES = [
     vendorSupplyLabel: "HQ market — supply assumed stronger",
     bookingPath: "/call-driver",
     cta: "Choose Call Driver service",
-    duplicateRisk: "same intent as /call-drivers-chennai (guide vs book)",
+    duplicateRisk: "same intent as /chennai/acting-driver (guide vs book)",
     searchIntent: 8,
     commercialIntent: 9,
     bookingPotential: 9,
@@ -349,7 +350,7 @@ export function revenueSeoReport() {
     { url: "/routes/madurai-to-rameswaram-cab", note: "Same-day temple pairing" },
     { url: "/routes/chennai-to-madurai-cab", note: "Meenakshi + onward south" },
     { url: "/routes/chennai-to-kanyakumari-cab", note: "Long coastal/temple highway" },
-    { url: "/car-rental/tirupati-city-cabs", note: "Destination hub — keep, do not spawn temple URLs" },
+    { url: "/tirupati", note: "Destination hub — keep, do not spawn temple URLs" },
     { url: "/services/tour-packages/chennai", note: "Chennai origin tour landing only" }
   ];
 
@@ -450,14 +451,12 @@ export function revenueSeoReport() {
       { service: "outstation-cab", why: "Round-trip / wait packages; 250 km car min is a real tariff rule" },
       { service: "one-way-cab", why: "Route fares; feeds existing /routes URLs" },
       { service: "acting-driver", why: "Own-car chauffeur; book on /call-driver" },
-      { service: "tempo-traveller", why: "Group hire AOV; not bus tickets" },
-      { service: "hourly-rental", why: "Local 4/8hr packages from published tariff" },
-      { service: "car-rental", why: "Chauffeur-driven only — must not imply self-drive" }
+      { service: "tempo-traveller", why: "Group hire AOV; not bus tickets" }
     ],
     competitorIntentGaps: [
       "Airport pickup + drop + city transfer mapped to one Chennai URL (done) — other cities still template",
       "Round-trip intent must stay on outstation pages (no /round-trip-cab)",
-      "Acting driver synonyms stay on /acting-driver/{city} (Chennai: /call-drivers-chennai) + /call-driver",
+      "Acting driver synonyms stay on /{city}/acting-driver (legacy /acting-driver/{city} 301s) + /call-driver",
       "Pilgrimage intent: holidays filter + temple routes — no /pilgrimage tree",
       "Self-drive SERPs should not be chased; Cabzii is chauffeur-driven",
       "National airport pages exist but supply/content are weak — do not scale copy until supply is known"
@@ -469,8 +468,7 @@ export function revenueSeoReport() {
     ],
     contentRisks: [
       "Non-Chennai city/service bodies remain templated",
-      "cab-rental vs car-rental vs hourly still overlap (same product, different queries)",
-      "driver-on-hire and chauffeur-service still indexable and overlap acting-driver"
+      "Local cab packages and acting-driver packages book on city hubs — they are not ranking URLs",
     ]
   };
 }

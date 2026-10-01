@@ -2,15 +2,15 @@ import { BRAND } from "../brand";
 
 /** Home hero tabs — live services only (flights / hotels / trains are paused). */
 export const HERO_TABS = [
-  { id: "cabs", label: "Cabs", iconKey: "car" },
-  { id: "drivers", label: "Hire a Driver", iconKey: "driver" },
-  { id: "buses", label: "Buses", iconKey: "bus" },
-  { id: "holidays", label: "Holidays", iconKey: "holiday" }
+  { id: "cabs", label: "Cabs", shortLabel: "Cabs", iconKey: "car" },
+  { id: "drivers", label: "Hire a Driver", shortLabel: "Driver", iconKey: "driver" },
+  { id: "buses", label: "Buses", shortLabel: "Buses", iconKey: "bus" },
+  { id: "holidays", label: "Holidays", shortLabel: "Holidays", iconKey: "holiday" }
 ];
 
 export const TRENDING_SEARCHES = [
-  { label: "Cab Booking Chennai", href: "/car-rental/chennai-city-cabs" },
-  { label: "Airport Taxi Chennai", href: "/services/airport-taxi/chennai" },
+  { label: "Cab Booking Chennai", href: "/chennai" },
+  { label: "Airport Taxi Chennai", href: "/chennai/airport-cab-booking" },
   { label: "Chennai → Bengaluru", slug: "chennai-to-bangalore-cab" },
   { label: "Chennai → Pondicherry", slug: "chennai-to-pondicherry-cab" },
   { label: "Outstation Cab Chennai", href: "/services/outstation-cab/chennai" },

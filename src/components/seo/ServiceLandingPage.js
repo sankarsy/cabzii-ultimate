@@ -11,6 +11,7 @@ import { serviceSearchHref, tunedServiceDescription, tunedServiceH1 } from "../.
 import { formatSerpPrice, serviceSerpBadges } from "../../lib/seo/serpRichData";
 import { servicePath } from "../../lib/seo/services";
 import { routesForCity } from "../../lib/seo/routes";
+import { routePublicPath } from "../../lib/seo/outstationPaths";
 import { classifyRoute } from "../../lib/seo/indexation";
 import { todayStr } from "../../lib/mmtTrip";
 import RelatedSeoLinks from "./RelatedSeoLinks";
@@ -99,7 +100,7 @@ export default function ServiceLandingPage({
       {city.slug === "chennai" && DRIVER_FOCUS_SLUGS.has(service.slug) ? (
         <p className="mt-3 text-sm text-slate-700">
           The main Chennai page for chauffeur / driver-on-hire is{" "}
-          <Link href="/call-drivers-chennai" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
+          <Link href="/chennai/acting-driver" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
             acting driver in Chennai
           </Link>
           . Book from{" "}
@@ -160,7 +161,7 @@ export default function ServiceLandingPage({
             {cityRoutes.map((route) => (
               <li key={route.slug}>
                 <Link
-                  href={`/routes/${route.slug}`}
+                  href={routePublicPath(route.slug)}
                   className="inline-block rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700 transition hover:border-[var(--emt-orange)] hover:bg-[#fff4ee] hover:text-[var(--emt-orange)]"
                 >
                   {route.fromCity.name} → {route.toCity.name}

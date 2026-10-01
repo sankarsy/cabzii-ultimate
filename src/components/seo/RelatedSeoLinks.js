@@ -7,7 +7,7 @@ import PageHubLinks from "./PageHubLinks";
 
 const FALLBACK_LINKS = [
   { label: "Book a cab", href: "/cabs", hint: "", children: [] },
-  { label: "Airport taxi Chennai", href: "/services/airport-taxi/chennai", hint: "", children: [] },
+  { label: "Airport taxi Chennai", href: "/chennai/airport-cab-booking", hint: "", children: [] },
   { label: "Call Driver", href: "/call-driver", hint: "", children: [] },
   { label: "Holiday packages", href: "/holidays", hint: "", children: [] },
   { label: "All routes", href: "/routes", hint: "", children: [] }

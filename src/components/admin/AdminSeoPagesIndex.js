@@ -12,9 +12,7 @@ import AdminSeoSop from "./AdminSeoSop";
 const TYPE_FILTERS = [
   { id: "all", label: "All" },
   { id: "site", label: "Home & listings" },
-  { id: "cab", label: "Cabs" },
-  { id: "driver", label: "Drivers" },
-  { id: "tour", label: "Tours" },
+  { id: "tour", label: "Holiday packages" },
   { id: "route", label: "Routes" },
   { id: "service", label: "Services" },
   { id: "city", label: "City hubs" },
@@ -61,9 +59,7 @@ export default function AdminSeoPagesIndex({ token = "" }) {
     setLoading(true);
     setError("");
     try {
-      const [cabs, drivers, packages, blogs, seoServices, seoRoutes, seoCityPages, seoLandings, settingsRes] = await Promise.all([
-        fetchAdminList(`${buildCatalogListUrl("cabs")}&limit=500`, token),
-        fetchAdminList(`${buildCatalogListUrl("drivers")}&limit=500`, token),
+      const [packages, blogs, seoServices, seoRoutes, seoCityPages, seoLandings, settingsRes] = await Promise.all([
         fetchAdminList(`${buildCatalogListUrl("packages")}&limit=500`, token),
         fetchAdminList(`${buildCatalogListUrl("blogs")}&limit=200`, token),
         fetchAdminList(buildCatalogListUrl("seoServices"), token),
@@ -80,8 +76,6 @@ export default function AdminSeoPagesIndex({ token = "" }) {
       setPageSeo(storedPageSeo);
       setRows(
         buildSeoPageIndex({
-          cabs,
-          drivers,
           packages,
           blogs,
           seoServices,
@@ -202,7 +196,7 @@ export default function AdminSeoPagesIndex({ token = "" }) {
         <ul className="mt-2 list-disc space-y-1 pl-5 text-xs sm:text-sm text-amber-900">
           <li>Title 50–60 characters, visible H1, description 120–155, keywords, intro, body, FAQs, hub links.</li>
           <li>
-            <strong>Create SEO page</strong> adds a custom landing at <code>/pages/slug</code>, a city cab hub, an acting-driver city page, a service, or a route.
+            <strong>Create SEO page</strong> adds a city hub, acting-driver city, airport/outstation/one-way/tempo service, route, or custom /pages/slug. Cab and acting-driver fare packages are not SEO pages.
           </li>
           <li>Built-in pages (home, /cabs, /call-driver) can be edited or reset — they cannot be deleted.</li>
           <li>CMS rows (city, service, route, custom landing) can be deleted. The live URL then falls back to the template or 404s for custom landings.</li>

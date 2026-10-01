@@ -1,5 +1,6 @@
 import { MAIN_PAGE_CITY_SLUGS } from "../seo/cities";
-import { cityCabLandingPath } from "../cityCabPaths";
+import { actingDriverLandingPath, airportCabBookingPath, cityCabLandingPath } from "../cityCabPaths";
+import { outstationPathFromLegacySlug } from "../seo/outstationPaths";
 
 const BLOCKED_PREFIXES = [
   "/api",
@@ -48,10 +49,23 @@ function cap(paths) {
 export function pathsFromSeoCityPage(record = {}) {
   const city = slug(record.citySlug);
   if (!city) return [];
-  const pageType = record.pageType === "acting-driver" ? "acting-driver" : "cab-booking";
+  const pageType = ["acting-driver", "airport-cab-booking"].includes(record.pageType)
+    ? record.pageType
+    : "cab-booking";
   const paths = [`/${pageType}/${city}`];
-  if (pageType === "cab-booking") paths.push(cityCabLandingPath(city));
-  if (pageType === "acting-driver" && city === "chennai") paths.push("/call-drivers-chennai");
+  if (pageType === "cab-booking") {
+    paths.push(cityCabLandingPath(city));
+    paths.push(`/car-rental/${city}-city-cabs`);
+  }
+  if (pageType === "airport-cab-booking") {
+    paths.push(airportCabBookingPath(city));
+    paths.push(`/services/airport-taxi/${city}`);
+  }
+  if (pageType === "acting-driver") {
+    paths.push(actingDriverLandingPath(city));
+    paths.push(`/acting-driver/${city}`);
+    if (city === "chennai") paths.push("/call-drivers-chennai");
+  }
   return cap(paths);
 }
 
@@ -68,7 +82,9 @@ export function pathsFromSeoService(record = {}) {
 
 export function pathsFromSeoRoute(record = {}) {
   const routeSlug = slug(record.slug);
-  return routeSlug ? cap([`/routes/${routeSlug}`]) : [];
+  if (!routeSlug) return [];
+  const next = outstationPathFromLegacySlug(routeSlug);
+  return cap([next || `/routes/${routeSlug}`, `/routes/${routeSlug}`]);
 }
 
 export function pathsFromSiteSettings(record = {}) {

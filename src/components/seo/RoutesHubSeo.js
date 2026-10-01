@@ -3,6 +3,7 @@ import Breadcrumbs from "./Breadcrumbs";
 import { FEATURED_ROUTE_SLUGS } from "../../lib/seo/featuredRoutes";
 import { SEO_ROUTES } from "../../lib/seo/routes";
 import { formatRouteLabel } from "../../lib/seo/internalLinks";
+import { routePublicPath } from "../../lib/seo/outstationPaths";
 
 export default function RoutesHubSeo() {
   const featured = FEATURED_ROUTE_SLUGS.map((slug) => SEO_ROUTES.find((r) => r.slug === slug)).filter(Boolean);
@@ -25,7 +26,7 @@ export default function RoutesHubSeo() {
         {featured.map((route) => (
           <li key={route.slug}>
             <Link
-              href={`/routes/${route.slug}`}
+              href={routePublicPath(route.slug)}
               className="block rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 hover:border-sky-300"
             >
               {formatRouteLabel(route)}

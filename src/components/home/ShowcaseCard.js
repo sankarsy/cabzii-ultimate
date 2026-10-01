@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Copy } from "lucide-react";
 import { getOfferIcon } from "../icons/heroIcons";
 import { formatOfferValidUntil } from "../../lib/offers";
+import { approxFromLabel } from "../../lib/approxPrice";
 
 export default function ShowcaseCard({ card: o, section = "offers", layout = "carousel" }) {
   const OfferIcon = getOfferIcon(o.iconKey);
@@ -54,7 +55,7 @@ export default function ShowcaseCard({ card: o, section = "offers", layout = "ca
           </span>
         ) : o.fare ? (
           <span className="relative mt-auto inline-flex items-center self-start rounded border-[1.5px] border-dashed border-white/60 bg-white/20 px-2.5 py-1 text-xs font-bold tracking-wider text-white backdrop-blur-sm">
-            {o.fare}
+            {approxFromLabel(o.fare)}
           </span>
         ) : null}
       </div>

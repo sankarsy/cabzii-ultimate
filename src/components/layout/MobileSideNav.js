@@ -5,10 +5,8 @@ import { createPortal } from "react-dom";
 import { useEffect, useState } from "react";
 import {
   BookOpen,
-  Bus,
   Car,
   ChevronRight,
-  CircleUser,
   FileText,
   HelpCircle,
   LogIn,
@@ -16,7 +14,6 @@ import {
   MessageCircle,
   Phone,
   Star,
-  Umbrella,
   UserRound,
   X
 } from "lucide-react";
@@ -24,13 +21,16 @@ import WhatsAppIcon from "../WhatsAppIcon";
 import HeaderSearchBar from "../mmt/HeaderSearchBar";
 import { telUrl, whatsappBookingUrl } from "../../lib/conversion";
 import { useSiteSettings } from "../SiteSettingsProvider";
+import { HERO_TABS } from "../../lib/emt/constants";
+import { HERO_TAB_ICONS } from "../icons/heroIcons";
+import { cn } from "../../lib/emt/cn";
 
-const BOOK_LINKS = [
-  { href: "/?tab=cabs", label: "Cabs", icon: Car },
-  { href: "/?tab=drivers", label: "Drivers", icon: CircleUser },
-  { href: "/?tab=buses", label: "Buses", icon: Bus },
-  { href: "/?tab=holidays", label: "Holidays", icon: Umbrella }
-];
+const PRODUCT_ICON_TONES = {
+  cabs: "text-sky-500",
+  drivers: "text-violet-500",
+  buses: "text-orange-500",
+  holidays: "text-emerald-500"
+};
 
 const EXPLORE_LINKS = [
   { href: "/locations", label: "Locations", icon: MapPin },
@@ -41,6 +41,37 @@ const EXPLORE_LINKS = [
   { href: "/track-booking", label: "Track booking", icon: MapPin },
   { href: "/testimonials", label: "Reviews", icon: Star }
 ];
+
+function ProductMenuGrid({ activeTab, onSelect, onNavigate }) {
+  return (
+    <div className="cabzii-menu-products mx-3 mb-1 mt-1 grid grid-cols-4 gap-1.5" role="navigation" aria-label="Book Cabs, Driver, Buses or Holidays">
+      {HERO_TABS.map((tab) => {
+        const Icon = HERO_TAB_ICONS[tab.id];
+        const active = activeTab === tab.id;
+        return (
+          <button
+            key={tab.id}
+            type="button"
+            aria-current={active ? "page" : undefined}
+            onClick={() => {
+              onSelect?.(tab.id);
+              onNavigate?.();
+            }}
+            className={cn(
+              "cabzii-tap flex flex-col items-center gap-1.5 rounded-2xl px-1 py-3 text-[11px] font-extrabold",
+              active ? "bg-sky-100 text-sky-700" : "text-slate-700"
+            )}
+          >
+            <span className={cn(PRODUCT_ICON_TONES[tab.id] || "text-sky-500")} aria-hidden>
+              {Icon ? <Icon className="h-6 w-6" strokeWidth={1.7} /> : null}
+            </span>
+            <span>{tab.shortLabel || tab.label}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
 
 function SectionLabel({ children }) {
   return (
@@ -136,6 +167,7 @@ export default function MobileSideNav({
   onClose,
   pathname,
   activeHeroTab,
+  onSelectTab,
   loggedIn,
   onLogout,
   onLoginPage
@@ -167,10 +199,6 @@ export default function MobileSideNav({
   if (!mounted || !open) return null;
 
   const isActive = (href) => {
-    if (href.startsWith("/?tab=")) {
-      const tab = href.replace("/?tab=", "");
-      return pathname === "/" && activeHeroTab === tab;
-    }
     return pathname === href || (href !== "/" && pathname.startsWith(`${href}/`));
   };
 
@@ -206,6 +234,9 @@ export default function MobileSideNav({
             <HeaderSearchBar variant="light" className="w-full" onSubmitted={onClose} />
           </div>
 
+          <SectionLabel>Book</SectionLabel>
+          <ProductMenuGrid activeTab={activeHeroTab} onSelect={onSelectTab} onNavigate={onClose} />
+
           <SectionLabel>Quick actions</SectionLabel>
 
           <DrawerActionRow icon={Phone} label="Call" sublabel="Talk to support" href={telUrl(phone)} accent="brand" onNavigate={onClose} />
@@ -236,11 +267,6 @@ export default function MobileSideNav({
           ) : onLoginPage ? null : (
             <DrawerActionRow icon={LogIn} label="Login or Signup" sublabel="OTP · Partner · Admin" href="/login" accent="brand" onNavigate={onClose} />
           )}
-
-          <SectionLabel>Book</SectionLabel>
-          {BOOK_LINKS.map((item) => (
-            <DrawerLink key={item.href} {...item} active={isActive(item.href)} onNavigate={onClose} />
-          ))}
 
           <SectionLabel>Explore</SectionLabel>
           {EXPLORE_LINKS.map((item) => (

@@ -83,7 +83,7 @@ export const STATIC_PAGE_SEO_LIST = [
   },
   {
     id: "site:call-drivers-chennai",
-    path: "/call-drivers-chennai",
+    path: "/chennai/acting-driver",
     type: "site",
     typeLabel: "Acting drivers Chennai",
     productName: "Call Drivers in Chennai",

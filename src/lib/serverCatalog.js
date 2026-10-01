@@ -121,7 +121,7 @@ export async function fetchSeoRouteBySlug(slug) {
   return fetchJson(`/seo-routes/${encodeURIComponent(slug)}`, SEO_REVALIDATE_SECONDS);
 }
 
-/** Admin-managed meta for /car-rental/{city}-city-cabs and /acting-driver/{city}. */
+/** Admin-managed meta for /{city} cab hubs, /{city}/airport-cab-booking, and /{city}/acting-driver. */
 export async function fetchSeoCityPage(pageType, citySlug) {
   if (!pageType || !citySlug) return null;
   return fetchJson(`/seo-city-pages/${encodeURIComponent(pageType)}/${encodeURIComponent(citySlug)}`, SEO_REVALIDATE_SECONDS);

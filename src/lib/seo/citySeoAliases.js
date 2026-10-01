@@ -3,7 +3,7 @@
  * Maps keyword slugs → canonical paths (301 via middleware).
  */
 import { SEO_CITIES } from "./cities";
-import { cityCabLandingPath } from "../cityCabPaths";
+import { airportTaxiPublicPath, cityCabLandingPath } from "../cityCabPaths";
 
 /** Alternate URL tokens (e.g. bangalore → bengaluru canonical slug). */
 const CITY_URL_TOKENS = {
@@ -102,11 +102,11 @@ export function buildCitySeoKeywordAliases() {
       add(map, `local-taxi-${token}`, `/services/local-taxi/${canonical}`);
 
       // Airport
-      add(map, `${token}-airport-taxi`, `/services/airport-taxi/${canonical}`);
-      add(map, `airport-taxi-${token}`, `/services/airport-taxi/${canonical}`);
-      add(map, `${token}-airport-transfer`, `/services/airport-taxi/${canonical}`);
-      add(map, `${token}-airport-pickup-taxi`, `/services/airport-taxi/${canonical}`);
-      add(map, `${token}-airport-drop-taxi`, `/services/airport-taxi/${canonical}`);
+      add(map, `${token}-airport-taxi`, airportTaxiPublicPath(canonical));
+      add(map, `airport-taxi-${token}`, airportTaxiPublicPath(canonical));
+      add(map, `${token}-airport-transfer`, airportTaxiPublicPath(canonical));
+      add(map, `${token}-airport-pickup-taxi`, airportTaxiPublicPath(canonical));
+      add(map, `${token}-airport-drop-taxi`, airportTaxiPublicPath(canonical));
     }
   }
 

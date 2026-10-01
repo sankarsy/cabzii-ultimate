@@ -1,6 +1,6 @@
 import { ORG_EMAIL, ORG_PHONE, SITE_NAME, SITE_URL } from "../lib/seo/constants";
 import { CABZII_PHONE_DIGITS, whatsappBookingUrl } from "../lib/conversion";
-import { cityCabLandingPath, CALL_DRIVERS_CHENNAI_PATH } from "../lib/cityCabPaths";
+import { cityCabLandingPath, actingDriverLandingPath, CALL_DRIVERS_CHENNAI_PATH } from "../lib/cityCabPaths";
 
 export { CALL_DRIVERS_CHENNAI_PATH };
 
@@ -62,7 +62,7 @@ const local = CALL_DRIVER_TARIFF.local;
 export const CALL_DRIVERS_CHENNAI = {
   brand: SITE_NAME,
   domain: SITE_URL,
-  path: CALL_DRIVERS_CHENNAI_PATH,
+  path: actingDriverLandingPath("chennai"),
   city: "Chennai",
   phoneDisplay: "+91 99441 97416",
   phones: [ORG_PHONE],
@@ -340,7 +340,7 @@ export const CALL_DRIVERS_CHENNAI = {
     }
   ],
   related: [
-    { href: "/services/airport-taxi/chennai", label: "Airport transfers in Chennai" },
+    { href: "/chennai/airport-cab-booking", label: "Airport transfers in Chennai" },
     { href: "/services/car-rental/chennai", label: "Car rental Chennai (with driver)" },
     { href: "/call-driver/book?service=corporate", label: "Employee and corporate drivers" },
     { href: "/tariff", label: "Chennai cab tariff" },

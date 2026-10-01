@@ -64,13 +64,13 @@ export default function SeoRouteCabListing({ initialTrip = {}, initialCabs = [] 
       <CabResultsModifyBar initialTrip={trip} />
       <div className="section-shell py-3 lg:py-5">
         {loading && !showList ? (
-          <div className="rounded-xl border border-slate-200 bg-white p-12 text-center text-slate-500">
+          <div className="rounded-xl border border-slate-200 bg-white px-4 py-8 text-center text-sm text-slate-500 sm:p-12">
             Finding best cabs for you…
           </div>
         ) : error && !showList ? (
           <div className="rounded-xl border border-slate-200 bg-white p-12 text-center text-rose-600">{error}</div>
         ) : showList ? (
-          <MmtCabResults cabs={cabs} trip={trip} />
+          <MmtCabResults cabs={cabs} trip={trip} embedded />
         ) : (
           <div className="rounded-xl border border-dashed border-slate-200 bg-white p-12 text-center text-slate-500">
             No cabs found for this route.

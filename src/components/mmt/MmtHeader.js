@@ -1,15 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import CabziiLogo from "../brand/CabziiLogo";
 import { BRAND } from "../../lib/brand";
 import { clearSession, isLoggedIn } from "../../lib/auth";
-import { useScrollHeader } from "../../lib/useScrollHeader";
 import HeaderSearchBar from "./HeaderSearchBar";
 import MobileSideNav from "../layout/MobileSideNav";
 import { useHeroSearch } from "../emt/HeroSearchContext";
+import EmtCategoryTabs from "../emt/EmtCategoryTabs";
+import { productTabFromPath, productTabHref, resolveProductTab } from "../../lib/emt/productNav";
 
 function AccountGlyph({ className = "h-5 w-5" }) {
   return (
@@ -34,34 +35,46 @@ function AccountButton({ href, label }) {
     <Link
       href={href}
       aria-label={label}
-      className="cabzii-tap inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#eef2f7] text-slate-700 transition hover:bg-[#e4e9f1]"
+      className="cabzii-tap inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#eef2f7] text-slate-700 transition active:scale-95 hover:bg-[#e4e9f1]"
     >
       <AccountGlyph />
     </Link>
   );
 }
 
-function SiteHeader({ loggedIn, logout, menuOpen, setMenuOpen, pathname }) {
+function ProductTabs({ activeTab, onSelect, className = "" }) {
+  return (
+    <EmtCategoryTabs variant="nav" activeTab={activeTab} setActiveTab={onSelect} className={className} />
+  );
+}
+
+function SiteHeader({ loggedIn, logout, menuOpen, setMenuOpen, pathname, activeTab, onSelectTab }) {
   const onLoginPage = pathname === "/login" || pathname.startsWith("/login/");
   const closeMenu = () => setMenuOpen(false);
 
   return (
-    <>
-      <div className="border-b border-slate-200/90 bg-white pt-[env(safe-area-inset-top,0px)]">
-        <div className="section-shell flex items-center justify-between gap-3 py-3 sm:py-3.5 lg:grid lg:grid-cols-[auto_minmax(0,1fr)_auto] lg:gap-4">
-          <Link href="/" className="min-w-0 shrink justify-self-start" aria-label={`${BRAND.fullName} home`}>
-            <CabziiLogo
-              showDomain
-              showTagline
-              className="!text-base sm:!text-lg lg:!text-xl max-md:[&>span:last-child]:hidden"
-            />
-          </Link>
+    <div className="border-b border-slate-200/90 bg-white pt-[env(safe-area-inset-top,0px)]">
+      <div className="section-shell grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 py-2.5 sm:gap-3 lg:gap-4">
+        <Link href="/" className="min-w-0 shrink-0 justify-self-start" aria-label={`${BRAND.fullName} home`}>
+          <CabziiLogo
+            showDomain
+            showTagline
+            className="!text-base sm:!text-lg lg:!text-xl max-md:[&>span:last-child]:hidden"
+          />
+        </Link>
 
-          <div className="hidden min-w-0 justify-center px-2 lg:flex lg:px-4">
-            <HeaderSearchBar variant="light" className="w-full max-w-2xl" onSubmitted={closeMenu} />
-          </div>
+        <div className="flex min-w-0 justify-center px-0.5 sm:px-2">
+          <HeaderSearchBar
+            compact
+            variant="light"
+            className="w-full min-w-0 max-w-[20rem] lg:max-w-[24rem]"
+            onSubmitted={closeMenu}
+          />
+        </div>
 
-          <div className="hidden shrink-0 items-center justify-end gap-2 lg:flex sm:justify-self-end">
+        <div className="flex min-w-0 shrink-0 items-center justify-end gap-1 sm:gap-1.5 lg:gap-2">
+          <ProductTabs activeTab={activeTab} onSelect={onSelectTab} className="hidden lg:flex" />
+          <div className="hidden shrink-0 items-center gap-1.5 lg:flex">
             {loggedIn ? (
               <>
                 <AccountButton href="/account" label="Account" />
@@ -73,8 +86,7 @@ function SiteHeader({ loggedIn, logout, menuOpen, setMenuOpen, pathname }) {
               <AccountButton href="/login" label="Login" />
             )}
           </div>
-
-          <div className="flex shrink-0 items-center justify-end gap-1.5 lg:hidden">
+          <div className="flex shrink-0 items-center gap-1 lg:hidden">
             {onLoginPage ? null : <AccountButton href={loggedIn ? "/account" : "/login"} label={loggedIn ? "Account" : "Login"} />}
             <button
               type="button"
@@ -91,17 +103,22 @@ function SiteHeader({ loggedIn, logout, menuOpen, setMenuOpen, pathname }) {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 
-/** Same logo + search + login navbar on every page. */
+/** Same logo + product tabs + search + login on every page. */
 export default function MmtHeader({ hideOnMobile = false, hidden = false }) {
   const pathname = usePathname();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [loggedIn, setLoggedIn] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const { visible: headerVisible, forceVisible } = useScrollHeader(true);
+  const hero = useHeroSearch();
+  const queryTab = resolveProductTab(searchParams.get("tab"));
+  const activeHeroTab = hero?.activeTab || queryTab;
+  const activeTab = productTabFromPath(pathname, activeHeroTab);
+  const onLoginPage = pathname === "/login" || pathname.startsWith("/login/");
 
   useEffect(() => {
     const sync = () => setLoggedIn(isLoggedIn());
@@ -113,10 +130,6 @@ export default function MmtHeader({ hideOnMobile = false, hidden = false }) {
   useEffect(() => {
     setMenuOpen(false);
   }, [pathname]);
-
-  useEffect(() => {
-    if (menuOpen) forceVisible();
-  }, [menuOpen, forceVisible]);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -134,19 +147,22 @@ export default function MmtHeader({ hideOnMobile = false, hidden = false }) {
     router.refresh();
   };
 
-  const showHeader = headerVisible || menuOpen;
-  const hero = useHeroSearch();
-  const activeHeroTab = hero?.activeTab || "cabs";
-  const onLoginPage = pathname === "/login" || pathname.startsWith("/login/");
+  const onSelectTab = (id) => {
+    if (pathname === "/") {
+      hero?.setActiveTab?.(id);
+      return;
+    }
+    router.push(productTabHref(id));
+  };
 
   if (hidden) return null;
 
   return (
     <>
       <header
-        className={`fixed left-0 right-0 top-0 z-[100] border-b border-slate-200 bg-white text-slate-900 shadow-sm transition-transform duration-300 ease-out will-change-transform ${
-          showHeader ? "translate-y-0" : "-translate-y-full"
-        } ${hideOnMobile ? "max-lg:hidden" : ""}`}
+        className={`fixed left-0 right-0 top-0 z-[100] bg-white/92 text-slate-900 shadow-[0_1px_0_rgba(15,23,42,0.06)] backdrop-blur-md ${
+          hideOnMobile ? "max-lg:hidden" : ""
+        }`}
       >
         <SiteHeader
           loggedIn={loggedIn}
@@ -154,6 +170,8 @@ export default function MmtHeader({ hideOnMobile = false, hidden = false }) {
           menuOpen={menuOpen}
           setMenuOpen={setMenuOpen}
           pathname={pathname}
+          activeTab={activeTab}
+          onSelectTab={onSelectTab}
         />
       </header>
 
@@ -161,7 +179,8 @@ export default function MmtHeader({ hideOnMobile = false, hidden = false }) {
         open={menuOpen}
         onClose={() => setMenuOpen(false)}
         pathname={pathname}
-        activeHeroTab={activeHeroTab}
+        activeHeroTab={activeTab}
+        onSelectTab={onSelectTab}
         loggedIn={loggedIn}
         onLogout={logout}
         onLoginPage={onLoginPage}

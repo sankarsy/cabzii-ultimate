@@ -9,12 +9,43 @@ import HeroTabUrlSync from "../emt/HeroTabUrlSync";
 import { useSelectedCity } from "../../lib/useSelectedCity";
 import { isValidDriverTripSearch, parseDriverTripSearchParams } from "../../lib/driverTrip";
 import { isValidTripSearch, parseTripSearchParams } from "../../lib/mmtTrip";
+import { resolveProductTab } from "../../lib/emt/productNav";
 
-function resolveHeroTab(tabParam) {
-  if (tabParam === "drivers") return "drivers";
-  if (tabParam === "holidays") return "holidays";
-  if (tabParam === "buses") return "buses";
-  return "cabs";
+function HomeProviders({ displayCity, children }) {
+  const searchParams = useSearchParams();
+  const defaultTab = resolveProductTab(searchParams.get("tab"));
+
+  return (
+    <HeroSearchProvider defaultTab={defaultTab}>
+      <HeroTabUrlSync />
+      <MmtLayout>
+        <Suspense fallback={<EmtHeroSearch defaultCity={displayCity} initialCabTrip={null} initialDriverTrip={null} />}>
+          <HeroFromUrl displayCity={displayCity} />
+        </Suspense>
+        {children}
+      </MmtLayout>
+    </HeroSearchProvider>
+  );
+}
+
+export default function MmtHomePage({ children }) {
+  const { city: selectedCity } = useSelectedCity();
+  const displayCity = selectedCity || "Chennai";
+
+  return (
+    <Suspense
+      fallback={
+        <HeroSearchProvider defaultTab="cabs">
+          <MmtLayout>
+            <EmtHeroSearch defaultCity={displayCity} initialCabTrip={null} initialDriverTrip={null} />
+            {children}
+          </MmtLayout>
+        </HeroSearchProvider>
+      }
+    >
+      <HomeProviders displayCity={displayCity}>{children}</HomeProviders>
+    </Suspense>
+  );
 }
 
 function ApplyLandingTab() {
@@ -25,7 +56,7 @@ function ApplyLandingTab() {
   useEffect(() => {
     if (applied.current) return;
     applied.current = true;
-    const tab = resolveHeroTab(searchParams.get("tab"));
+    const tab = resolveProductTab(searchParams.get("tab"));
     if (tab !== "cabs") hero?.setActiveTab?.(tab);
   }, [searchParams, hero]);
 
@@ -47,22 +78,5 @@ function HeroFromUrl({ displayCity }) {
         initialDriverTrip={hasFrom && isValidDriverTripSearch(driverTrip) ? driverTrip : null}
       />
     </>
-  );
-}
-
-export default function MmtHomePage({ children }) {
-  const { city: selectedCity } = useSelectedCity();
-  const displayCity = selectedCity || "Chennai";
-
-  return (
-    <HeroSearchProvider defaultTab="cabs">
-      <HeroTabUrlSync />
-      <MmtLayout>
-        <Suspense fallback={<EmtHeroSearch defaultCity={displayCity} initialCabTrip={null} initialDriverTrip={null} />}>
-          <HeroFromUrl displayCity={displayCity} />
-        </Suspense>
-        {children}
-      </MmtLayout>
-    </HeroSearchProvider>
   );
 }

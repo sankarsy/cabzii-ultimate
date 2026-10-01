@@ -6,8 +6,7 @@ import { UserRound } from "lucide-react";
 import CabziiBrowseHeader from "../mmt/CabziiBrowseHeader";
 import RelatedSeoLinks from "../seo/RelatedSeoLinks";
 import CallDriverServiceGrid from "./CallDriverServiceGrid";
-import { CALL_DRIVER_SERVICES, callDriverBookHref, mergeCallDriverServices } from "../../lib/callDriver";
-import CallDriverServiceSeo from "./CallDriverServiceSeo";
+import { CALL_DRIVER_SERVICES, mergeCallDriverServices } from "../../lib/callDriver";
 import { DEFAULT_CALL_DRIVER_PAGE } from "../../lib/callDriverPage";
 
 export default function CallDriverLanding({
@@ -18,7 +17,6 @@ export default function CallDriverLanding({
   sections = DEFAULT_CALL_DRIVER_PAGE.sections
 }) {
   const [services, setServices] = useState(CALL_DRIVER_SERVICES);
-  const [seoMap, setSeoMap] = useState({});
   const [pageCopy, setPageCopy] = useState({ title, subtitle, intro, sections });
 
   useEffect(() => {
@@ -28,7 +26,6 @@ export default function CallDriverLanding({
       .then((json) => {
         if (cancelled || !json?.data) return;
         if (json.data.services) setServices(mergeCallDriverServices(json.data.services));
-        if (json.data.seo && typeof json.data.seo === "object") setSeoMap(json.data.seo);
         if (json.data.page) {
           setPageCopy({
             title: json.data.page.title || title,
@@ -73,21 +70,6 @@ export default function CallDriverLanding({
               </section>
             ) : null
           )}
-          <div className="space-y-10 border-t border-slate-200 pt-8">
-            {services.map((svc) => (
-              <div key={svc.id} id={svc.id}>
-                <CallDriverServiceSeo serviceId={svc.id} compact adminMap={seoMap} />
-                <p className="mt-3">
-                  <Link
-                    href={callDriverBookHref(svc.id)}
-                    className="font-semibold text-[var(--cabzii-brand)] hover:underline"
-                  >
-                    Book {svc.title} →
-                  </Link>
-                </p>
-              </div>
-            ))}
-          </div>
         </div>
       ) : null}
 

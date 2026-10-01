@@ -22,13 +22,13 @@ import { getCityLandingBody } from "../../../lib/seo/landingContent";
 import { resolveMediaUrl } from "../../../lib/media";
 
 import { SEO_REVALIDATE_SECONDS } from "../../../lib/revalidation/constants";
-import { CALL_DRIVERS_CHENNAI_PATH } from "../../../data/call-drivers-chennai";
+import { actingDriverLandingPath, isActingDriverHubCity } from "../../../lib/cityCabPaths";
 
 export const revalidate = SEO_REVALIDATE_SECONDS;
 export const dynamicParams = true;
 
 export function generateStaticParams() {
-  return MAIN_PAGE_CITY_SLUGS.map((city) => ({ city }));
+  return MAIN_PAGE_CITY_SLUGS.filter((city) => !isActingDriverHubCity(city)).map((city) => ({ city }));
 }
 
 export async function generateMetadata({ params }) {
@@ -42,8 +42,8 @@ export async function generateMetadata({ params }) {
       follow: false
     });
   }
-  if (city.slug === "chennai") {
-    permanentRedirect(CALL_DRIVERS_CHENNAI_PATH);
+  if (isActingDriverHubCity(city.slug)) {
+    permanentRedirect(actingDriverLandingPath(city.slug));
   }
   const path = `/acting-driver/${city.slug}`;
   const cms = await fetchSeoCityPage("acting-driver", city.slug);
@@ -66,8 +66,8 @@ export async function generateMetadata({ params }) {
 export default async function ActingDriverCityPage({ params }) {
   const city = cityBySlug(params.city);
   if (!city) notFound();
-  if (city.slug === "chennai") {
-    permanentRedirect(CALL_DRIVERS_CHENNAI_PATH);
+  if (isActingDriverHubCity(city.slug)) {
+    permanentRedirect(actingDriverLandingPath(city.slug));
   }
 
   const path = `/acting-driver/${city.slug}`;

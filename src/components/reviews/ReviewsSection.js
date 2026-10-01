@@ -56,7 +56,7 @@ export default function ReviewsSection({ itemType, itemId, className = "" }) {
       <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-8">
         <div className="flex shrink-0 flex-col items-start">
           <div className="flex items-baseline gap-1.5">
-            <span className="text-4xl font-extrabold tracking-tight text-slate-900">{average.toFixed(1)}</span>
+            <span className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">{average.toFixed(1)}</span>
             <span className="text-sm font-medium text-slate-500">/ 5</span>
           </div>
           <StarRating value={average} className="mt-1" />

@@ -2,6 +2,7 @@
 
 import { previewCatalogSlug } from "../../lib/catalogProduct";
 import { seoCityPublicPath } from "../../lib/cityCabPaths";
+import { routePublicPath } from "../../lib/seo/outstationPaths";
 import ImageUploadField from "./ImageUploadField";
 
 function inputCls() {
@@ -26,10 +27,10 @@ function serviceSlugPreview(form) {
 
 function routeSlugPreview(form) {
   const manual = previewCatalogSlug(form, "seoTitle");
-  if (manual) return `/routes/${manual}`;
+  if (manual) return routePublicPath(manual) || `/routes/${manual}`;
   const from = (form.fromCitySlug || "").toLowerCase().replace(/[^a-z0-9-]/g, "");
   const to = (form.toCitySlug || "").toLowerCase().replace(/[^a-z0-9-]/g, "");
-  if (from && to) return `/routes/${from}-to-${to}-cab`;
+  if (from && to) return `/${from}/outstation/${from}-to-${to}`;
   return `/routes/${manual || "…"}`;
 }
 
@@ -172,8 +173,8 @@ export function AdminSeoCityPageForm({ form, onChange }) {
       <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-900">
         <p className="font-semibold">City landing pages — this is the Google result for “cab booking Chennai”</p>
         <ul className="mt-1 list-inside list-disc space-y-0.5 text-emerald-800">
-          <li>Live URL is /car-rental/&#123;city&#125;-city-cabs (cabs) or /acting-driver/&#123;city&#125; (Chennai acting driver is /call-drivers-chennai)</li>
-          <li>Click <strong>Create</strong>, set page type + city slug (chennai), then save SEO title and body</li>
+          <li>Live URL is /&#123;city&#125; (cabs), /&#123;city&#125;/airport-cab-booking, or /&#123;city&#125;/acting-driver (Chennai, Trichy, Madurai, Coimbatore)</li>
+          <li>Start with Chennai, Trichy, Madurai and Coimbatore. Click <strong>Create</strong>, set page type + city slug, then save H1, FAQs and places</li>
           <li>Leave a field empty to keep the website&apos;s auto-generated copy</li>
           <li>One entry per page type + city. Super admin only (Admin Login, not Travel Partner)</li>
         </ul>
@@ -183,20 +184,31 @@ export function AdminSeoCityPageForm({ form, onChange }) {
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
           <Field label="Page type *">
             <select className={inputCls()} value={form.pageType || "cab-booking"} onChange={(e) => set({ pageType: e.target.value })}>
-              <option value="cab-booking">Cab booking city (/car-rental/…-city-cabs)</option>
-              <option value="acting-driver">Acting driver city (/acting-driver/…, Chennai → /call-drivers-chennai)</option>
+              <option value="cab-booking">Cab booking city (/chennai, /trichy, /madurai, /coimbatore)</option>
+              <option value="airport-cab-booking">Airport cab booking (/&#123;city&#125;/airport-cab-booking)</option>
+              <option value="acting-driver">Acting driver city (/&#123;city&#125;/acting-driver)</option>
             </select>
           </Field>
           <Field label="City slug *" hint="e.g. chennai, bengaluru, madurai">
             <input className={inputCls()} value={form.citySlug || ""} onChange={(e) => set({ citySlug: e.target.value })} placeholder="chennai" />
           </Field>
           <div className="sm:col-span-2">
-            <Field label="Product name" hint="City hub title — e.g. Cab Booking Chennai">
+            <Field label="Product name (H1)" hint="Visible heading — e.g. Best Cab Services in Chennai - Cabzii">
               <input
                 className={inputCls()}
                 value={form.h1 || ""}
                 onChange={(e) => set({ h1: e.target.value })}
-                placeholder="Cab Booking Chennai"
+                placeholder="Best Cab Services in Chennai - Cabzii"
+              />
+            </Field>
+          </div>
+          <div className="sm:col-span-2">
+            <Field label="Lead line" hint="Under the H1">
+              <input
+                className={inputCls()}
+                value={form.lead || ""}
+                onChange={(e) => set({ lead: e.target.value })}
+                placeholder="Book airport, local and outstation cabs in Chennai. Fares show before you pay."
               />
             </Field>
           </div>
@@ -234,8 +246,23 @@ export function AdminSeoCityPageForm({ form, onChange }) {
 
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="sm:col-span-2">
-          <Field label="Extra page content (optional HTML)" hint="Shown above the auto-generated city content">
+          <Field label="About this city" hint="Shown in the SEO body">
+            <textarea className={inputCls()} rows={3} value={form.aboutCity || ""} onChange={(e) => set({ aboutCity: e.target.value })} />
+          </Field>
+        </div>
+        <div className="sm:col-span-2">
+          <Field label="Extra page content (optional HTML)" hint="Shown in the SEO article">
             <textarea className={inputCls()} rows={4} value={form.body || ""} onChange={(e) => set({ body: e.target.value })} />
+          </Field>
+        </div>
+        <div className="sm:col-span-2">
+          <Field label="FAQs" hint="One per line: Question | Answer">
+            <textarea className={inputCls()} rows={6} value={form.faqsText || ""} onChange={(e) => set({ faqsText: e.target.value })} placeholder={"How do I book a cab in Chennai? | Enter pickup and drop, choose a vehicle, pay 50% to confirm."} />
+          </Field>
+        </div>
+        <div className="sm:col-span-2">
+          <Field label="Tourist places / common drops" hint={form.pageType === "airport-cab-booking" ? "One per line: Area | Short description" : "One per line: Place | Short description"}>
+            <textarea className={inputCls()} rows={4} value={form.touristPlacesText || ""} onChange={(e) => set({ touristPlacesText: e.target.value })} placeholder={"Marina Beach | Book a local cab for the beach drop without parking hassle."} />
           </Field>
         </div>
         <div className="sm:col-span-2">
@@ -269,7 +296,7 @@ export function AdminSeoRouteForm({ form, onChange }) {
         <ul className="mt-1 list-inside list-disc space-y-0.5 text-emerald-800">
           <li>Meta title: route + fare + cabzii.in</li>
           <li>From/to city slugs must match site cities (chennai, bengaluru)</li>
-          <li>Published ON → appears on /routes/ and in sitemap</li>
+          <li>Published ON → live at /{"{city}"}/outstation/{"{from}-to-{to}"} and in sitemap</li>
         </ul>
       </div>
       <div className="rounded-xl border border-slate-200 bg-slate-50/80 p-4">

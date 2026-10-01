@@ -2,13 +2,14 @@
 
 import { useMemo, useState } from "react";
 import { SEO_CITIES } from "../../lib/seo/cities";
+import { RANKING_SERVICE_SLUGS } from "../../lib/seo/packageDoorways";
 import { createRankingSeoPage } from "../../lib/admin/adminSeoApi";
 
 const KINDS = [
   { id: "landing", label: "Custom landing", hint: "New URL at /pages/your-slug" },
-  { id: "city", label: "City cab hub", hint: "/car-rental/{city}-city-cabs" },
-  { id: "acting-driver", label: "Acting driver city", hint: "/acting-driver/{city}" },
-  { id: "service", label: "Service page", hint: "/services/{slug}/chennai" },
+  { id: "city", label: "City cab hub", hint: "/{city} (chennai, trichy, madurai, coimbatore)" },
+  { id: "acting-driver", label: "Acting driver city", hint: "/{city}/acting-driver (chennai, trichy, madurai, coimbatore)" },
+  { id: "service", label: "Service page", hint: "/services/{slug}/chennai — airport-taxi, outstation-cab, one-way-cab or tempo-traveller only" },
   { id: "route", label: "Route page", hint: "/routes/{from}-to-{to}-cab" }
 ];
 
@@ -146,8 +147,15 @@ export default function AdminSeoCreatePage({ open, token, pageSeo = {}, onClose,
           ) : null}
 
           {kind === "service" ? (
-            <Field label="Service slug *" hint="airport-taxi, outstation-cab, hourly-rental, car-rental">
-              <input className={inputCls()} value={form.slug} onChange={(e) => setForm((p) => ({ ...p, slug: e.target.value }))} required />
+            <Field label="Service *" hint="Fare packages (hourly, local, car rental, driver-on-hire) are not SEO pages — they book on the city hub.">
+              <select className={inputCls()} value={form.slug} onChange={(e) => setForm((p) => ({ ...p, slug: e.target.value }))} required>
+                <option value="">Select service</option>
+                {RANKING_SERVICE_SLUGS.map((slug) => (
+                  <option key={slug} value={slug}>
+                    {slug}
+                  </option>
+                ))}
+              </select>
             </Field>
           ) : null}
 
