@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import JsonLd from "../../components/seo/JsonLd";
 import CityCabLandingPage from "../../components/city-cabs/CityCabLandingPage";
 import SeoPageView from "../../components/seo/SeoPageView";
@@ -62,7 +62,7 @@ export async function generateMetadata({ params }) {
 
 export default async function CityCabHubPage({ params }) {
   const city = cityBySlug(params.city);
-  if (!city || !isMainPageCity(city.slug)) notFound();
+  if (!city || !isMainPageCity(city.slug)) permanentRedirect("/cabs");
 
   const base = getCityCabData(city.slug);
   if (!base) notFound();

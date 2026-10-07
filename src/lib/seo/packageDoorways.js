@@ -15,7 +15,7 @@ export const PACKAGE_DOORWAY_SERVICE_SLUGS = [
 ];
 
 /** Service URLs that should stay in Google: trip type, not a fare slab. */
-export const RANKING_SERVICE_SLUGS = ["airport-taxi", "outstation-cab", "one-way-cab", "tempo-traveller"];
+export const RANKING_SERVICE_SLUGS = ["airport-taxi", "outstation-cab"];
 
 export function isPackageDoorwayService(slug) {
   return PACKAGE_DOORWAY_SERVICE_SLUGS.includes(String(slug || ""));

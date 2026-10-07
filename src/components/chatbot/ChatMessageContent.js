@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-const PATH_RE = /(\/(?:cabs|drivers|holidays|testimonials|locations|blogs|flights|hotels|trains|buses|cancellation-policy|terms-and-conditions)(?:\/[^\s]*)?)/gi;
+const PATH_RE = /(\/(?:cabs|drivers|holidays|testimonials|locations|blogs|buses|cancellation-policy|terms-and-conditions)(?:\/[^\s]*)?)/gi;
 
 /** Render assistant text with clickable internal paths. */
 export default function ChatMessageContent({ content, isUser = false }) {
@@ -10,7 +10,7 @@ export default function ChatMessageContent({ content, isUser = false }) {
   return (
     <>
       {parts.map((part, i) => {
-        if (part.match(/^\/(?:cabs|drivers|holidays|testimonials|locations|blogs|flights|hotels|trains|buses|cancellation-policy|terms-and-conditions)/i)) {
+        if (part.match(/^\/(?:cabs|drivers|holidays|testimonials|locations|blogs|buses|cancellation-policy|terms-and-conditions)/i)) {
           const href = part.split(/[\s\n]/)[0];
           return (
             <Link

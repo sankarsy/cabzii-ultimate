@@ -96,15 +96,10 @@ export const PRIMARY_FOCUS_CITY_SLUGS = [
 ];
 
 /**
- * Tamil Nadu + Tirupati pilgrimage + Pondicherry + Bengaluru corridor.
- * These are pre-rendered, sitemapped, and indexed. Other national cities stay on-demand / noindex.
+ * Live ranking city hubs only. Extra programmatic city landings 301 to /cabs.
+ * Add a slug here when you publish a new city page yourself.
  */
-export const MAIN_PAGE_CITY_SLUGS = [
-  ...TAMIL_NADU_CITY_SLUGS,
-  "pondicherry",
-  "tirupati",
-  "bengaluru"
-];
+export const MAIN_PAGE_CITY_SLUGS = ["chennai"];
 
 export function isTamilNaduCity(cityOrSlug) {
   const slug = typeof cityOrSlug === "string" ? cityOrSlug : cityOrSlug?.slug;
@@ -123,17 +118,7 @@ export function isMainPageCity(cityOrSlug) {
 
 /** Peer city links for hubs — TN peers first when viewing a TN city. */
 export function peerCitiesForHub(city, limit = 12) {
-  const others = SEO_CITIES.filter((c) => c.slug !== city.slug);
-  if (isTamilNaduCity(city)) {
-    const tn = others.filter((c) => isTamilNaduCity(c));
-    const rest = others.filter((c) => !isTamilNaduCity(c) && isPrimaryFocusCity(c));
-    return [...tn, ...rest].slice(0, limit);
-  }
-  if (isPrimaryFocusCity(city)) {
-    const focus = others.filter((c) => isPrimaryFocusCity(c));
-    return focus.slice(0, limit);
-  }
-  return others.filter((c) => isPrimaryFocusCity(c)).slice(0, limit);
+  return SEO_CITIES.filter((c) => c.slug !== city.slug && isMainPageCity(c.slug)).slice(0, limit);
 }
 
 export function cityBySlug(slug) {

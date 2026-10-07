@@ -1,9 +1,9 @@
 import Link from "next/link";
 import Breadcrumbs from "./Breadcrumbs";
 import { SEO_SERVICES, servicePath } from "../../lib/seo/services";
-import { isPackageDoorwayService } from "../../lib/seo/packageDoorways";
 import { SEO_CITIES } from "../../lib/seo/cities";
 import { INTERNAL_LINK_CITIES } from "../../lib/seo/internalLinks";
+import { isKeepRankingServicePage } from "../../lib/seo/keepLivePages";
 
 export default function ServicesHubSeo() {
   const cities = INTERNAL_LINK_CITIES.map((slug) => SEO_CITIES.find((c) => c.slug === slug)).filter(Boolean);
@@ -25,7 +25,11 @@ export default function ServicesHubSeo() {
       <section className="cabzii-seo-block">
         <h2>Service categories</h2>
         <ul className="mt-3 grid gap-2 sm:grid-cols-2">
-          {SEO_SERVICES.filter((svc) => !isPackageDoorwayService(svc.slug)).map((svc) => (
+          {SEO_SERVICES.filter(
+            (svc) =>
+              svc.slug === "airport-taxi" ||
+              INTERNAL_LINK_CITIES.some((city) => isKeepRankingServicePage(svc.slug, city))
+          ).map((svc) => (
             <li key={svc.slug} className="rounded-xl border border-slate-200 bg-white p-3">
               <p className="font-semibold text-slate-900">{svc.name}</p>
               <p className="mt-1 text-xs text-slate-600">{svc.highlights?.[0]}</p>

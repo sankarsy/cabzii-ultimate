@@ -3,6 +3,7 @@ import { cityCabLandingPath, actingDriverLandingPath, airportTaxiPublicPath } fr
 import { SEO_ROUTES, routesForCity } from "./routes";
 import { SEO_SERVICES, servicePath } from "./services";
 import { isPackageDoorwayService } from "./packageDoorways";
+import { isKeepRankingServicePage, isKeepRouteSlug, KEEP_ACTING_DRIVER_CITY_SLUGS } from "./keepLivePages";
 import { cityHasCommercialAirport } from "./airports";
 import { routePublicPath } from "./outstationPaths";
 
@@ -21,18 +22,7 @@ export const CORE_INTERNAL_LINKS = [
 export const INTERNAL_LINK_CITIES = MAIN_PAGE_CITY_SLUGS;
 
 /** Top cities for service landing cross-links (SEO). */
-export const SERVICE_LINK_CITIES = [
-  "chennai",
-  "coimbatore",
-  "madurai",
-  "trichy",
-  "salem",
-  "tirupati",
-  "bengaluru",
-  "pondicherry",
-  "rameswaram",
-  "kanchipuram"
-];
+export const SERVICE_LINK_CITIES = ["chennai"];
 
 function citiesBySlugs(slugs) {
   return slugs.map((slug) => SEO_CITIES.find((c) => c.slug === slug)).filter(Boolean);
@@ -57,7 +47,7 @@ export function cabBookingLinks(limit = INTERNAL_LINK_CITIES.length) {
 }
 
 export function actingDriverLinks(limit = INTERNAL_LINK_CITIES.length) {
-  return citiesBySlugs(INTERNAL_LINK_CITIES)
+  return citiesBySlugs(KEEP_ACTING_DRIVER_CITY_SLUGS)
     .slice(0, limit)
     .map((city) => ({
       href: actingDriverLandingPath(city.slug),
@@ -69,7 +59,11 @@ export function actingDriverLinks(limit = INTERNAL_LINK_CITIES.length) {
 /** All services for one city. */
 export function serviceLinks(citySlug = "chennai", limit = SEO_SERVICES.length) {
   const city = SEO_CITIES.find((c) => c.slug === citySlug) || SEO_CITIES[0];
-  return SEO_SERVICES.filter((svc) => !isPackageDoorwayService(svc.slug))
+  return SEO_SERVICES.filter(
+    (svc) =>
+      !isPackageDoorwayService(svc.slug) &&
+      (svc.slug === "airport-taxi" ? city.slug === "chennai" : isKeepRankingServicePage(svc.slug, city.slug))
+  )
     .slice(0, limit)
     .map((svc) => ({
     href: servicePath(svc, city),
@@ -85,7 +79,9 @@ export function serviceLinksForCities(
   { servicesPerCity = SEO_SERVICES.length } = {}
 ) {
   const cities = citiesBySlugs(citySlugs);
-  const services = SEO_SERVICES.filter((svc) => !isPackageDoorwayService(svc.slug)).slice(0, servicesPerCity);
+  const services = SEO_SERVICES.filter(
+    (svc) => !isPackageDoorwayService(svc.slug) && (svc.slug === "airport-taxi" || svc.slug === "outstation-cab")
+  ).slice(0, servicesPerCity);
   const links = [];
 
   for (const city of cities) {
@@ -103,7 +99,9 @@ export function serviceLinksForCities(
 }
 
 export function routeLinks(limit = SEO_ROUTES.length) {
-  return SEO_ROUTES.slice(0, limit).map((route) => ({
+  return SEO_ROUTES.filter((route) => isKeepRouteSlug(route.slug))
+    .slice(0, limit)
+    .map((route) => ({
     href: routePublicPath(route.slug),
     label: formatRouteLabel(route)
   }));
@@ -113,7 +111,7 @@ export function routeLinksForCity(citySlug, limit = 6) {
   const seen = new Set();
   const out = [];
   for (const route of routesForCity(citySlug)) {
-    if (!route?.slug || seen.has(route.slug)) continue;
+    if (!route?.slug || seen.has(route.slug) || !isKeepRouteSlug(route.slug)) continue;
     seen.add(route.slug);
     out.push({
       href: routePublicPath(route.slug),

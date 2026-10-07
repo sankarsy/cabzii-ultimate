@@ -9,6 +9,7 @@ import {
 } from "../cityCabPaths";
 import { outstationPath, parseLegacyRoutesPathname } from "../seo/outstationPaths";
 import { isPackageDoorwayService, packageDoorwayCanonicalPath } from "../seo/packageDoorways";
+import { resolveDroppedSeoRedirect } from "../seo/keepLivePages";
 
 export const PUBLIC_ROUTE_REDIRECTS = {
   "/cars": "/cabs",
@@ -55,9 +56,16 @@ export function resolvePublicRouteRedirect(pathname) {
   if (PUBLIC_ROUTE_REDIRECTS[pathname]) {
     return PUBLIC_ROUTE_REDIRECTS[pathname];
   }
+  if (/^\/(hotels|flights|trains)(\/|$)/.test(String(pathname || ""))) {
+    return "/";
+  }
+  const droppedSeo = resolveDroppedSeoRedirect(pathname);
+  if (droppedSeo) {
+    return droppedSeo;
+  }
   const trichyAlias = String(pathname || "").match(/^\/([a-z0-9-]+)(\/.*)?$/);
   if (trichyAlias && TRICHY_CITY_ALIASES.includes(trichyAlias[1])) {
-    return `/trichy${trichyAlias[2] || ""}`.replace(/\/$/, "") || "/trichy";
+    return "/cabs";
   }
   const legacyAirport = String(pathname || "").match(/^\/services\/airport-taxi\/([a-z0-9-]+)\/?$/);
   if (legacyAirport && isAirportCabBookingCity(legacyAirport[1])) {

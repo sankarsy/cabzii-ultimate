@@ -12,6 +12,7 @@ import { SEO_ROUTES } from "./routes";
 import { cityHasCommercialAirport } from "./airports";
 import { actingDriverLandingPath, cityCabLandingPath } from "../cityCabPaths";
 import { isPackageDoorwayService } from "./packageDoorways";
+import { isKeepActingDriverCity, isKeepRankingServicePage, isKeepRouteSlug, isKeepSeoCity } from "./keepLivePages";
 
 /** A keep index · B improve while indexed · C noindex,follow · D do not generate (unused for live URLs) */
 export const SEO_CLASS = {
@@ -104,6 +105,18 @@ export function classifyCityHub(citySlug, pageType = "cab-booking") {
   const isCab = pageType !== "acting-driver";
   const intent = isCab ? "cab-booking" : "acting-driver";
 
+  if (!isKeepSeoCity(slug) && (isCab || !isKeepActingDriverCity(slug))) {
+    return policy({
+      classification: SEO_CLASS.C,
+      indexable: false,
+      commercialScore: 12,
+      searchIntent: intent,
+      contentQuality: "dropped",
+      vendorRequired: isCab,
+      reason: "Not in the live ranking set — 301 off this URL"
+    });
+  }
+
   if (slug === "chennai") {
     return policy({
       classification: SEO_CLASS.A,
@@ -114,6 +127,18 @@ export function classifyCityHub(citySlug, pageType = "cab-booking") {
       contentQuality: "unique",
       vendorRequired: isCab,
       reason: "HQ money page"
+    });
+  }
+
+  if (!isCab && isKeepActingDriverCity(slug)) {
+    return policy({
+      classification: SEO_CLASS.A,
+      indexable: true,
+      commercialScore: 88,
+      searchIntent: intent,
+      contentQuality: "unique",
+      vendorRequired: false,
+      reason: "Previously created acting-driver page"
     });
   }
 
@@ -167,6 +192,18 @@ export function classifyCityHub(citySlug, pageType = "cab-booking") {
 export function classifyServiceCity(serviceSlug, citySlug) {
   const service = String(serviceSlug || "");
   const city = String(citySlug || "");
+
+  if (!isKeepRankingServicePage(service, city) && !(service === "airport-taxi" && city === "chennai")) {
+    return policy({
+      classification: SEO_CLASS.C,
+      indexable: false,
+      commercialScore: 12,
+      searchIntent: service || "service",
+      contentQuality: "dropped",
+      vendorRequired: false,
+      reason: "Not in the live ranking set — 301 off this URL"
+    });
+  }
 
   if (isPackageDoorwayService(service)) {
     return policy({
@@ -270,6 +307,17 @@ export function classifyRoute(route = {}, { source } = {}) {
       searchIntent: "route",
       contentQuality: "cms",
       reason: "CMS-published route — ops chose to keep it"
+    });
+  }
+
+  if (!isKeepRouteSlug(slug)) {
+    return policy({
+      classification: SEO_CLASS.C,
+      indexable: false,
+      commercialScore: 12,
+      searchIntent: "route",
+      contentQuality: "dropped",
+      reason: "Not in the live ranking set — 301 off this URL"
     });
   }
 

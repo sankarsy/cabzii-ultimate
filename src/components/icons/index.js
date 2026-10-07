@@ -206,20 +206,8 @@ export const HOME_CATEGORY_ICON_STYLES = {
     active: "bg-emerald-50 text-emerald-500 ring-1 ring-emerald-100",
     idle: "bg-slate-50/80 text-slate-500 ring-1 ring-slate-200"
   },
-  hotels: {
-    active: "bg-amber-50 text-amber-500 ring-1 ring-amber-100",
-    idle: "bg-slate-50/80 text-slate-500 ring-1 ring-slate-200"
-  },
-  flights: {
-    active: "bg-blue-50 text-blue-500 ring-1 ring-blue-100",
-    idle: "bg-slate-50/80 text-slate-500 ring-1 ring-slate-200"
-  },
   buses: {
     active: "bg-orange-50 text-orange-500 ring-1 ring-orange-100",
-    idle: "bg-slate-50/80 text-slate-500 ring-1 ring-slate-200"
-  },
-  trains: {
-    active: "bg-indigo-50 text-indigo-500 ring-1 ring-indigo-100",
     idle: "bg-slate-50/80 text-slate-500 ring-1 ring-slate-200"
   }
 };

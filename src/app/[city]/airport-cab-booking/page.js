@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import JsonLd from "../../../components/seo/JsonLd";
 import AirportCabLandingPage from "../../../components/city-cabs/AirportCabLandingPage";
 import SeoPageView from "../../../components/seo/SeoPageView";
@@ -9,7 +9,7 @@ import { fetchCabsForTrip, fetchSeoCityPage } from "../../../lib/serverCatalog";
 import { fetchSiteReviewStats } from "../../../lib/serverReviewStats";
 import { ORG_PHONE, SOCIAL_PROFILES, SITE_LOGO, SITE_NAME } from "../../../lib/seo/constants";
 import { SEO_REVALIDATE_SECONDS } from "../../../lib/revalidation/constants";
-import { airportCabBookingPath, cityCabLandingPath } from "../../../lib/cityCabPaths";
+import { airportCabBookingPath, cityCabLandingPath, isAirportCabBookingCity } from "../../../lib/cityCabPaths";
 
 export const revalidate = SEO_REVALIDATE_SECONDS;
 export const dynamicParams = true;
@@ -53,6 +53,7 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function CityAirportCabBookingPage({ params }) {
+  if (!isAirportCabBookingCity(params.city)) permanentRedirect("/cabs");
   const city = cityBySlug(params.city);
   const base = city ? getAirportCabData(city.slug) : null;
   if (!base) notFound();

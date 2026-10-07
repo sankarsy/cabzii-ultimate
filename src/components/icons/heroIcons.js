@@ -13,12 +13,10 @@ import {
   MapPin,
   Palmtree,
   Plane,
-  Building2,
   Route,
   ShieldCheck,
   Sparkles,
   Star,
-  TrainFront,
   Umbrella,
   UsersRound
 } from "lucide-react";
@@ -56,11 +54,8 @@ function DriverOutlineIcon(props) {
   );
 }
 
-/** Category tabs: Cabs, Drivers, Buses, Hotels, Trains, Flights, Holidays */
+/** Category tabs: Cabs, Hire a Driver, Buses, Holidays */
 export const HERO_TAB_ICONS = {
-  flights: wrapLucide(Plane),
-  hotels: wrapLucide(Building2),
-  trains: wrapLucide(TrainFront),
   buses: wrapLucide(Bus, 1.6),
   holidays: wrapLucide(Palmtree, 1.6),
   cabs: wrapLucide(CarTaxiFront, 1.6),

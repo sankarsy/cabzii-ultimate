@@ -67,9 +67,7 @@ export function resolveSeoAliasPath(pathname) {
       return cityCabLandingPath(resolveCitySlug(city));
     }
     if (prefix === "acting-driver") {
-      const citySlug = resolveCitySlug(city);
-      const next = actingDriverLandingPath(citySlug);
-      return next === `/acting-driver/${citySlug}` ? null : next;
+      return actingDriverLandingPath(resolveCitySlug(city));
     }
     if (SERVICE_URL_PREFIXES.has(prefix)) {
       const serviceSlug = prefix === "holiday-packages" ? "tour-packages" : prefix;

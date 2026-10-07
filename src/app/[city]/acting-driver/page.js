@@ -25,7 +25,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }) {
   const city = cityBySlug(params.city);
   if (city && !isActingDriverHubCity(city.slug)) {
-    permanentRedirect(actingDriverLandingPath(city.slug));
+    permanentRedirect("/call-driver");
   }
   const base = city ? getActingDriverHubData(city.slug) : null;
   const path = actingDriverLandingPath(params.city);
@@ -62,7 +62,7 @@ export async function generateMetadata({ params }) {
 export default async function CityActingDriverPage({ params }) {
   const city = cityBySlug(params.city);
   if (city && !isActingDriverHubCity(city.slug)) {
-    permanentRedirect(actingDriverLandingPath(city.slug));
+    permanentRedirect("/call-driver");
   }
   const base = city ? getActingDriverHubData(city.slug) : null;
   if (!base) notFound();

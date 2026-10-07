@@ -4,9 +4,10 @@ export const CITY_CABS_SUFFIX = "-city-cabs";
 export const CITY_CABS_HUB_PATH = "/car-rental";
 export const CALL_DRIVERS_CHENNAI_PATH = "/call-drivers-chennai";
 export const AIRPORT_CAB_BOOKING_SEGMENT = "airport-cab-booking";
-export const AIRPORT_CAB_BOOKING_CITIES = ["chennai", "trichy", "madurai", "coimbatore"];
+export const AIRPORT_CAB_BOOKING_CITIES = ["chennai"];
 export const ACTING_DRIVER_SEGMENT = "acting-driver";
-export const ACTING_DRIVER_HUB_CITIES = AIRPORT_CAB_BOOKING_CITIES;
+/** Live acting-driver landings — always /{city}/acting-driver. */
+export const ACTING_DRIVER_HUB_CITIES = ["chennai", "tirupati"];
 export const TRICHY_CITY_ALIASES = ["tiruchi", "tiruchirappalli", "tiruchirapalli"];
 
 export function cityCabLandingSlug(citySlug) {
@@ -43,12 +44,11 @@ export function isActingDriverHubCity(citySlug) {
   return ACTING_DRIVER_HUB_CITIES.includes(String(citySlug || "").toLowerCase());
 }
 
-/** Canonical acting-driver landing: /{city}/acting-driver for ranking hubs. */
+/** Canonical acting-driver landing: /{city}/acting-driver. Legacy /acting-driver/{city} 301s here. */
 export function actingDriverLandingPath(citySlug) {
   const slug = String(citySlug || "").toLowerCase();
   if (!slug) return `/${ACTING_DRIVER_SEGMENT}`;
-  if (isActingDriverHubCity(slug)) return `/${slug}/${ACTING_DRIVER_SEGMENT}`;
-  return `/${ACTING_DRIVER_SEGMENT}/${slug}`;
+  return `/${slug}/${ACTING_DRIVER_SEGMENT}`;
 }
 
 export function legacyActingDriverLandingPath(citySlug) {

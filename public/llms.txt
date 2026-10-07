@@ -4,24 +4,29 @@
 
 ## Primary pages
 - https://www.cabzii.in/
-- https://www.cabzii.in/cab-booking/chennai
-- https://www.cabzii.in/acting-driver/chennai
-- https://www.cabzii.in/acting-driver/tirupati
-- https://www.cabzii.in/routes/chennai-to-tirupati-cab
-- https://www.cabzii.in/routes/chennai-to-bangalore-cab
-- https://www.cabzii.in/services/airport-taxi/chennai
+- https://www.cabzii.in/chennai
+- https://www.cabzii.in/chennai/airport-cab-booking
+- https://www.cabzii.in/chennai/acting-driver
+- https://www.cabzii.in/tirupati/acting-driver
+- https://www.cabzii.in/chennai/outstation/chennai-to-tirupati
+- https://www.cabzii.in/chennai/outstation/chennai-to-bangalore
 - https://www.cabzii.in/services/outstation-cab/chennai
-- https://www.cabzii.in/services/car-rental/chennai
 - https://www.cabzii.in/cabs
+- https://www.cabzii.in/call-driver
 - https://www.cabzii.in/drivers
+- https://www.cabzii.in/buses
 - https://www.cabzii.in/holidays
+- https://www.cabzii.in/tariff
 - https://www.cabzii.in/locations
 - https://www.cabzii.in/blogs
 - https://www.cabzii.in/blog/cab-booking-in-chennai-complete-guide-2026
 - https://www.cabzii.in/testimonials
+- https://www.cabzii.in/about
+- https://www.cabzii.in/contact
+- https://www.cabzii.in/faq
 
 ## Services
-Cab booking, taxi booking near me, airport taxi, outstation cab, one way cab, acting driver, call driver, driver on hire, chauffeur service, tempo traveller, car rental, cab rental, local taxi, hourly rental, holiday packages, Tirupati taxi from Chennai.
+Cab booking, airport taxi, outstation cab, acting driver, call driver, tempo traveller, holiday packages.
 
 ## Booking
 Customers book via cabzii.in with mobile OTP login. Fares shown before payment.

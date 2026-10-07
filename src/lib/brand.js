@@ -18,7 +18,6 @@ export const BRAND = {
 export const NAV_LINKS = [
   { href: "/cabs", label: "Cabs" },
   { href: "/drivers", label: "Drivers" },
-  { href: "/holidays", label: "Holidays" },
-  { href: "/hotels", label: "Hotels" },
-  { href: "/flights", label: "Flights" }
+  { href: "/buses", label: "Buses" },
+  { href: "/holidays", label: "Holidays" }
 ];

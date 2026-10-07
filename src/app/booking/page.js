@@ -1,9 +1,8 @@
 "use client";
 
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import BookingForm from "../../components/BookingForm";
-import EmtBookingFlow from "../../components/emt/EmtBookingFlow";
 
 function CabTourBooking({ searchParams }) {
   const router = useRouter();
@@ -65,14 +64,17 @@ function CabTourBooking({ searchParams }) {
 }
 
 function BookingRouter({ searchParams }) {
+  const router = useRouter();
   const itemType = searchParams?.type ?? "cab";
 
-  if (itemType === "flight" || itemType === "hotel") {
-    return (
-      <Suspense fallback={<div className="py-16 text-center">Loading…</div>}>
-        <EmtBookingFlow />
-      </Suspense>
-    );
+  useEffect(() => {
+    if (itemType === "flight" || itemType === "hotel" || itemType === "train") {
+      router.replace("/cabs");
+    }
+  }, [itemType, router]);
+
+  if (itemType === "flight" || itemType === "hotel" || itemType === "train") {
+    return <div className="section-shell py-16 text-center text-sm text-slate-600">Redirecting…</div>;
   }
 
   return <CabTourBooking searchParams={searchParams} />;

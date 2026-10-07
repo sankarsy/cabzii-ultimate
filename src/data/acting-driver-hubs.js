@@ -80,8 +80,8 @@ export function buildActingDriverHubData(city) {
   return {
     city,
     path: actingDriverLandingPath(city.slug),
-    cityHubPath: cityCabLandingPath(city.slug),
-    airportPath: airportCabBookingPath(city.slug),
+    cityHubPath: city.slug === "chennai" ? cityCabLandingPath(city.slug) : "/cabs",
+    airportPath: city.slug === "chennai" ? airportCabBookingPath(city.slug) : "/cabs",
     callDriverPath: "/call-driver",
     title: clampText(seeded?.title || `Acting Driver in ${name} | Call Driver | ${SITE_NAME}`, 60),
     description: clampText(

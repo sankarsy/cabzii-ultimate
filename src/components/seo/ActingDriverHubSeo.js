@@ -31,6 +31,9 @@ export default function ActingDriverHubSeo() {
         <Link href="/chennai/acting-driver" className="cabzii-btn cabzii-btn-secondary cabzii-btn-sm">
           Acting driver in Chennai
         </Link>
+        <Link href="/tirupati/acting-driver" className="cabzii-btn cabzii-btn-secondary cabzii-btn-sm">
+          Acting driver in Tirupati
+        </Link>
       </div>
 
       <section className="cabzii-seo-block">

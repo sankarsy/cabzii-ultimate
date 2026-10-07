@@ -3,7 +3,7 @@ import { SITE_URL } from "../lib/seo";
 /**
  * Private, transactional, duplicate or thin pages — not for indexing.
  * /buses stays crawlable so Google can see its noindex tag (do not robots-disallow it).
- * Hotels/flights/trains remain blocked.
+ * Removed hotels/flights/trains URLs stay blocked if anything still requests them.
  */
 const DISALLOW = [
   "/driver/",

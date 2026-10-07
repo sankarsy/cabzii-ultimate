@@ -1,6 +1,6 @@
 import { BRAND } from "../brand";
 
-/** Home hero tabs — live services only (flights / hotels / trains are paused). */
+/** Home hero tabs — live Cabzii products. */
 export const HERO_TABS = [
   { id: "cabs", label: "Cabs", shortLabel: "Cabs", iconKey: "car" },
   { id: "drivers", label: "Hire a Driver", shortLabel: "Driver", iconKey: "driver" },

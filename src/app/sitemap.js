@@ -14,6 +14,7 @@ import {
 import { SEO_REVALIDATE_SECONDS } from "../lib/revalidation/constants";
 import { classifyCityHub, classifyRoute, classifyServiceCity } from "../lib/seo/indexation";
 import { airportCabBookingPath, cityCabLandingPath, actingDriverLandingPath, isAirportCabBookingCity, isActingDriverHubCity } from "../lib/cityCabPaths";
+import { KEEP_ACTING_DRIVER_CITY_SLUGS } from "../lib/seo/keepLivePages";
 import { catalogPublicPath } from "../lib/catalogProduct";
 import { isLiveApiHostProtected } from "../lib/liveApiHostGuard";
 import { resolveProductImageSeo } from "../lib/dynamicImageSeo";
@@ -111,6 +112,23 @@ export default async function sitemap() {
       });
     }
     return rows;
+  });
+
+  const actingDriverKeepPages = KEEP_ACTING_DRIVER_CITY_SLUGS.flatMap((slug) => {
+    const city = SEO_CITIES.find((c) => c.slug === slug);
+    if (!city) return [];
+    const already = cityRoutes.some((row) => row.url === `${base}${actingDriverLandingPath(city.slug)}`);
+    if (already) return [];
+    const driverPolicy = classifyCityHub(city.slug, "acting-driver");
+    if (!driverPolicy.indexable) return [];
+    return [
+      {
+        url: `${base}${actingDriverLandingPath(city.slug)}`,
+        lastModified: now,
+        changeFrequency: driverPolicy.changeFrequency,
+        priority: 0.9
+      }
+    ];
   });
 
   const [cabs, packages, blogPosts, cmsServices, cmsRoutes, cmsLandings] = await Promise.all([
@@ -290,6 +308,7 @@ export default async function sitemap() {
   return dedupeSitemapEntries([
     ...staticRoutes,
     ...cityRoutes,
+    ...actingDriverKeepPages,
     ...staticServiceRoutes,
     ...cmsServiceRoutes,
     ...staticRoutePages,

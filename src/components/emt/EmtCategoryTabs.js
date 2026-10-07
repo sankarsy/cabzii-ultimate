@@ -11,10 +11,7 @@ const SHELL_ICON_TONES = {
   cabs: "text-sky-500",
   drivers: "text-violet-500",
   holidays: "text-emerald-500",
-  hotels: "text-amber-500",
-  flights: "text-blue-500",
-  buses: "text-orange-500",
-  trains: "text-indigo-500"
+  buses: "text-orange-500"
 };
 
 export default function EmtCategoryTabs({

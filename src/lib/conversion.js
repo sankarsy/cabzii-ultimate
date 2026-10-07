@@ -56,7 +56,7 @@ export function bookingWhatsappMessage({
     }
   }
 
-  if (path === "/tirupati" || path.startsWith("/tirupati/") || path.includes("/cab-booking/tirupati") || path.includes("/acting-driver/tirupati")) {
+  if (path === "/tirupati" || path.startsWith("/tirupati/") || path.includes("/cab-booking/tirupati") || path.includes("/acting-driver/tirupati") || path.includes("/tirupati/acting-driver")) {
     return "Hi Cabzii, I want to book a Tirupati cab. Pickup: ___. Date: ___. Passengers: ___. Please share sedan/SUV fare and availability.";
   }
 

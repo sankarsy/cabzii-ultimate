@@ -21,6 +21,23 @@ export const ACTING_DRIVER_HUB_SEO = {
       { title: "Chennai Airport (MAA)", body: "Airport Call Driver collects or delivers your car. For a Cabzii taxi to MAA, use airport cab booking instead." }
     ]
   },
+  tirupati: {
+    title: "Acting Driver in Tirupati | Call Driver | Cabzii",
+    description:
+      "Hire an acting driver in Tirupati for your own car. Book existing Call Driver packages — local, outstation, airport, monthly quote, corporate and valet.",
+    keywords:
+      "acting driver Tirupati, call driver Tirupati, driver on hire Tirupati, darshan chauffeur Tirupati, airport chauffeur TIR",
+    h1: "Acting Driver in Tirupati | Cabzii Call Driver",
+    lead: "Book a professional to drive your car in Tirupati. Same Call Driver packages — local, outstation, airport, monthly quote, corporate and valet.",
+    aboutCity:
+      "Acting driver in Tirupati is Cabzii Call Driver for your own car — city hotels, Alipiri and queue complexes, plus TIR airport chauffeur. This is not a Cabzii taxi. Local hours use the published 3-hour minimum and ₹100 extra hour. Outstation return is ₹1,500 per 12-hour day plus driver accommodation. Airport chauffeur is driver-only pickup or drop in your vehicle. Monthly and corporate work is quoted. Cabzii assigns a driver after you confirm — availability depends on a driver being free at that hour.",
+    areas: [
+      { title: "City hotels / Alipiri", body: "Local Call Driver from hotel or Alipiri towards queue complexes in your car." },
+      { title: "Tirupati railway / bus stand", body: "Station pickup for local or outstation acting-driver days. Enter the exact landmark." },
+      { title: "Outstation to Chennai or Bengaluru", body: "Outstation Call Driver in your car for the return highway day. Accommodation extra on round trips." },
+      { title: "Tirupati Airport (TIR)", body: "Airport chauffeur in your vehicle. Need a Cabzii taxi instead? Book a cab, not Call Driver." }
+    ]
+  },
   trichy: {
     title: "Acting Driver in Trichy | Call Driver | Cabzii",
     description:

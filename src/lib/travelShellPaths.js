@@ -4,12 +4,9 @@ export const TRAVEL_SHELL_PREFIXES = [
   "/call-driver",
   "/drivers",
   "/drivers/results",
-  "/flights",
-  "/hotels",
   "/holidays",
   "/tour-packages",
   "/buses",
-  "/trains",
   "/payment",
   "/login",
   "/my-bookings",
@@ -22,6 +19,7 @@ export const TRAVEL_SHELL_PREFIXES = [
   "/routes",
   "/services",
   "/blogs",
+  "/blog",
   "/testimonials"
 ];
 

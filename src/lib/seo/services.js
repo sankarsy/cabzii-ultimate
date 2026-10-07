@@ -92,8 +92,8 @@ export const SEO_SERVICES = [
   }
 ];
 
-/** Only these service landings are pre-built + indexed (fare packages redirect to hubs). */
-export const MAIN_PAGE_SERVICE_SLUGS = ["airport-taxi", "outstation-cab", "one-way-cab", "tempo-traveller"];
+/** Only these service landings stay live. Airport uses /chennai/airport-cab-booking. */
+export const MAIN_PAGE_SERVICE_SLUGS = ["outstation-cab"];
 
 export function isMainPageService(slug) {
   return MAIN_PAGE_SERVICE_SLUGS.includes(String(slug || ""));

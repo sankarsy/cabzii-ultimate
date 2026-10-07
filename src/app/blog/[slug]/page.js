@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import Footer from "../../../components/Footer";
-import Navbar from "../../../components/Navbar";
 import JsonLd from "../../../components/seo/JsonLd";
+import Breadcrumbs from "../../../components/seo/Breadcrumbs";
+import CityCabFaqAccordion from "../../../components/city-cabs/CityCabFaqAccordion";
 import { fetchBlogBySlug } from "../../../lib/serverCatalog";
 import {
   articleJsonLd,
@@ -15,29 +15,19 @@ import { formatBlogAuthor, formatBlogDate } from "../../../lib/seo/serpRichData"
 import { resolveMediaUrl } from "../../../lib/media";
 import BlogCommercialLinks from "../../../components/seo/BlogCommercialLinks";
 import { SEO_REVALIDATE_SECONDS } from "../../../lib/revalidation/constants";
+import {
+  CHENNAI_GUIDE_FAQS,
+  CHENNAI_GUIDE_H1,
+  CHENNAI_GUIDE_LEAD,
+  CHENNAI_GUIDE_SLUG,
+  chennaiCabGuideHtml
+} from "../../../lib/seo/chennaiCabGuide";
 
 export const revalidate = SEO_REVALIDATE_SECONDS;
 
-const CHENNAI_GUIDE_FAQS = [
-  [
-    "How do I book a cab in Chennai online?",
-    "Open cabzii.in, enter pickup and drop in Chennai, choose Dzire/Ertiga/Innova/Tempo, login with mobile OTP and confirm. Fares are shown before payment."
-  ],
-  [
-    "How much does an acting driver cost in Chennai?",
-    "Acting driver packages in Chennai start from hourly local slabs (4hr/8hr) and daily outstation rates. Cabzii shows exact package price with allowance before you book."
-  ],
-  [
-    "Can I book Tirupati taxi from Chennai?",
-    "Yes. Book Chennai to Tirupati one way or round trip cab on Cabzii — sedan, Innova or tempo options with upfront fare on the Chennai–Tirupati route page."
-  ],
-  [
-    "Is Cabzii good for taxi booking near me in Chennai?",
-    "Cabzii prioritises vendors serving your Chennai locality — search from T. Nagar, OMR, Anna Nagar, airport or any area and compare near-me taxi fares instantly."
-  ]
-];
-
-const CHENNAI_GUIDE_SLUG = "cab-booking-in-chennai-complete-guide-2026";
+function faqsFromPairs(pairs) {
+  return pairs.map(([question, answer]) => ({ question, answer }));
+}
 
 export async function generateMetadata({ params }) {
   const post = await fetchBlogBySlug(params.slug);
@@ -51,20 +41,12 @@ export async function generateMetadata({ params }) {
   }
   if (params.slug === CHENNAI_GUIDE_SLUG) {
     return buildPageMetadata({
-      title: formatSerpTitle("Chennai Cabs Guide", "Packages, Hours & Booking 2026"),
-      description:
-        "Chennai cabs guide — hourly packages (4 hours, 8 hours), outstation trips, acting driver hire and taxi near me. Book cab packages online on Cabzii.in.",
+      title: formatSerpTitle("Chennai cab booking guide", "Local, airport & outstation 2026"),
+      description: CHENNAI_GUIDE_LEAD,
       path: `/blog/${params.slug}`,
-      keywords: [
-        "chennai cabs",
-        "cab booking in chennai",
-        "chennai cab packages",
-        "4 hours cab chennai",
-        "8 hours cab chennai",
-        "cabzii"
-      ],
+      keywords: ["chennai cab booking", "chennai taxi guide", "cabzii chennai", "airport taxi chennai"],
       image: "/images/hero-banner.png",
-      imageAlt: "Chennai cabs booking guide on Cabzii"
+      imageAlt: "Chennai cab booking guide on Cabzii"
     });
   }
 
@@ -84,13 +66,16 @@ export default async function BlogPostPage({ params }) {
   if (!post) notFound();
 
   const slug = params.slug;
+  const isChennaiGuide = slug === CHENNAI_GUIDE_SLUG;
   const keywords = (post.seo || "")
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean);
 
-  const isChennaiGuide = slug.includes("chennai") && slug.includes("guide");
-  const faqs = isChennaiGuide ? CHENNAI_GUIDE_FAQS : [];
+  const h1 = isChennaiGuide ? CHENNAI_GUIDE_H1 : post.title;
+  const lead = isChennaiGuide ? CHENNAI_GUIDE_LEAD : post.excerpt;
+  const bodyHtml = isChennaiGuide ? chennaiCabGuideHtml() : post.body;
+  const faqRows = isChennaiGuide ? faqsFromPairs(CHENNAI_GUIDE_FAQS) : [];
   const authorLabel = formatBlogAuthor(post.author);
   const dateLabel = formatBlogDate(post.date || post.publishedAt);
   const heroImage = resolveMediaUrl(post.image) || "https://www.cabzii.in/images/hero-banner.png";
@@ -99,82 +84,83 @@ export default async function BlogPostPage({ params }) {
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
       { name: "Blog", path: "/blogs" },
-      { name: post.title, path: `/blog/${slug}` }
+      { name: h1, path: `/blog/${slug}` }
     ]),
     articleJsonLd({
-      title: post.title,
-      description: post.seoDescription || post.excerpt,
+      title: h1,
+      description: lead || post.seoDescription || post.excerpt,
       urlPath: `/blog/${slug}`,
       author: authorLabel,
       datePublished: post.date || post.publishedAt || undefined,
       image: heroImage
     }),
-    ...(faqs.length ? [faqFromPairs(faqs)] : [])
+    ...(isChennaiGuide ? [faqFromPairs(CHENNAI_GUIDE_FAQS)] : [])
   ];
 
   return (
-    <main className="min-h-screen bg-linear-to-b from-slate-50 via-sky-50/60 to-white">
+    <div>
       <JsonLd data={jsonLd} />
-      <Navbar />
-      <article className="section-shell py-10 md:py-14">
-        <nav className="mb-4 text-xs text-slate-500">
-          <Link href="/" className="hover:text-[#0056D2]">
-            Home
-          </Link>
-          <span className="mx-2">/</span>
-          <Link href="/blogs" className="hover:text-[#0056D2]">
-            Blog
-          </Link>
-        </nav>
-        <p className="text-xs font-bold uppercase tracking-wider text-[#0056D2]">Cabzii Blog</p>
-        <h1 className="mt-2 text-3xl font-extrabold text-slate-900 md:text-4xl">
-          {slug === CHENNAI_GUIDE_SLUG
-            ? "Chennai Cabs — Packages, Hours & Cab Booking Guide 2026"
-            : post.title}
-        </h1>
-        <p className="mt-3 text-sm text-slate-500">
-          By {authorLabel}
-          {dateLabel ? ` · ${dateLabel}` : ""}
-        </p>
-        <p className="mt-6 text-base leading-relaxed text-slate-700">{post.excerpt}</p>
+      <div className="border-b border-slate-200 bg-white">
+        <div className="section-shell py-5 sm:py-7">
+          <Breadcrumbs
+            items={[
+              { name: "Home", path: "/" },
+              { name: "Blog", path: "/blogs" },
+              { name: h1, path: `/blog/${slug}` }
+            ]}
+          />
+          <p className="mt-2 text-[10px] font-bold uppercase tracking-wider text-[var(--cabzii-brand)] sm:text-[11px]">
+            Cabzii blog
+          </p>
+          <h1 className="mt-2 text-lg font-bold leading-tight tracking-tight text-slate-900 sm:text-xl md:text-2xl">
+            {h1}
+          </h1>
+          <p className="mt-2 text-xs text-slate-500 sm:text-sm">
+            By {authorLabel}
+            {dateLabel ? ` · ${dateLabel}` : ""}
+          </p>
+          {lead ? <p className="mx-auto mt-3 max-w-2xl text-xs text-slate-600 sm:text-sm">{lead}</p> : null}
+        </div>
+      </div>
 
-        {post.body ? (
+      <article className="section-shell cabzii-seo-landing py-5 sm:py-8">
+        {bodyHtml ? (
           <div
-            className="blog-prose mt-8 space-y-4 text-base leading-relaxed text-slate-700 [&_a]:font-semibold [&_a]:text-[#0056D2] [&_a]:underline-offset-2 hover:[&_a]:underline [&_h2]:mt-10 [&_h2]:text-xl [&_h2]:font-bold [&_h2]:text-slate-900 [&_li]:ml-5 [&_ol]:list-decimal [&_ol]:space-y-2 [&_table]:mt-4 [&_table]:w-full [&_table]:border-collapse [&_td]:border [&_td]:border-slate-200 [&_td]:px-3 [&_td]:py-2 [&_th]:border [&_th]:border-slate-200 [&_th]:bg-slate-100 [&_th]:px-3 [&_th]:py-2 [&_th]:text-left [&_ul]:list-disc [&_ul]:space-y-1"
-            dangerouslySetInnerHTML={{ __html: post.body }}
+            className="cabzii-seo-block prose prose-slate max-w-none text-sm text-slate-700 [&_a]:font-semibold [&_a]:text-[var(--cabzii-brand)] [&_a]:no-underline hover:[&_a]:underline [&_h2]:mt-8 [&_h2]:text-base [&_h2]:font-bold [&_h2]:text-slate-900 [&_li]:ml-5 [&_ol]:mt-2 [&_ol]:list-decimal [&_ol]:space-y-1 [&_p]:mt-2 [&_ul]:list-disc"
+            dangerouslySetInnerHTML={{ __html: bodyHtml }}
           />
         ) : null}
 
-        {keywords.length > 0 ? (
-          <div className="mt-8 flex flex-wrap gap-2">
+        {keywords.length && !isChennaiGuide ? (
+          <ul className="mt-6 flex flex-wrap gap-2">
             {keywords.map((kw) => (
-              <span
-                key={kw}
-                className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700"
-              >
-                {kw}
-              </span>
+              <li key={kw}>
+                <span className="inline-block rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-800">
+                  {kw}
+                </span>
+              </li>
             ))}
-          </div>
+          </ul>
         ) : null}
 
-        {faqs.length ? (
-          <section className="mt-10">
-            <h2 className="text-xl font-bold text-slate-900">Frequently asked questions</h2>
-            <dl className="mt-4 space-y-4">
-              {faqs.map(([q, a]) => (
-                <div key={q} className="rounded-lg border border-slate-200 bg-white p-4">
-                  <dt className="font-semibold text-slate-900">{q}</dt>
-                  <dd className="mt-1 text-sm text-slate-600">{a}</dd>
-                </div>
-              ))}
-            </dl>
+        {faqRows.length ? (
+          <section className="mt-8">
+            <h2 className="text-base font-bold text-slate-900 sm:text-lg">Frequently asked questions</h2>
+            <p className="mt-1 text-xs text-slate-600 sm:text-sm">Booking, fares and acting driver in Chennai.</p>
+            <div className="mt-4">
+              <CityCabFaqAccordion faqs={faqRows} />
+            </div>
           </section>
         ) : null}
 
-        <BlogCommercialLinks title={post.title} slug={slug} excerpt={post.excerpt || post.seoDescription || ""} />
+        <BlogCommercialLinks title={h1} slug={slug} excerpt={lead || post.excerpt || post.seoDescription || ""} />
+
+        <p className="mt-8">
+          <Link href="/blogs" className="text-sm font-semibold text-[var(--cabzii-brand)] hover:underline">
+            ← All articles
+          </Link>
+        </p>
       </article>
-      <Footer />
-    </main>
+    </div>
   );
 }
