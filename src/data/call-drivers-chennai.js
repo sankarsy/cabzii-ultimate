@@ -73,12 +73,12 @@ export const CALL_DRIVERS_CHENNAI = {
     message: "Hi Cabzii, I need a Call Driver / acting driver in Chennai.\nPickup:\nDate:\nHours:\nVehicle:"
   }),
   telHref: `tel:${ORG_PHONE}`,
-  title: "Call Drivers in Chennai | Hire Acting Drivers | Cabzii",
+  title: "Acting Driver in Chennai | Driver for Your Car | Cabzii",
   description:
-    "Hire call drivers in Chennai for your own car — city trips, outstation acting driver days and MAA airport chauffeur. Fares shown before you confirm.",
+    "Hire an acting driver in Chennai for your own car. Book existing Call Driver packages — local, outstation, airport, monthly quote, corporate and valet.",
   keywords:
-    "call drivers in Chennai, acting driver in Chennai, outstation acting driver, hire acting drivers Chennai, airport call driver Chennai, city call driver",
-  h1: "Hire Call Drivers in Chennai",
+    "acting driver in Chennai, call driver Chennai, driver for my own car Chennai, outstation acting driver Chennai, acting driver near me",
+  h1: "Acting Driver in Chennai | Driver for Your Own Car",
   intro: [
     "Cabzii Call Driver is an acting driver for your own car in Chennai — city hours, MAA airport pickup or drop, and outstation acting driver days.",
     "Call or WhatsApp to book. A professional driver is assigned after you confirm. Availability depends on a driver being free at that hour."

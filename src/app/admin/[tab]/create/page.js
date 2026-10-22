@@ -4,6 +4,9 @@ const ALLOWED_TABS = ["cabs", "drivers", "packages", "buses", "bookings", "blogs
 
 export default function AdminCreateRedirectPage({ params }) {
   const tab = params?.tab;
+  if (tab === "drivers") {
+    redirect("/admin?tab=ops");
+  }
   if (!ALLOWED_TABS.includes(tab)) {
     redirect("/admin");
   }

@@ -38,6 +38,11 @@ export function resolveMediaUrl(path) {
     return `/${normalized}`;
   }
 
+  /* Next.js public assets — never prefix with the API origin. */
+  if (normalized.startsWith("/images/") || normalized.startsWith("/_next/")) {
+    return normalized;
+  }
+
   if (/^https?:\/\//i.test(normalized)) return normalized;
 
   const base = getMediaBackendBase();

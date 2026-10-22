@@ -8,23 +8,26 @@ import AdminCatalogPanel from "../../components/admin/AdminCatalogPanel";
 import VehicleAdminPanel from "../../components/admin/vehicles/VehicleAdminPanel";
 import AdminSeoPagesIndex from "../../components/admin/AdminSeoPagesIndex";
 import AdminCrm from "../../components/admin/AdminCrm";
-import AdminAiChat from "../../components/admin/AdminAiChat";
 import AdminCustomers from "../../components/admin/AdminCustomers";
 import AdminMasterData from "../../components/admin/AdminMasterData";
 import AdminReports from "../../components/admin/AdminReports";
-import AdminSeoRevenue from "../../components/admin/AdminSeoRevenue";
-import AdminReviews from "../../components/admin/AdminReviews";
 import AdminEnterprise from "../../components/admin/enterprise/AdminEnterprise";
 import AdminShell from "../../components/admin/AdminShell";
-import AdminSiteSettings from "../../components/admin/AdminSiteSettings";
 import AdminCallDriverPage from "../../components/admin/AdminCallDriverPage";
+import AdminCities from "../../components/admin/cms/AdminCities";
+import AdminCmsDashboard from "../../components/admin/cms/AdminCmsDashboard";
+import AdminCmsServicePages from "../../components/admin/cms/AdminCmsServicePages";
+import AdminReviewsHub from "../../components/admin/cms/AdminReviewsHub";
+import AdminSettingsHub from "../../components/admin/cms/AdminSettingsHub";
+import AdminRolesPage from "../../components/admin/cms/AdminRolesPage";
+import AdminRouteFares from "../../components/admin/AdminRouteFares";
+import AdminDriverAccounts from "../../components/admin/AdminDriverAccounts";
 import CabziiLogo from "../../components/brand/CabziiLogo";
 import { BRAND } from "../../lib/brand";
-import { CATALOG_TAB_KEYS, CATALOG_TABS } from "../../lib/adminCatalogConfig";
+import { CATALOG_TAB_KEYS } from "../../lib/adminCatalogConfig";
 import { MASTER_SECTION_KEYS } from "../../lib/adminMasterConfig";
+import { ADMIN_TAB_KEYS, VENDOR_ALLOWED_TABS, filterNavGroups, resolveNavTarget } from "../../lib/adminNav";
 import { clearSession, getToken } from "../../lib/auth";
-
-const VENDOR_ALLOWED_TABS = new Set(["ops", "cabs", "bookings", "packages", "buses", "master", "reports"]);
 
 export default function AdminPage() {
   const router = useRouter();
@@ -36,8 +39,9 @@ export default function AdminPage() {
   const [prefillSlug, setPrefillSlug] = useState("");
   const [panelMode, setPanelMode] = useState("list");
   const [activeTab, setActiveTab] = useState("ops");
-  const [enterpriseSection, setEnterpriseSection] = useState("dashboard");
+  const [enterpriseSection, setEnterpriseSection] = useState("faqs");
   const [masterSection, setMasterSection] = useState("vendors");
+  const [settingsSection, setSettingsSection] = useState("general");
   const [token, setToken] = useState("");
   const [user, setUser] = useState(null);
   const [authChecked, setAuthChecked] = useState(false);
@@ -57,28 +61,25 @@ export default function AdminPage() {
     const view = searchParams.get("view");
     const mode = searchParams.get("mode");
     const section = searchParams.get("section");
-    if (
-      tab &&
-      (      tab === "master" ||
-        tab === "ops" ||
-        tab === "settings" ||
-        tab === "enterprise" ||
-        tab === "crm" ||
-        tab === "aiChat" ||
-        tab === "customers" ||
-        tab === "reports" ||
-        tab === "seoRevenue" ||
-        tab === "reviews" ||
-        tab === "seoPagesHub" ||
-        tab === "callDriverPage" ||
-        CATALOG_TAB_KEYS.includes(tab))
-    ) {
+    if (tab === "drivers") {
+      setActiveTab("actingDriversOps");
+      router.replace("/admin?tab=actingDriversOps");
+    } else if (tab === "seoCityPages") {
+      setActiveTab("seoPagesHub");
+      router.replace("/admin?tab=seoPagesHub");
+    } else if (tab === "reviews" || tab === "testimonials") {
+      setActiveTab("reviewsHub");
+    } else if (tab && (ADMIN_TAB_KEYS.has(tab) || CATALOG_TAB_KEYS.includes(tab))) {
       setActiveTab(tab);
     }
     const entSection = searchParams.get("section");
     if (entSection && tab === "enterprise") setEnterpriseSection(entSection);
+    if (tab === "settings" && section) setSettingsSection(section);
     const createVendor = searchParams.get("createVendor");
-    if (section && MASTER_SECTION_KEYS.includes(section)) {
+    if (tab === "master" && section === "cities") {
+      setActiveTab("cities");
+      router.replace("/admin?tab=cities");
+    } else if (section && MASTER_SECTION_KEYS.includes(section) && tab !== "enterprise" && tab !== "settings") {
       setMasterSection(section);
       setActiveTab("master");
     }
@@ -96,7 +97,7 @@ export default function AdminPage() {
     } else if (!mode) {
       setPanelMode("list");
     }
-  }, [searchParams]);
+  }, [searchParams, router]);
 
   useEffect(() => {
     const loadMe = async () => {
@@ -130,9 +131,9 @@ export default function AdminPage() {
       router.replace("/admin?tab=ops");
       return;
     }
-    if (activeTab === "master" && masterSection !== "drivers") {
-      setMasterSection("drivers");
-      router.replace("/admin?tab=master&section=drivers");
+    if (activeTab === "master") {
+      setActiveTab("ops");
+      router.replace("/admin?tab=ops");
     }
   }, [user, activeTab, masterSection, router]);
 
@@ -144,68 +145,25 @@ export default function AdminPage() {
     router.push("/login");
   };
 
-  const sidebarGroups = [
-    {
-      label: "Ops",
-      items: [
-        { key: "ops", label: "Operations" },
-        { key: "reports", label: "Reports" },
-        { key: "crm", label: "CRM", superAdminOnly: true },
-        { key: "customers", label: "Customers", superAdminOnly: true },
-        { key: "reviews", label: "Reviews", superAdminOnly: true }
-      ]
-    },
-    {
-      label: "Catalog",
-      items: CATALOG_TAB_KEYS.filter((tab) => ["cabs", "drivers", "buses", "packages", "bookings"].includes(tab)).map(
-        (tab) => ({
-          key: tab,
-          label: tab === "packages" ? "Holidays" : tab === "buses" ? "Buses" : CATALOG_TABS[tab].label,
-          superAdminOnly: Boolean(CATALOG_TABS[tab].superAdminOnly)
-        })
-      )
-    },
-    {
-      label: "Content",
-      items: [
-        { key: "seoPagesHub", label: "Google SEO pages", superAdminOnly: true },
-        { key: "callDriverPage", label: "Call Driver page", superAdminOnly: true },
-        ...CATALOG_TAB_KEYS.filter((tab) => ["blogs", "testimonials"].includes(tab)).map((tab) => ({
-          key: tab,
-          label: CATALOG_TABS[tab].label,
-          superAdminOnly: CATALOG_TABS[tab].superAdminOnly !== false
-        })),
-        { key: "settings", label: "Settings", superAdminOnly: true }
-      ]
-    },
-    {
-      label: "Master",
-      items: [
-        { key: "vendors", label: "Vendors", tab: "master", section: "vendors", superAdminOnly: true },
-        { key: "driverAccounts", label: "Drivers", tab: "master", section: "drivers" },
-        { key: "cities", label: "Cities", tab: "master", section: "cities", superAdminOnly: true },
-        { key: "locations", label: "Locations", tab: "master", section: "locations", superAdminOnly: true },
-        { key: "offers", label: "Exclusive Offers", tab: "master", section: "offers", superAdminOnly: true },
-        { key: "cityServices", label: "Cab services", tab: "master", section: "services", superAdminOnly: true },
-        { key: "popularRoutes", label: "Popular routes", tab: "master", section: "routes", superAdminOnly: true }
-      ]
-    }
-  ];
+  const sidebarGroups = filterNavGroups(isSuperAdmin);
 
   const adminSidebar = (
     <>
-      {sidebarGroups.map((group) => {
-        const items = group.items.filter((item) => !item.superAdminOnly || isSuperAdmin);
-        if (!items.length) return null;
-        return (
-          <div key={group.label} className="mb-2">
-            <p className="mb-1 px-2 pt-1 text-[10px] font-bold uppercase tracking-wide text-slate-400">{group.label}</p>
+      {sidebarGroups.map((group) => (
+          <div key={group.label} className="mb-4">
+            <p className="mb-1.5 px-2 pt-1 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">{group.label}</p>
             <nav className="space-y-0.5">
-              {items.map((item) => {
-                const tab = item.tab || item.key;
-                const section = item.section || "";
+              {group.items.map((item) => {
+                const target = resolveNavTarget(item, !isSuperAdmin);
+                const tab = target.tab;
+                const section = target.section;
                 const isActive =
-                  activeTab === tab && (!section || (tab === "master" && masterSection === section));
+                  activeTab === tab &&
+                  (!section ||
+                    (tab === "master" && masterSection === section) ||
+                    (tab === "enterprise" && enterpriseSection === section) ||
+                    (tab === "settings" && settingsSection === section));
+                const Icon = item.icon;
                 return (
                   <button
                     key={item.key}
@@ -213,24 +171,29 @@ export default function AdminPage() {
                     onClick={() => {
                       setActiveTab(tab);
                       if (tab === "master") setMasterSection(section || "vendors");
-                      const qs = tab === "master" ? `?tab=master&section=${section || "vendors"}` : `?tab=${tab}`;
+                      if (tab === "enterprise") setEnterpriseSection(section || "faqs");
+                      if (tab === "settings") setSettingsSection(section || "general");
+                      let qs = `?tab=${tab}`;
+                      if (tab === "master") qs = `?tab=master&section=${section || "vendors"}`;
+                      if (tab === "enterprise") qs = `?tab=enterprise&section=${section || "faqs"}`;
+                      if (tab === "settings" && section) qs = `?tab=settings&section=${section}`;
                       router.push(`/admin${qs}`);
                       setNavOpen(false);
                     }}
-                    className={`flex w-full items-center rounded-md px-2 py-1.5 text-left text-xs font-semibold transition ${
+                    className={`flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-left text-[13px] font-medium transition ${
                       isActive
-                        ? "bg-[var(--cabzii-brand)] text-white"
-                        : "text-slate-700 hover:bg-slate-100"
+                        ? "bg-sky-50 text-sky-800"
+                        : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
                     }`}
                   >
-                    {item.label}
+                    {Icon ? <Icon className="h-4 w-4 shrink-0 opacity-90" /> : null}
+                    <span>{item.label}</span>
                   </button>
                 );
               })}
             </nav>
           </div>
-        );
-      })}
+      ))}
     </>
   );
 
@@ -262,34 +225,49 @@ export default function AdminPage() {
             {!isSuperAdmin && !VENDOR_ALLOWED_TABS.has(activeTab) ? (
               <AdminOpsDashboard token={token} isSuperAdmin={false} />
             ) : activeTab === "ops" ? (
-              <AdminOpsDashboard token={token} isSuperAdmin={isSuperAdmin} />
+              <AdminCmsDashboard token={token} isSuperAdmin={isSuperAdmin} />
+            ) : activeTab === "cities" ? (
+              <AdminCities token={token} />
+            ) : activeTab === "seoServices" ? (
+              <AdminCmsServicePages token={token} moduleKey="cab" />
+            ) : activeTab === "cmsServices" ? (
+              <AdminCmsServicePages token={token} moduleKey="service" />
+            ) : activeTab === "airportTaxi" ? (
+              <AdminCmsServicePages token={token} moduleKey="airport" />
+            ) : activeTab === "actingDriverCms" ? (
+              <AdminCmsServicePages token={token} moduleKey="actingDriver" />
+            ) : activeTab === "reviewsHub" ? (
+              <AdminReviewsHub token={token} isSuperAdmin={isSuperAdmin} />
+            ) : activeTab === "actingDriversOps" ? (
+              <AdminDriverAccounts token={token} isSuperAdmin={isSuperAdmin} />
+            ) : activeTab === "settingsRoles" ? (
+              <AdminRolesPage />
+            ) : activeTab === "assignments" ? (
+              <AdminOpsDashboard token={token} isSuperAdmin={isSuperAdmin} variant="assignments" />
             ) : activeTab === "reports" ? (
               <AdminReports token={token} isSuperAdmin={isSuperAdmin} />
-            ) : activeTab === "seoRevenue" ? (
-              <AdminSeoRevenue token={token} />
             ) : activeTab === "crm" ? (
               <AdminCrm token={token} isSuperAdmin={isSuperAdmin} />
-            ) : activeTab === "aiChat" ? (
-              <AdminAiChat token={token} isSuperAdmin={isSuperAdmin} />
             ) : activeTab === "customers" ? (
               <AdminCustomers token={token} isSuperAdmin={isSuperAdmin} />
-            ) : activeTab === "reviews" ? (
-              <AdminReviews token={token} />
             ) : activeTab === "master" ? (
               <AdminMasterData
                 token={token}
                 isSuperAdmin={isSuperAdmin}
                 initialSection={masterSection}
                 focusCreateVendor={searchParams.get("createVendor") === "1"}
+                hideTabs
               />
             ) : activeTab === "enterprise" ? (
-              <AdminEnterprise token={token} initialSection={enterpriseSection} />
+              <AdminEnterprise token={token} initialSection={enterpriseSection === "dashboard" ? "faqs" : enterpriseSection} hideChrome />
+            ) : activeTab === "routeFares" ? (
+              <AdminRouteFares token={token} />
             ) : activeTab === "seoPagesHub" ? (
               <AdminSeoPagesIndex token={token} />
             ) : activeTab === "callDriverPage" ? (
               <AdminCallDriverPage token={token} isSuperAdmin={isSuperAdmin} />
             ) : activeTab === "settings" ? (
-              <AdminSiteSettings token={token} isSuperAdmin={isSuperAdmin} />
+              <AdminSettingsHub token={token} isSuperAdmin={isSuperAdmin} initialSection={settingsSection} />
             ) : activeTab === "cabs" ? (
               <VehicleAdminPanel
                 token={token}
@@ -298,17 +276,39 @@ export default function AdminPage() {
                 pageMode={panelMode}
               />
             ) : CATALOG_TAB_KEYS.includes(activeTab) ? (
-              <AdminCatalogPanel
-                tabKey={activeTab}
-                token={token}
-                isSuperAdmin={isSuperAdmin}
-                initialEditId={initialEditId}
-                viewId={initialViewId}
-                pageMode={panelMode}
-                prefillCity={prefillCity}
-                prefillType={prefillType}
-                prefillSlug={prefillSlug}
-              />
+              <div className="space-y-4">
+                {activeTab === "seoRoutes" ? (
+                  <div>
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-sky-700">CMS</p>
+                    <h1 className="text-2xl font-bold tracking-tight text-slate-900">Routes</h1>
+                    <p className="mt-1 text-sm text-slate-600">Origin and destination must both be cities you already created. Live URLs stay on the current outstation path.</p>
+                  </div>
+                ) : null}
+                {activeTab === "packages" ? (
+                  <div>
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-sky-700">CMS</p>
+                    <h1 className="text-2xl font-bold tracking-tight text-slate-900">Holiday Trips</h1>
+                    <p className="mt-1 text-sm text-slate-600">One module for pilgrimage and holiday destinations. Do not create a new menu per destination.</p>
+                  </div>
+                ) : null}
+                {activeTab === "bookings" ? (
+                  <div>
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-sky-700">Operations</p>
+                    <h1 className="text-2xl font-bold tracking-tight text-slate-900">Bookings</h1>
+                  </div>
+                ) : null}
+                <AdminCatalogPanel
+                  tabKey={activeTab}
+                  token={token}
+                  isSuperAdmin={isSuperAdmin}
+                  initialEditId={initialEditId}
+                  viewId={initialViewId}
+                  pageMode={panelMode}
+                  prefillCity={prefillCity}
+                  prefillType={prefillType}
+                  prefillSlug={prefillSlug}
+                />
+              </div>
             ) : null}
         </>
       ) : null}

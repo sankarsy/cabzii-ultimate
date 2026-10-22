@@ -1,3 +1,5 @@
+import { normalizeSeoCitySlug, SEO_SCOPE_CITY_SLUGS } from "../../config/seo-scope";
+
 /** South India + national cities for programmatic SEO landing pages. */
 export const SEO_CITIES = [
   { slug: "chennai", name: "Chennai", state: "Tamil Nadu", region: "IN-TN", langs: ["ta", "en"] },
@@ -40,6 +42,8 @@ export const SEO_CITIES = [
   { slug: "pune", name: "Pune", state: "Maharashtra", region: "IN-MH", langs: ["en"] },
   { slug: "kolkata", name: "Kolkata", state: "West Bengal", region: "IN-WB", langs: ["en"] },
   { slug: "kochi", name: "Kochi", state: "Kerala", region: "IN-KL", langs: ["en"] },
+  { slug: "sabarimala", name: "Sabarimala", state: "Kerala", region: "IN-KL", langs: ["ml", "ta", "en"] },
+  { slug: "ayyappankovil", name: "Ayyappan Kovil", state: "Kerala", region: "IN-KL", langs: ["ml", "ta", "en"] },
   { slug: "visakhapatnam", name: "Visakhapatnam", state: "Andhra Pradesh", region: "IN-AP", langs: ["te", "en"] },
   { slug: "goa", name: "Goa", state: "Goa", region: "IN-GA", langs: ["en"] },
   { slug: "jaipur", name: "Jaipur", state: "Rajasthan", region: "IN-RJ", langs: ["en"] },
@@ -86,6 +90,8 @@ export const PRIMARY_FOCUS_CITY_SLUGS = [
   ...TAMIL_NADU_CITY_SLUGS,
   "pondicherry",
   "tirupati",
+  "sabarimala",
+  "ayyappankovil",
   "bengaluru",
   "kanchipuram",
   "tiruvannamalai",
@@ -97,9 +103,9 @@ export const PRIMARY_FOCUS_CITY_SLUGS = [
 
 /**
  * Live ranking city hubs only. Extra programmatic city landings 301 to /cabs.
- * Add a slug here when you publish a new city page yourself.
+ * Add a slug in config/seo-scope.js to publish a new city page.
  */
-export const MAIN_PAGE_CITY_SLUGS = ["chennai"];
+export const MAIN_PAGE_CITY_SLUGS = SEO_SCOPE_CITY_SLUGS;
 
 export function isTamilNaduCity(cityOrSlug) {
   const slug = typeof cityOrSlug === "string" ? cityOrSlug : cityOrSlug?.slug;
@@ -122,7 +128,22 @@ export function peerCitiesForHub(city, limit = 12) {
 }
 
 export function cityBySlug(slug) {
-  return SEO_CITIES.find((c) => c.slug === slug) ?? null;
+  const key = normalizeSeoCitySlug(slug);
+  return SEO_CITIES.find((c) => c.slug === key) ?? null;
+}
+
+/** Known city, or a display-only city built from a URL slug (Mahabalipuram, etc.). */
+export function displayCityFromSlug(slug) {
+  const known = cityBySlug(slug);
+  if (known) return known;
+  const key = normalizeSeoCitySlug(slug);
+  const name = String(key || "")
+    .split("-")
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+  if (!name) return null;
+  return { slug: key, name, state: "", region: "", langs: ["en"] };
 }
 
 export function cityNameLower(city) {
@@ -171,6 +192,8 @@ export const CITY_GEO = {
   pune: { lat: "18.5204", lng: "73.8567" },
   kolkata: { lat: "22.5726", lng: "88.3639" },
   kochi: { lat: "9.9312", lng: "76.2673" },
+  sabarimala: { lat: "9.4346", lng: "77.0811" },
+  ayyappankovil: { lat: "9.8384", lng: "77.0276" },
   visakhapatnam: { lat: "17.6868", lng: "83.2185" },
   goa: { lat: "15.2993", lng: "74.124" },
   jaipur: { lat: "26.9124", lng: "75.7873" },

@@ -104,7 +104,7 @@ export default function LocationsPage() {
             <div className="mt-8 rounded-xl border border-dashed border-slate-300 bg-white p-8 text-center">
               <p className="text-sm text-slate-600">
                 {cityLabel
-                  ? `No pickup points listed for ${cityLabel} yet. Try Bengaluru, Coimbatore, or another served city.`
+                  ? `No pickup points listed for ${cityLabel} yet. Try Chennai, Madurai, or another live city.`
                   : "Select a city above to see service locations."}
               </p>
               {cityLabel ? (

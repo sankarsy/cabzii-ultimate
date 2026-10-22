@@ -31,10 +31,10 @@ export default async function CallDriverPage() {
     {
       "@context": "https://schema.org",
       "@type": "Service",
-      name: "Call Driver in Chennai | Acting Driver Service",
+      name: "Call Driver | Acting Driver Booking",
       serviceType: "Acting driver / call driver for own car",
       provider: { "@type": "Organization", name: "Cabzii", url: SITE_URL },
-      areaServed: "Chennai",
+      areaServed: "South India",
       url: `${SITE_URL}/call-driver`,
       description: page.intro
     },

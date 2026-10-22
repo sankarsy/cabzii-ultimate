@@ -5,6 +5,7 @@ import { Eye, EyeOff } from "lucide-react";
 import AdminHomeCards from "./AdminHomeCards";
 import AdminDriverAccounts from "./AdminDriverAccounts";
 import { MASTER_HOME_CARD_SECTIONS, MASTER_SECTION_KEYS, MASTER_SECTION_LABELS } from "../../lib/adminMasterConfig";
+import CitySelect from "./cms/CitySelect";
 
 const emptyVendor = {
   name: "",
@@ -25,9 +26,6 @@ const emptyCity = {
   country: "India",
   isActive: true,
   sortOrder: 0,
-  metaTitle: "",
-  metaDescription: "",
-  keywords: "",
   content: "",
   image: "",
   banner: "",
@@ -83,7 +81,7 @@ function locationCityId(loc) {
   return String(loc.city);
 }
 
-export default function AdminMasterData({ token, isSuperAdmin, initialSection = "vendors", focusCreateVendor = false }) {
+export default function AdminMasterData({ token, isSuperAdmin, initialSection = "vendors", focusCreateVendor = false, hideTabs = false }) {
   const [section, setSection] = useState(initialSection);
   const [vendors, setVendors] = useState([]);
   const [cities, setCities] = useState([]);
@@ -210,9 +208,6 @@ export default function AdminMasterData({ token, isSuperAdmin, initialSection = 
       country: String(cityForm.country || "India").trim() || "India",
       isActive: cityForm.isActive !== false,
       sortOrder: Number(cityForm.sortOrder) || 0,
-      metaTitle: cityForm.metaTitle || "",
-      metaDescription: cityForm.metaDescription || "",
-      keywords: cityForm.keywords || "",
       content: cityForm.content || "",
       faqs: Array.isArray(cityForm.faqs)
         ? cityForm.faqs.map((f) => ({ question: f.question || "", answer: f.answer || "" }))
@@ -323,7 +318,7 @@ export default function AdminMasterData({ token, isSuperAdmin, initialSection = 
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-2">
-        {MASTER_SECTION_KEYS.map((tab) => (
+        {hideTabs ? null : MASTER_SECTION_KEYS.filter((tab) => tab !== "locations" && tab !== "drivers").map((tab) => (
           <button
             key={tab}
             type="button"
@@ -385,18 +380,13 @@ export default function AdminMasterData({ token, isSuperAdmin, initialSection = 
                 placeholder={editVendorId ? "Required only if changing password" : "Type password again"}
               />
               <Field label="City / base location">
-                <input
-                  className={inputCls()}
-                  list="vendor-city-options"
+                <CitySelect
+                  token={token}
                   value={vendorForm.city}
-                  onChange={(e) => setVendorForm((p) => ({ ...p, city: e.target.value }))}
-                  placeholder="Type city e.g. Chennai"
+                  onChange={(city) => setVendorForm((p) => ({ ...p, city }))}
+                  valueMode="name"
+                  placeholder="Select an existing city"
                 />
-                <datalist id="vendor-city-options">
-                  {cities.map((c) => (
-                    <option key={c._id} value={c.name} />
-                  ))}
-                </datalist>
               </Field>
               <Field label="Location / address">
                 <input className={inputCls()} value={vendorForm.location} onChange={(e) => setVendorForm((p) => ({ ...p, location: e.target.value }))} placeholder="Office, landmark or area" />
@@ -473,17 +463,6 @@ export default function AdminMasterData({ token, isSuperAdmin, initialSection = 
               <Field label="State">
                 <input className={inputCls()} value={cityForm.state} onChange={(e) => setCityForm((p) => ({ ...p, state: e.target.value }))} />
               </Field>
-              <Field label="Meta title">
-                <input className={inputCls()} value={cityForm.metaTitle} onChange={(e) => setCityForm((p) => ({ ...p, metaTitle: e.target.value }))} />
-              </Field>
-              <div className="sm:col-span-2">
-                <Field label="Meta description">
-                  <textarea className={inputCls()} rows={2} value={cityForm.metaDescription} onChange={(e) => setCityForm((p) => ({ ...p, metaDescription: e.target.value }))} />
-                </Field>
-              </div>
-              <Field label="Keywords">
-                <input className={inputCls()} value={cityForm.keywords} onChange={(e) => setCityForm((p) => ({ ...p, keywords: e.target.value }))} />
-              </Field>
               <Field label="Image URL">
                 <input className={inputCls()} value={cityForm.image} onChange={(e) => setCityForm((p) => ({ ...p, image: e.target.value }))} />
               </Field>
@@ -530,9 +509,6 @@ export default function AdminMasterData({ token, isSuperAdmin, initialSection = 
                       country: c.country || "India",
                       isActive: c.isActive !== false,
                       sortOrder: c.sortOrder || 0,
-                      metaTitle: c.metaTitle || "",
-                      metaDescription: c.metaDescription || "",
-                      keywords: c.keywords || "",
                       content: c.content || "",
                       faqs: Array.isArray(c.faqs) ? c.faqs.map((f) => ({ question: f.question || "", answer: f.answer || "" })) : [],
                       airportDetails: c.airportDetails || "",

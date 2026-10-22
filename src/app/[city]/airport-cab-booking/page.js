@@ -5,7 +5,7 @@ import SeoPageView from "../../../components/seo/SeoPageView";
 import { buildPageMetadata, cityBySlug, classifyServiceCity, SITE_URL } from "../../../lib/seo";
 import { applyAirportCabCms, airportHubStaticParams, getAirportCabData } from "../../../data/airport-cabs";
 import { buildCityCabJsonLd } from "../../../lib/schema";
-import { fetchCabsForTrip, fetchSeoCityPage } from "../../../lib/serverCatalog";
+import { fetchCabsForTrip, fetchCatalogList, fetchSeoCityPage } from "../../../lib/serverCatalog";
 import { fetchSiteReviewStats } from "../../../lib/serverReviewStats";
 import { ORG_PHONE, SOCIAL_PROFILES, SITE_LOGO, SITE_NAME } from "../../../lib/seo/constants";
 import { SEO_REVALIDATE_SECONDS } from "../../../lib/revalidation/constants";
@@ -60,8 +60,14 @@ export default async function CityAirportCabBookingPage({ params }) {
 
   const cms = await fetchSeoCityPage("airport-cab-booking", city.slug);
   const data = applyAirportCabCms(base, cms) || base;
-  const cabs = await fetchCabsForTrip(data.bookingTrip, 50);
-  const reviewStats = await fetchSiteReviewStats();
+  const [cabs, reviewStats, testimonialRows] = await Promise.all([
+    fetchCabsForTrip(data.bookingTrip, 50),
+    fetchSiteReviewStats(),
+    fetchCatalogList("testimonials", 8)
+  ]);
+  const quotes = (Array.isArray(testimonialRows) ? testimonialRows : [])
+    .filter((row) => row && !row.sampleReview && String(row.message || "").trim())
+    .slice(0, 2);
   const jsonLd = buildCityCabJsonLd({
     cityName: `${city.name} Airport`,
     pageUrl: `${SITE_URL}${data.path}`,
@@ -87,7 +93,11 @@ export default async function CityAirportCabBookingPage({ params }) {
     <>
       <SeoPageView pageType="service" city={city.slug} service="airport-taxi" />
       <JsonLd data={jsonLd} />
-      <AirportCabLandingPage data={data} cabs={JSON.parse(JSON.stringify(cabs || []))} />
+      <AirportCabLandingPage
+        data={data}
+        cabs={JSON.parse(JSON.stringify(cabs || []))}
+        quotes={JSON.parse(JSON.stringify(quotes || []))}
+      />
     </>
   );
 }

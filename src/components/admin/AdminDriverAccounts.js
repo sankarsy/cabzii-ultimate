@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import CitySelect from "./cms/CitySelect";
 
 const DRIVER_TYPES = [
   { id: "local", label: "Local Driver" },
@@ -159,18 +160,14 @@ export default function AdminDriverAccounts({ token, isSuperAdmin = false, citie
               </select>
             </Field>
             <Field label="City">
-              <input
-                className={inputCls()}
-                list="driver-city-options"
+              <CitySelect
+                token={token}
                 value={form.city}
-                onChange={(e) => setForm((p) => ({ ...p, city: e.target.value }))}
-                placeholder="Type city e.g. Chennai"
+                onChange={(city) => setForm((p) => ({ ...p, city }))}
+                valueMode="name"
+                service="actingDriver"
+                placeholder="Select an existing city"
               />
-              <datalist id="driver-city-options">
-                {cities.map((c) => (
-                  <option key={c._id || c.name} value={c.name} />
-                ))}
-              </datalist>
             </Field>
             <Field label="Location / area">
               <input className={inputCls()} value={form.location} onChange={(e) => setForm((p) => ({ ...p, location: e.target.value }))} placeholder="Area or landmark" />

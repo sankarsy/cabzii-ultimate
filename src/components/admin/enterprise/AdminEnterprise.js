@@ -56,7 +56,7 @@ function ListEditor({ items, onChange, fields }) {
   );
 }
 
-export default function AdminEnterprise({ token, initialSection = "dashboard" }) {
+export default function AdminEnterprise({ token, initialSection = "dashboard", hideChrome = false }) {
   const [section, setSection] = useState(initialSection);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -131,6 +131,10 @@ export default function AdminEnterprise({ token, initialSection = "dashboard" })
   const [aiVars, setAiVars] = useState({ City: "Chennai", FromCity: "Chennai", ToCity: "Bengaluru" });
   const [aiPrompt, setAiPrompt] = useState("");
   const [aiDraft, setAiDraft] = useState(null);
+
+  useEffect(() => {
+    if (initialSection) setSection(initialSection);
+  }, [initialSection]);
 
   const loadDashboard = useCallback(async () => {
     const data = await enterpriseFetch("dashboard", { token });
@@ -326,17 +330,22 @@ export default function AdminEnterprise({ token, initialSection = "dashboard" })
     }
   }
 
+  const visibleSections = hideChrome
+    ? ENTERPRISE_SECTIONS.filter((s) => s.key === section)
+    : ENTERPRISE_SECTIONS.filter((s) => s.key === "cms-pages" || s.key === "faqs");
+
   return (
     <div className="space-y-4">
-      <div className="rounded-xl border border-indigo-200 bg-gradient-to-r from-indigo-50 to-blue-50 p-4">
-        <h2 className="text-lg font-bold text-slate-900">Enterprise CMS</h2>
+      <div>
+        <h2 className="text-lg font-bold text-slate-900">{section === "faqs" ? "FAQs" : "Pages"}</h2>
         <p className="mt-1 text-sm text-slate-600">
-          Manage all website content, SEO, FAQs, destinations, media, and analytics — no code required.
+          {section === "faqs" ? "Reusable FAQ records stored in the database." : "Static pages stored in the database."}
         </p>
       </div>
 
+      {hideChrome || visibleSections.length <= 1 ? null : (
       <div className="flex flex-wrap gap-2">
-        {ENTERPRISE_SECTIONS.map((s) => (
+        {visibleSections.map((s) => (
           <button
             key={s.key}
             type="button"
@@ -349,6 +358,7 @@ export default function AdminEnterprise({ token, initialSection = "dashboard" })
           </button>
         ))}
       </div>
+      )}
 
       {message ? <p className="rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-800">{message}</p> : null}
       {error ? <p className="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700">{error}</p> : null}

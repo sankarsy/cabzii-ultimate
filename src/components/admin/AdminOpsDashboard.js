@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
-import Link from "next/link";
 import { extractCabList, extractDriverList } from "../../lib/apiClient";
 import { todayStr } from "../../lib/istDate";
 import useBookingLocation from "../../lib/useBookingLocation";
@@ -141,7 +140,7 @@ function OpsBookingMap({ booking, token }) {
   );
 }
 
-export default function AdminOpsDashboard({ token, isSuperAdmin }) {
+export default function AdminOpsDashboard({ token, isSuperAdmin, variant = "dashboard" }) {
   const authHeaders = token ? { authorization: `Bearer ${token}` } : {};
   const today = todayStr();
   const [bookings, setBookings] = useState([]);
@@ -291,23 +290,14 @@ export default function AdminOpsDashboard({ token, isSuperAdmin }) {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-lg font-bold text-slate-900">{isSuperAdmin ? "Operations" : "Operator dashboard"}</h1>
+        <h1 className="text-lg font-bold text-slate-900">
+          {variant === "assignments" ? "Assignments" : isSuperAdmin ? "Dashboard" : "Operator dashboard"}
+        </h1>
         <p className="text-sm text-slate-600">
-          Confirm bookings, assign your vehicles and drivers, then finish or cancel the trip.
+          {variant === "assignments"
+            ? "Assign a cab and driver to each booking. Existing assignment fields stay on the booking record."
+            : "Confirm bookings, assign vehicles and drivers, then finish or cancel the trip."}
         </p>
-        {isSuperAdmin ? (
-          <p className="mt-2 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-xs text-sky-950">
-            Google landing pages are under{" "}
-            <Link href="/admin?tab=seoPagesHub" className="font-semibold underline">
-              Content → Google SEO pages
-            </Link>
-            . Vehicle SEO (Dzire Tour S):{" "}
-            <Link href="/admin?tab=cabs" className="font-semibold underline">
-              Catalog → Cabs
-            </Link>
-            .
-          </p>
-        ) : null}
       </div>
 
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">

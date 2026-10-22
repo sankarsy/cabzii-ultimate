@@ -12,6 +12,22 @@ import {
   buildVehicleJsonLd,
   seoVars
 } from "./vehicleEnterpriseSeo";
+import {
+  RANKING_AI_VERSION,
+  banLocalInMeta,
+  ensureRankingDescription,
+  ensureRankingFaqs,
+  ensureRankingHtml,
+  ensureRankingIntro,
+  ensureRankingKeywords,
+  ensureRankingTitle,
+  fallbackRankingContent,
+  fallbackRankingFaqs,
+  fallbackRankingIntro,
+  normalizeRankingMarkdown,
+  rankingMetaTemplates,
+  rankingScoreRules
+} from "./seo/rankingAiCopy";
 
 const MODEL = process.env.OPENAI_SEO_MODEL || "gpt-4o-mini";
 const cache = new Map();
@@ -68,22 +84,31 @@ function setCache(key, data) {
 function contextFromPayload(payload = {}) {
   const v = seoVars(payload);
   const ctx = {
-    vehicle: payload.vehicleName || payload.title || payload.name || v.vehicle,
+    vehicle: payload.vehicleName || payload.title || payload.name || payload.h1 || v.vehicle,
     brand: payload.brand || payload.brandName || v.brand,
     city: payload.city || v.city,
     state: payload.state || v.state,
     price: v.price,
     seats: payload.seats || v.seats,
-    category: payload.category || payload.type || "Cab",
+    category: payload.category || payload.type || payload.pageType || "Cab",
     fuel: payload.fuelType || v.fuel,
     transmission: payload.transmission || v.transmission,
-    pathPrefix: payload.pathPrefix || "/cabs",
+    pathPrefix: payload.pathPrefix || payload.path || "/cabs",
     existingTitle: payload.seoTitle || "",
     existingDescription: payload.seoDescription || "",
-    content: payload.content || payload.longSeoContent || "",
+    content: payload.content || payload.longSeoContent || payload.html || "",
     customPrompt: String(payload.customPrompt || payload.instruction || "").trim(),
     imageType: payload.imageType || "gallery",
-    index: payload.index || 1
+    index: payload.index || 1,
+    pageKind: payload.pageKind === "ranking" ? "ranking" : "vehicle",
+    path: payload.path || payload.pathPrefix || "",
+    pageType: payload.pageType || payload.category || "",
+    intro: payload.intro || "",
+    keywords: payload.keywords || payload.seoKeywords || "",
+    h1: payload.h1 || payload.vehicleName || "",
+    rankGaps: payload.rankGaps || "",
+    faqs: payload.faqs || payload.faq || [],
+    promptVersion: payload.pageKind === "ranking" ? RANKING_AI_VERSION : "v1"
   };
   // Shape expected by vehicleEnterpriseSeo helpers
   ctx.vehicleName = ctx.vehicle;
@@ -115,12 +140,13 @@ async function chatJson(system, user, { temperature = 0.7 } = {}) {
   }
 }
 
-async function chatText(system, user, { temperature = 0.6 } = {}) {
+async function chatText(system, user, { temperature = 0.6, max_tokens = 2500 } = {}) {
   const client = getClient();
   if (!client) return null;
   const res = await client.chat.completions.create({
     model: MODEL,
     temperature,
+    max_tokens,
     messages: [
       { role: "system", content: system },
       { role: "user", content: user }
@@ -131,13 +157,31 @@ async function chatText(system, user, { temperature = 0.6 } = {}) {
 
 function brandRules() {
   return `You are an expert SEO copywriter for Cabzii (cabzii.in), an Indian cab booking platform.
-Write natural Indian English for Google search. Focus on CTR, local SEO, and conversion.
-Never invent fake certifications. Prefer Chennai/Tamil Nadu style local SEO when city matches.
+Write natural Indian English for Google search. Focus on CTR, city SEO, and conversion.
+Never invent fake certifications. Prefer Tamil Nadu city search language when city matches.
+On city taxi-service pages do not mention local cab, hourly rental, round-trip, or any named package.
 Return ONLY valid JSON when asked for JSON.`;
 }
 
 function promptNote(ctx) {
   return ctx.customPrompt ? `\nExtra instructions from admin: ${ctx.customPrompt}` : "";
+}
+
+function rankingBrief(ctx) {
+  return `This is a Cabzii Google ranking page (not a vehicle catalog card).
+Page type: ${ctx.pageType || ctx.category}
+Product / H1: ${ctx.h1 || ctx.vehicle}
+City: ${ctx.city}
+State: ${ctx.state}
+Live URL: ${ctx.path || ctx.pathPrefix}
+Existing title: ${ctx.existingTitle || "(empty)"}
+Existing description: ${ctx.existingDescription || "(empty)"}
+Existing intro: ${ctx.intro || "(empty)"}
+Existing body: ${(ctx.content || "").slice(0, 800) || "(empty)"}
+Keywords: ${ctx.keywords || "(empty)"}
+${ctx.rankGaps ? `Current failing score checks: ${ctx.rankGaps}` : ""}
+${rankingScoreRules()}
+No airport taxi copy unless the page is airport-taxi.${promptNote(ctx)}`;
 }
 
 /* ── Fallbacks (no API key) ─────────────────────────────────── */
@@ -167,7 +211,7 @@ function fallbackDescriptions(ctx) {
       d.slice(0, 160),
       `Book ${ctx.vehicle} in ${ctx.city} from ${ctx.price}. Verified drivers, airport & outstation. Book now on Cabzii.`.slice(0, 160),
       `Need a ${ctx.vehicle}? Hire in ${ctx.city}, ${ctx.state} with upfront fares on Cabzii.in.`.slice(0, 160),
-      `${ctx.vehicle} rental ${ctx.city} — local, airport transfer & corporate travel. Transparent pricing. Book today.`.slice(0, 160),
+      `${ctx.vehicle} rental ${ctx.city} — airport transfer and corporate travel. Transparent pricing. Book today.`.slice(0, 160),
       `Reserve ${ctx.vehicle} online in ${ctx.city}. AC cabs and professional drivers. Start booking on Cabzii.`.slice(0, 160)
     ]
   };
@@ -178,7 +222,7 @@ function fallbackKeywords(ctx) {
   const c = String(ctx.city || "chennai").toLowerCase();
   return {
     primary: [`${v} ${c}`, `${v} rental ${c}`, `${c} taxi`],
-    secondary: ["airport taxi", "outstation cab", "cab booking", "local taxi"],
+    secondary: ["airport taxi", "outstation cab", "cab booking", "call taxi"],
     longTail: [`book ${v} in ${c}`, `${v} airport transfer ${c}`, `hire ${v} for outstation from ${c}`],
     lsi: ["chauffeur", "tempo traveller", "ac cab", "one way taxi", "corporate travel"]
   };
@@ -274,7 +318,12 @@ export async function runAiSeoTask(task, payload = {}) {
       case "seo-title": {
         const ai = await chatJson(
           brandRules(),
-          `Generate 10 unique SEO titles for this Cabzii listing.
+          ctx.pageKind === "ranking"
+            ? `${rankingBrief(ctx)}
+Generate 8 unique SEO titles. Each 50–60 characters. CTR-focused.
+Never use the word "local". Prefer "cab booking" or "call taxi" (or "call driver" on acting-driver pages).
+Return JSON: {"titles":["..."]}`
+            : `Generate 10 unique SEO titles for this Cabzii listing.
 Vehicle: ${ctx.vehicle}
 Brand: ${ctx.brand}
 City: ${ctx.city}
@@ -285,26 +334,50 @@ Category: ${ctx.category}${promptNote(ctx)}
 Rules: under 60 characters, CTR optimized, include city + primary keyword, natural language.
 Return JSON: {"titles":["..."]}`
         );
-        result = ai?.titles?.length ? { titles: ai.titles.map((t) => String(t).slice(0, 70)) } : fallbackTitle(ctx);
+        result = ai?.titles?.length
+          ? {
+              titles: ai.titles.map((t) =>
+                ctx.pageKind === "ranking" ? ensureRankingTitle(t, ctx) : String(t).slice(0, 70)
+              )
+            }
+          : ctx.pageKind === "ranking"
+            ? { titles: [rankingMetaTemplates(ctx).title] }
+            : fallbackTitle(ctx);
         break;
       }
       case "meta-description": {
         const ai = await chatJson(
           brandRules(),
-          `Generate 5 meta descriptions for Cabzii.
+          ctx.pageKind === "ranking"
+            ? `${rankingBrief(ctx)}
+Generate 5 meta descriptions. Each 120–155 characters with a booking CTA.
+Never use the word "local". Prefer "cab booking" / "call taxi" (or "call driver" on acting-driver pages).
+Return JSON: {"descriptions":["..."]}`
+            : `Generate 5 meta descriptions for Cabzii.
 Vehicle: ${ctx.vehicle}, City: ${ctx.city}, State: ${ctx.state}, Price: ${ctx.price}, Seats: ${ctx.seats}${promptNote(ctx)}
 Rules: under 160 chars, high CTR, include CTA + keyword.
 Return JSON: {"descriptions":["..."]}`
         );
         result = ai?.descriptions?.length
-          ? { descriptions: ai.descriptions.map((d) => String(d).slice(0, 180)) }
-          : fallbackDescriptions(ctx);
+          ? {
+              descriptions: ai.descriptions.map((d) =>
+                ctx.pageKind === "ranking" ? ensureRankingDescription(d, ctx) : String(d).slice(0, 180)
+              )
+            }
+          : ctx.pageKind === "ranking"
+            ? { descriptions: [rankingMetaTemplates(ctx).description] }
+            : fallbackDescriptions(ctx);
         break;
       }
       case "keywords": {
         const ai = await chatJson(
           brandRules(),
-          `Generate SEO keywords for Cabzii listing: ${ctx.vehicle} in ${ctx.city}, ${ctx.state}.
+          ctx.pageKind === "ranking"
+            ? `${rankingBrief(ctx)}
+Generate ranking keywords for this URL. First primary term must match search intent.
+Never use the word "local". Prefer cab booking, call taxi, or call driver.
+Return JSON: {"primary":[],"secondary":[],"longTail":[],"lsi":[]}`
+            : `Generate SEO keywords for Cabzii listing: ${ctx.vehicle} in ${ctx.city}, ${ctx.state}.
 Category: ${ctx.category}. Seats: ${ctx.seats}.
 Return JSON: {"primary":[],"secondary":[],"longTail":[],"lsi":[]}`
         );
@@ -317,31 +390,79 @@ Return JSON: {"primary":[],"secondary":[],"longTail":[],"lsi":[]}`
                 lsi: ai.lsi || []
               }
             : fallbackKeywords(ctx);
+        if (ctx.pageKind === "ranking") {
+          const clean = (arr) =>
+            (arr || [])
+              .map((k) => banLocalInMeta(String(k), ctx))
+              .filter((k) => k && !/\blocal\b/i.test(k));
+          result = {
+            primary: clean(result.primary),
+            secondary: clean(result.secondary),
+            longTail: clean(result.longTail),
+            lsi: clean(result.lsi)
+          };
+          if (!result.primary.length) {
+            result.primary = ensureRankingKeywords("", ctx).split(",").map((k) => k.trim()).filter(Boolean).slice(0, 3);
+          }
+        }
         break;
       }
       case "faq": {
         const ai = await chatJson(
           brandRules(),
-          `Generate 10 SEO-optimized FAQs for booking ${ctx.vehicle} in ${ctx.city} on Cabzii.
+          ctx.pageKind === "ranking"
+            ? `${rankingBrief(ctx)}
+Generate exactly 6 complete FAQs customers would search. Each answer 40–70 words. Question AND answer required. No fake prices.
+Return JSON: {"faqs":[{"question":"","answer":""}]}`
+            : `Generate 10 SEO-optimized FAQs for booking ${ctx.vehicle} in ${ctx.city} on Cabzii.
 Include fare, airport, outstation, inclusions, booking steps.
 Return JSON: {"faqs":[{"question":"","answer":""}]}`
         );
-        result = ai?.faqs?.length
-          ? { faqs: ai.faqs }
-          : { faqs: generateFaqSuggestions(ctx) };
+        if (ctx.pageKind === "ranking") {
+          result = { faqs: ensureRankingFaqs(ai?.faqs, ctx) };
+        } else {
+          result = ai?.faqs?.length ? { faqs: ai.faqs } : { faqs: generateFaqSuggestions(ctx) };
+        }
         break;
       }
       case "content": {
         const ai = await chatText(
           brandRules() +
-            " Write long-form SEO content in Markdown only. Never use a top-level # H1 — the product page already has one H1. Use ## for main sections and ### for subsections. Keep headings short (under 60 characters). Never write 'All India' as a city — use Chennai or the given city.",
-          `Write 900-1500 words Markdown SEO article for ${ctx.vehicle} rental in ${ctx.city}, ${ctx.state}.
+            (ctx.pageKind === "ranking"
+              ? " Write long-form SEO Markdown only. Never use a top-level # H1. Use at least 4 ## H2 headings. Do not use ### — the rank calculator only counts H2. Keep headings under 60 characters. Never write 'All India' as a city."
+              : " Write long-form SEO content in Markdown only. Never use a top-level # H1 — the product page already has one H1. Use ## for main sections and ### for subsections. Keep headings short (under 60 characters). Never write 'All India' as a city — use Chennai or the given city."),
+          ctx.pageKind === "ranking"
+            ? `${rankingBrief(ctx)}
+Write 500–800 words Markdown for this ranking page. No top-level # H1.
+Start with a 50–80 word intro paragraph (no heading).
+Then at least these ## H2 sections (use ## not ###):
+## What ${ctx.city} taxi services include
+## How booking works on Cabzii
+## Where ${ctx.city} travellers usually go
+## Why book ${ctx.city} cabs with Cabzii
+Do not mention local cab, hourly rental, 4-hour, 8-hour, 40 km, 80 km, round-trip, or any named package.
+End with a short book CTA and one in-content link to /cabs.
+Stay on this URL's intent only.`
+            : `Write 900-1500 words Markdown SEO article for ${ctx.vehicle} rental in ${ctx.city}, ${ctx.state}.
 Price from ${ctx.price}. Seats: ${ctx.seats}. Brand: ${ctx.brand}. Category: ${ctx.category}.
 Start with ## ${ctx.vehicle} rental in ${ctx.city} (not #).
 Then use ## or ### for: Introduction, Vehicle Overview, Features, Pricing, Why Choose Cabzii, Popular Routes, Airport Transfer, Corporate Travel, Wedding Travel, Tour Packages, FAQs, Conclusion.
-Use natural keywords. End with a CTA to book on Cabzii.`
+Use natural keywords. End with a CTA to book on Cabzii.`,
+          ctx.pageKind === "ranking" ? { max_tokens: 3500 } : {}
         );
-        if (ai) {
+        if (ctx.pageKind === "ranking") {
+          if (ai) {
+            const markdown = normalizeRankingMarkdown(ai);
+            result = {
+              html: ensureRankingHtml(marked.parse(markdown), ctx),
+              markdown,
+              intro: ensureRankingIntro(ctx.intro || "", ctx)
+            };
+          } else {
+            const fb = fallbackRankingContent(ctx);
+            result = { ...fb, intro: fallbackRankingIntro(ctx) };
+          }
+        } else if (ai) {
           result = { html: marked.parse(ai), markdown: ai };
         } else {
           result = fallbackContent(ctx);
@@ -363,7 +484,10 @@ Return JSON: {"slugs":["..."]}`
       case "h1": {
         const ai = await chatJson(
           brandRules(),
-          `Generate 5 H1 headings for ${ctx.vehicle} in ${ctx.city}. Under 70 chars. Return JSON: {"headings":[]}`
+          ctx.pageKind === "ranking"
+            ? `${rankingBrief(ctx)}
+Generate 5 visible H1 options. Under 70 characters. Match search intent + city. Return JSON: {"headings":[]}`
+            : `Generate 5 H1 headings for ${ctx.vehicle} in ${ctx.city}. Under 70 chars. Return JSON: {"headings":[]}`
         );
         result = ai?.headings?.length ? { headings: ai.headings } : fallbackH1(ctx);
         break;
@@ -371,7 +495,10 @@ Return JSON: {"slugs":["..."]}`
       case "h2": {
         const ai = await chatJson(
           brandRules(),
-          `Generate 10 SEO H2 headings for a ${ctx.vehicle} landing page in ${ctx.city}. Return JSON: {"headings":[]}`
+          ctx.pageKind === "ranking"
+            ? `${rankingBrief(ctx)}
+Generate 8 H2 headings (under 60 characters) for this ranking page. They must be usable as ## headings in the body. Return JSON: {"headings":[]}`
+            : `Generate 10 SEO H2 headings for a ${ctx.vehicle} landing page in ${ctx.city}. Return JSON: {"headings":[]}`
         );
         result = ai?.headings?.length ? { headings: ai.headings } : fallbackH2(ctx);
         break;
@@ -419,15 +546,46 @@ Return JSON: {"jsonLd": { "@context":"https://schema.org", "@graph":[] }}`
           grammar: "Fix grammar and punctuation only",
           cta: "Add a strong booking CTA for Cabzii at the end"
         };
+        const rankingExpand =
+          task === "expand" ||
+          task === "improve" ||
+          task === "rewrite" ||
+          String(ctx.customPrompt || "").toLowerCase().includes("intro");
         const ai = await chatText(
           brandRules(),
-          `${intents[task]}.
+          ctx.pageKind === "ranking"
+            ? `${rankingBrief(ctx)}
+${intents[task]}.
+${
+  String(ctx.customPrompt || "").toLowerCase().includes("intro")
+    ? "Write only a 50–80 word intro paragraph as plain text. No heading, no HTML, no title."
+    : "Expand or rewrite so the body is 500–800 words with at least 3 ## H2 headings (not ###). Return Markdown, no H1."
+}
+Current copy:
+${ctx.content || ctx.intro || ctx.existingDescription || "Write ranking copy for this Cabzii page."}`
+            : `${intents[task]}.
 Vehicle context: ${ctx.vehicle} in ${ctx.city}.
 Content:
 ${ctx.content || ctx.existingDescription || "Book this cab on Cabzii."}
-Return improved HTML paragraphs only.`
+Return improved HTML paragraphs only.`,
+          ctx.pageKind === "ranking" && rankingExpand ? { max_tokens: 3500 } : {}
         );
-        result = { html: ai || ctx.content, text: ai || ctx.content };
+        if (ctx.pageKind === "ranking") {
+          const isIntro = String(ctx.customPrompt || "").toLowerCase().includes("intro");
+          if (isIntro) {
+            const intro = ensureRankingIntro(ai || ctx.intro, ctx);
+            result = { html: intro, text: intro, intro };
+          } else if (ai) {
+            const markdown = normalizeRankingMarkdown(ai);
+            const html = ensureRankingHtml(marked.parse(markdown), ctx);
+            result = { html, text: html, markdown };
+          } else {
+            const fb = fallbackRankingContent(ctx);
+            result = { html: fb.html, text: fb.html, markdown: fb.markdown };
+          }
+        } else {
+          result = { html: ai || ctx.content, text: ai || ctx.content };
+        }
         break;
       }
       case "everything": {
@@ -443,13 +601,16 @@ Return improved HTML paragraphs only.`
           runAiSeoTask("image-alt", payload)
         ]);
         const pick = (i, fb) => (settled[i].status === "fulfilled" ? settled[i].value : fb);
-        const titles = pick(0, fallbackTitle(ctx));
-        const descriptions = pick(1, fallbackDescriptions(ctx));
+        const titles = pick(0, ctx.pageKind === "ranking" ? { titles: [rankingMetaTemplates(ctx).title] } : fallbackTitle(ctx));
+        const descriptions = pick(
+          1,
+          ctx.pageKind === "ranking" ? { descriptions: [rankingMetaTemplates(ctx).description] } : fallbackDescriptions(ctx)
+        );
         const keywords = pick(2, fallbackKeywords(ctx));
-        const faqs = pick(3, { faqs: generateFaqSuggestions(ctx) });
+        const faqs = pick(3, ctx.pageKind === "ranking" ? { faqs: fallbackRankingFaqs(ctx) } : { faqs: generateFaqSuggestions(ctx) });
         const h1s = pick(4, fallbackH1(ctx));
         const h2s = pick(5, fallbackH2(ctx));
-        const content = pick(6, fallbackContent(ctx));
+        const content = pick(6, ctx.pageKind === "ranking" ? fallbackRankingContent(ctx) : fallbackContent(ctx));
         const slugs = pick(7, { slugs: [localSlug(ctx)] });
         const alt = pick(8, {
           alt: `${ctx.vehicle} photo in ${ctx.city}`,
@@ -457,17 +618,26 @@ Return improved HTML paragraphs only.`
           caption: "",
           filename: localSlug(ctx)
         });
+        const rankingFaqs = ctx.pageKind === "ranking" ? ensureRankingFaqs(faqs.faqs, ctx) : faqs.faqs || [];
+        const rankingHtml =
+          ctx.pageKind === "ranking" ? ensureRankingHtml(content.html || content.longSeoContent || "", ctx) : content.html || "";
         result = {
-          seoTitle: titles.titles?.[0] || "",
+          seoTitle: ctx.pageKind === "ranking" ? ensureRankingTitle(titles.titles?.[0] || "", ctx) : titles.titles?.[0] || "",
           titles: titles.titles || [],
-          seoDescription: descriptions.descriptions?.[0] || "",
+          seoDescription:
+            ctx.pageKind === "ranking"
+              ? ensureRankingDescription(descriptions.descriptions?.[0] || "", ctx)
+              : descriptions.descriptions?.[0] || "",
           descriptions: descriptions.descriptions || [],
           keywords,
-          faq: faqs.faqs || [],
+          faq: rankingFaqs,
+          faqs: rankingFaqs,
           h1: h1s.headings?.[0] || "",
           h1Options: h1s.headings || [],
           h2: h2s.headings || [],
-          longSeoContent: content.html || "",
+          longSeoContent: rankingHtml || content.html || "",
+          html: rankingHtml || content.html || "",
+          intro: ctx.pageKind === "ranking" ? ensureRankingIntro(content.intro || ctx.intro || "", ctx) : "",
           shortDescription: descriptions.descriptions?.[1] || descriptions.descriptions?.[0] || "",
           slug: slugs.slugs?.[0] || localSlug(ctx),
           imageAlt: alt
@@ -482,8 +652,8 @@ Return improved HTML paragraphs only.`
     if (task === "seo-title") result = fallbackTitle(ctx);
     else if (task === "meta-description") result = fallbackDescriptions(ctx);
     else if (task === "keywords") result = fallbackKeywords(ctx);
-    else if (task === "faq") result = { faqs: generateFaqSuggestions(ctx) };
-    else if (task === "content") result = fallbackContent(ctx);
+    else if (task === "faq") result = { faqs: ctx.pageKind === "ranking" ? fallbackRankingFaqs(ctx) : generateFaqSuggestions(ctx) };
+    else if (task === "content") result = ctx.pageKind === "ranking" ? { ...fallbackRankingContent(ctx), intro: fallbackRankingIntro(ctx) } : fallbackContent(ctx);
     else if (task === "slug") result = { slugs: [localSlug(ctx)] };
     else if (task === "h1") result = fallbackH1(ctx);
     else if (task === "h2") result = fallbackH2(ctx);
@@ -495,7 +665,16 @@ Return improved HTML paragraphs only.`
         filename: localSlug(ctx)
       };
     } else if (task === "schema") result = { jsonLd: buildVehicleJsonLd(payload, ctx.pathPrefix) };
-    else throw err;
+    else if (["rewrite", "improve", "expand", "simplify", "grammar", "cta"].includes(task) && ctx.pageKind === "ranking") {
+      const isIntro = String(ctx.customPrompt || "").toLowerCase().includes("intro");
+      if (isIntro) {
+        const intro = fallbackRankingIntro(ctx);
+        result = { html: intro, text: intro, intro };
+      } else {
+        const fb = fallbackRankingContent(ctx);
+        result = { html: fb.html, text: fb.html, markdown: fb.markdown };
+      }
+    } else throw err;
     result._fallbackError = err?.message || "AI failed";
   }
 

@@ -69,16 +69,19 @@ export default function EmtWhyChooseUs({ settings = DEFAULT_SITE_SETTINGS }) {
             const Icon = getTrustIcon(f.iconKey);
             const style = TRUST_ICON_STYLES[f.iconKey] || TRUST_ICON_STYLES.verified;
             return (
-              <div key={f.title} className="flex gap-2.5 rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+              <div
+                key={f.title}
+                className="flex h-full min-w-0 flex-col gap-2 overflow-hidden rounded-xl border border-slate-200 bg-white p-3 shadow-sm"
+              >
                 <span
-                  className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${style.iconBg} ${style.iconColor}`}
+                  className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${style.iconBg} ${style.iconColor}`}
                   aria-hidden
                 >
                   <Icon className="h-4 w-4" />
                 </span>
                 <div className="min-w-0">
-                  <h3 className="text-[13px] font-bold leading-snug text-slate-900">{f.title}</h3>
-                  <p className="mt-0.5 line-clamp-2 text-[11px] leading-relaxed text-slate-600">{f.desc}</p>
+                  <h3 className="!text-[13px] font-bold !leading-snug !tracking-tight text-slate-900">{f.title}</h3>
+                  <p className="mt-1 text-[11px] leading-snug text-slate-600">{f.desc}</p>
                 </div>
               </div>
             );

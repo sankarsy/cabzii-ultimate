@@ -14,7 +14,8 @@ export default function AdminSearchSelect({
   disabled = false,
   allowCustom = true,
   emptyLabel = "No matches — type to add",
-  className = ""
+  className = "",
+  compact = false
 }) {
   const listId = useId();
   const rootRef = useRef(null);
@@ -70,7 +71,11 @@ export default function AdminSearchSelect({
         aria-expanded={open}
         aria-controls={listId}
         aria-autocomplete="list"
-        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-sky-600 disabled:bg-slate-50"
+        className={
+          compact
+            ? "h-7 w-full rounded-md border border-slate-200 bg-white px-2 text-[12px] text-slate-900 outline-none focus:border-sky-500 disabled:bg-slate-50"
+            : "w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-sky-600 disabled:bg-slate-50"
+        }
         placeholder={placeholder}
         value={query}
         onChange={(e) => {

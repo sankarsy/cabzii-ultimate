@@ -1,9 +1,11 @@
 import { SEO_SERVICES } from "./seo/services";
 import { SEO_ROUTES } from "./seo/routes";
+import { isRankingService } from "./seo/packageDoorways";
+import { isSeoScopeRoute } from "../config/seo-scope";
 
 /** Payloads to upsert built-in service pages into MongoDB. */
 export function builtInSeoServicePayloads() {
-  return SEO_SERVICES.map((s) => ({
+  return SEO_SERVICES.filter((s) => isRankingService(s.slug)).map((s) => ({
     slug: s.slug,
     name: s.name,
     primaryKeyword: s.primaryKeyword || s.name,
@@ -26,7 +28,7 @@ export function builtInSeoServicePayloads() {
 
 /** Payloads to upsert built-in route pages into MongoDB. */
 export function builtInSeoRoutePayloads() {
-  return SEO_ROUTES.map((r) => {
+  return SEO_ROUTES.filter((r) => isSeoScopeRoute(r.from || r.fromCitySlug, r.to || r.toCitySlug)).map((r) => {
     const from = r.from || r.fromCitySlug;
     const to = r.to || r.toCitySlug;
     const title = `${String(from || "").replace(/\b\w/g, (c) => c.toUpperCase())} to ${String(to || "").replace(/\b\w/g, (c) => c.toUpperCase())} Cab`;

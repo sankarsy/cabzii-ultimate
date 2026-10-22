@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import MmtLayout from "../../components/mmt/MmtLayout";
 import { BRAND } from "../../lib/brand";
-import { authHeaders, buildLoginHref, getToken, getUser, isLoggedIn, setSession } from "../../lib/auth";
+import { authHeaders, buildLoginHref, clearSession, getToken, getUser, isLoggedIn, setSession } from "../../lib/auth";
 
 function formatRole(role) {
   if (role === "super_admin") return "Super Admin";
@@ -83,6 +83,13 @@ export default function AccountPage() {
 
   const isAdmin = user?.role === "super_admin" || user?.role === "vendor_admin";
 
+  const logout = async () => {
+    clearSession();
+    await fetch("/api/auth/session", { method: "DELETE" });
+    router.push("/");
+    router.refresh();
+  };
+
   if (!user) {
     return (
       <MmtLayout>
@@ -101,7 +108,16 @@ export default function AccountPage() {
         </p>
 
         <section className="mt-8 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-          <h2 className="text-lg font-bold text-slate-900">Profile</h2>
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <h2 className="text-lg font-bold text-slate-900">Profile</h2>
+            <button
+              type="button"
+              onClick={logout}
+              className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm font-semibold text-rose-700 hover:bg-rose-100"
+            >
+              Logout
+            </button>
+          </div>
           <dl className="mt-4 grid gap-4 sm:grid-cols-2">
             <div className="rounded-xl bg-slate-50 px-4 py-3">
               <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">Mobile</dt>

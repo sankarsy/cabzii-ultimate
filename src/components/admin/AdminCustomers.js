@@ -25,6 +25,9 @@ export default function AdminCustomers({ token, isSuperAdmin }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const [createForm, setCreateForm] = useState({ name: "", mobileNumber: "", email: "" });
+  const [createMessage, setCreateMessage] = useState("");
+  const [creating, setCreating] = useState(false);
   const [selected, setSelected] = useState(null);
   const [detail, setDetail] = useState(null);
   const [detailLoading, setDetailLoading] = useState(false);
@@ -57,6 +60,28 @@ export default function AdminCustomers({ token, isSuperAdmin }) {
     if (isSuperAdmin) loadCustomers();
   }, [isSuperAdmin, loadCustomers]);
 
+  const createCustomer = async (e) => {
+    e.preventDefault();
+    setCreating(true);
+    setCreateMessage("");
+    try {
+      const res = await fetch("/api/customers", {
+        method: "POST",
+        headers: { ...authHeaders, "Content-Type": "application/json" },
+        body: JSON.stringify(createForm)
+      });
+      const data = await res.json();
+      if (!res.ok || data?.success === false) throw new Error(data?.message || "Could not create client.");
+      setCreateForm({ name: "", mobileNumber: "", email: "" });
+      setCreateMessage("Client created. They can sign in with OTP on the website — no password stored here.");
+      await loadCustomers();
+    } catch (err) {
+      setCreateMessage(err.message || "Could not create client.");
+    } finally {
+      setCreating(false);
+    }
+  };
+
   const openCustomer = async (id) => {
     setSelected(id);
     setDetail(null);
@@ -86,11 +111,40 @@ export default function AdminCustomers({ token, isSuperAdmin }) {
       <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 className="text-lg font-bold text-slate-900">Customers</h2>
+            <h2 className="text-lg font-bold text-slate-900">Clients</h2>
             <p className="text-sm text-slate-500">
-              {formatNumber(meta.total)} {meta.total === 1 ? "customer" : "customers"} · includes everyone who booked (login optional)
+              {formatNumber(meta.total)} {meta.total === 1 ? "client" : "clients"} · website OTP sign-ups and admin-created accounts share the same list
             </p>
           </div>
+          <form
+            onSubmit={createCustomer}
+            className="grid w-full gap-2 rounded-xl border border-slate-100 bg-slate-50 p-3 sm:grid-cols-4"
+          >
+            <input
+              className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              placeholder="Name"
+              value={createForm.name}
+              onChange={(e) => setCreateForm((p) => ({ ...p, name: e.target.value }))}
+            />
+            <input
+              className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              placeholder="10-digit mobile *"
+              value={createForm.mobileNumber}
+              onChange={(e) => setCreateForm((p) => ({ ...p, mobileNumber: e.target.value }))}
+              required
+            />
+            <input
+              className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              placeholder="Email"
+              type="email"
+              value={createForm.email}
+              onChange={(e) => setCreateForm((p) => ({ ...p, email: e.target.value }))}
+            />
+            <button type="submit" disabled={creating} className="rounded-lg bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-700 disabled:opacity-60">
+              {creating ? "Saving…" : "Add client"}
+            </button>
+            {createMessage ? <p className="sm:col-span-4 text-xs text-slate-600">{createMessage}</p> : null}
+          </form>
           <form
             onSubmit={(e) => {
               e.preventDefault();

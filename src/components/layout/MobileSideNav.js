@@ -12,18 +12,19 @@ import {
   LogIn,
   MapPin,
   MessageCircle,
-  Phone,
   Star,
   UserRound,
+  Wallet,
   X
 } from "lucide-react";
 import WhatsAppIcon from "../WhatsAppIcon";
 import HeaderSearchBar from "../mmt/HeaderSearchBar";
-import { telUrl, whatsappBookingUrl } from "../../lib/conversion";
+import { whatsappBookingUrl } from "../../lib/conversion";
 import { useSiteSettings } from "../SiteSettingsProvider";
 import { HERO_TABS } from "../../lib/emt/constants";
 import { HERO_TAB_ICONS } from "../icons/heroIcons";
 import { cn } from "../../lib/emt/cn";
+import { EARN_NAV } from "../../lib/brand";
 
 const PRODUCT_ICON_TONES = {
   cabs: "text-sky-500",
@@ -174,7 +175,6 @@ export default function MobileSideNav({
 }) {
   const [mounted, setMounted] = useState(false);
   const settings = useSiteSettings();
-  const phone = settings.contact?.phone || "+91-9944197416";
   const whatsappNumber = String(settings.whatsappFab?.number || settings.contact?.whatsapp || "9944197416").replace(/\D/g, "");
   const waHref = whatsappBookingUrl({
     phone: whatsappNumber,
@@ -239,7 +239,6 @@ export default function MobileSideNav({
 
           <SectionLabel>Quick actions</SectionLabel>
 
-          <DrawerActionRow icon={Phone} label="Call" sublabel="Talk to support" href={telUrl(phone)} accent="brand" onNavigate={onClose} />
           <DrawerActionRow
             icon={WhatsAppIcon}
             label="WhatsApp"
@@ -250,6 +249,14 @@ export default function MobileSideNav({
             onNavigate={onClose}
           />
           <DrawerActionRow icon={Car} label="Book now" sublabel="Search & book cabs" href="/cabs" accent="cta" onNavigate={onClose} />
+          <DrawerActionRow
+            icon={Wallet}
+            label={EARN_NAV.label}
+            sublabel="Attach your cab or drive with Cabzii"
+            href={EARN_NAV.href}
+            accent="brand"
+            onNavigate={onClose}
+          />
 
           {loggedIn ? (
             <>

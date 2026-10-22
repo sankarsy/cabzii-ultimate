@@ -26,85 +26,106 @@ const HOME_CITY_HUBS = [
     slug: "chennai",
     hint: "Maduravoyal HQ · city-wide pickup",
     children: [
-      routeDest("chennai-to-pondicherry-cab", "Pondicherry"),
       routeDest("chennai-to-tirupati-cab", "Tirupati"),
-      routeDest("chennai-to-bangalore-cab", "Bangalore"),
-      routeDest("chennai-to-madurai-cab", "Madurai"),
-      routeDest("chennai-to-trichy-cab", "Trichy"),
-      routeDest("chennai-to-vellore-cab", "Vellore")
-    ]
-  },
-  {
-    slug: "coimbatore",
-    hint: "Hill and west Tamil Nadu taxi booking",
-    children: [
-      routeDest("coimbatore-to-ooty-cab", "Ooty"),
-      routeDest("coimbatore-to-kodaikanal-cab", "Kodaikanal"),
-      routeDest("coimbatore-to-madurai-cab", "Madurai"),
-      routeDest("coimbatore-to-bengaluru-cab", "Bengaluru"),
-      routeDest("coimbatore-to-tirupati-cab", "Tirupati")
+      dest("/services/outstation-cab/chennai", "Outstation cab"),
+      dest("/chennai/airport-cab-booking", "Airport taxi"),
+      dest("/acting-driver/chennai", "Acting driver")
     ]
   },
   {
     slug: "madurai",
-    hint: "Temple city outstation and local cabs",
+    hint: "Temple city local and outstation cabs",
     children: [
-      routeDest("madurai-to-rameswaram-cab", "Rameswaram"),
-      routeDest("madurai-to-kodaikanal-cab", "Kodaikanal"),
-      routeDest("madurai-to-chennai-cab", "Chennai"),
-      routeDest("madurai-to-trichy-cab", "Trichy"),
-      routeDest("madurai-to-tirupati-cab", "Tirupati")
-    ]
-  },
-  {
-    slug: "trichy",
-    hint: "Central Tamil Nadu taxi booking",
-    children: [
-      routeDest("trichy-to-chennai-cab", "Chennai"),
-      routeDest("trichy-to-tirupati-cab", "Tirupati"),
-      dest("/services/outstation-cab/trichy", "Outstation cab"),
-      dest("/trichy", "Local package")
-    ]
-  },
-  {
-    slug: "salem",
-    hint: "North Tamil Nadu taxi booking",
-    children: [
-      routeDest("salem-to-chennai-cab", "Chennai"),
-      routeDest("salem-to-tirupati-cab", "Tirupati"),
-      dest("/services/outstation-cab/salem", "Outstation cab"),
-      dest("/salem", "Local package")
-    ]
-  },
-  {
-    slug: "pondicherry",
-    hint: "Puducherry taxi and outstation cabs",
-    children: [
-      routeDest("pondicherry-to-chennai-cab", "Chennai"),
-      routeDest("pondicherry-to-tirupati-cab", "Tirupati"),
-      dest("/services/outstation-cab/pondicherry", "Outstation cab"),
-      dest("/chennai", "Chennai city cabs")
+      dest("/services/outstation-cab/madurai", "Outstation cab"),
+      dest("/services/airport-taxi/madurai", "Airport taxi"),
+      dest("/acting-driver/madurai", "Acting driver")
     ]
   },
   {
     slug: "tirupati",
     hint: "Pilgrimage taxi from Tirupati",
     children: [
-      routeDest("tirupati-to-chennai-cab", "Chennai"),
-      routeDest("bengaluru-to-tirupati-cab", "Bengaluru"),
-      routeDest("kanchipuram-to-tirupati-cab", "Kanchipuram"),
-      dest("/services/outstation-cab/tirupati", "Outstation cab")
+      routeDest("chennai-to-tirupati-cab", "From Chennai"),
+      dest("/services/outstation-cab/tirupati", "Outstation cab"),
+      dest("/services/airport-taxi/tirupati", "Airport taxi")
     ]
   },
   {
-    slug: "bengaluru",
-    hint: "Karnataka taxi booking",
+    slug: "trichy",
+    hint: "Central Tamil Nadu taxi booking",
     children: [
-      routeDest("bengaluru-to-mysore-cab", "Mysore"),
-      routeDest("bengaluru-to-chennai-cab", "Chennai"),
-      routeDest("bengaluru-to-tirupati-cab", "Tirupati"),
-      routeDest("bengaluru-to-coimbatore-cab", "Coimbatore"),
-      routeDest("bengaluru-to-pondicherry-cab", "Pondicherry")
+      dest("/services/outstation-cab/trichy", "Outstation cab"),
+      dest("/services/airport-taxi/trichy", "Airport taxi"),
+      dest("/acting-driver/trichy", "Acting driver")
+    ]
+  },
+  {
+    slug: "coimbatore",
+    hint: "West Tamil Nadu taxi booking",
+    children: [
+      dest("/services/outstation-cab/coimbatore", "Outstation cab"),
+      dest("/services/airport-taxi/coimbatore", "Airport taxi"),
+      dest("/acting-driver/coimbatore", "Acting driver")
+    ]
+  },
+  {
+    slug: "vellore",
+    hint: "CMC, Katpadi and outstation cabs",
+    children: [
+      dest("/services/outstation-cab/vellore", "Outstation cab"),
+      dest("/services/airport-taxi/vellore", "Airport transfer"),
+      dest("/acting-driver/vellore", "Acting driver")
+    ]
+  },
+  {
+    slug: "kanchipuram",
+    hint: "Temple town — no airport taxi",
+    children: [
+      dest("/services/outstation-cab/kanchipuram", "Outstation cab"),
+      dest("/acting-driver/kanchipuram", "Acting driver")
+    ]
+  },
+  {
+    slug: "kodaikanal",
+    hint: "Hill station — Madurai ghat, no airport",
+    children: [
+      dest("/services/outstation-cab/kodaikanal", "Outstation cab"),
+      dest("/acting-driver/kodaikanal", "Acting driver")
+    ]
+  },
+  {
+    slug: "ooty",
+    hint: "Nilgiris — Coimbatore ghat, no airport",
+    children: [
+      dest("/services/outstation-cab/ooty", "Outstation cab"),
+      dest("/acting-driver/ooty", "Acting driver")
+    ]
+  },
+  {
+    slug: "pondicherry",
+    hint: "White Town, Auroville and PNY",
+    children: [
+      dest("/services/outstation-cab/pondicherry", "Outstation cab"),
+      dest("/services/airport-taxi/pondicherry", "Airport taxi"),
+      dest("/acting-driver/pondicherry", "Acting driver")
+    ]
+  },
+  {
+    slug: "sabarimala",
+    hint: "Ayyappa shrine — Pamba drop, no airport",
+    children: [
+      dest("/services/outstation-cab/sabarimala", "Outstation cab"),
+      dest("/acting-driver/sabarimala", "Acting driver"),
+      dest("/cab-booking/ayyappankovil", "Ayyappan Kovil")
+    ]
+  },
+  {
+    slug: "ayyappankovil",
+    hint: "Idukki Ayyappa temple — no airport",
+    children: [
+      dest("/services/outstation-cab/ayyappankovil", "Outstation cab"),
+      dest("/acting-driver/ayyappankovil", "Acting driver"),
+      dest("/cab-booking/sabarimala", "Sabarimala")
     ]
   }
 ];
@@ -120,6 +141,27 @@ function cityHubLink(hub) {
   };
 }
 
+function liveOutstationRouteLinks(citySlug = "chennai", limit = 8) {
+  return routeLinksForCity(citySlug, limit).map((item) => ({
+    ...item,
+    hint: "Fares shown before you confirm",
+    children: []
+  }));
+}
+
+function withLiveOutstationRoutes(groups, citySlug = "chennai") {
+  const routes = liveOutstationRouteLinks(citySlug, 8);
+  if (!routes.length) return groups;
+  return groups.map((group) => {
+    const id = String(group.id || "").toLowerCase();
+    const title = String(group.title || "").toLowerCase();
+    if (id === "top-routes" || title.includes("outstation route")) {
+      return { ...group, links: routes };
+    }
+    return group;
+  });
+}
+
 /** FastTrack-style home hubs — unique cities, nested destinations, no duplicate headings. */
 export function defaultHomePageLinkGroups() {
   return [
@@ -131,7 +173,7 @@ export function defaultHomePageLinkGroups() {
       links: [
       { label: "Airport taxi Chennai", href: "/chennai/airport-cab-booking", hint: "Pickup and drop", children: [] },
         { label: "Outstation cab Chennai", href: "/services/outstation-cab/chennai", hint: "One-way and round-trip", children: [] },
-        { label: "Local package Chennai", href: "/chennai", hint: "4 hr / 8 hr hire", children: [] },
+        { label: "Local package Chennai", href: "/cab-booking/chennai", hint: "4 hr / 8 hr hire", children: [] },
         { label: "Acting driver Chennai", href: actingDriverLandingPath("chennai"), hint: "Driver for your car", children: [] }
       ]
     },
@@ -147,11 +189,7 @@ export function defaultHomePageLinkGroups() {
       title: "Top outstation routes",
       intro: "One-way and round-trip cabs from Chennai.",
       layout: "cards",
-      links: routeLinksForCity("chennai", 8).map((item) => ({
-        ...item,
-        hint: "Fares shown before you confirm",
-        children: []
-      }))
+      links: liveOutstationRouteLinks("chennai", 8)
     },
     {
       id: "more",
@@ -194,6 +232,7 @@ export function defaultPageLinkGroups(path = "/", pageKind = "", citySlug = "") 
 
 export function resolvePageLinkGroups(stored, path = "/", pageKind = "", citySlug = "") {
   const custom = normalizePageLinkGroups(stored);
-  if (custom.length) return custom;
-  return defaultPageLinkGroups(path, pageKind, citySlug);
+  const groups = custom.length ? custom : defaultPageLinkGroups(path, pageKind, citySlug);
+  if (path === "/" || pageKind === "home") return withLiveOutstationRoutes(groups, "chennai");
+  return groups;
 }

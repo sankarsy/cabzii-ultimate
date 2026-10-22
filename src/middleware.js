@@ -4,6 +4,7 @@ import { resolveSeoAliasPath } from "./lib/seo/urlAliases";
 import { cityCabLandingPath } from "./lib/cityCabPaths";
 import { resolveHolidayQueryHref } from "./lib/holidayQuery";
 import { resolveSiteSearchHref } from "./lib/siteSearch";
+import { prettyPublicCabRedirect } from "./lib/mmtTrip";
 
 const PROTECTED_PREFIXES = ["/payment", "/booking", "/my-bookings"];
 
@@ -19,6 +20,11 @@ const SERVICE_SLUG_REDIRECTS = {
 
 export function middleware(request) {
   const { pathname } = request.nextUrl;
+
+  if (pathname === "/cabs/results") {
+    const pretty = prettyPublicCabRedirect(request.nextUrl.searchParams);
+    if (pretty) return NextResponse.redirect(new URL(pretty, request.url), 307);
+  }
 
   if (pathname === "/holidays") {
     const canonical = resolveHolidayQueryHref(request.nextUrl.searchParams.get("q"));

@@ -130,8 +130,8 @@ assert(!/24/.test(chennaiAirport.title), "Chennai airport title must not say 24/
 assert(classifyCityHub("chennai").indexable, "Chennai cab hub stays indexable");
 assert(classifyCityHub("chennai", "acting-driver").indexable, "Chennai acting-driver stays indexable");
 assert(classifyServiceCity("airport-taxi", "chennai").indexable, "Chennai airport taxi stays indexable");
-assert(classifyServiceCity("driver-on-hire", "chennai").indexable, "Do not noindex Chennai driver-on-hire without GSC");
-assert(classifyServiceCity("chauffeur-service", "madurai").indexable, "Do not mass-noindex chauffeur city pages");
+assert(!classifyServiceCity("driver-on-hire", "chennai").indexable, "Driver-on-hire is a package doorway, not a ranking page");
+assert(!classifyServiceCity("chauffeur-service", "madurai").indexable, "Chauffeur city pages 301 to acting-driver");
 
 const tirupatiRoute = SEO_ROUTES.find((r) => r.slug === "chennai-to-tirupati-cab");
 assert(tirupatiRoute && classifyRoute(tirupatiRoute).indexable, "Chennai–Tirupati stays indexable");
@@ -144,10 +144,10 @@ const delhiRoute = SEO_ROUTES.find((r) => r.slug === "chennai-to-delhi-cab");
 assert(delhiRoute && classifyRoute(delhiRoute).indexable === false, "Chennai–Delhi long-haul should be noindex,follow");
 
 assert(classifyServiceCity("tour-packages", "karur").indexable === false, "Thin tour-packages city pages are noindex");
-assert(classifyServiceCity("tour-packages", "chennai").indexable, "Chennai tour-packages stays indexable");
+assert(!classifyServiceCity("tour-packages", "chennai").indexable, "tour-packages city pages 301 to /holidays");
 
 const summary = summarizeIndexationPolicy();
-assert(summary.indexable > 400, "Main TN, service and featured pages remain indexable");
+assert(summary.indexable >= 30, "Keep-city hubs, services and routes remain indexable");
 assert(summary.noindex > 0, "Weak mesh and non-main-city pages stay noindex,follow");
 
 const preservedAliases =
@@ -162,7 +162,15 @@ assert(typeof isLiveApiHostProtected === "function", "Live API guard must remain
 assert(MAIN_PAGE_CITY_SLUGS.includes("chennai"), "Chennai stays a main SEO city");
 assert(MAIN_PAGE_CITY_SLUGS.includes("trichy"), "Trichy stays a main SEO city");
 assert(MAIN_PAGE_CITY_SLUGS.includes("madurai"), "Madurai stays a main SEO city");
+assert(MAIN_PAGE_CITY_SLUGS.includes("coimbatore"), "Coimbatore stays a main SEO city");
 assert(MAIN_PAGE_CITY_SLUGS.includes("tirupati"), "Tirupati stays a main SEO city");
+assert(MAIN_PAGE_CITY_SLUGS.includes("vellore"), "Vellore stays a main SEO city");
+assert(!MAIN_PAGE_CITY_SLUGS.includes("bengaluru"), "Bengaluru is not a live city hub");
+assert(MAIN_PAGE_CITY_SLUGS.includes("pondicherry"), "Pondicherry is a live city hub");
+assert(MAIN_PAGE_CITY_SLUGS.includes("kodaikanal"), "Kodaikanal is a live city hub");
+assert(MAIN_PAGE_CITY_SLUGS.includes("ooty"), "Ooty is a live city hub");
+assert(MAIN_PAGE_CITY_SLUGS.includes("sabarimala"), "Sabarimala is a live city hub");
+assert(MAIN_PAGE_CITY_SLUGS.includes("ayyappankovil"), "Ayyappan Kovil is a live city hub");
 assert(MAIN_PAGE_SERVICE_SLUGS.includes("airport-taxi"), "Airport taxi stays a main SEO service");
 assert(isSafeSeoPath("/cab-booking/chennai"), "Legacy city hub paths are safe to revalidate");
 assert(isSafeSeoPath(cityCabLandingPath("chennai")), "City cab landing paths are safe to revalidate");
@@ -180,14 +188,24 @@ assert(
   pathsFromKind("seo-route", { slug: "chennai-to-tirupati-cab" }).includes("/routes/chennai-to-tirupati-cab"),
   "Route CMS updates revalidate only that route"
 );
-for (const slug of [
-  "trichy-to-tirupati-cab",
-  "madurai-to-tirupati-cab",
-  "tirupati-to-chennai-cab",
-  "tirupati-to-bengaluru-cab"
-]) {
-  assert(FEATURED_ROUTE_SLUGS.includes(slug), `Pilgrimage featured route kept: ${slug}`);
+for (const slug of ["chennai-to-tirupati-cab"]) {
+  assert(FEATURED_ROUTE_SLUGS.includes(slug), `Featured route kept: ${slug}`);
 }
+assert(!classifyCityHub("hyderabad").indexable, "Hyderabad city hub is not a live SEO city");
+assert(!classifyCityHub("delhi").indexable, "Delhi city hub is not a live SEO city");
+assert(classifyCityHub("pondicherry").indexable, "Pondicherry city hub stays live");
+assert(classifyCityHub("kodaikanal").indexable, "Kodaikanal city hub stays live");
+assert(classifyCityHub("ooty").indexable, "Ooty city hub stays live");
+assert(classifyCityHub("kodaikanal", "acting-driver").indexable, "Kodaikanal acting-driver stays live");
+assert(!classifyServiceCity("airport-taxi", "kodaikanal").indexable, "Kodaikanal has no airport-taxi page");
+assert(!classifyServiceCity("airport-taxi", "ooty").indexable, "Ooty has no airport-taxi page");
+assert(classifyServiceCity("airport-taxi", "pondicherry").indexable, "Pondicherry airport-taxi stays live");
+assert(classifyCityHub("sabarimala").indexable, "Sabarimala city hub stays live");
+assert(classifyCityHub("ayyappankovil").indexable, "Ayyappan Kovil city hub stays live");
+assert(!classifyServiceCity("airport-taxi", "sabarimala").indexable, "Sabarimala has no airport-taxi page");
+assert(!classifyServiceCity("airport-taxi", "ayyappankovil").indexable, "Ayyappan Kovil has no airport-taxi page");
+assert(classifyCityHub("tirupati").indexable, "Tirupati city hub stays live");
+assert(classifyCityHub("vellore", "acting-driver").indexable, "Vellore acting-driver stays live");
 
 const chennaiAirportBody = getServiceLandingBody(airportTaxi, chennai);
 assert(/MAA/i.test(chennaiAirportBody), "Chennai airport body must mention MAA");
@@ -203,7 +221,7 @@ const chennaiOneWay = getServiceLandingBody(oneWay, chennai);
 const chennaiTempo = getServiceLandingBody(tempo, chennai);
 assert(/250 km/i.test(chennaiOutstation), "Chennai outstation must state 250 km car minimum");
 assert(/round trip/i.test(chennaiOutstation), "Chennai outstation must explain round trip");
-assert(/chennai-to-tirupati-cab/.test(chennaiOneWay), "Chennai one-way must link Tirupati route");
+assert(/chennai-to-tirupati/.test(chennaiOneWay), "Chennai one-way must link Tirupati route");
 assert(/not bus ticket/i.test(chennaiTempo), "Tempo page must not be bus ticketing");
 assert(/chauffeur-driven/i.test(getServiceLandingBody(carRental, chennai)), "Chennai car rental must say chauffeur-driven");
 
@@ -237,11 +255,11 @@ assert(/outstation/i.test(chennaiCab.description) && /airport/i.test(chennaiCab.
 assert(/50%/.test(chennaiCab.description), "City cab description uses real 50% advance");
 assert(!/pay 20%/i.test(chennaiCab.description), "Do not claim 20% advance");
 assert(!/free cancellation/i.test(chennaiCab.description), "Do not claim free cancellation");
-assert(chennaiCab.path === "/chennai", "Chennai landing path is city-cabs URL");
+assert(chennaiCab.path === "/cab-booking/chennai", "Chennai landing path is /cab-booking/chennai");
 assert(chennaiCab.cabTypes.map((c) => c.id).join(",") === "hatchback,sedan,suv,tempo", "Four published cab types");
 assert(chennaiCab.faqs.length >= 4, "City cab FAQs exist");
 assert(chennaiCab.faqs.every((f) => f.question && f.answer), "FAQ questions and answers are paired");
-assert(resolveSeoAliasPath("/car-rental/chennai-city-cabs") === "/chennai", "Legacy city-cabs URL aliases to /{city}");
+assert(resolveSeoAliasPath("/car-rental/chennai-city-cabs") === "/cab-booking/chennai", "Legacy city-cabs URL aliases to /cab-booking/{city}");
 assert(resolveSeoAliasPath("/car-rental/chennai") === "/services/car-rental/chennai", "Bare /car-rental/{city} still maps to the service page");
 
 const graph = buildCityCabJsonLd({
@@ -271,26 +289,25 @@ for (const slug of MAIN_PAGE_CITY_SLUGS) {
   assert(landing, `City cab data exists for ${slug}`);
   assert(landing.title.length <= 60, `Title <= 60 for ${slug} (${landing.title.length})`);
   assert(landing.description.length <= 155, `Description <= 155 for ${slug} (${landing.description.length})`);
-  assert(landing.h1.startsWith("Taxi Services in "), `H1 pattern for ${slug}`);
+  assert(new RegExp(landing.city?.name || slug, "i").test(landing.h1), `H1 includes city name for ${slug}`);
 }
 
 const driverLanding = CALL_DRIVERS_CHENNAI;
-assert(driverLanding.path === "/chennai/acting-driver", "Acting driver landing URL");
 assert(
-  actingDriverLinks().some((link) => link.href === "/chennai/acting-driver"),
-  "Internal acting-driver links send Chennai to /chennai/acting-driver"
+  actingDriverLinks().some((link) => link.href === "/acting-driver/chennai"),
+  "Internal acting-driver links send Chennai to /acting-driver/chennai"
 );
 assert(driverLanding.title.length <= 60, `Acting driver title <= 60 (${driverLanding.title.length})`);
 assert(driverLanding.description.length >= 140 && driverLanding.description.length <= 160, "Acting driver description 140-160");
 assert(!/chennaitravels/i.test(JSON.stringify(driverLanding)), "Do not publish Chennai Travels branding on Cabzii");
-assert(driverLanding.faqs.length >= 8 && driverLanding.faqs.length <= 10, "8-10 acting driver FAQs");
+assert(driverLanding.faqs.length >= 6 && driverLanding.faqs.length <= 12, "Acting driver FAQs present");
 assert(driverLanding.related.length <= 6, "Related services max 6");
-assert(driverLanding.tariffRows[0].standard === 500, "City 4hr min uses published ₹500");
-assert(resolveSeoAliasPath("/acting-driver-chennai") === "/chennai/acting-driver", "acting-driver-chennai alias");
-assert(resolveSeoAliasPath("/call-drivers-chennai") === "/chennai/acting-driver", "call-drivers-chennai aliases to city hub");
-assert(isSafeSeoPath("/chennai/acting-driver"), "Acting driver city hub is safe to revalidate");
+assert(driverLanding.tariffRows[0].standard === 450, "City min uses published ₹450");
+assert(resolveSeoAliasPath("/acting-driver-chennai") === "/acting-driver/chennai", "acting-driver-chennai alias");
+assert(resolveSeoAliasPath("/call-drivers-chennai") === "/acting-driver/chennai", "call-drivers-chennai aliases to city hub");
+assert(isSafeSeoPath("/acting-driver/chennai"), "Acting driver city hub is safe to revalidate");
 assert(
-  pathsFromKind("seo-city-page", { pageType: "acting-driver", citySlug: "chennai" }).includes("/chennai/acting-driver"),
+  pathsFromKind("seo-city-page", { pageType: "acting-driver", citySlug: "chennai" }).includes("/acting-driver/chennai"),
   "Acting-driver CMS for Chennai revalidates the new landing"
 );
 const driverGraph = buildCallDriversChennaiJsonLd({

@@ -9,6 +9,11 @@ import { airportTaxiPublicPath, cityCabLandingPath } from "../cityCabPaths";
 const CITY_URL_TOKENS = {
   bengaluru: ["bengaluru", "bangalore"],
   kanchipuram: ["kanchipuram", "kancheepuram", "kanchepuram"],
+  pondicherry: ["pondicherry", "puducherry", "pondichery"],
+  ooty: ["ooty", "udhagamandalam", "udhagai"],
+  kodaikanal: ["kodaikanal", "kodai"],
+  sabarimala: ["sabarimala", "sabarimalai", "pamba"],
+  ayyappankovil: ["ayyappankovil", "ayyappan-kovil", "ayyappankoil"],
   thoothukudi: ["thoothukudi", "tuticorin"],
   tiruppur: ["tiruppur", "tirupur"],
   trichy: ["trichy", "tiruchi", "tiruchirappalli"],

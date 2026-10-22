@@ -1,9 +1,7 @@
 import { cityAreas } from "../lib/seo/content";
 import { airportInfoForCity } from "../lib/seo/airports";
 import { cityBySlug, peerCitiesForHub } from "../lib/seo/cities";
-import { routesForCity } from "../lib/seo/routes";
-import { formatRouteLabel } from "../lib/seo/internalLinks";
-import { routePublicPath } from "../lib/seo/outstationPaths";
+import { pickOutstationRoutes } from "../lib/cityOutstationRoutes";
 import {
   airportCabBookingPath,
   cityCabLandingPath,
@@ -23,24 +21,7 @@ function clampText(value, max) {
 }
 
 function pickRoutes(citySlug, limit) {
-  const rows = routesForCity(citySlug).filter((route) => route.from === citySlug);
-  const out = [];
-  const seen = new Set();
-  for (const route of rows) {
-    if (!route?.slug || seen.has(route.slug)) continue;
-    seen.add(route.slug);
-    out.push({
-      href: routePublicPath(route.slug),
-      label: formatRouteLabel(route),
-      distance: route.distance || "",
-      duration: route.duration || "",
-      sedanFrom: route.sedanFrom || 0,
-      suvFrom: route.suvFrom || 0,
-      innovaFrom: route.innovaFrom || 0
-    });
-    if (out.length >= limit) break;
-  }
-  return out;
+  return pickOutstationRoutes(citySlug, { direction: "from", limit });
 }
 
 function buildAirportFaqs(city, airport) {
@@ -82,7 +63,7 @@ export function buildAirportCabData(city) {
   const name = city.name;
   const areas = cityAreas(city.slug);
   const defaultDrop = areas[0] || name;
-  const fromRoutes = pickRoutes(city.slug, 12);
+  const fromRoutes = pickRoutes(city.slug, 18);
   const nearby = peerCitiesForHub(city, 8).map((peer) => ({
     href: cityCabLandingPath(peer.slug),
     label: `${peer.name} city cabs`,

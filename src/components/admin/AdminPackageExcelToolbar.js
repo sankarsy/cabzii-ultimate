@@ -16,7 +16,8 @@ export default function AdminPackageExcelToolbar({
   items = [],
   token,
   canEdit,
-  onImported
+  onImported,
+  compact = false
 }) {
   const fileRef = useRef(null);
   const [busy, setBusy] = useState(false);
@@ -147,31 +148,40 @@ export default function AdminPackageExcelToolbar({
     }
   }
 
+  const btn = compact
+    ? "h-7 rounded-md border border-slate-200 bg-white px-2 text-[11px] font-semibold text-slate-600 hover:bg-slate-50 disabled:opacity-50"
+    : "rounded-md border border-indigo-300 bg-white px-3 py-1.5 text-xs font-semibold text-indigo-800 hover:bg-indigo-50 disabled:opacity-50";
+  const uploadBtn = compact
+    ? "h-7 rounded-md bg-slate-800 px-2.5 text-[11px] font-semibold text-white hover:bg-slate-900 disabled:opacity-50"
+    : "rounded-md bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700 disabled:opacity-50";
+
   return (
-    <div className="mb-3 rounded-lg border border-indigo-200 bg-indigo-50/80 p-3">
-      <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+    <div className={compact ? "flex flex-wrap items-center gap-1.5" : "mb-3 rounded-lg border border-indigo-200 bg-indigo-50/80 p-3"}>
+      <div className={compact ? "contents" : "flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between"}>
+        {compact ? null : (
         <div>
           <p className="text-sm font-semibold text-slate-900">Excel — download &amp; upload packages</p>
           <p className="mt-0.5 text-xs text-slate-600">
             Export all fare packages (local 4hr, 8hr, outstation). Upload updates rows with matching <strong>id</strong>, or creates new rows when id is empty.
           </p>
         </div>
-        <div className="flex flex-wrap gap-2">
+        )}
+        <div className="flex flex-wrap gap-1.5">
           <button
             type="button"
             disabled={busy}
             onClick={handleDownloadTab}
-            className="rounded-md border border-indigo-300 bg-white px-3 py-1.5 text-xs font-semibold text-indigo-800 hover:bg-indigo-50 disabled:opacity-50"
+            className={btn}
           >
-            Download {tabKey} Excel
+            {compact ? "Excel" : `Download ${tabKey} Excel`}
           </button>
           <button
             type="button"
             disabled={busy}
             onClick={handleDownloadAll}
-            className="rounded-md border border-indigo-300 bg-white px-3 py-1.5 text-xs font-semibold text-indigo-800 hover:bg-indigo-50 disabled:opacity-50"
+            className={btn}
           >
-            Download all (3 sheets)
+            {compact ? "All sheets" : "Download all (3 sheets)"}
           </button>
           {canEdit ? (
             <>
@@ -186,7 +196,7 @@ export default function AdminPackageExcelToolbar({
                 type="button"
                 disabled={busy}
                 onClick={() => fileRef.current?.click()}
-                className="rounded-md bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700 disabled:opacity-50"
+                className={uploadBtn}
               >
                 {busy ? "Importing…" : "Upload Excel"}
               </button>

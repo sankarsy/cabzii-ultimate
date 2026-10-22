@@ -1,7 +1,25 @@
+import { inferCitySlugFromText, isSeoScopeCity } from "../../config/seo-scope";
 import { mergeStaticSeoRoutes, mergeStaticSeoServices } from "../adminCatalogConfig";
 import { previewCatalogSlug } from "../catalogProduct";
+import { programmaticPageSeoDefaults } from "./adminSeoDefaults";
 import { STATIC_PAGE_SEO_LIST } from "./pageSeoCatalog";
 import { listProgrammaticSeoPages } from "./seoPagesCatalog";
+import { resolveDroppedSeoRedirect } from "./keepLivePages";
+import { isRankingService } from "./packageDoorways";
+
+function isLiveRankingRow(row) {
+  if (!row?.path) return false;
+  if (resolveDroppedSeoRedirect(row.path)) return false;
+  if (row.type === "service" && row.serviceSlug && !isRankingService(row.serviceSlug)) return false;
+  if (
+    row.citySlug &&
+    (row.type === "city" || row.type === "acting-driver" || row.type === "service") &&
+    !isSeoScopeCity(row.citySlug)
+  ) {
+    return false;
+  }
+  return true;
+}
 
 function truncate(text, max = 72) {
   const t = String(text || "").trim();
@@ -57,6 +75,7 @@ export function buildSeoPageIndex(data = {}) {
       seoDescription: pkg.seoDescription || "",
       seoKeywords: pkg.seo || "",
       path: `/tour-packages/${slug}`,
+      citySlug: inferCitySlugFromText(pkg.city || pkg.destination || pkg.location || pkg.name || slug),
       source: pkg.seoTitle || pkg.seo ? "catalog" : "auto",
       adminTab: "packages",
       editId: id,
@@ -79,6 +98,7 @@ export function buildSeoPageIndex(data = {}) {
       seoDescription: blog.seoDescription || blog.excerpt || "",
       seoKeywords: blog.seo || "",
       path: `/blog/${slug}`,
+      citySlug: inferCitySlugFromText(blog.city || blog.title || slug),
       source: blog.seoTitle ? "catalog" : "auto",
       adminTab: "blogs",
       editId: id,
@@ -97,7 +117,7 @@ export function buildSeoPageIndex(data = {}) {
 
     if (page.type === "city" || page.type === "acting-driver") {
       cms = cityPageMap.get(page.cmsKey);
-      createHref = `/admin?tab=seoCityPages&mode=create&prefillCity=${page.citySlug}&prefillType=${page.pageType || "cab-booking"}`;
+      createHref = `/admin?tab=seoPagesHub`;
       if (cms) {
         cmsEditId = cms._id || cms.id;
         source = "cms";
@@ -109,7 +129,10 @@ export function buildSeoPageIndex(data = {}) {
         else if (svc.seoTitle || svc.seo) source = "cms";
         if (!svc.isStatic) cmsEditId = svc._id || svc.id;
       }
-      createHref = `/admin?tab=seoServices&mode=create&prefillSlug=${page.serviceSlug}`;
+      createHref =
+        page.serviceSlug === "airport-taxi"
+          ? "/admin?tab=airportTaxi"
+          : `/admin?tab=cmsServices`;
     } else if (page.type === "route") {
       const route = routeBySlug.get(page.routeSlug);
       if (route) {
@@ -120,9 +143,13 @@ export function buildSeoPageIndex(data = {}) {
       createHref = `/admin?tab=seoRoutes&mode=create&prefillSlug=${page.routeSlug}`;
     }
 
-    const seoTitle = cms?.seoTitle || (page.type === "service" ? serviceBySlug.get(page.serviceSlug)?.seoTitle : "") || (page.type === "route" ? routeBySlug.get(page.routeSlug)?.seoTitle : "") || "";
-    const seoDescription = cms?.seoDescription || (page.type === "service" ? serviceBySlug.get(page.serviceSlug)?.seoDescription : "") || (page.type === "route" ? routeBySlug.get(page.routeSlug)?.seoDescription : "") || "";
-    const seoKeywords = cms?.seo || (page.type === "service" ? serviceBySlug.get(page.serviceSlug)?.seo : "") || (page.type === "route" ? routeBySlug.get(page.routeSlug)?.seo : "") || "";
+    const generated = programmaticPageSeoDefaults(page);
+    const cityCmsTitle = page.type === "city" || page.type === "acting-driver" ? cms?.seoTitle || "" : "";
+    const cityCmsDesc = page.type === "city" || page.type === "acting-driver" ? cms?.seoDescription || "" : "";
+    const cityCmsKw = page.type === "city" || page.type === "acting-driver" ? cms?.seo || "" : "";
+    const seoTitle = cityCmsTitle || generated.seoTitle || page.title;
+    const seoDescription = cityCmsDesc || generated.seoDescription;
+    const seoKeywords = cityCmsKw || generated.seoKeywords;
     const cmsProductName =
       cms?.h1 ||
       (page.type === "service" ? serviceBySlug.get(page.serviceSlug)?.name || serviceBySlug.get(page.serviceSlug)?.menuLabel : "") ||
@@ -145,15 +172,23 @@ export function buildSeoPageIndex(data = {}) {
       path: page.path,
       citySlug: page.citySlug || "",
       pageType: page.pageType || "",
+      serviceSlug: page.serviceSlug || "",
+      routeSlug: page.routeSlug || "",
+      fromCitySlug: page.fromCitySlug || "",
+      toCitySlug: page.toCitySlug || "",
       source,
       adminTab: page.adminTab,
       editId: cmsEditId,
       createHref,
       canDelete: source === "cms" && Boolean(cmsEditId),
-      seoStatus: seoStatus({ seoTitle, seoDescription, seo: seoKeywords }),
+      seoStatus: source === "cms" ? seoStatus({ seoTitle, seoDescription, seo: seoKeywords }) : "auto",
+      generatedDefault: source !== "cms",
       sourceLabel: sourceLabel(source)
     };
-    row.editHref = adminEditHref(page.adminTab, row.editId, createHref);
+    row.editHref =
+      page.adminTab === "seoPagesHub"
+        ? `/admin?tab=seoPagesHub`
+        : adminEditHref(page.adminTab, row.editId, createHref);
     rows.push(row);
   }
 
@@ -209,6 +244,7 @@ export function buildSeoPageIndex(data = {}) {
       ctaHref: landing.ctaHref || "/cabs",
       ctaLabel: landing.ctaLabel || "Book now",
       landingSlug: landing.slug,
+      citySlug: inferCitySlugFromText(landing.slug || landing.h1 || path),
       path,
       source: "cms",
       adminTab: "seoLandings",
@@ -221,13 +257,19 @@ export function buildSeoPageIndex(data = {}) {
     });
   }
 
-  return rows.map((row) => {
+  return rows.filter(isLiveRankingRow).map((row) => {
     const stored = data.pageSeo?.[row.path] || {};
     const storedLinks = stored.pageLinks;
     const seoTitle = stored.seoTitle || row.seoTitle;
     const seoDescription = stored.seoDescription || row.seoDescription;
     const seoKeywords = stored.seoKeywords || row.seoKeywords;
     const productName = stored.productName || stored.h1 || row.productName;
+    const savedOverride = Boolean(
+      stored.seoTitle || stored.seoDescription || stored.seoKeywords || stored.h1 || stored.intro
+    );
+    const filled = seoStatus({ seoTitle, seoDescription, seo: seoKeywords });
+    const unsavedTemplate = row.source === "auto" || row.source === "static";
+    const seoStatusValue = unsavedTemplate && !savedOverride ? "auto" : filled;
     return {
       ...row,
       productName,
@@ -243,7 +285,7 @@ export function buildSeoPageIndex(data = {}) {
       seoTitleDisplay: truncate(seoTitle, 56),
       seoDescriptionDisplay: truncate(seoDescription, 80),
       seoKeywordsDisplay: truncate(seoKeywords, 48),
-      seoStatus: seoStatus({ seoTitle, seoDescription, seo: seoKeywords })
+      seoStatus: seoStatusValue
     };
   });
 }

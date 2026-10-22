@@ -32,6 +32,7 @@ export function isUnsupportedTrustCopy(...parts) {
     const t = String(part || "");
     if (looksLikeInventedCount(t) || isOtpGuaranteeClaim(t)) return true;
     if (/24\s*[×x/]\s*7/i.test(t) || /\b24\/7\b/i.test(t)) return true;
+    if (/\bverified drivers?\b/i.test(t)) return true;
     return false;
   });
 }

@@ -37,7 +37,16 @@ const CITY_SLUG_ALIASES = {
   tiruchirappalli: "trichy",
   tanjore: "thanjavur",
   kanniyakumari: "kanyakumari",
-  thiruvannamalai: "tiruvannamalai"
+  thiruvannamalai: "tiruvannamalai",
+  puducherry: "pondicherry",
+  pondichery: "pondicherry",
+  kodai: "kodaikanal",
+  udhagamandalam: "ooty",
+  udhagai: "ooty",
+  sabarimalai: "sabarimala",
+  pamba: "sabarimala",
+  "ayyappan-kovil": "ayyappankovil",
+  ayyappankoil: "ayyappankovil"
 };
 
 function resolveCitySlug(raw) {
@@ -49,9 +58,9 @@ function resolveCitySlug(raw) {
  * Resolve SEO alias path to canonical path (301 target), or null.
  * Examples:
  *   /car-rental/chennai → /services/car-rental/chennai
- *   /travels/chennai → /chennai
- *   /travels-in-chennai → /chennai
- *   /car-rental/chennai-city-cabs → /chennai
+ *   /travels/chennai → /cab-booking/chennai
+ *   /travels-in-chennai → /cab-booking/chennai
+ *   /car-rental/chennai-city-cabs → /cab-booking/chennai
  *   /car-rental-in-chennai → /services/car-rental/chennai
  */
 export function resolveSeoAliasPath(pathname) {
@@ -63,11 +72,8 @@ export function resolveSeoAliasPath(pathname) {
     if (prefix === "car-rental" && parseCityCabLandingSlug(city)) {
       return cityCabLandingPath(parseCityCabLandingSlug(city));
     }
-    if (prefix === "cab-booking") {
-      return cityCabLandingPath(resolveCitySlug(city));
-    }
-    if (prefix === "acting-driver") {
-      return actingDriverLandingPath(resolveCitySlug(city));
+    if (prefix === "cab-booking" || prefix === "acting-driver") {
+      return null;
     }
     if (SERVICE_URL_PREFIXES.has(prefix)) {
       const serviceSlug = prefix === "holiday-packages" ? "tour-packages" : prefix;
@@ -119,13 +125,13 @@ export function resolveSeoAliasPath(pathname) {
       "madurai-to-rameswaram-cab": "/routes/madurai-to-rameswaram-cab",
       "coimbatore-to-ooty-cab": "/routes/coimbatore-to-ooty-cab",
       "coimbatore-to-ooty-taxi": "/routes/coimbatore-to-ooty-cab",
-      "acting-driver-chennai": "/chennai/acting-driver",
-      "call-driver-chennai": "/chennai/acting-driver",
-      "hire-drivers-chennai": "/chennai/acting-driver",
-      "hire-acting-drivers-chennai": "/chennai/acting-driver",
-      "call-drivers-chennai": "/chennai/acting-driver",
-      "tirupati-cab-booking": cityCabLandingPath("tirupati"),
-      "taxi-in-tirupati": cityCabLandingPath("tirupati"),
+      "acting-driver-chennai": actingDriverLandingPath("chennai"),
+      "call-driver-chennai": actingDriverLandingPath("chennai"),
+      "hire-drivers-chennai": actingDriverLandingPath("chennai"),
+      "hire-acting-drivers-chennai": actingDriverLandingPath("chennai"),
+      "call-drivers-chennai": actingDriverLandingPath("chennai"),
+      "tirupati-cab-booking": "/chennai/outstation/chennai-to-tirupati",
+      "taxi-in-tirupati": "/chennai/outstation/chennai-to-tirupati",
       "chennai-to-pondicherry-cab": "/routes/chennai-to-pondicherry-cab",
       "bangalore-airport-taxi": "/services/airport-taxi/bengaluru",
       "bangalore-airport-pickup": "/services/airport-taxi/bengaluru",

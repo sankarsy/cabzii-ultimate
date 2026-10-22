@@ -41,6 +41,7 @@ import {
 import { normalizeStoredImagePath, resolveMediaUrl } from "../../lib/media";
 import { IMAGE_UPLOAD_RULES } from "../../lib/imageUploadRules";
 import { seoCityPublicPath } from "../../lib/cityCabPaths";
+import { mergeStaticSeoCityPages } from "../../lib/seo/seoPagesCatalog";
 import imageCompression from "browser-image-compression";
 import AdminBookingEditor from "./AdminBookingEditor";
 import { AdminSeoCityPageForm, AdminSeoRouteForm, AdminSeoServiceForm } from "./AdminSeoForm";
@@ -49,6 +50,7 @@ import { AdminGalleryField, AdminProductImageField, parseGallery } from "./Admin
 import ImageUploadField from "./ImageUploadField";
 import FarePackagesEditor from "./FarePackagesEditor";
 import AdminPackageExcelToolbar from "./AdminPackageExcelToolbar";
+import CitySelect from "./cms/CitySelect";
 import TourPackageContentEditor from "./TourPackageContentEditor";
 import {
   builtInSeoRoutePayloads,
@@ -268,6 +270,7 @@ export default function AdminCatalogPanel({
       let rows = Array.isArray(data.data) ? data.data : [];
       if (tabKey === "seoServices") rows = mergeStaticSeoServices(rows);
       if (tabKey === "seoRoutes") rows = mergeStaticSeoRoutes(rows);
+      if (tabKey === "seoCityPages") rows = mergeStaticSeoCityPages(rows);
       setItems(rows);
     } catch (error) {
       setItems([]);
@@ -974,7 +977,7 @@ export default function AdminCatalogPanel({
     }
     return sorted;
   }, [items, query, statusFilter, typeFilter, sortKey, tabKey, tab]);
-  const pageSize = 10;
+  const pageSize = tabKey === "seoRoutes" || tabKey === "packages" || tabKey === "blogs" ? 50 : 10;
   const totalPages = Math.max(1, Math.ceil(filteredItems.length / pageSize));
   const pagedItems = filteredItems.slice((listPage - 1) * pageSize, listPage * pageSize);
   const viewingItem = viewingId ? items.find((x) => String(x._id || x.id) === viewingId) : null;
@@ -1111,9 +1114,9 @@ export default function AdminCatalogPanel({
         ) : tab.form === "seoService" ? (
           <AdminSeoServiceForm form={seoServiceForm} onChange={setSeoServiceForm} authToken={token} />
         ) : tab.form === "seoRoute" ? (
-          <AdminSeoRouteForm form={seoRouteForm} onChange={setSeoRouteForm} />
+          <AdminSeoRouteForm form={seoRouteForm} onChange={setSeoRouteForm} authToken={token} />
         ) : tab.form === "seoCityPage" ? (
-          <AdminSeoCityPageForm form={seoCityPageForm} onChange={setSeoCityPageForm} />
+          <AdminSeoCityPageForm form={seoCityPageForm} onChange={setSeoCityPageForm} authToken={token} />
         ) : tab.form === "testimonial" ? (
           <div className="mt-3 grid gap-3 sm:grid-cols-2">
             <Field label="Name *">
@@ -1319,12 +1322,12 @@ export default function AdminCatalogPanel({
                   <input type="number" min={0} className={inputCls()} value={tourPackageForm.price} onChange={(e) => setTourPackageForm((p) => ({ ...p, price: Number(e.target.value) }))} />
                 </Field>
                 <Field label="Included pickup hub" hint="Round-trip transport from this city is bundled in price">
-                  <input className={inputCls()} value={tourPackageForm.pricingOriginCity || "Chennai"} onChange={(e) => setTourPackageForm((p) => ({ ...p, pricingOriginCity: e.target.value }))} placeholder="Chennai" />
+                  <CitySelect token={token} value={tourPackageForm.pricingOriginCity || ""} onChange={(pricingOriginCity) => setTourPackageForm((p) => ({ ...p, pricingOriginCity }))} valueMode="name" service="holidayTrips" />
                 </Field>
               </div>
               <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                <Field label="Destination city" hint="Transport route ends here — e.g. Tirupati">
-                  <input className={inputCls()} value={tourPackageForm.city} onChange={(e) => setTourPackageForm((p) => ({ ...p, city: e.target.value }))} placeholder="Tirupati" />
+                <Field label="Destination city" hint="Transport route ends here">
+                  <CitySelect token={token} value={tourPackageForm.city} onChange={(city) => setTourPackageForm((p) => ({ ...p, city }))} valueMode="name" />
                 </Field>
                 <Field label="Meeting point / location" hint="Optional landmark shown on package card">
                   <input className={inputCls()} value={tourPackageForm.location} onChange={(e) => setTourPackageForm((p) => ({ ...p, location: e.target.value }))} placeholder="Tirumala foothills" />
@@ -1641,8 +1644,8 @@ export default function AdminCatalogPanel({
           <p className="font-semibold">These are the city pages Google ranks — not the Cabs catalog.</p>
           <p className="mt-1">
             Click <strong>Create</strong>, choose <em>Cab booking city</em>, city slug <code>chennai</code>. That publishes{" "}
-            <a className="font-semibold underline" href="/chennai" target="_blank" rel="noreferrer">
-              /chennai
+            <a className="font-semibold underline" href="/cab-booking/chennai" target="_blank" rel="noreferrer">
+              /cab-booking/chennai
             </a>
             . For a Dzire Tour S product page, use Catalog → Cabs instead.
           </p>

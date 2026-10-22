@@ -11,6 +11,9 @@ import {
   UserRound
 } from "lucide-react";
 import { CALL_DRIVER_SERVICES, callDriverBookHref, formatFromPrice } from "../../lib/callDriver";
+import { CALL_DRIVER_TARIFF } from "../../data/call-drivers-chennai";
+import { CLAIMS } from "../../config/claims";
+import { formatInr } from "../../lib/formatInr";
 
 const SERVICE_ICONS = {
   local: MapPin,
@@ -24,7 +27,7 @@ const SERVICE_ICONS = {
 const STEPS = [
   { n: "1", title: "Pick a service", desc: "Local, outstation, airport, monthly, corporate or valet." },
   { n: "2", title: "Add trip details", desc: "Date, time, pickup and your vehicle." },
-  { n: "3", title: "Cabzii assigns", desc: "A verified driver is assigned after you book." }
+  { n: "3", title: "Cabzii assigns", desc: "A professional driver is assigned after you book." }
 ];
 
 function fareFor(svc) {
@@ -35,7 +38,9 @@ function fareFor(svc) {
 
 export default function CallDriverHomeSection({ services: servicesProp }) {
   const services = Array.isArray(servicesProp) && servicesProp.length ? servicesProp : CALL_DRIVER_SERVICES;
-  const localFare = formatFromPrice(services.find((s) => s.id === "local")?.fromPrice);
+  const localFrom = Number(services.find((s) => s.id === "local")?.fromPrice);
+  const localAmount = Number.isFinite(localFrom) && localFrom > 0 ? localFrom : CALL_DRIVER_TARIFF.local.standard;
+  const localFare = `₹${formatInr(localAmount)} · ${CALL_DRIVER_TARIFF.local.minHours} hours`;
 
   return (
     <section className="border-t border-slate-200 bg-linear-to-b from-sky-50/70 to-white py-8 sm:py-10">
@@ -77,7 +82,7 @@ export default function CallDriverHomeSection({ services: servicesProp }) {
               <ul className="relative mt-3 flex flex-wrap gap-2">
                 <li className="inline-flex items-center gap-1 rounded-full bg-white/15 px-2.5 py-1 text-[11px] font-semibold">
                   <ShieldCheck className="h-3.5 w-3.5" strokeWidth={2.25} />
-                  Verified drivers
+                  {CLAIMS.verifiedDrivers ? "Verified drivers" : "Assigned after booking"}
                 </li>
                 <li className="rounded-full bg-white/15 px-2.5 py-1 text-[11px] font-semibold">You keep your car</li>
                 <li className="rounded-full bg-white/15 px-2.5 py-1 text-[11px] font-semibold">Assigned after booking</li>
@@ -87,9 +92,7 @@ export default function CallDriverHomeSection({ services: servicesProp }) {
                   Book a Driver
                   <ChevronRight className="h-4 w-4" />
                 </Link>
-                {localFare ? (
-                  <p className="text-sm font-bold text-white/95">Local from {localFare.replace(/^From /, "")}</p>
-                ) : null}
+                <p className="text-sm font-bold text-white/95">Local from {localFare}</p>
               </div>
             </div>
 

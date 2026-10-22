@@ -1,4 +1,4 @@
-/** Canonical city taxi landing: /{city} (FastTrack-style). Legacy /car-rental/{city}-city-cabs 301s here. */
+/** Canonical city taxi landing: /cab-booking/{city}. Legacy /{city} 301s here. */
 
 export const CITY_CABS_SUFFIX = "-city-cabs";
 export const CITY_CABS_HUB_PATH = "/car-rental";
@@ -6,9 +6,22 @@ export const CALL_DRIVERS_CHENNAI_PATH = "/call-drivers-chennai";
 export const AIRPORT_CAB_BOOKING_SEGMENT = "airport-cab-booking";
 export const AIRPORT_CAB_BOOKING_CITIES = ["chennai"];
 export const ACTING_DRIVER_SEGMENT = "acting-driver";
-/** Live acting-driver landings — always /{city}/acting-driver. */
-export const ACTING_DRIVER_HUB_CITIES = ["chennai", "tirupati"];
-export const TRICHY_CITY_ALIASES = ["tiruchi", "tiruchirappalli", "tiruchirapalli"];
+/** Live acting-driver landings — always /acting-driver/{city}. */
+export const ACTING_DRIVER_HUB_CITIES = [
+  "chennai",
+  "madurai",
+  "tirupati",
+  "trichy",
+  "coimbatore",
+  "vellore",
+  "kanchipuram",
+  "kodaikanal",
+  "ooty",
+  "pondicherry",
+  "sabarimala",
+  "ayyappankovil"
+];
+export const TRICHY_CITY_ALIASES = ["tiruchi", "tiruchy", "tiruchirappalli", "tiruchirapalli"];
 
 export function cityCabLandingSlug(citySlug) {
   return `${String(citySlug || "").toLowerCase()}${CITY_CABS_SUFFIX}`;
@@ -16,8 +29,8 @@ export function cityCabLandingSlug(citySlug) {
 
 export function cityCabLandingPath(citySlug) {
   const slug = String(citySlug || "").toLowerCase();
-  if (!slug) return CITY_CABS_HUB_PATH;
-  return `/${slug}`;
+  if (!slug) return "/cab-booking";
+  return `/cab-booking/${slug}`;
 }
 
 export function legacyCityCabLandingPath(citySlug) {
@@ -36,6 +49,7 @@ export function isCityCabLandingPath(pathname) {
     .replace(/\/+$/, "")
     .split("/")
     .filter(Boolean);
+  if (parts.length === 2 && parts[0] === "cab-booking" && /^[a-z0-9-]+$/.test(parts[1])) return true;
   if (parts.length === 1 && /^[a-z0-9-]+$/.test(parts[0])) return true;
   return parts.length === 2 && parts[0] === "car-rental" && Boolean(parseCityCabLandingSlug(parts[1]));
 }
@@ -44,18 +58,18 @@ export function isActingDriverHubCity(citySlug) {
   return ACTING_DRIVER_HUB_CITIES.includes(String(citySlug || "").toLowerCase());
 }
 
-/** Canonical acting-driver landing: /{city}/acting-driver. Legacy /acting-driver/{city} 301s here. */
+/** Canonical acting-driver landing: /acting-driver/{city}. Legacy /{city}/acting-driver 301s here. */
 export function actingDriverLandingPath(citySlug) {
   const slug = String(citySlug || "").toLowerCase();
   if (!slug) return `/${ACTING_DRIVER_SEGMENT}`;
-  return `/${slug}/${ACTING_DRIVER_SEGMENT}`;
+  return `/${ACTING_DRIVER_SEGMENT}/${slug}`;
 }
 
 export function legacyActingDriverLandingPath(citySlug) {
   const slug = String(citySlug || "").toLowerCase();
   if (!slug) return `/${ACTING_DRIVER_SEGMENT}`;
   if (slug === "chennai") return CALL_DRIVERS_CHENNAI_PATH;
-  return `/${ACTING_DRIVER_SEGMENT}/${slug}`;
+  return `/${slug}/${ACTING_DRIVER_SEGMENT}`;
 }
 
 export function isAirportCabBookingCity(citySlug) {

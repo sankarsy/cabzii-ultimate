@@ -5,6 +5,7 @@ import FooterSeoLinks from "./seo/FooterSeoLinks";
 import SocialLinks from "./ui/SocialLinks";
 import { isTravelShellPath } from "../lib/travelShellPaths";
 import { useSiteSettings } from "./SiteSettingsProvider";
+import { BRAND } from "../lib/brand";
 
 export default function Footer() {
   const pathname = usePathname();
@@ -64,7 +65,7 @@ export default function Footer() {
         <FooterSeoLinks />
 
         <div className="mt-8 border-t border-slate-800 pt-4 text-center text-sm text-slate-500" suppressHydrationWarning>
-          © {new Date().getFullYear()} {siteName || "cabzii.in"}. All rights reserved.
+          © {new Date().getFullYear()} {BRAND.copyrightHolder}. All rights reserved.
         </div>
       </div>
     </footer>

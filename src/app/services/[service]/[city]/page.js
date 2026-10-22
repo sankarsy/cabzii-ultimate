@@ -23,6 +23,7 @@ import { serviceSerpBadges } from "../../../../lib/seo/serpRichData";
 import { resolveMediaUrl } from "../../../../lib/media";
 import { cityCabLandingPath, airportCabBookingPath, isAirportCabBookingCity } from "../../../../lib/cityCabPaths";
 import { isPackageDoorwayService, packageDoorwayCanonicalPath } from "../../../../lib/seo/packageDoorways";
+import { isKeepAirportCity, resolveDroppedSeoRedirect } from "../../../../lib/seo/keepLivePages";
 
 import { SEO_REVALIDATE_SECONDS } from "../../../../lib/revalidation/constants";
 
@@ -31,7 +32,7 @@ export const dynamicParams = true;
 
 export function generateStaticParams() {
   return MAIN_PAGE_SERVICE_SLUGS.flatMap((service) =>
-    MAIN_PAGE_CITY_SLUGS.filter((city) => !(service === "airport-taxi" && isAirportCabBookingCity(city))).map((city) => ({
+    MAIN_PAGE_CITY_SLUGS.filter((city) => !(service === "airport-taxi" && (isAirportCabBookingCity(city) || !isKeepAirportCity(city)))).map((city) => ({
       service,
       city
     }))
@@ -45,6 +46,8 @@ export async function generateMetadata({ params }) {
   if (params.service === "airport-taxi" && isAirportCabBookingCity(params.city)) {
     permanentRedirect(airportCabBookingPath(params.city));
   }
+  const dropped = resolveDroppedSeoRedirect(`/services/${params.service}/${params.city}`);
+  if (dropped) permanentRedirect(dropped);
   const { service: serviceRow, city, cmsMeta } = await resolveServiceForCity(params.service, params.city);
   if (!serviceRow || !city) {
     return buildPageMetadata({
@@ -83,6 +86,8 @@ export default async function ServiceCityPage({ params }) {
   if (params.service === "airport-taxi" && isAirportCabBookingCity(params.city)) {
     permanentRedirect(airportCabBookingPath(params.city));
   }
+  const dropped = resolveDroppedSeoRedirect(`/services/${params.service}/${params.city}`);
+  if (dropped) permanentRedirect(dropped);
   const { service, city } = await resolveServiceForCity(params.service, params.city);
   if (!service || !city) notFound();
 
@@ -90,9 +95,8 @@ export default async function ServiceCityPage({ params }) {
   const faqs = getServiceFaqs(service, city);
   const reviewStats = await fetchSiteReviewStats();
   const isTourPackages = service.slug === "tour-packages" || service.slug === "holiday-packages";
-  const [cabs, drivers, packages] = await Promise.all([
+  const [cabs, packages] = await Promise.all([
     isTourPackages ? Promise.resolve([]) : fetchCatalogForCity("cabs", city.name, 12),
-    isTourPackages ? Promise.resolve([]) : fetchCatalogForCity("drivers", city.name, 6),
     isTourPackages ? fetchCatalogForCity("packages", city.name, 8) : Promise.resolve([])
   ]);
   const serpBadges = serviceSerpBadges(service, city);
@@ -126,7 +130,6 @@ export default async function ServiceCityPage({ params }) {
         extraBody={service.body}
         reviewStats={reviewStats}
         cabs={JSON.parse(JSON.stringify(cabs))}
-        drivers={JSON.parse(JSON.stringify(drivers))}
         packages={JSON.parse(JSON.stringify(packages))}
       />
     </>

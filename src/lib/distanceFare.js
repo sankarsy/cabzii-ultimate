@@ -1,4 +1,6 @@
 import { num } from "./cabFare";
+import { cabTypeBucket } from "./cabListing";
+import { fareForCabCategory, shouldApplyCategoryRouteFare } from "./categoryRouteFare";
 
 /** Use distance × per-km only for outstation. Local/hourly/airport stay on the selected package. */
 export function shouldUseDistanceFare(trip) {
@@ -60,9 +62,49 @@ export function calculateDistanceFare({
   };
 }
 
+/** Copied template fares used on many vehicles — not real per-vehicle packages. */
+const PLACEHOLDER_PACKAGE_PRICES = new Set([1279, 2399, 1599]);
+
+function isGuessedLocalFare(cab, amount) {
+  const price = num(cab?.price);
+  if (price <= 30 || amount <= 0) return false;
+  const guessed = Math.round(price * 0.4);
+  return Math.abs(amount - guessed) <= 1 && amount % 50 !== 0;
+}
+
+function resolvePackageTotal(cab, slab, trip) {
+  const listed = num(slab?.price) > 0 ? num(slab.price) : num(slab?.originalPrice) || num(slab?.list);
+  const perKm = resolvePerKmRate(slab, cab);
+  const hours =
+    String(trip?.tripType || "").toLowerCase() === "hourly" ? num(trip?.packageHours, 8) : num(slab?.includedHours) || 4;
+  const includedKm = num(slab?.includedKm) || hours * 10;
+  const fromRates = perKm > 0 && includedKm > 0 ? Math.round(perKm * includedKm * 2) : 0;
+  if (fromRates > 0 && (listed <= 30 || PLACEHOLDER_PACKAGE_PRICES.has(listed))) return fromRates;
+  if (listed > 30 && !isGuessedLocalFare(cab, listed) && !PLACEHOLDER_PACKAGE_PRICES.has(listed)) return listed;
+  if (fromRates > 0) return fromRates;
+  const starting = num(cab?.startingPrice);
+  if (starting > 30) return starting;
+  const price = num(cab?.price);
+  return price > 30 ? price : 0;
+}
+
 /** Cab fare for search results / booking — package or distance-based. */
 export function resolveCabTripFare(cab, slab, trip) {
-  const packageTotal = num(slab?.price) > 0 ? num(slab.price) : num(slab?.originalPrice) || num(slab?.list) || num(cab?.price);
+  const categoryPrice = shouldApplyCategoryRouteFare(trip) ? fareForCabCategory(cab, trip?.categoryFares) : 0;
+  if (categoryPrice > 0) {
+    const typeLabel = cabTypeBucket(cab);
+    return {
+      listPrice: categoryPrice,
+      total: categoryPrice,
+      discountPct: 0,
+      discountAmount: 0,
+      perKmRate: resolvePerKmRate(slab, cab),
+      usesDistance: false,
+      fareNote: `${typeLabel} fare for this route`
+    };
+  }
+
+  const packageTotal = resolvePackageTotal(cab, slab, trip);
 
   if (!shouldUseDistanceFare(trip)) {
     return {

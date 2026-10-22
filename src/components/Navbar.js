@@ -19,7 +19,8 @@ const fallbackNavLinks = [
   { href: "/cabs", label: "Cabs" },
   { href: "/buses", label: "Buses" },
   { href: "/call-driver", label: "Call Driver" },
-  { href: "/holidays", label: "Holidays" }
+  { href: "/holidays", label: "Holidays" },
+  { href: "/earn", label: "Earn with Cabzii" }
 ];
 
 export default function Navbar({ variant = "default" }) {

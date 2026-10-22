@@ -121,21 +121,32 @@ export function lookupRouteTripData(fromSlug, toSlug) {
   const from = fromSlug;
   const to = toSlug;
 
-  const hubMatrices = {
+  const fromMatrix = hubMatrices()[from];
+  if (fromMatrix?.[to]) return { ...fromMatrix[to], km: fromMatrix[to].km };
+
+  const toMatrix = hubMatrices()[to];
+  if (toMatrix?.[from]) return { ...toMatrix[from], km: toMatrix[from].km };
+
+  return estimateFromKm(320);
+}
+
+function hubMatrices() {
+  return {
     chennai: CITY_DISTANCE_FROM_CHENNAI,
     bengaluru: CITY_DISTANCE_FROM_BENGALURU,
     coimbatore: CITY_DISTANCE_FROM_COIMBATORE,
     hyderabad: CITY_DISTANCE_FROM_HYDERABAD,
     madurai: CITY_DISTANCE_FROM_MADURAI
   };
+}
 
-  const fromMatrix = hubMatrices[from];
-  if (fromMatrix?.[to]) return { ...fromMatrix[to], km: fromMatrix[to].km };
-
-  const toMatrix = hubMatrices[to];
-  if (toMatrix?.[from]) return { ...toMatrix[from], km: toMatrix[from].km };
-
-  return estimateFromKm(320);
+/** Same lookup, but null when the pair is not in a hub matrix (no guessed km). */
+export function lookupKnownRouteTripData(fromSlug, toSlug) {
+  const from = String(fromSlug || "");
+  const to = String(toSlug || "");
+  const matrices = hubMatrices();
+  const hit = matrices[from]?.[to] || matrices[to]?.[from];
+  return hit?.km > 0 ? { ...hit, km: hit.km } : null;
 }
 
 function makeRoute(fromSlug, toSlug, data) {

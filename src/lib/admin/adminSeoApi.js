@@ -1,5 +1,5 @@
 import { CATALOG_TABS } from "../adminCatalogConfig";
-import { actingDriverLandingPath, cityCabLandingPath } from "../cityCabPaths";
+import { actingDriverLandingPath, airportTaxiPublicPath, cityCabLandingPath } from "../cityCabPaths";
 import { normalizePageLinkGroups } from "../seo/pageLinksCore";
 import { routePublicPath } from "../seo/outstationPaths";
 import { isRankingService } from "../seo/packageDoorways";
@@ -12,6 +12,7 @@ const API_MAP = {
   service: "seoServices",
   route: "seoRoutes",
   city: "seoCityPages",
+  airport: "seoCityPages",
   "acting-driver": "seoCityPages",
   landing: "seoLandings"
 };
@@ -71,14 +72,15 @@ function seoPayload(form, row) {
   if (row.type === "driver") return { seoTitle: base.seoTitle, seoDescription: base.seoDescription, seo: base.seo, name: base.h1 || undefined };
   if (row.type === "tour") return { seoTitle: base.seoTitle, seoDescription: base.seoDescription, seo: base.seo, name: base.h1 || undefined };
   if (row.type === "blog") return { seoTitle: base.seoTitle, seoDescription: base.seoDescription, seo: base.seo, title: base.h1 || undefined };
-  if (row.type === "city" || row.type === "acting-driver") {
+  if (row.type === "city" || row.type === "acting-driver" || row.type === "airport") {
     return {
       seoTitle: base.seoTitle,
       seoDescription: base.seoDescription,
       seo: base.seo,
       h1: base.h1 || undefined,
       body: base.body,
-      faqs: base.faqs
+      faqs: base.faqs,
+      published: form.published !== false
     };
   }
   if (row.type === "service") {
@@ -130,8 +132,9 @@ function createPayload(form, row) {
       seoDescription: seo.seoDescription,
       seo: seo.seo,
       body: seo.body || "",
-      published: true,
-      allCities: true
+      published: form.published !== false,
+      allCities: true,
+      menuCitySlug: row.citySlug || "chennai"
     };
   }
   if (row.type === "route") {
@@ -147,9 +150,11 @@ function createPayload(form, row) {
       published: true
     };
   }
-  if (row.type === "city" || row.type === "acting-driver") {
+  if (row.type === "city" || row.type === "acting-driver" || row.type === "airport") {
     return {
-      pageType: row.pageType || (row.type === "acting-driver" ? "acting-driver" : "cab-booking"),
+      pageType:
+        row.pageType ||
+        (row.type === "acting-driver" ? "acting-driver" : row.type === "airport" ? "airport-cab-booking" : "cab-booking"),
       citySlug: row.citySlug || "",
       h1: form.productName?.trim() || row.productName,
       seoTitle: seo.seoTitle,
@@ -157,7 +162,7 @@ function createPayload(form, row) {
       seo: seo.seo,
       body: seo.body || "",
       faqs: seo.faqs || [],
-      published: true
+      published: form.published !== false
     };
   }
   return seo;
@@ -221,13 +226,13 @@ export async function saveSeoSnippet({ row, form, token, pageSeo = {} }) {
   if (!tab?.base) throw new Error("Unknown page type.");
 
   const isStatic = !row.editId || String(row.editId).startsWith("static:");
-  if (isStatic && (row.type === "service" || row.type === "route" || row.type === "city" || row.type === "acting-driver")) {
-    const res = await fetch(tab.base, {
-      method: "POST",
-      headers: authHeaders(token),
-      body: JSON.stringify(createPayload(form, row))
-    });
-    const created = await parseJson(res);
+  if (row.type === "service" && row.path) {
+    if (isStatic) await upsertCmsRecord({ tab, row, form, token });
+    const links = await savePageSeoMap({ token, pageSeo, path: row.path, fields });
+    return { pageSeo: links.pageSeo };
+  }
+  if (isStatic && (row.type === "route" || row.type === "city" || row.type === "acting-driver" || row.type === "airport")) {
+    const created = await upsertCmsRecord({ tab, row, form, token });
     const links = await savePageSeoMap({ token, pageSeo, path: row.path, fields });
     return { ...created, pageSeo: links.pageSeo };
   }
@@ -285,26 +290,23 @@ export async function createRankingSeoPage({ kind, form, token, pageSeo = {} }) 
     return { ...created, pageSeo: links.pageSeo, path };
   }
 
-  if (kind === "city" || kind === "acting-driver") {
+  if (kind === "city" || kind === "acting-driver" || kind === "airport") {
     const citySlug = String(form.citySlug || "").trim().toLowerCase();
-    const pageType = kind === "acting-driver" ? "acting-driver" : "cab-booking";
-    const res = await fetch("/api/seo-city-pages", {
-      method: "POST",
-      headers: authHeaders(token),
-      body: JSON.stringify({
-        pageType,
-        citySlug,
-        h1,
-        seoTitle,
-        seoDescription,
-        seo: seoKeywords,
-        body,
-        faqs,
-        published: true
-      })
+    const pageType =
+      kind === "acting-driver" ? "acting-driver" : kind === "airport" ? "airport-cab-booking" : "cab-booking";
+    const created = await upsertCmsRecord({
+      tab: CATALOG_TABS.seoCityPages,
+      row: { type: kind === "acting-driver" ? "acting-driver" : kind === "airport" ? "airport" : "city", pageType, citySlug },
+      form: { ...form, productName: h1, seoTitle, seoDescription, seoKeywords: seoKeywords, html: body, faqs, published: form.published !== false },
+      token
     });
-    const created = await parseJson(res);
-    const path = created?.data?.publicPath || (kind === "acting-driver" ? actingDriverLandingPath(citySlug) : cityCabLandingPath(citySlug));
+    const path =
+      created?.data?.publicPath ||
+      (kind === "acting-driver"
+        ? actingDriverLandingPath(citySlug)
+        : kind === "airport"
+          ? airportTaxiPublicPath(citySlug)
+          : cityCabLandingPath(citySlug));
     const links = await savePageSeoMap({
       token,
       pageSeo,
@@ -319,23 +321,15 @@ export async function createRankingSeoPage({ kind, form, token, pageSeo = {} }) 
     if (!isRankingService(serviceSlug)) {
       throw new Error("Cab and acting-driver packages are not SEO pages. Use airport-taxi, outstation-cab, one-way-cab or tempo-traveller.");
     }
-    const res = await fetch("/api/seo-services", {
-      method: "POST",
-      headers: authHeaders(token),
-      body: JSON.stringify({
-        slug: serviceSlug,
-        name: h1,
-        seoTitle,
-        seoDescription,
-        seo: seoKeywords,
-        body,
-        published: true,
-        allCities: true
-      })
+    const citySlug = String(form.citySlug || "chennai").trim().toLowerCase() || "chennai";
+    const created = await upsertCmsRecord({
+      tab: CATALOG_TABS.seoServices,
+      row: { type: "service", serviceSlug, citySlug, path: `/services/${serviceSlug}/${citySlug}` },
+      form: { ...form, productName: h1, seoTitle, seoDescription, seoKeywords, html: body, published: form.published !== false },
+      token
     });
-    const created = await parseJson(res);
     const createdSlug = String(created?.data?.slug || serviceSlug).trim();
-    const path = `/services/${createdSlug}/chennai`;
+    const path = createdSlug === "airport-taxi" ? airportTaxiPublicPath(citySlug) : `/services/${createdSlug}/${citySlug}`;
     const links = await savePageSeoMap({
       token,
       pageSeo,
@@ -377,11 +371,73 @@ export async function createRankingSeoPage({ kind, form, token, pageSeo = {} }) 
   throw new Error("Unknown page type.");
 }
 
+export async function clearPathPageSeo({ path, token, pageSeo = {} }) {
+  if (!path) return { pageSeo };
+  const res = await fetch("/api/site-settings", {
+    method: "PUT",
+    headers: authHeaders(token),
+    body: JSON.stringify({ pageSeo: { [path]: null } })
+  });
+  const data = await parseJson(res);
+  const next = { ...pageSeo };
+  delete next[path];
+  return { data: data?.data, pageSeo: next };
+}
+
+async function fetchAdminRows(url, token) {
+  const res = await fetch(url, {
+    cache: "no-store",
+    headers: { authorization: `Bearer ${token}` }
+  });
+  const data = await parseJson(res);
+  return Array.isArray(data?.data) ? data.data : [];
+}
+
+async function upsertCmsRecord({ tab, row, form, token }) {
+  const payload = createPayload(form, row);
+  if (row.type === "service") {
+    const rows = await fetchAdminRows(`${tab.base}?admin=1&limit=200`, token);
+    const existing = rows.find((item) => item.slug === payload.slug && !String(item._id || "").startsWith("static:"));
+    if (existing?._id) {
+      return { success: true, data: existing };
+    }
+  }
+  if (row.type === "city" || row.type === "acting-driver" || row.type === "airport") {
+    const pageType = payload.pageType;
+    const citySlug = payload.citySlug;
+    const rows = await fetchAdminRows(
+      `${tab.base}?admin=1&limit=500&pageType=${encodeURIComponent(pageType)}&citySlug=${encodeURIComponent(citySlug)}`,
+      token
+    );
+    const existing = rows.find(
+      (item) => item.pageType === pageType && String(item.citySlug || "").toLowerCase() === citySlug
+    );
+    if (existing?._id) {
+      const res = await fetch(`${tab.base}/${existing._id}`, {
+        method: "PUT",
+        headers: authHeaders(token),
+        body: JSON.stringify({ ...existing, ...payload })
+      });
+      return parseJson(res);
+    }
+  }
+  const res = await fetch(tab.base, {
+    method: "POST",
+    headers: authHeaders(token),
+    body: JSON.stringify(payload)
+  });
+  return parseJson(res);
+}
+
 export async function deleteSeoSnippet({ row, token, pageSeo = {} }) {
   if (row.type === "site") {
     throw new Error("Homepage and listing pages cannot be deleted — clear SEO fields to use defaults.");
   }
-  if (!row.canDelete || !row.editId || String(row.editId).startsWith("static:")) {
+  if (row.type === "service" && row.path) {
+    return clearPathPageSeo({ path: row.path, token, pageSeo });
+  }
+  if (!row.editId || String(row.editId).startsWith("static:")) {
+    if (row.path && pageSeo[row.path]) return clearPathPageSeo({ path: row.path, token, pageSeo });
     throw new Error("This page uses a built-in template. Edit SEO to override, or delete only saved CMS rows.");
   }
 

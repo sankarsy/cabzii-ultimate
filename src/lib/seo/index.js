@@ -16,4 +16,5 @@ export * from "./outstationPaths";
 export * from "./indexation";
 export * from "./packageDoorways";
 export * from "./keepLivePages";
+export * from "../../config/seo-scope";
 export * from "./revenueAudit";

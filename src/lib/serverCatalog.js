@@ -1,5 +1,5 @@
 import { isLiveApiHostProtected } from "./liveApiHostGuard";
-import { getBackendUrl } from "./seo";
+import { getBackendUrl } from "./seo/constants";
 import { SHOWCASE_FALLBACKS } from "./homeShowcase";
 import { filterActiveOffers } from "./offers";
 import { mergeCallDriverServices } from "./callDriver";
@@ -72,7 +72,7 @@ export async function fetchCatalogForCity(resource, cityName, limit = 8) {
     limit: String(limit),
     page: "1",
     priorityCity: cityName,
-    city: cityName
+    match: "0"
   });
   const data = await fetchJson(`/${resource}?${q.toString()}`, SEO_REVALIDATE_SECONDS);
   const list = Array.isArray(data) ? data : [];
@@ -82,17 +82,15 @@ export async function fetchCatalogForCity(resource, cityName, limit = 8) {
   return fallback;
 }
 
-/** Same cab query as /cabs/results so SEO route pages can render live fares without a Get Fare click. */
+/** Live cab list for SEO landings. Rank by city, but do not exclusive-match one vendor. */
 export async function fetchCabsForTrip(trip, limit = 50) {
   const city = String(trip?.from || trip?.city || "").split(",")[0].trim();
   const q = new URLSearchParams({
     limit: String(limit),
-    page: "1"
+    page: "1",
+    match: "0"
   });
-  if (city) {
-    q.set("priorityCity", city);
-    q.set("city", city);
-  }
+  if (city) q.set("priorityCity", city);
   if (trip?.date) q.set("date", trip.date);
   if (trip?.time) q.set("time", trip.time);
   if (trip?.packageHours) q.set("packageHours", String(trip.packageHours));
@@ -102,7 +100,7 @@ export async function fetchCabsForTrip(trip, limit = 50) {
 
   const data = await fetchJson(`/cabs?${q.toString()}`, 0);
   const list = normalizeCabList(Array.isArray(data) ? data : []);
-  if (list.length) return list;
+  if (list.length >= Math.min(4, limit)) return list;
   return normalizeCabList(await fetchCatalogForCity("cabs", city, limit));
 }
 
@@ -121,10 +119,15 @@ export async function fetchSeoRouteBySlug(slug) {
   return fetchJson(`/seo-routes/${encodeURIComponent(slug)}`, SEO_REVALIDATE_SECONDS);
 }
 
-/** Admin-managed meta for /{city} cab hubs, /{city}/airport-cab-booking, and /{city}/acting-driver. */
+/** Admin-managed meta for /cab-booking/{city}, /acting-driver/{city}, and /{city}/airport-cab-booking. */
 export async function fetchSeoCityPage(pageType, citySlug) {
   if (!pageType || !citySlug) return null;
   return fetchJson(`/seo-city-pages/${encodeURIComponent(pageType)}/${encodeURIComponent(citySlug)}`, SEO_REVALIDATE_SECONDS);
+}
+
+export async function fetchSeoCityPages() {
+  const data = await fetchJson("/seo-city-pages?limit=100", SEO_REVALIDATE_SECONDS);
+  return Array.isArray(data) ? data : [];
 }
 
 /** Admin-managed ranking landings at /pages/{slug}. */

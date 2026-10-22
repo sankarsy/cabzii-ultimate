@@ -10,11 +10,11 @@ import { SITE_URL } from "./seo/constants";
 
 /** Local fallbacks — replace files in /public/images/fallbacks/ without code changes. */
 export const SERVICE_FALLBACK_PATHS = {
-  cab: "/images/fallbacks/cab.svg",
-  sedan: "/images/fallbacks/cab.svg",
-  suv: "/images/fallbacks/suv.svg",
-  tempo: "/images/fallbacks/tempo.svg",
-  bus: "/images/fallbacks/bus.svg",
+  cab: "/images/fallbacks/cab.svg?v=2",
+  sedan: "/images/fallbacks/cab.svg?v=2",
+  suv: "/images/fallbacks/suv.svg?v=2",
+  tempo: "/images/fallbacks/tempo.svg?v=2",
+  bus: "/images/fallbacks/bus.svg?v=2",
   driver: "/images/fallbacks/driver.svg",
   holiday: "/images/fallbacks/holiday.svg",
   hotel: "/images/fallbacks/hotel.svg",

@@ -20,7 +20,8 @@ export const TRAVEL_SHELL_PREFIXES = [
   "/services",
   "/blogs",
   "/blog",
-  "/testimonials"
+  "/testimonials",
+  "/earn"
 ];
 
 export function isTravelShellPath(pathname = "") {

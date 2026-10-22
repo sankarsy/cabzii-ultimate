@@ -4,10 +4,12 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { PILGRIMAGE_PACKAGES } from "../../lib/domesticFocus";
 import { HOLIDAY_CATEGORIES } from "../../lib/holidays";
+import { popularRouteLinks } from "../../lib/cityOutstationRoutes";
+import { resolveScopedCity } from "../../lib/cityShowcase";
+import { useSelectedCity } from "../../lib/useSelectedCity";
 import {
   actingDriverLinks,
   cabBookingLinks,
-  routeLinks,
   serviceLinks,
   serviceLinksForCities
 } from "../../lib/seo/internalLinks";
@@ -20,7 +22,7 @@ function chunkColumns(items, cols = 4) {
   return columns;
 }
 
-function buildSections() {
+function buildSections(citySlug, cityName) {
   const packages = PILGRIMAGE_PACKAGES.map((p) => ({ href: p.href, label: p.name }));
   const categories = HOLIDAY_CATEGORIES.filter((c) => c.id !== "all").map((c) => ({
     href: `/holidays?category=${c.id}`,
@@ -32,13 +34,18 @@ function buildSections() {
     { id: "categories", label: "Explore by category", intro: "Find holidays by trip style — pilgrimage, beach, hills and more.", items: categories },
     { id: "cab-booking", label: "Cab booking by city", intro: "City taxi booking pages for South India hubs.", items: cabBookingLinks() },
     { id: "drivers", label: "Acting drivers by city", intro: "Hire an acting driver for your own car, city by city.", items: actingDriverLinks() },
-    { id: "one-way", label: "Popular one-way routes", intro: "Intercity one-way cab routes with upfront fares.", items: routeLinks(32) },
+    {
+      id: "one-way",
+      label: `Popular routes from ${cityName}`,
+      intro: `One-way and round-trip cabs from ${cityName} to other cities.`,
+      items: popularRouteLinks(citySlug, 16)
+    },
     { id: "chennai", label: "Services in Chennai", intro: "Airport taxi, outstation, hourly rental and more in Chennai.", items: serviceLinks("chennai") },
     {
       id: "other-cities",
-      label: "Services — Bengaluru, Hyderabad & more",
-      intro: "Cab and driver services in Bengaluru, Hyderabad, Coimbatore and Madurai.",
-      items: serviceLinksForCities(["bengaluru", "hyderabad", "coimbatore", "madurai"], { servicesPerCity: 4 })
+      label: "Services — Madurai, Tirupati & more",
+      intro: "Cab and driver services in Madurai, Tirupati, Coimbatore, Trichy and Vellore.",
+      items: serviceLinksForCities(["madurai", "tirupati", "coimbatore", "trichy", "vellore"], { servicesPerCity: 2 })
     }
   ];
 }
@@ -66,7 +73,9 @@ function LinkColumns({ items }) {
 }
 
 export default function FooterSeoHub() {
-  const sections = useMemo(() => buildSections(), []);
+  const { city } = useSelectedCity();
+  const scoped = useMemo(() => resolveScopedCity(city), [city]);
+  const sections = useMemo(() => buildSections(scoped.slug, scoped.name), [scoped.slug, scoped.name]);
   const [activeId, setActiveId] = useState(sections[0].id);
   const active = sections.find((t) => t.id === activeId) || sections[0];
 

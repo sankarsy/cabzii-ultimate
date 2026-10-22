@@ -70,6 +70,18 @@ export const NEAREST_AIRPORT_BY_CITY = {
     name: "Chennai International Airport",
     note: "Kanchipuram has no commercial passenger airport. Temple visitors typically transfer via Chennai (MAA)."
   },
+  sabarimala: {
+    code: "COK",
+    name: "Cochin International Airport",
+    also: "Madurai Airport (IXM)",
+    note: "Sabarimala has no airport. Cabs drop at Pamba or Nilakkal. Usual air gateways are Cochin (COK) and Madurai (IXM)."
+  },
+  ayyappankovil: {
+    code: "COK",
+    name: "Cochin International Airport",
+    also: "Madurai Airport (IXM)",
+    note: "Ayyappan Kovil (Idukki) has no commercial airport. Usual air gateways are Cochin (COK) and Madurai (IXM)."
+  },
   tiruvannamalai: {
     code: "MAA",
     name: "Chennai International Airport",

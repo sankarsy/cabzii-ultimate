@@ -1,11 +1,20 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { Copy } from "lucide-react";
 import { getOfferIcon } from "../icons/heroIcons";
 import { formatOfferValidUntil } from "../../lib/offers";
 import { approxFromLabel } from "../../lib/approxPrice";
+import { useSelectedCity } from "../../lib/useSelectedCity";
+import { cityScopedCardHref } from "../../lib/cityShowcase";
 
 export default function ShowcaseCard({ card: o, section = "offers", layout = "carousel" }) {
+  const { city: selectedCity } = useSelectedCity();
+  const href =
+    section === "routes"
+      ? o.href || "/cabs"
+      : cityScopedCardHref(o.href || "/cabs", selectedCity);
   const OfferIcon = getOfferIcon(o.iconKey);
   const validUntilLabel = formatOfferValidUntil(o);
   const layoutClass =
@@ -15,7 +24,7 @@ export default function ShowcaseCard({ card: o, section = "offers", layout = "ca
 
   return (
     <Link
-      href={o.href || "/cabs"}
+      href={href}
       className={`${layoutClass} group overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-[var(--emt-shadow-card)] transition-all duration-200 sm:hover:-translate-y-1 sm:hover:shadow-[var(--emt-shadow-hover)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cabzii-brand)] focus-visible:ring-offset-2`}
     >
       <div

@@ -4,10 +4,16 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { clearSitePageSeo, deleteSeoSnippet, saveSeoSnippet } from "../../lib/admin/adminSeoApi";
 import { buildCatalogListUrl } from "../../lib/adminCatalogConfig";
+import { SEO_SCOPE_CITIES } from "../../config/seo-scope";
 import { buildSeoPageIndex, seoIndexStats } from "../../lib/seo/seoPageIndexBuilder";
 import AdminSeoSnippetEditor from "./AdminSeoSnippetEditor";
 import AdminSeoCreatePage from "./AdminSeoCreatePage";
 import AdminSeoSop from "./AdminSeoSop";
+
+const SCOPE_TABS = [
+  { slug: "all", name: "All cities" },
+  { slug: "site", name: "Site-wide" }
+];
 
 const TYPE_FILTERS = [
   { id: "all", label: "All" },
@@ -27,6 +33,29 @@ const SEO_STATUS_STYLES = {
   auto: "bg-slate-100 text-slate-600"
 };
 
+function CityTag({ active, onClick, name, count }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
+        active
+          ? "border-[var(--cabzii-brand)] bg-[var(--cabzii-brand)] text-white"
+          : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50"
+      }`}
+    >
+      <span>{name}</span>
+      <span
+        className={`min-w-[1.5rem] rounded-full px-1.5 py-0.5 text-center text-[10px] font-bold tabular-nums ${
+          active ? "bg-white/20 text-white" : "bg-slate-100 text-slate-600"
+        }`}
+      >
+        {count}
+      </span>
+    </button>
+  );
+}
+
 async function fetchAdminList(url, token) {
   const res = await fetch(url, {
     cache: "no-store",
@@ -39,6 +68,7 @@ async function fetchAdminList(url, token) {
 
 export default function AdminSeoPagesIndex({ token = "" }) {
   const [query, setQuery] = useState("");
+  const [cityFilter, setCityFilter] = useState("chennai");
   const [typeFilter, setTypeFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [campaignFilter, setCampaignFilter] = useState("all");
@@ -50,6 +80,7 @@ export default function AdminSeoPagesIndex({ token = "" }) {
   const [editorRow, setEditorRow] = useState(null);
   const [createOpen, setCreateOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [sopOpen, setSopOpen] = useState(false);
 
   const loadAll = useCallback(async () => {
     if (!token) {
@@ -99,9 +130,24 @@ export default function AdminSeoPagesIndex({ token = "" }) {
 
   const stats = useMemo(() => seoIndexStats(rows), [rows]);
 
+  const cityCounts = useMemo(() => {
+    const counts = { all: rows.length, site: 0 };
+    for (const city of SEO_SCOPE_CITIES) counts[city.slug] = 0;
+    for (const row of rows) {
+      if (row.citySlug && counts[row.citySlug] != null) counts[row.citySlug] += 1;
+      else counts.site += 1;
+    }
+    return counts;
+  }, [rows]);
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return rows.filter((row) => {
+      if (cityFilter === "site") {
+        if (row.citySlug) return false;
+      } else if (cityFilter !== "all") {
+        if (row.citySlug !== cityFilter) return false;
+      }
       if (typeFilter !== "all" && row.type !== typeFilter) return false;
       if (statusFilter !== "all" && row.seoStatus !== statusFilter) return false;
       if (campaignFilter === "ready" && row.seoStatus !== "complete") return false;
@@ -115,7 +161,7 @@ export default function AdminSeoPagesIndex({ token = "" }) {
         row.typeLabel?.toLowerCase().includes(q)
       );
     });
-  }, [rows, query, typeFilter, statusFilter, campaignFilter]);
+  }, [rows, query, cityFilter, typeFilter, statusFilter, campaignFilter]);
 
   const handleSave = async (form) => {
     if (!editorRow || !token) return;
@@ -126,7 +172,6 @@ export default function AdminSeoPagesIndex({ token = "" }) {
       const result = await saveSeoSnippet({ row: editorRow, form, token, pageSeo });
       if (result?.pageSeo) setPageSeo(result.pageSeo);
       setMessage(`Saved SEO for ${editorRow.path}. Google & ads will update after revalidation (~1 min).`);
-      setEditorRow(null);
       await loadAll();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not save SEO.");
@@ -163,20 +208,41 @@ export default function AdminSeoPagesIndex({ token = "" }) {
     }
   };
 
+  if (editorRow) {
+    return (
+      <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-[var(--cabzii-shadow-card)] sm:p-6">
+        {error ? <p className="mb-3 text-sm text-rose-600">{error}</p> : null}
+        {message ? <p className="mb-3 text-sm text-emerald-700">{message}</p> : null}
+        <AdminSeoSnippetEditor
+          row={editorRow}
+          open
+          token={token}
+          onClose={() => {
+            setEditorRow(null);
+            setMessage("");
+            setError("");
+          }}
+          onSave={handleSave}
+          saving={saving}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-[var(--cabzii-shadow-card)] sm:p-6">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <h2 className="text-lg font-bold text-slate-900">Google SEO pages</h2>
           <p className="mt-1 max-w-3xl text-sm text-slate-600">
-            One ranking SEO type for every URL: H1, title, description, keywords, intro, body, FAQs and hub links. Create, edit or delete from this list.
+            Live ranking URLs only — Chennai, Madurai, Tirupati, Trichy, Coimbatore and Vellore. Create extra pages yourself when you need them. All other city pages are redirected and hidden.
           </p>
           {!loading && rows.length ? (
             <div className="mt-3 flex flex-wrap gap-2 text-xs">
-              <span className="rounded-full bg-slate-100 px-2.5 py-1 font-semibold text-slate-700">{stats.total} URLs</span>
-              <span className="rounded-full bg-emerald-100 px-2.5 py-1 font-semibold text-emerald-800">{stats.complete} campaign-ready</span>
+              <span className="rounded-full bg-slate-100 px-2.5 py-1 font-semibold text-slate-700">{stats.total} live URLs</span>
+              <span className="rounded-full bg-emerald-100 px-2.5 py-1 font-semibold text-emerald-800">{stats.complete} saved</span>
               <span className="rounded-full bg-amber-100 px-2.5 py-1 font-semibold text-amber-800">{stats.partial} partial</span>
-              <span className="rounded-full bg-slate-100 px-2.5 py-1 font-semibold text-slate-600">{stats.auto} auto</span>
+              <span className="rounded-full bg-slate-100 px-2.5 py-1 font-semibold text-slate-600">{stats.auto} auto — not saved yet</span>
             </div>
           ) : null}
         </div>
@@ -191,19 +257,59 @@ export default function AdminSeoPagesIndex({ token = "" }) {
         </div>
       </div>
 
-      <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">
-        <p className="font-semibold">Same SEO type on every page</p>
-        <ul className="mt-2 list-disc space-y-1 pl-5 text-xs sm:text-sm text-amber-900">
-          <li>Title 50–60 characters, visible H1, description 120–155, keywords, intro, body, FAQs, hub links.</li>
-          <li>
-            <strong>Create SEO page</strong> adds a city hub, acting-driver city, airport/outstation/one-way/tempo service, route, or custom /pages/slug. Cab and acting-driver fare packages are not SEO pages.
-          </li>
-          <li>Built-in pages (home, /cabs, /call-driver) can be edited or reset — they cannot be deleted.</li>
-          <li>CMS rows (city, service, route, custom landing) can be deleted. The live URL then falls back to the template or 404s for custom landings.</li>
-        </ul>
+      <div className="mt-4">
+        <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">City pages</p>
+        <div className="mt-2 flex flex-wrap gap-2">
+          {SEO_SCOPE_CITIES.map((city) => (
+            <CityTag
+              key={city.slug}
+              name={city.name}
+              count={cityCounts[city.slug] ?? 0}
+              active={cityFilter === city.slug}
+              onClick={() => setCityFilter(city.slug)}
+            />
+          ))}
+        </div>
+        <p className="mt-3 text-[11px] font-bold uppercase tracking-wide text-slate-500">Lists</p>
+        <div className="mt-2 flex flex-wrap gap-2">
+          {SCOPE_TABS.map((tab) => (
+            <CityTag
+              key={tab.slug}
+              name={tab.name}
+              count={cityCounts[tab.slug] ?? 0}
+              active={cityFilter === tab.slug}
+              onClick={() => setCityFilter(tab.slug)}
+            />
+          ))}
+        </div>
       </div>
 
-      <AdminSeoSop />
+      <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50">
+        <button
+          type="button"
+          onClick={() => setSopOpen((open) => !open)}
+          className="flex w-full items-center justify-between px-4 py-3 text-left text-sm font-semibold text-slate-800"
+        >
+          SEO guiding map (SOP)
+          <span className="text-xs font-normal text-slate-500">{sopOpen ? "Hide" : "Show"}</span>
+        </button>
+        {sopOpen ? (
+          <div className="border-t border-slate-200 px-4 pb-4">
+            <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">
+              <p className="font-semibold">Same SEO type on every page</p>
+              <ul className="mt-2 list-disc space-y-1 pl-5 text-xs sm:text-sm text-amber-900">
+                <li>Title 50–60 characters, visible H1, description 120–155, keywords, intro, body, FAQs, hub links.</li>
+                <li>
+                  <strong>Create SEO page</strong> adds a city hub, acting-driver city, airport/outstation/one-way/tempo service, route, or custom /pages/slug. Cab and acting-driver fare packages are not SEO pages.
+                </li>
+                <li>Built-in pages (home, /cabs, /call-driver) can be edited or reset — they cannot be deleted.</li>
+                <li>CMS rows (city, service, route, custom landing) can be deleted. The live URL then falls back to the template or 404s for custom landings.</li>
+              </ul>
+            </div>
+            <AdminSeoSop />
+          </div>
+        ) : null}
+      </div>
 
       <div className="mt-4 flex flex-col gap-3 xl:flex-row xl:items-center">
         <input
@@ -256,7 +362,10 @@ export default function AdminSeoPagesIndex({ token = "" }) {
       {loading ? <p className="mt-4 text-sm text-slate-500">Loading all products and SEO pages…</p> : null}
 
       <p className="mt-3 text-xs text-slate-500">
-        Showing {filtered.length} of {rows.length} entries — click <strong>Edit SEO</strong> to update Google snippet fields and page hub links
+        Showing {filtered.length} of {rows.length} entries
+        {cityFilter !== "all" && cityFilter !== "site" ? ` for ${SEO_SCOPE_CITIES.find((c) => c.slug === cityFilter)?.name || cityFilter}` : ""}
+        {cityFilter === "site" ? " (home, listings, packages and blogs without a keep-city)" : ""}
+        — click <strong>Edit SEO</strong> to update Google snippet fields
       </p>
 
       <div className="mt-3 overflow-x-auto rounded-lg border border-slate-200">
@@ -274,7 +383,7 @@ export default function AdminSeoPagesIndex({ token = "" }) {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
-            {filtered.slice(0, 400).map((row) => (
+            {filtered.map((row) => (
               <tr key={row.id} className="align-top hover:bg-slate-50/80">
                 <td className="whitespace-nowrap px-3 py-2 text-xs font-medium text-slate-500">{row.typeLabel}</td>
                 <td className="max-w-[140px] px-3 py-2 font-medium text-slate-900">{row.productName}</td>
@@ -286,7 +395,7 @@ export default function AdminSeoPagesIndex({ token = "" }) {
                 </td>
                 <td className="whitespace-nowrap px-3 py-2">
                   <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${SEO_STATUS_STYLES[row.seoStatus] || SEO_STATUS_STYLES.auto}`}>
-                    {row.seoStatus}
+                    {row.seoStatus === "auto" ? "auto — audit" : row.seoStatus === "complete" ? "saved" : row.seoStatus}
                   </span>
                   <p className="mt-1 text-[10px] text-slate-500">{row.sourceLabel}</p>
                 </td>
@@ -321,10 +430,6 @@ export default function AdminSeoPagesIndex({ token = "" }) {
         </table>
       </div>
 
-      {filtered.length > 400 ? (
-        <p className="mt-2 text-xs text-amber-700">Showing first 400 matches — use search or filters to narrow down.</p>
-      ) : null}
-
       <div className="mt-4 grid gap-3 lg:grid-cols-2">
         <div className="rounded-lg border border-sky-200 bg-sky-50 px-4 py-3 text-xs text-sky-900">
           <p className="font-semibold">Google Ads checklist</p>
@@ -345,7 +450,6 @@ export default function AdminSeoPagesIndex({ token = "" }) {
         </div>
       </div>
 
-      <AdminSeoSnippetEditor row={editorRow} open={Boolean(editorRow)} onClose={() => setEditorRow(null)} onSave={handleSave} saving={saving} />
       <AdminSeoCreatePage
         open={createOpen}
         token={token}

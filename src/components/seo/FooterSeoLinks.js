@@ -1,19 +1,18 @@
 import Link from "next/link";
+import { popularRouteLinks } from "../../lib/cityOutstationRoutes";
 import {
   INTERNAL_LINK_CITIES,
   actingDriverLinks,
   cabBookingLinks,
-  routeLinks,
   serviceLinks,
   serviceLinksForCities
 } from "../../lib/seo/internalLinks";
-import { SEO_ROUTES } from "../../lib/seo/routes";
 
 const QUICK_PILLS = [
   { href: "/cabs", label: "Cabs" },
   { href: "/tariff", label: "Tariff" },
   { href: "/holidays", label: "Holidays" },
-  { href: "/drivers", label: "Drivers" },
+  { href: "/call-driver", label: "Call Driver" },
   { href: "/locations", label: "Locations" },
   { href: "/blogs", label: "Blog" }
 ];
@@ -41,7 +40,7 @@ function FooterLinkList({ title, items }) {
 export default function FooterSeoLinks() {
   const cabs = cabBookingLinks(INTERNAL_LINK_CITIES.length);
   const drivers = actingDriverLinks(INTERNAL_LINK_CITIES.length);
-  const routes = routeLinks(SEO_ROUTES.length);
+  const routes = popularRouteLinks("chennai", 16);
   const servicesChennai = serviceLinks("chennai");
   const servicesOther = serviceLinksForCities(["bengaluru", "hyderabad", "coimbatore"]);
 
@@ -64,7 +63,7 @@ export default function FooterSeoLinks() {
         <FooterLinkList title="Acting drivers by city" items={drivers} />
         <FooterLinkList title="Services in Chennai" items={servicesChennai} />
         <FooterLinkList title="Services — BLR, HYD & CBE" items={servicesOther} />
-        <FooterLinkList title="Popular one-way routes" items={routes} />
+        <FooterLinkList title="Popular routes from Chennai" items={routes} />
       </div>
     </div>
   );

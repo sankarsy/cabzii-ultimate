@@ -4,6 +4,7 @@ import { previewCatalogSlug } from "../../lib/catalogProduct";
 import { seoCityPublicPath } from "../../lib/cityCabPaths";
 import { routePublicPath } from "../../lib/seo/outstationPaths";
 import ImageUploadField from "./ImageUploadField";
+import CitySelect from "./cms/CitySelect";
 
 function inputCls() {
   return "w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-sky-600";
@@ -90,8 +91,8 @@ export function AdminSeoServiceForm({ form, onChange, authToken = "" }) {
           <Field label="URL slug" hint="Auto from SEO title if empty">
             <input className={inputCls()} value={form.slug || ""} onChange={(e) => set({ slug: e.target.value })} placeholder="airport-taxi" />
           </Field>
-          <Field label="Menu city slug" hint="Default city in URL & navbar">
-            <input className={inputCls()} value={form.menuCitySlug || "chennai"} onChange={(e) => set({ menuCitySlug: e.target.value })} placeholder="chennai" />
+          <Field label="City *" hint="From Cities. Never type a new city here.">
+            <CitySelect token={authToken} value={form.menuCitySlug || ""} onChange={(menuCitySlug) => set({ menuCitySlug })} service="cabBooking" />
           </Field>
           <div className="sm:col-span-2 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-xs text-sky-900">
             <span className="font-semibold">Live URL:</span>{" "}
@@ -114,8 +115,17 @@ export function AdminSeoServiceForm({ form, onChange, authToken = "" }) {
           </Field>
         </div>
         <div className="sm:col-span-2">
-          <Field label="Page content (optional HTML)">
-            <textarea className={inputCls()} rows={4} value={form.body || ""} onChange={(e) => set({ body: e.target.value })} />
+          <Field
+            label="SEO page content (HTML)"
+            hint="Shown below the cab list. Paste your article (headings, lists, tables). Leave empty to hide this block."
+          >
+            <textarea
+              className={`${inputCls()} font-mono text-[13px]`}
+              rows={14}
+              value={form.body || ""}
+              onChange={(e) => set({ body: e.target.value })}
+              placeholder={"<h2>How to Book</h2>\n<p>Write your own copy here…</p>"}
+            />
           </Field>
         </div>
         <div className="sm:col-span-2">
@@ -164,7 +174,7 @@ export function AdminSeoServiceForm({ form, onChange, authToken = "" }) {
   );
 }
 
-export function AdminSeoCityPageForm({ form, onChange }) {
+export function AdminSeoCityPageForm({ form, onChange, authToken = "" }) {
   const set = (patch) => onChange((prev) => ({ ...prev, ...patch }));
   const previewPath = seoCityPublicPath(form.pageType || "cab-booking", form.citySlug || "chennai");
 
@@ -173,10 +183,10 @@ export function AdminSeoCityPageForm({ form, onChange }) {
       <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-900">
         <p className="font-semibold">City landing pages — this is the Google result for “cab booking Chennai”</p>
         <ul className="mt-1 list-inside list-disc space-y-0.5 text-emerald-800">
-          <li>Live URL is /&#123;city&#125; (cabs), /&#123;city&#125;/airport-cab-booking, or /&#123;city&#125;/acting-driver (Chennai, Trichy, Madurai, Coimbatore)</li>
-          <li>Start with Chennai, Trichy, Madurai and Coimbatore. Click <strong>Create</strong>, set page type + city slug, then save H1, FAQs and places</li>
-          <li>Leave a field empty to keep the website&apos;s auto-generated copy</li>
-          <li>One entry per page type + city. Super admin only (Admin Login, not Travel Partner)</li>
+          <li>Live URL is /cab-booking/&#123;city&#125;, /acting-driver/&#123;city&#125;, or /&#123;city&#125;/airport-cab-booking</li>
+          <li>Create Cab Booking + Chennai or Acting Driver + Madurai here. Empty fields keep auto-generated copy</li>
+          <li>Manual SEO fields below always beat generated defaults. Publishing a draft does not overwrite them later</li>
+          <li>One entry per page type + city. Super admin only</li>
         </ul>
       </div>
       <div className="rounded-xl border border-slate-200 bg-slate-50/80 p-4">
@@ -184,13 +194,13 @@ export function AdminSeoCityPageForm({ form, onChange }) {
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
           <Field label="Page type *">
             <select className={inputCls()} value={form.pageType || "cab-booking"} onChange={(e) => set({ pageType: e.target.value })}>
-              <option value="cab-booking">Cab booking city (/chennai, /trichy, /madurai, /coimbatore)</option>
-              <option value="airport-cab-booking">Airport cab booking (/&#123;city&#125;/airport-cab-booking)</option>
-              <option value="acting-driver">Acting driver city (/&#123;city&#125;/acting-driver)</option>
+              <option value="cab-booking">Cab booking (/cab-booking/chennai)</option>
+              <option value="airport-cab-booking">Airport cab booking (/chennai/airport-cab-booking)</option>
+              <option value="acting-driver">Acting driver (/acting-driver/chennai)</option>
             </select>
           </Field>
-          <Field label="City slug *" hint="e.g. chennai, bengaluru, madurai">
-            <input className={inputCls()} value={form.citySlug || ""} onChange={(e) => set({ citySlug: e.target.value })} placeholder="chennai" />
+          <Field label="City *" hint="From Cities. Never type a new city here.">
+            <CitySelect token={authToken} value={form.citySlug || ""} onChange={(citySlug) => set({ citySlug })} />
           </Field>
           <div className="sm:col-span-2">
             <Field label="Product name (H1)" hint="Visible heading — e.g. Best Cab Services in Chennai - Cabzii">
@@ -276,16 +286,54 @@ export function AdminSeoCityPageForm({ form, onChange }) {
         <Field label="Popular routes" hint="Comma-separated route slugs or labels">
           <input className={inputCls()} value={form.popularRoutes || ""} onChange={(e) => set({ popularRoutes: e.target.value })} placeholder="chennai-to-bangalore-cab, chennai-to-pondicherry-cab" />
         </Field>
+        <div className="sm:col-span-2 rounded-xl border border-slate-200 bg-white p-4">
+          <p className="text-sm font-semibold text-slate-800">Manual SEO override</p>
+          <p className="mt-1 text-xs text-slate-500">Leave blank to use generated title, description and robots.</p>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <div className="sm:col-span-2">
+              <Field label="Canonical URL">
+                <input className={inputCls()} value={form.canonicalUrl || ""} onChange={(e) => set({ canonicalUrl: e.target.value })} placeholder="https://www.cabzii.in/cab-booking/chennai" />
+              </Field>
+            </div>
+            <Field label="OG title">
+              <input className={inputCls()} value={form.ogTitle || ""} onChange={(e) => set({ ogTitle: e.target.value })} />
+            </Field>
+            <Field label="Twitter title">
+              <input className={inputCls()} value={form.twitterTitle || ""} onChange={(e) => set({ twitterTitle: e.target.value })} />
+            </Field>
+            <div className="sm:col-span-2">
+              <Field label="OG description">
+                <textarea className={inputCls()} rows={2} value={form.ogDescription || ""} onChange={(e) => set({ ogDescription: e.target.value })} />
+              </Field>
+            </div>
+            <div className="sm:col-span-2">
+              <ImageUploadField label="OG image" value={form.ogImage || ""} authToken={authToken} onChange={(ogImage) => set({ ogImage })} />
+            </div>
+            <div className="sm:col-span-2">
+              <Field label="JSON-LD schema (optional)">
+                <textarea className={inputCls()} rows={4} value={form.schemaJson || ""} onChange={(e) => set({ schemaJson: e.target.value })} placeholder="{ }" />
+              </Field>
+            </div>
+            <label className="flex items-center gap-2 text-sm text-slate-700">
+              <input type="checkbox" checked={form.robotsIndex !== false} onChange={(e) => set({ robotsIndex: e.target.checked })} />
+              Index
+            </label>
+            <label className="flex items-center gap-2 text-sm text-slate-700">
+              <input type="checkbox" checked={form.robotsFollow !== false} onChange={(e) => set({ robotsFollow: e.target.checked })} />
+              Follow
+            </label>
+          </div>
+        </div>
         <label className="flex items-center gap-2 text-sm text-slate-700 sm:col-span-2">
           <input type="checkbox" checked={form.published !== false} onChange={(e) => set({ published: e.target.checked })} />
-          Published (overrides live page meta)
+          Published (drafts stay noindex and off the sitemap)
         </label>
       </div>
     </div>
   );
 }
 
-export function AdminSeoRouteForm({ form, onChange }) {
+export function AdminSeoRouteForm({ form, onChange, authToken = "" }) {
   const set = (patch) => onChange((prev) => ({ ...prev, ...patch }));
   const routeName = form.title || "";
 
@@ -350,11 +398,11 @@ export function AdminSeoRouteForm({ form, onChange }) {
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2">
-        <Field label="From city slug *" hint="e.g. chennai">
-          <input className={inputCls()} value={form.fromCitySlug || ""} onChange={(e) => set({ fromCitySlug: e.target.value })} placeholder="chennai" />
+        <Field label="Origin city *" hint="Active cities only">
+          <CitySelect token={authToken} value={form.fromCitySlug || ""} onChange={(fromCitySlug) => set({ fromCitySlug })} excludeSlug={form.toCitySlug} />
         </Field>
-        <Field label="To city slug *" hint="e.g. bengaluru">
-          <input className={inputCls()} value={form.toCitySlug || ""} onChange={(e) => set({ toCitySlug: e.target.value })} placeholder="bengaluru" />
+        <Field label="Destination city *" hint="Must be a different city">
+          <CitySelect token={authToken} value={form.toCitySlug || ""} onChange={(toCitySlug) => set({ toCitySlug })} excludeSlug={form.fromCitySlug} />
         </Field>
         <Field label="Distance">
           <input className={inputCls()} value={form.distance || ""} onChange={(e) => set({ distance: e.target.value })} placeholder="350 km" />
@@ -362,11 +410,20 @@ export function AdminSeoRouteForm({ form, onChange }) {
         <Field label="Duration">
           <input className={inputCls()} value={form.duration || ""} onChange={(e) => set({ duration: e.target.value })} placeholder="6–7 hours" />
         </Field>
-        <Field label="Sedan from (₹)">
+        <div className="sm:col-span-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-950">
+          Category fares: every Hatchback / Sedan / SUV / Van on this route shows the amount you enter. Two sedans = same sedan price.
+        </div>
+        <Field label="Hatchback (₹)">
+          <input type="number" min={0} className={inputCls()} value={form.hatchbackFrom ?? 0} onChange={(e) => set({ hatchbackFrom: Number(e.target.value) })} />
+        </Field>
+        <Field label="Sedan (₹)">
           <input type="number" min={0} className={inputCls()} value={form.sedanFrom ?? 0} onChange={(e) => set({ sedanFrom: Number(e.target.value) })} />
         </Field>
-        <Field label="SUV from (₹)">
+        <Field label="SUV (₹)">
           <input type="number" min={0} className={inputCls()} value={form.suvFrom ?? 0} onChange={(e) => set({ suvFrom: Number(e.target.value) })} />
+        </Field>
+        <Field label="Van / Tempo (₹)">
+          <input type="number" min={0} className={inputCls()} value={form.vanFrom ?? 0} onChange={(e) => set({ vanFrom: Number(e.target.value) })} />
         </Field>
         <div className="sm:col-span-2">
           <Field label="Highlights" hint="Comma-separated">
@@ -374,8 +431,17 @@ export function AdminSeoRouteForm({ form, onChange }) {
           </Field>
         </div>
         <div className="sm:col-span-2">
-          <Field label="Page content (optional HTML)">
-            <textarea className={inputCls()} rows={4} value={form.body || ""} onChange={(e) => set({ body: e.target.value })} />
+          <Field
+            label="SEO page content (HTML)"
+            hint="Shown below the cab list. Paste your article (headings, lists, tables). Leave empty to hide this block."
+          >
+            <textarea
+              className={`${inputCls()} font-mono text-[13px]`}
+              rows={14}
+              value={form.body || ""}
+              onChange={(e) => set({ body: e.target.value })}
+              placeholder={"<h2>How to Book</h2>\n<p>Write your own copy here…</p>"}
+            />
           </Field>
         </div>
         <label className="flex items-center gap-2 text-sm text-slate-700 sm:col-span-2">

@@ -93,6 +93,18 @@ export const CITY_HUB_CONTEXT = {
     useCases:
       "Charing Cross, Botanical Garden hotels, Coonoor, and CJB airport."
   },
+  sabarimala: {
+    travel:
+      "Sabarimala cabs stop at Pamba or Nilakkal — not Sannidhanam. Season peaks in Mandala–Makaravilakku. No local airport; COK, IXM and Chengannur are the usual gateways.",
+    useCases:
+      "Pamba drop, Nilakkal parking, Erumeli stop, and returns to Tamil Nadu or Kochi."
+  },
+  ayyappankovil: {
+    travel:
+      "Ayyappan Kovil is an Idukki Ayyappa temple town, separate from Sabarimala. Ghat roads, no airport. Use the Sabarimala hub for Pamba/Nilakkal.",
+    useCases:
+      "Temple-town pickup, Idukki/Kumily ghat, and COK or IXM transfers."
+  },
   rameswaram: {
     travel:
       "Rameswaram is a pilgrimage island via Pamban. There is no airport; Madurai (IXM) is the air gateway. Dawn temple slots and same-day Madurai returns are the usual Cabzii pattern.",
@@ -345,6 +357,16 @@ export const DRIVER_CITY_CONTEXT = {
     travel:
       "Ooty acting drivers handle Coonoor loops and CJB airport returns in the guest’s SUV.",
     useCases: "Hill-station chauffeur and Coimbatore airport."
+  },
+  sabarimala: {
+    travel:
+      "Sabarimala acting drivers take the owner’s car to Pamba or Nilakkal. The last stretch is on foot. No local airport chauffeur product.",
+    useCases: "Pamba/Nilakkal chauffeur and Tamil Nadu highway return."
+  },
+  ayyappankovil: {
+    travel:
+      "Ayyappan Kovil acting drivers cover the Idukki temple-town ghat in the guest’s car — not Sabarimala Sannidhanam.",
+    useCases: "Temple-town chauffeur and COK/IXM highway days."
   },
   rameswaram: {
     travel:

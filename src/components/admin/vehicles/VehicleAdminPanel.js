@@ -341,100 +341,102 @@ export default function VehicleAdminPanel({
     }
   };
 
+  const chip = (active) =>
+    `inline-flex h-7 items-center rounded-full px-2.5 text-[11px] font-semibold ${
+      active ? "bg-sky-600 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+    }`;
+  const field = "h-7 min-w-[8rem] flex-1 rounded-md border border-slate-200 bg-white px-2 text-[12px] text-slate-800 outline-none focus:border-sky-500";
+
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-xl font-bold text-slate-900">Vehicle management</h1>
-        <p className="text-sm text-slate-600">
-            {isSuperAdmin === false
-              ? "Add each physical vehicle separately. Force Traveller #1 and #2 must be two records. Draft stays off the public site until name, seats and pricing are complete. A photo is optional."
-              : `Edit fleet city under Basic Info. HQ default: ${DEFAULT_HQ_CITY}. Path: Admin → Cabs.`}
-          </p>
-        </div>
-          <button type="button" onClick={openCreate} className="rounded-lg bg-[var(--cabzii-brand)] px-4 py-2.5 text-sm font-semibold text-white hover:opacity-90">
-            + Add vehicle
+    <div className="space-y-3">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h1 className="text-lg font-bold tracking-tight text-slate-900">Vehicles</h1>
+        <div className="flex flex-wrap items-center gap-1.5">
+          {!formOpen ? (
+            <AdminPackageExcelToolbar
+              tabKey="cabs"
+              items={items}
+              token={token}
+              canEdit={isSuperAdmin !== false}
+              onImported={loadList}
+              compact
+            />
+          ) : null}
+          <button type="button" onClick={openCreate} className="inline-flex h-7 items-center rounded-md bg-sky-600 px-2.5 text-[12px] font-semibold text-white hover:bg-sky-700">
+            + Add
           </button>
+        </div>
       </div>
 
-      {!formOpen ? (
-        <AdminPackageExcelToolbar
-          tabKey="cabs"
-          items={items}
-          token={token}
-          canEdit={isSuperAdmin !== false}
-          onImported={loadList}
-        />
-      ) : null}
-
-      <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-        <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
-          <input className="rounded-lg border border-slate-300 px-3 py-2 text-sm" placeholder="Search name, plate, brand, slug, code…" value={q} onChange={(e) => { setQ(e.target.value); setPage(1); }} />
+      <div className="flex flex-wrap items-center gap-1.5">
+          <input className={`${field} min-w-[12rem]`} placeholder="Search…" value={q} onChange={(e) => { setQ(e.target.value); setPage(1); }} />
           <AdminSearchSelect
+            compact
+            className="min-w-[8rem] flex-1"
             value={city}
             options={cityOptions}
-            placeholder="Filter city…"
+            placeholder="City"
             allowCustom
             onChange={(v) => { setCity(v); setPage(1); }}
           />
           {isSuperAdmin !== false ? (
           <AdminSearchSelect
+            compact
+            className="min-w-[8rem] flex-1"
             value={vendor}
             options={vendorOptions}
-            placeholder="Filter vendor…"
+            placeholder="Vendor"
             allowCustom
             onChange={(v) => { setVendor(v); setPage(1); }}
           />
           ) : null}
-          <input className="rounded-lg border border-slate-300 px-3 py-2 text-sm" placeholder="Brand" value={brand} onChange={(e) => { setBrand(e.target.value); setPage(1); }} />
+          <input className={field} placeholder="Brand" value={brand} onChange={(e) => { setBrand(e.target.value); setPage(1); }} />
           <AdminSearchSelect
+            compact
+            className="min-w-[8rem] flex-1"
             value={category}
             options={categoryOptions}
-            placeholder="Filter vehicle type…"
+            placeholder="Type"
             allowCustom
             onChange={(v) => { setCategory(v); setPage(1); }}
           />
-          <select className="rounded-lg border border-slate-300 px-3 py-2 text-sm" value={status} onChange={(e) => { setStatus(e.target.value); setPage(1); }}>
-            <option value="">All status</option>
+          <select className={`${field} flex-none`} value={status} onChange={(e) => { setStatus(e.target.value); setPage(1); }}>
+            <option value="">Status</option>
             {VEHICLE_STATUS_OPTIONS.filter((o) => isSuperAdmin !== false || !o.adminOnly).map((o) => (
               <option key={o.value} value={o.value}>{o.label}</option>
             ))}
           </select>
-          <select className="rounded-lg border border-slate-300 px-3 py-2 text-sm" value={availabilityStatus} onChange={(e) => { setAvailabilityStatus(e.target.value); setPage(1); }}>
-            <option value="">All availability</option>
+          <select className={`${field} flex-none`} value={availabilityStatus} onChange={(e) => { setAvailabilityStatus(e.target.value); setPage(1); }}>
+            <option value="">Availability</option>
             {AVAILABILITY_STATUS_OPTIONS.filter((o) => isSuperAdmin !== false || !o.adminOnly).map((o) => (
               <option key={o.value} value={o.value}>{o.label}</option>
             ))}
           </select>
-          <select className="rounded-lg border border-slate-300 px-3 py-2 text-sm" value={sort} onChange={(e) => setSort(e.target.value)}>
+          <select className={`${field} flex-none`} value={sort} onChange={(e) => setSort(e.target.value)}>
             {SORT_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
           </select>
-          <div className="flex flex-wrap items-center gap-3 text-sm">
-            <label className="flex items-center gap-1"><input type="checkbox" checked={featured} onChange={(e) => { setFeatured(e.target.checked); setPage(1); }} /> Featured</label>
-            <label className="flex items-center gap-1"><input type="checkbox" checked={recommended} onChange={(e) => { setRecommended(e.target.checked); setPage(1); }} /> Recommended</label>
-            <label className="flex items-center gap-1"><input type="checkbox" checked={bestseller} onChange={(e) => { setBestseller(e.target.checked); setPage(1); }} /> Bestseller</label>
-          </div>
-        </div>
+          <button type="button" className={chip(featured)} onClick={() => { setFeatured((v) => !v); setPage(1); }}>Featured</button>
+          <button type="button" className={chip(recommended)} onClick={() => { setRecommended((v) => !v); setPage(1); }}>Recommended</button>
+          <button type="button" className={chip(bestseller)} onClick={() => { setBestseller((v) => !v); setPage(1); }}>Bestseller</button>
         {isSuperAdmin !== false && !formOpen ? (
-          <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-slate-100 pt-3">
+          <>
             <button
               type="button"
               disabled={bulkBusy || loading || !items.length}
               onClick={() => { setCity("Salem"); setPage(1); }}
-              className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+              className="h-7 rounded-full px-2.5 text-[11px] font-semibold text-slate-500 hover:bg-slate-100 disabled:opacity-50"
             >
-              Find Salem vehicles
+              Salem
             </button>
             <button
               type="button"
               disabled={bulkBusy || loading || !items.length}
               onClick={setPageCitiesToChennai}
-              className="rounded-lg border border-sky-300 bg-sky-50 px-3 py-1.5 text-xs font-semibold text-sky-800 hover:bg-sky-100 disabled:opacity-50"
+              className="h-7 rounded-full px-2.5 text-[11px] font-semibold text-sky-700 hover:bg-sky-50 disabled:opacity-50"
             >
-              {bulkBusy ? "Updating…" : `Set this page → ${DEFAULT_HQ_CITY}`}
+              {bulkBusy ? "…" : `→ ${DEFAULT_HQ_CITY}`}
             </button>
-            <p className="text-[11px] text-slate-500">Tip: filter City = Salem, then click Set this page → Chennai.</p>
-          </div>
+          </>
         ) : null}
       </div>
 

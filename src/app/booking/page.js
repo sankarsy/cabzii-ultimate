@@ -15,7 +15,7 @@ function CabTourBooking({ searchParams }) {
       router.replace(`/cabs/${encodeURIComponent(itemId)}`);
     }
     if (itemType === "driver" && itemId && !searchParams?.step) {
-      router.replace(`/drivers/${encodeURIComponent(itemId)}`);
+      router.replace("/call-driver");
     }
   }, [itemType, itemId, router, searchParams?.step]);
 

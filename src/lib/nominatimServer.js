@@ -1,134 +1,115 @@
 const DEFAULT_BASE = "https://nominatim.openstreetmap.org";
-const USER_AGENT = process.env.NOMINATIM_USER_AGENT || "CabziiCabBooking/1.0 (contact@cabzii.in)";
+const FETCH_MS = 4000;
 
 function baseUrl() {
-  return (process.env.NOMINATIM_BASE_URL || DEFAULT_BASE).replace(/\/$/, "");
+  return String(process.env.NOMINATIM_BASE_URL || DEFAULT_BASE).replace(/\/$/, "");
+}
+
+function userAgent() {
+  return process.env.NOMINATIM_USER_AGENT || "CabziiCabBooking/1.0 (support@cabzii.com)";
 }
 
 async function nominatimFetch(path, params = {}) {
-  const url = new URL(`${baseUrl()}${path}`);
-  Object.entries(params).forEach(([k, v]) => {
-    if (v !== undefined && v !== null && v !== "") url.searchParams.set(k, String(v));
+  const url = new URL(baseUrl() + path);
+  Object.entries(params).forEach(([key, value]) => {
+    if (value != null && value !== "") url.searchParams.set(key, String(value));
   });
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 5000);
-  let res;
+  const timer = setTimeout(() => controller.abort(), FETCH_MS);
   try {
-    res = await fetch(url.toString(), {
+    const res = await fetch(url, {
       cache: "no-store",
       signal: controller.signal,
-      headers: { "User-Agent": USER_AGENT, Accept: "application/json" }
+      headers: { "User-Agent": userAgent(), Accept: "application/json" }
     });
+    if (!res.ok) return null;
+    return res.json();
+  } catch {
+    return null;
   } finally {
-    clearTimeout(timeout);
+    clearTimeout(timer);
   }
-  if (!res.ok) return null;
-  return res.json();
 }
 
-function osmTypeChar(osmType) {
-  const t = String(osmType || "").toLowerCase();
-  if (t === "node") return "N";
-  if (t === "way") return "W";
-  if (t === "relation") return "R";
-  return "N";
+function osmPlaceId(osmType, osmId) {
+  if (!osmType || osmId == null) return null;
+  return `osm:${osmType}:${osmId}`;
 }
 
-export function osmPlaceId(osmType, osmId) {
-  return `osm:${osmTypeChar(osmType)}:${osmId}`;
-}
-
-export function parseOsmPlaceId(placeId) {
-  const raw = String(placeId || "");
-  if (!raw.startsWith("osm:")) return null;
-  const parts = raw.split(":");
-  if (parts.length < 3) return null;
-  const typeChar = parts[1].toUpperCase();
-  const id = parts[2];
-  const map = { N: "node", W: "way", R: "relation" };
-  return { osmType: map[typeChar] || "node", osmId: id, osmIds: `${typeChar}${id}` };
-}
-
-function cityFromAddress(addr = {}) {
-  return (
-    addr.city ||
-    addr.town ||
-    addr.village ||
-    addr.suburb ||
-    addr.county ||
-    addr.state_district ||
-    ""
-  );
-}
-
-export function mapNominatimResult(item) {
+function mapHit(item) {
   if (!item) return null;
-  const addr = item.address || {};
   const lat = Number(item.lat);
-  const lng = Number(item.lon ?? item.lng);
+  const lng = Number(item.lon);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+  const addr = item.address || {};
   return {
-    label: item.display_name || item.name || "",
+    label: item.display_name,
     placeId: item.place_id ? `nominatim:${item.place_id}` : osmPlaceId(item.osm_type, item.osm_id),
-    lat: Number.isFinite(lat) ? lat : null,
-    lng: Number.isFinite(lng) ? lng : null,
-    city: cityFromAddress(addr),
+    lat,
+    lng,
+    city: addr.city || addr.town || addr.village || addr.suburb || addr.county || "",
     state: addr.state || "",
     pincode: addr.postcode || "",
-    country: addr.country || "India",
+    country: addr.country || "",
     source: "nominatim"
   };
 }
 
-export async function searchPlaces(query, { limit = 8, countrycodes = "in" } = {}) {
-  const q = String(query || "").trim();
-  if (q.length < 2) return [];
+export async function searchPlaces(query, { limit = 8, citiesOnly = false } = {}) {
   const data = await nominatimFetch("/search", {
-    q,
-    format: "json",
+    q: query,
+    format: "jsonv2",
     addressdetails: 1,
-    countrycodes,
-    limit
+    limit,
+    countrycodes: "in",
+    ...(citiesOnly ? { featuretype: "city" } : {})
   });
-  if (!Array.isArray(data)) return [];
-  return data.map(mapNominatimResult).filter((x) => x?.label);
+  return Array.isArray(data) ? data.map(mapHit).filter(Boolean) : [];
 }
 
 export async function geocodeAddress(query) {
-  const list = await searchPlaces(query, { limit: 1 });
-  return list[0] || null;
+  const hits = await searchPlaces(query, { limit: 1 });
+  return hits[0] || null;
 }
 
 export async function reverseGeocode(lat, lng) {
   const data = await nominatimFetch("/reverse", {
     lat,
     lon: lng,
-    format: "json",
-    addressdetails: 1
+    format: "jsonv2",
+    addressdetails: 1,
+    zoom: 18
   });
-  return mapNominatimResult(data);
+  return mapHit(data);
 }
 
 export async function lookupPlace(placeId) {
-  const osm = parseOsmPlaceId(placeId);
-  if (osm) {
+  const raw = String(placeId || "");
+  if (raw.startsWith("osm:")) {
+    const parts = raw.split(":");
+    const osmType = parts[1];
+    const osmId = parts[2];
     const data = await nominatimFetch("/lookup", {
-      osm_ids: osm.osmIds,
-      format: "json",
+      osm_ids: `${String(osmType || "").charAt(0).toUpperCase()}${osmId}`,
+      format: "jsonv2",
       addressdetails: 1
     });
-    const item = Array.isArray(data) ? data[0] : null;
-    return mapNominatimResult(item);
+    return Array.isArray(data) ? mapHit(data[0]) : null;
   }
-
-  if (String(placeId).startsWith("nominatim:")) {
-    const pid = placeId.split(":")[1];
+  if (raw.startsWith("nominatim:")) {
+    const id = raw.slice("nominatim:".length);
     const data = await nominatimFetch("/details", {
-      place_id: pid,
+      place_id: id,
       format: "json",
       addressdetails: 1
     });
-    return mapNominatimResult(data);
+    if (!data) return null;
+    return mapHit({
+      ...data,
+      lat: data.centroid?.coordinates?.[1] ?? data.lat,
+      lon: data.centroid?.coordinates?.[0] ?? data.lon,
+      display_name: data.localname || data.addresstags?.display_name || data.names?.name
+    });
   }
-
   return null;
 }

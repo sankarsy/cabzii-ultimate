@@ -123,8 +123,8 @@ export default function DriverDetailPage({ driverId, initialDriver = null }) {
               Home
             </Link>
             <span className="mx-1.5 text-slate-300">/</span>
-            <Link href="/drivers" className="hover:text-[var(--cabzii-brand)]">
-              Drivers
+            <Link href="/call-driver" className="hover:text-[var(--cabzii-brand)]">
+              Call Driver
             </Link>
             <span className="mx-1.5 text-slate-300">/</span>
             <span className="text-slate-600">{driver?.name ?? "Details"}</span>
@@ -137,8 +137,8 @@ export default function DriverDetailPage({ driverId, initialDriver = null }) {
           ) : loadError || !driver ? (
             <div className="rounded-xl border border-amber-200 bg-amber-50 p-6 text-center">
               <p className="font-semibold text-amber-900">{loadError || "Driver not available."}</p>
-              <Link href="/drivers" className="mt-3 inline-block text-sm font-semibold text-[var(--cabzii-brand)] hover:underline">
-                ← Browse all drivers
+              <Link href="/call-driver" className="mt-3 inline-block text-sm font-semibold text-[var(--cabzii-brand)] hover:underline">
+                ← Book Call Driver
               </Link>
             </div>
           ) : (

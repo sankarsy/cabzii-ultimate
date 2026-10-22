@@ -91,20 +91,20 @@ export function getBackendUrl() {
  * Homepage SERP title — query first so Google doesn’t collapse branded mobile results to “Cabzii”.
  * Keep under 60 characters; end with brand.
  */
-export const HOME_SEO_TITLE = "Cab Booking in Chennai | Airport Taxi | Cabzii";
+export const HOME_SEO_TITLE = "Book Cabs, Airport Taxi & Acting Driver | Cabzii";
 export const HOME_SEO_DESCRIPTION =
-  "Book Cabzii cabs in Chennai for airport taxi, local packages and outstation trips. Hatchback to Innova — fares shown before you confirm, with WhatsApp support.";
+  "Book Cabzii cabs and acting drivers. Airport taxi, local packages, outstation trips and a chauffeur for your own car. Fares shown before you confirm.";
 export const HOME_SEO_KEYWORDS = [
-  "cab booking chennai",
+  "cabzii",
+  "book cabs",
+  "acting driver",
   "airport taxi",
   "outstation cab",
-  "one way cab",
-  "acting driver",
-  "cabzii"
+  "driver for own car"
 ];
-export const HOME_H1 = "Cab booking in Chennai";
+export const HOME_H1 = "Book cabs and acting drivers";
 export const HOME_H1_LEDE =
-  "Airport taxi, local packages, outstation and acting driver. Fares shown before you confirm.";
+  "Airport taxi, local packages, outstation trips and a driver for your own car. Fares shown before you confirm.";
 
 function normalizePath(path) {
   if (!path || path === "/") return "/";

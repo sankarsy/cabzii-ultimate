@@ -18,6 +18,7 @@ import { upsertEnquiry } from "../../lib/enquiryCapture";
 import { formatInrCurrency } from "../../lib/formatInr";
 import { inputBaseClass, typo } from "../../lib/typography";
 import { SEARCH_FIELD_ICONS, SEARCH_FIELD_ICON_CHIPS } from "../icons/heroIcons";
+import { NativeDateField, NativeTimeField } from "../ui/NativeDateTimeField";
 
 const inputCls = `${inputBaseClass} max-sm:min-h-12`;
 const areaCls = `${inputBaseClass} h-auto min-h-[4.5rem] py-2.5`;
@@ -611,6 +612,10 @@ export default function CallDriverBookingFlow() {
                       label={serviceId === "airport" && form.airportDirection === "drop" ? "Drop location" : "Pickup location"}
                       value={form.pickup}
                       onChange={(v) => patch("pickup", v)}
+                      onResolved={(area) => {
+                        if (area?.label) patch("pickup", area.label);
+                      }}
+                      allowCurrentLocation
                       placeholder="Search pickup address"
                       leadingIcon={SEARCH_FIELD_ICONS.pickup}
                       leadingIconClassName={SEARCH_FIELD_ICON_CHIPS.pickup}
@@ -653,6 +658,10 @@ export default function CallDriverBookingFlow() {
                       label="School location"
                       value={form.schoolName}
                       onChange={(v) => patch("schoolName", v)}
+                      onResolved={(area) => {
+                        if (area?.label) patch("schoolName", area.label);
+                      }}
+                      allowCurrentLocation={false}
                       placeholder="School name or address"
                       leadingIcon={SEARCH_FIELD_ICONS.drop}
                       leadingIconClassName={SEARCH_FIELD_ICON_CHIPS.drop}
@@ -664,6 +673,10 @@ export default function CallDriverBookingFlow() {
                       label="Destination"
                       value={form.drop}
                       onChange={(v) => patch("drop", v)}
+                      onResolved={(area) => {
+                        if (area?.label) patch("drop", area.label);
+                      }}
+                      allowCurrentLocation={false}
                       placeholder="Search drop location"
                       leadingIcon={SEARCH_FIELD_ICONS.drop}
                       leadingIconClassName={SEARCH_FIELD_ICON_CHIPS.drop}
@@ -705,15 +718,19 @@ export default function CallDriverBookingFlow() {
 
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                     <Field label={serviceId === "outstation" ? "Travel date" : "Date"}>
-                      <input type="date" className={inputCls} value={form.date} onChange={(e) => setTravelDate(e.target.value)} />
+                      <div className={`${inputCls} !flex items-center`}>
+                        <NativeDateField value={form.date} onChange={setTravelDate} label="" ariaLabel="Travel date" />
+                      </div>
                     </Field>
                     <Field label="Pickup time">
-                      <input
-                        type="time"
-                        className={inputCls}
-                        value={form.pickupTime}
-                        onChange={(e) => patch("pickupTime", e.target.value)}
-                      />
+                      <div className={`${inputCls} !flex items-center`}>
+                        <NativeTimeField
+                          value={form.pickupTime}
+                          onChange={(next) => patch("pickupTime", next)}
+                          label=""
+                          ariaLabel="Pickup time"
+                        />
+                      </div>
                     </Field>
                   </div>
 
@@ -740,13 +757,15 @@ export default function CallDriverBookingFlow() {
                   {serviceId === "outstation" && form.tripMode !== "one_way" ? (
                     <>
                       <Field label="Return date" hint={`${outstationDays} day${outstationDays === 1 ? "" : "s"} · ${outstationDays * PER_DAY_HOURS} hrs included`}>
-                        <input
-                          type="date"
-                          min={form.date || undefined}
-                          className={inputCls}
-                          value={form.returnDate}
-                          onChange={(e) => setReturnDate(e.target.value)}
-                        />
+                        <div className={`${inputCls} !flex items-center`}>
+                          <NativeDateField
+                            value={form.returnDate}
+                            onChange={setReturnDate}
+                            min={form.date}
+                            label=""
+                            ariaLabel="Return date"
+                          />
+                        </div>
                       </Field>
                       <div>
                         <p className={typo.label}>Days</p>

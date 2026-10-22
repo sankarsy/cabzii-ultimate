@@ -2,14 +2,14 @@
 
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import CabziiLogo from "../brand/CabziiLogo";
 import { BRAND } from "../../lib/brand";
 import { clearSession, isLoggedIn } from "../../lib/auth";
 import HeaderSearchBar from "./HeaderSearchBar";
 import MobileSideNav from "../layout/MobileSideNav";
-import { useHeroSearch } from "../emt/HeroSearchContext";
 import EmtCategoryTabs from "../emt/EmtCategoryTabs";
+import { useHeroSearch } from "../emt/HeroSearchContext";
 import { productTabFromPath, productTabHref, resolveProductTab } from "../../lib/emt/productNav";
 
 function AccountGlyph({ className = "h-5 w-5" }) {
@@ -30,21 +30,31 @@ function AccountGlyph({ className = "h-5 w-5" }) {
   );
 }
 
-function AccountButton({ href, label }) {
+function ProfileMenu({ logout }) {
   return (
-    <Link
-      href={href}
-      aria-label={label}
-      className="cabzii-tap inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#eef2f7] text-slate-700 transition active:scale-95 hover:bg-[#e4e9f1]"
-    >
-      <AccountGlyph />
-    </Link>
-  );
-}
-
-function ProductTabs({ activeTab, onSelect, className = "" }) {
-  return (
-    <EmtCategoryTabs variant="nav" activeTab={activeTab} setActiveTab={onSelect} className={className} />
+    <details className="group relative">
+      <summary
+        aria-label="Account menu"
+        className="cabzii-tap flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-full bg-[#eef2f7] text-slate-700 transition hover:bg-[#e4e9f1] [&::-webkit-details-marker]:hidden"
+      >
+        <AccountGlyph />
+      </summary>
+      <div className="absolute right-0 z-50 mt-1 min-w-[11rem] overflow-hidden rounded-xl border border-slate-200 bg-white py-1 shadow-lg">
+        <Link href="/account" className="block px-3 py-2 text-[13px] font-medium text-slate-700 hover:bg-sky-50 hover:text-[var(--cabzii-brand)]">
+          My account
+        </Link>
+        <Link href="/my-bookings" className="block px-3 py-2 text-[13px] font-medium text-slate-700 hover:bg-sky-50 hover:text-[var(--cabzii-brand)]">
+          My trips
+        </Link>
+        <button
+          type="button"
+          onClick={logout}
+          className="block w-full px-3 py-2 text-left text-[13px] font-medium text-rose-600 hover:bg-rose-50"
+        >
+          Logout
+        </button>
+      </div>
+    </details>
   );
 }
 
@@ -63,31 +73,33 @@ function SiteHeader({ loggedIn, logout, menuOpen, setMenuOpen, pathname, activeT
           />
         </Link>
 
-        <div className="flex min-w-0 justify-center px-0.5 sm:px-2">
+        <div className="hidden min-w-0 justify-center px-2 lg:flex">
           <HeaderSearchBar
             compact
             variant="light"
-            className="w-full min-w-0 max-w-[20rem] lg:max-w-[24rem]"
+            className="w-full min-w-0 max-w-[24rem]"
             onSubmitted={closeMenu}
           />
         </div>
 
-        <div className="flex min-w-0 shrink-0 items-center justify-end gap-1 sm:gap-1.5 lg:gap-2">
-          <ProductTabs activeTab={activeTab} onSelect={onSelectTab} className="hidden lg:flex" />
-          <div className="hidden shrink-0 items-center gap-1.5 lg:flex">
+        <div className="flex min-w-0 shrink-0 items-center justify-end gap-0.5 sm:gap-1 lg:gap-2">
+          <nav className="hidden min-w-0 items-center lg:flex" aria-label="Book Cabs, Hire a Driver, Buses or Holidays">
+            <EmtCategoryTabs activeTab={activeTab} setActiveTab={onSelectTab} variant="nav" />
+          </nav>
+          <div className="hidden shrink-0 items-center lg:flex">
             {loggedIn ? (
-              <>
-                <AccountButton href="/account" label="Account" />
-                <button type="button" onClick={logout} className="rounded-lg px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50">
-                  Logout
-                </button>
-              </>
+              <ProfileMenu logout={logout} />
             ) : onLoginPage ? null : (
-              <AccountButton href="/login" label="Login" />
+              <Link
+                href="/login"
+                aria-label="Login"
+                className="cabzii-tap flex h-10 w-10 items-center justify-center rounded-full bg-[#eef2f7] text-slate-600 transition hover:bg-[#e4e9f1]"
+              >
+                <AccountGlyph className="h-5 w-5" />
+              </Link>
             )}
           </div>
-          <div className="flex shrink-0 items-center gap-1 lg:hidden">
-            {onLoginPage ? null : <AccountButton href={loggedIn ? "/account" : "/login"} label={loggedIn ? "Account" : "Login"} />}
+          <div className="flex shrink-0 items-center lg:hidden">
             <button
               type="button"
               className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 text-[var(--cabzii-brand)] hover:bg-blue-50/70"
@@ -114,6 +126,8 @@ export default function MmtHeader({ hideOnMobile = false, hidden = false }) {
   const searchParams = useSearchParams();
   const [loggedIn, setLoggedIn] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [headerHidden, setHeaderHidden] = useState(false);
+  const lastScrollY = useRef(0);
   const hero = useHeroSearch();
   const queryTab = resolveProductTab(searchParams.get("tab"));
   const activeHeroTab = hero?.activeTab || queryTab;
@@ -129,7 +143,32 @@ export default function MmtHeader({ hideOnMobile = false, hidden = false }) {
 
   useEffect(() => {
     setMenuOpen(false);
+    setHeaderHidden(false);
   }, [pathname]);
+
+  useEffect(() => {
+    lastScrollY.current = typeof window !== "undefined" ? window.scrollY : 0;
+    const onScroll = () => {
+      if (window.matchMedia("(min-width: 1024px)").matches) {
+        setHeaderHidden(false);
+        lastScrollY.current = window.scrollY;
+        return;
+      }
+      if (menuOpen) {
+        setHeaderHidden(false);
+        lastScrollY.current = window.scrollY;
+        return;
+      }
+      const y = window.scrollY;
+      const delta = y - lastScrollY.current;
+      if (y < 16) setHeaderHidden(false);
+      else if (delta > 8) setHeaderHidden(true);
+      else if (delta < -8) setHeaderHidden(false);
+      lastScrollY.current = y;
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [menuOpen]);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -160,9 +199,9 @@ export default function MmtHeader({ hideOnMobile = false, hidden = false }) {
   return (
     <>
       <header
-        className={`fixed left-0 right-0 top-0 z-[100] bg-white/92 text-slate-900 shadow-[0_1px_0_rgba(15,23,42,0.06)] backdrop-blur-md ${
+        className={`fixed left-0 right-0 top-0 z-[100] bg-white/92 text-slate-900 shadow-[0_1px_0_rgba(15,23,42,0.06)] backdrop-blur-md transition-transform duration-300 ease-out max-lg:will-change-transform ${
           hideOnMobile ? "max-lg:hidden" : ""
-        }`}
+        } ${headerHidden ? "max-lg:-translate-y-full" : "translate-y-0"}`}
       >
         <SiteHeader
           loggedIn={loggedIn}

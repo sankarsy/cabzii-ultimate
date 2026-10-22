@@ -17,8 +17,8 @@ const HOME_HUB_CITIES = [
 const CHENNAI_SERVICES = [
   { href: "/chennai/airport-cab-booking", label: "Airport taxi Chennai", hint: "Pickup and drop" },
   { href: "/services/outstation-cab/chennai", label: "Outstation cab Chennai", hint: "One-way and round-trip" },
-  { href: "/chennai", label: "Local package Chennai", hint: "4 hr / 8 hr hire" },
-  { href: "/chennai/acting-driver", label: "Acting driver Chennai", hint: "Driver for your car" }
+  { href: "/cab-booking/chennai", label: "Local package Chennai", hint: "4 hr / 8 hr hire" },
+  { href: "/acting-driver/chennai", label: "Acting driver Chennai", hint: "Driver for your car" }
 ];
 
 function HubCard({ href, title, hint }) {
@@ -70,7 +70,7 @@ export default function HomeSeoDiscover() {
         <ul className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
           {routes.map((item) => (
             <li key={item.href}>
-              <HubCard href={item.href} title={`${item.label} cab`} hint="Fares shown before you confirm" />
+              <HubCard href={item.href} title={item.label} hint="Fares shown before you confirm" />
             </li>
           ))}
         </ul>

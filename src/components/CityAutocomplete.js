@@ -1,11 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { filterTamilNaduCities } from "../lib/tamilNaduCities";
+import PlaceAutocomplete from "./PlaceAutocomplete";
 
 /**
- * Google + database city picker.
- * @param {{ value: string, onChange: (label: string, meta?: { placeId?: string }) => void, placeholder?: string, className?: string, inputClassName?: string }} props
+ * City picker — Google Places (New) localities, not a hardcoded city list.
  */
 export default function CityAutocomplete({
   value,
@@ -14,119 +12,26 @@ export default function CityAutocomplete({
   className = "",
   inputClassName = ""
 }) {
-  const [query, setQuery] = useState(value || "");
-  const [suggestions, setSuggestions] = useState([]);
-  const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const wrapRef = useRef(null);
-
-  useEffect(() => {
-    setQuery(value || "");
-  }, [value]);
-
-  useEffect(() => {
-    const onDocClick = (e) => {
-      if (wrapRef.current && !wrapRef.current.contains(e.target)) setOpen(false);
-    };
-    document.addEventListener("mousedown", onDocClick);
-    return () => document.removeEventListener("mousedown", onDocClick);
-  }, []);
-
-  useEffect(() => {
-    if (!open) {
-      setSuggestions([]);
-      return;
-    }
-    const trimmed = query.trim();
-    if (trimmed.length < 2) {
-      setSuggestions(
-        filterTamilNaduCities("").slice(0, 12).map((label) => ({ label, source: "tamilnadu" }))
-      );
-      return;
-    }
-    let cancelled = false;
-    const timer = setTimeout(async () => {
-      setLoading(true);
-      try {
-        const res = await fetch(
-          `/api/places?input=${encodeURIComponent(trimmed)}&types=cities`,
-          { cache: "no-store" }
-        );
-        const data = await res.json();
-        const fromApi = (data?.predictions ?? []).map((p) =>
-          typeof p === "string" ? { label: p, source: "api" } : p
-        );
-        if (!cancelled) setSuggestions(fromApi);
-      } catch {
-        if (!cancelled) {
-          setSuggestions(
-            filterTamilNaduCities(trimmed).slice(0, 10).map((label) => ({ label, source: "tamilnadu" }))
-          );
-        }
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }, 280);
-    return () => {
-      cancelled = true;
-      clearTimeout(timer);
-    };
-  }, [query, open]);
-
-  const pick = (label, placeId) => {
-    setQuery(label);
-    onChange(label, placeId ? { placeId } : undefined);
-    setOpen(false);
-    setSuggestions([]);
-  };
-
-  const defaultInput =
-    "w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#0056D2] focus:ring-2 focus:ring-blue-100";
-
   return (
-    <div ref={wrapRef} className={`relative ${className}`}>
-      <input
-        type="text"
-        value={query}
-        onChange={(e) => {
-          setQuery(e.target.value);
-          setOpen(true);
-          if (!e.target.value.trim()) onChange("");
-        }}
-        onFocus={() => {
-          setOpen(true);
-          if (!query.trim()) {
-            setSuggestions(
-              filterTamilNaduCities("").slice(0, 12).map((label) => ({ label, source: "tamilnadu" }))
-            );
-          }
-        }}
-        placeholder={placeholder}
-        className={inputClassName || defaultInput}
-        autoComplete="off"
-        aria-label="Search city"
-      />
-      {loading && open ? (
-        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-slate-400">…</span>
-      ) : null}
-      {open && suggestions.length > 0 ? (
-        <ul className="absolute z-40 mt-1 max-h-48 w-full overflow-auto rounded-lg border border-slate-200 bg-white py-1 shadow-lg">
-          {suggestions.map((item) => (
-            <li key={item.label || item}>
-              <button
-                type="button"
-                onClick={() => pick(item.label || item, item.placeId)}
-                className="flex w-full flex-col px-3 py-2 text-left text-sm hover:bg-slate-50"
-              >
-                <span className="font-medium text-slate-800">{item.label}</span>
-                {item.source === "google" ? (
-                  <span className="text-[10px] text-slate-400">Google Places</span>
-                ) : null}
-              </button>
-            </li>
-          ))}
-        </ul>
-      ) : null}
-    </div>
+    <PlaceAutocomplete
+      className={className}
+      inputClassName={inputClassName}
+      placeholder={placeholder}
+      value={value}
+      types="cities"
+      allowCurrentLocation={false}
+      onChange={(label) => {
+        if (!String(label || "").trim()) onChange("");
+      }}
+      onResolved={(area) => {
+        if (area?.label) {
+          onChange(area.label, {
+            placeId: area.placeId,
+            lat: area.lat,
+            lng: area.lng
+          });
+        }
+      }}
+    />
   );
 }

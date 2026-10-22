@@ -32,7 +32,7 @@ const UNIQUE = {
 <p>Tolls, parking and driver batta treatment are listed in the fare breakdown before you pay. Do not assume they are always included.</p>
 
 <h2>Related pilgrimage travel</h2>
-<p>Same-intent searches (Tirupati taxi, Chennai Tirupati car rental, one-way darshan cab) stay on this URL. Temple packages with itinerary: <a href="/holidays?category=pilgrimage">pilgrimage packages</a>. Acting driver in your own car: <a href="/chennai/acting-driver">acting driver Chennai</a>.</p>
+<p>Same-intent searches (Tirupati taxi, Chennai Tirupati car rental, one-way darshan cab) stay on this URL. Temple packages with itinerary: <a href="/holidays?category=pilgrimage">pilgrimage packages</a>. Acting driver in your own car: <a href="/acting-driver/chennai">acting driver Chennai</a>.</p>
 `,
 
   "chennai-to-pondicherry-cab": (route) => `
@@ -150,7 +150,7 @@ const UNIQUE = {
   "chennai-to-kumbakonam-cab": (route) => `
 <h2>Chennai to Kumbakonam cab</h2>
 <p>Temple-town corridor: <strong>${route.distance}</strong>, typically <strong>${route.duration}</strong>. ${fareLine(route)} Mahamaham and festival dates are slower; leave early from Chennai.</p>
-<p>Pair with <a href="/routes/chennai-to-thanjavur-cab">Chennai to Thanjavur</a> rather than extra URLs. Acting driver in your car: <a href="/chennai/acting-driver">acting driver Chennai</a>.</p>
+<p>Pair with <a href="/routes/chennai-to-thanjavur-cab">Chennai to Thanjavur</a> rather than extra URLs. Acting driver in your car: <a href="/acting-driver/chennai">acting driver Chennai</a>.</p>
 `,
 
   "chennai-to-thanjavur-cab": (route) => `

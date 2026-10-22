@@ -181,8 +181,8 @@ export default function TourPackageContentEditor({ form, onChange, disabled }) {
         <div>
           <p className="text-xs font-bold uppercase tracking-wide text-sky-900">Package page content</p>
           <p className="mt-0.5 text-[11px] text-slate-600">
-            Shown on the booking page (/holidays/…) and SEO landing (/tour-packages/…). Create, edit or delete
-            each section below.
+            Shown below the cab list on /tour-packages/… and /holidays/…. Prefer the SEO panel “Page content” field
+            for the public article. Nothing is auto-written on the live page.
           </p>
         </div>
         <div className="flex flex-wrap gap-1.5">
@@ -246,14 +246,17 @@ export default function TourPackageContentEditor({ form, onChange, disabled }) {
         </Field>
 
         <div className="sm:col-span-2">
-          <Field label="Description" hint="Full overview on the product page">
+          <Field
+            label="SEO page content (HTML)"
+            hint="Headings, lists, tables — this is the public article. Leave empty to hide it."
+          >
             <textarea
-              rows={4}
-              className={inputCls()}
+              rows={14}
+              className={`${inputCls()} font-mono text-[13px]`}
               disabled={disabled}
               value={form.description || ""}
               onChange={(e) => patch({ description: e.target.value })}
-              placeholder="Package overview shown to customers…"
+              placeholder={"<h2>How to Book</h2>\n<p>Write your own copy here…</p>"}
             />
           </Field>
         </div>

@@ -1,29 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { coordsForPlaceLabel } from "./indiaCityCoords";
 import { hasRouteEndpoints } from "./tripCoords";
 import { tripNeedsDrop } from "./mmtTrip";
-import { estimateDurationMin, estimateRoadDistanceKm } from "./openRouteService";
-
-function enrichTripCoords(trip) {
-  const next = { ...trip };
-  if (!next.fromLat && next.from) {
-    const hit = coordsForPlaceLabel(next.from);
-    if (hit) {
-      next.fromLat = hit.lat;
-      next.fromLng = hit.lng;
-    }
-  }
-  if (!next.toLat && next.to) {
-    const hit = coordsForPlaceLabel(next.to);
-    if (hit) {
-      next.toLat = hit.lat;
-      next.toLng = hit.lng;
-    }
-  }
-  return next;
-}
 
 export function useTripRoute(trip) {
   const [route, setRoute] = useState(null);
@@ -31,64 +10,50 @@ export function useTripRoute(trip) {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const enriched = enrichTripCoords(trip || {});
-    const needsDrop = tripNeedsDrop(enriched?.tripType);
+    const next = trip || {};
+    const needsDrop = tripNeedsDrop(next?.tripType);
 
-    if (!enriched?.from?.trim()) {
+    if (!next?.from?.trim()) {
       setRoute(null);
-      return;
+      setError("");
+      return undefined;
     }
-    if (needsDrop && !enriched?.to?.trim()) {
+    if (needsDrop && !next?.to?.trim()) {
       setRoute(null);
-      return;
+      setError("");
+      return undefined;
     }
     if (!needsDrop) {
       setRoute(null);
-      return;
+      setError("");
+      return undefined;
     }
 
-    if (enriched.distanceKm) {
+    if (next.distanceKm && hasRouteEndpoints(next)) {
       setRoute({
-        distanceKm: enriched.distanceKm,
-        durationMin: enriched.durationMin,
-        fromLat: enriched.fromLat,
-        fromLng: enriched.fromLng,
-        toLat: enriched.toLat,
-        toLng: enriched.toLng,
+        distanceKm: next.distanceKm,
+        durationMin: next.durationMin,
+        fromLat: next.fromLat,
+        fromLng: next.fromLng,
+        toLat: next.toLat,
+        toLng: next.toLng,
         geometry: null,
         cached: true
       });
-      if (hasRouteEndpoints(enriched)) return;
+      setError("");
+      return undefined;
     }
 
     let cancelled = false;
     const params = new URLSearchParams();
-    if (hasRouteEndpoints(enriched)) {
-      params.set("fromLat", String(enriched.fromLat));
-      params.set("fromLng", String(enriched.fromLng));
-      params.set("toLat", String(enriched.toLat));
-      params.set("toLng", String(enriched.toLng));
+    if (hasRouteEndpoints(next)) {
+      params.set("fromLat", String(next.fromLat));
+      params.set("fromLng", String(next.fromLng));
+      params.set("toLat", String(next.toLat));
+      params.set("toLng", String(next.toLng));
     } else {
-      params.set("from", enriched.from);
-      params.set("to", enriched.to);
-    }
-
-    if (hasRouteEndpoints(enriched) && !enriched.distanceKm) {
-      const distanceKm = estimateRoadDistanceKm(
-        enriched.fromLat,
-        enriched.fromLng,
-        enriched.toLat,
-        enriched.toLng
-      );
-      setRoute({
-        fromLat: enriched.fromLat,
-        fromLng: enriched.fromLng,
-        toLat: enriched.toLat,
-        toLng: enriched.toLng,
-        distanceKm,
-        durationMin: estimateDurationMin(distanceKm),
-        estimated: true
-      });
+      params.set("from", next.from);
+      params.set("to", next.to);
     }
 
     setLoading(true);
@@ -101,55 +66,13 @@ export function useTripRoute(trip) {
           setRoute(json);
           return;
         }
-
-        if (hasRouteEndpoints(enriched)) {
-          const distanceKm = estimateRoadDistanceKm(
-            enriched.fromLat,
-            enriched.fromLng,
-            enriched.toLat,
-            enriched.toLng
-          );
-          setRoute({
-            fromLat: enriched.fromLat,
-            fromLng: enriched.fromLng,
-            toLat: enriched.toLat,
-            toLng: enriched.toLng,
-            distanceKm,
-            durationMin: estimateDurationMin(distanceKm),
-            geometry: [
-              [enriched.fromLat, enriched.fromLng],
-              [enriched.toLat, enriched.toLng]
-            ],
-            estimated: true
-          });
-          return;
-        }
-
-        setError(json?.error || "Route unavailable");
+        setError(json?.error || "No driving route between these places.");
         setRoute(null);
       })
       .catch(() => {
         if (!cancelled) {
-          if (hasRouteEndpoints(enriched)) {
-            const distanceKm = estimateRoadDistanceKm(
-              enriched.fromLat,
-              enriched.fromLng,
-              enriched.toLat,
-              enriched.toLng
-            );
-            setRoute({
-              fromLat: enriched.fromLat,
-              fromLng: enriched.fromLng,
-              toLat: enriched.toLat,
-              toLng: enriched.toLng,
-              distanceKm,
-              durationMin: estimateDurationMin(distanceKm),
-              estimated: true
-            });
-          } else {
-            setError("Could not load route");
-            setRoute(null);
-          }
+          setError("Could not load driving distance.");
+          setRoute(null);
         }
       })
       .finally(() => {

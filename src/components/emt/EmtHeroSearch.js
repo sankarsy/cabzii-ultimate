@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import EmtHeroFeatures from "./EmtHeroFeatures";
 import { useHeroSearch } from "./HeroSearchContext";
 import MmtCabSearchWidget from "../mmt/MmtCabSearchWidget";
+import { HOME_H1, HOME_H1_LEDE } from "../../lib/seo/constants";
 
 function HeroSearchFallback() {
   return (
@@ -33,8 +34,8 @@ export default function EmtHeroSearch({
   defaultTab = "cabs",
   initialCabTrip = null,
   initialDriverTrip = null,
-  seoHeading = "Cab booking in Chennai",
-  seoSubheading = "Airport taxi, local packages, outstation and acting driver. Fares shown before you confirm."
+  seoHeading = HOME_H1,
+  seoSubheading = HOME_H1_LEDE
 }) {
   const hero = useHeroSearch();
   const active = hero?.activeTab ?? defaultTab;

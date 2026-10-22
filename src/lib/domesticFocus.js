@@ -6,7 +6,7 @@ export const DOMESTIC_TAGLINE =
 export const DOMESTIC_NAV_LINKS = [
   { href: "/cabs", label: "Book Cab" },
   { href: "/buses", label: "Bus tickets" },
-  { href: "/cabs/results?serviceTripType=airport", label: "Airport Taxi" },
+  { href: "/chennai/airport-cab-booking", label: "Airport Taxi" },
   { href: "/holidays?category=pilgrimage", label: "Temple Tours" },
   { href: "/call-driver", label: "Call Driver" },
   { href: "/holidays", label: "Tour Packages" }

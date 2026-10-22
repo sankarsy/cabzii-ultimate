@@ -2,7 +2,7 @@ export const DEFAULT_SITE_SETTINGS = {
   siteName: "cabzii.in",
   brandColor: "#0056D2",
   tagline:
-    "Premium cab, taxi, airport transfer, outstation and acting driver booking across South India with transparent fares.",
+    "Cab, taxi, airport transfer, outstation and acting driver booking across South India with fares shown before you confirm.",
   contact: {
     email: "support@cabzii.com",
     phone: "+91 99441 97416",
@@ -15,7 +15,8 @@ export const DEFAULT_SITE_SETTINGS = {
     { label: "Cabs", href: "/cabs", visible: true, sortOrder: 2 },
     { label: "Buses", href: "/buses", visible: true, sortOrder: 3 },
     { label: "Call Driver", href: "/call-driver", visible: true, sortOrder: 4 },
-    { label: "Holidays", href: "/holidays", visible: true, sortOrder: 5 }
+    { label: "Holidays", href: "/holidays", visible: true, sortOrder: 5 },
+    { label: "Earn with Cabzii", href: "/earn", visible: true, sortOrder: 6 }
   ],
   footerQuickLinks: [
     { label: "Home", href: "/" },
@@ -25,7 +26,8 @@ export const DEFAULT_SITE_SETTINGS = {
     { label: "Call Driver", href: "/call-driver" },
     { label: "Blog", href: "/blogs" },
     { label: "Reviews", href: "/testimonials" },
-    { label: "Locations", href: "/locations" }
+    { label: "Locations", href: "/locations" },
+    { label: "Earn with Cabzii", href: "/earn" }
   ],
   footerLegalLinks: [
     { label: "Terms and Conditions", href: "/terms-and-conditions" },
@@ -65,7 +67,7 @@ export const DEFAULT_SITE_SETTINGS = {
   ],
   whySection: {
     eyebrow: "Why Cabzii",
-    title: "A premium cab booking experience",
+    title: "Cab booking with fares shown first",
     subtitle:
       "Airport taxi, outstation, local packages and acting driver from Chennai and Tamil Nadu corridors."
   },

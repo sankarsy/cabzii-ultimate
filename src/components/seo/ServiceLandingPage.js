@@ -10,9 +10,7 @@ import { airportDropHint } from "../../lib/seo/airports";
 import { serviceSearchHref, tunedServiceDescription, tunedServiceH1 } from "../../lib/seo/metadataTuning";
 import { formatSerpPrice, serviceSerpBadges } from "../../lib/seo/serpRichData";
 import { servicePath } from "../../lib/seo/services";
-import { routesForCity } from "../../lib/seo/routes";
-import { routePublicPath } from "../../lib/seo/outstationPaths";
-import { classifyRoute } from "../../lib/seo/indexation";
+import { pickOutstationRoutes } from "../../lib/cityOutstationRoutes";
 import { todayStr } from "../../lib/mmtTrip";
 import RelatedSeoLinks from "./RelatedSeoLinks";
 import ChennaiClusterLinks from "./ChennaiClusterLinks";
@@ -44,17 +42,7 @@ export default function ServiceLandingPage({
   const path = servicePath(service, city);
   const areas = cityAreas(city.slug);
   const isTourPackages = service.slug === "tour-packages" || service.slug === "holiday-packages";
-  const seenRouteSlugs = new Set();
-  const cityRoutes = isTourPackages
-    ? []
-    : routesForCity(city.slug)
-        .filter((route) => {
-          if (seenRouteSlugs.has(route.slug)) return false;
-          seenRouteSlugs.add(route.slug);
-          return classifyRoute(route).indexable;
-        })
-        .sort((a, b) => classifyRoute(b).commercialScore - classifyRoute(a).commercialScore)
-        .slice(0, 8);
+  const cityRoutes = isTourPackages ? [] : pickOutstationRoutes(city.slug, { direction: "from", limit: 8 });
   const searchHref = serviceSearchHref(service, city);
   const h1 = tunedServiceH1(service, city);
   const lead = tunedServiceDescription(service, city);
@@ -100,7 +88,7 @@ export default function ServiceLandingPage({
       {city.slug === "chennai" && DRIVER_FOCUS_SLUGS.has(service.slug) ? (
         <p className="mt-3 text-sm text-slate-700">
           The main Chennai page for chauffeur / driver-on-hire is{" "}
-          <Link href="/chennai/acting-driver" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
+          <Link href="/acting-driver/chennai" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
             acting driver in Chennai
           </Link>
           . Book from{" "}
@@ -153,18 +141,18 @@ export default function ServiceLandingPage({
 
       {cityRoutes.length ? (
         <section className="cabzii-seo-block">
-          <h2>Popular one-way routes</h2>
+          <h2>Popular routes from {city.name}</h2>
           <p className="mt-1 text-[11px] text-slate-600 sm:text-xs">
-            Fixed-fare one-way cabs to and from {city.name} — tap a route to see live fares.
+            One-way and round-trip cabs from {city.name} to other cities — tap a route to see live fares.
           </p>
           <ul className="mt-2.5 flex flex-wrap gap-1.5">
             {cityRoutes.map((route) => (
-              <li key={route.slug}>
+              <li key={route.href}>
                 <Link
-                  href={routePublicPath(route.slug)}
+                  href={route.href}
                   className="inline-block rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700 transition hover:border-[var(--emt-orange)] hover:bg-[#fff4ee] hover:text-[var(--emt-orange)]"
                 >
-                  {route.fromCity.name} → {route.toCity.name}
+                  {route.originName} → {route.otherName}
                 </Link>
               </li>
             ))}

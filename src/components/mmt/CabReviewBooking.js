@@ -11,7 +11,7 @@ import { inferPassengerSeats } from "../../lib/cabSeats";
 import { formatMmtListingStamp } from "../../lib/emt/heroDates";
 import { formatInrCurrency } from "../../lib/formatInr";
 import { couponsForTrip } from "../../lib/paymentMethods";
-import { tripToSearchQuery } from "../../lib/mmtTrip";
+import { cabResultsHref } from "../../lib/mmtTrip";
 import { resolveCabImage } from "../../lib/vehicleImages";
 import { shortPlace } from "./useCabModifySearch";
 import { inputBaseClass } from "../../lib/typography";
@@ -84,7 +84,7 @@ export default function CabReviewBooking({
   const perKm = Number(fare?.perKmRate) || Number(slab?.extraKm) || 0;
   const includedKm = Number(slab?.includedKm) || 0;
   const driverBatta = Number(fare?.driverBatta) || 0;
-  const resultsHref = `/cabs/results?${tripToSearchQuery(trip).toString()}`;
+  const resultsHref = cabResultsHref(trip);
   const stamp = formatMmtListingStamp(trip.date, trip.time);
   const fromLabel = shortPlace(trip.from) || pickup || "Pickup";
   const toLabel = shortPlace(trip.to) || "Drop";

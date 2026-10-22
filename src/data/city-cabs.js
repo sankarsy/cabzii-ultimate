@@ -1,10 +1,8 @@
 import { cityAreas } from "../lib/seo/content";
 import { airportInfoForCity, cityHasCommercialAirport } from "../lib/seo/airports";
 import { cityBySlug, MAIN_PAGE_CITY_SLUGS, peerCitiesForHub } from "../lib/seo/cities";
-import { routesForCity } from "../lib/seo/routes";
-import { formatRouteLabel } from "../lib/seo/internalLinks";
-import { routePublicPath } from "../lib/seo/outstationPaths";
 import { cityCabLandingPath, actingDriverLandingPath, airportTaxiPublicPath } from "../lib/cityCabPaths";
+import { pickOutstationRoutes, outstationSearchHref } from "../lib/cityOutstationRoutes";
 import { SITE_NAME } from "../lib/seo/constants";
 import { cityHubSeo } from "./cityHubSeo";
 import { todayStr } from "../lib/mmtTrip";
@@ -14,31 +12,6 @@ function clampText(value, max) {
   const text = String(value || "").trim();
   if (text.length <= max) return text;
   return `${text.slice(0, Math.max(0, max - 1)).trim()}…`;
-}
-
-function pickRoutes(citySlug, direction, limit) {
-  const rows = routesForCity(citySlug).filter((route) =>
-    direction === "from" ? route.from === citySlug : route.to === citySlug
-  );
-  const out = [];
-  const seen = new Set();
-  for (const route of rows) {
-    if (!route?.slug || seen.has(route.slug)) continue;
-    seen.add(route.slug);
-    const otherSlug = direction === "from" ? route.to : route.from;
-    out.push({
-      href: routePublicPath(route.slug),
-      label: formatRouteLabel(route),
-      otherSlug,
-      distance: route.distance || "",
-      duration: route.duration || "",
-      sedanFrom: route.sedanFrom || 0,
-      suvFrom: route.suvFrom || 0,
-      innovaFrom: route.innovaFrom || 0
-    });
-    if (out.length >= limit) break;
-  }
-  return out;
 }
 
 function buildTitle(cityName, seeded) {
@@ -104,7 +77,7 @@ export function buildCityCabData(city) {
   const name = city.name;
   const seeded = cityHubSeo(city.slug);
   const airport = airportInfoForCity(city.slug);
-  const fromRoutes = pickRoutes(city.slug, "from", 10);
+  const fromRoutes = pickOutstationRoutes(city.slug, { direction: "from", limit: 10 });
   const nearby = peerCitiesForHub(city, 8).map((peer) => ({
     href: cityCabLandingPath(peer.slug),
     label: `${peer.name} city cabs`,
@@ -114,14 +87,14 @@ export function buildCityCabData(city) {
     ? seeded.places.map((place) => ({
         name: place.title,
         subtitle: place.body,
-        href: `/cabs/results?serviceTripType=hourly&from=${encodeURIComponent(name)}&to=${encodeURIComponent(place.title)}&city=${encodeURIComponent(name)}`
+        href: outstationSearchHref(name, place.title)
       }))
     : cityAreas(city.slug)
         .slice(0, 6)
         .map((area) => ({
           name: area,
           subtitle: `Use a ${name} local or outstation cab for pickups around ${area}.`,
-          href: `/cabs/results?serviceTripType=hourly&from=${encodeURIComponent(`${area}, ${name}`)}&city=${encodeURIComponent(name)}`
+          href: cityCabLandingPath(city.slug)
         })));
 
   const airportHeading = airport?.type === "local" ? `Cabs from ${name} Airport` : `Airport taxi from ${name}`;
@@ -155,7 +128,7 @@ export function buildCityCabData(city) {
       time: "09:00",
       roundTrip: false,
       city: name,
-      packageHours: 8
+      packageHours: 4
     },
     heroAlt: `Chauffeur-driven taxi service in ${name} with Cabzii`,
     cabTypes: buildCabTypes(name),
@@ -215,7 +188,7 @@ export function applyCityCabCms(data, cms) {
           subtitle: String(row.body).trim(),
           href:
             String(row.href || "").trim() ||
-            `/cabs/results?serviceTripType=hourly&from=${encodeURIComponent(data.city.name)}&to=${encodeURIComponent(row.title)}&city=${encodeURIComponent(data.city.name)}`
+            outstationSearchHref(data.city.name, row.title)
         }))
     : [];
   const cmsLocations = Array.isArray(cms.popularLocations)

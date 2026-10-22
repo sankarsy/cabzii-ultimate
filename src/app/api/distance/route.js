@@ -1,72 +1,75 @@
-import { coordsForPlaceLabel } from "../../../lib/indiaCityCoords";
-import { geocodeAddress } from "../../../lib/nominatimServer";
-import {
-  estimateDurationMin,
-  estimateRoadDistanceKm,
-  getDrivingRoute
-} from "../../../lib/openRouteService";
+import { computeDrivingRoute, geocodeAddress, GoogleMapsError, googleMapsConfigured } from "../../../lib/googleMapsServer";
+import { geocodeAddress as nominatimGeocode } from "../../../lib/nominatimServer";
+import { getDrivingRoute } from "../../../lib/openRouteService";
+
+function num(value) {
+  const n = Number(value);
+  return Number.isFinite(n) ? n : null;
+}
+
+async function resolvePoint(lat, lng, label) {
+  if (lat != null && lng != null) return { lat, lng };
+  if (!label) return null;
+  if (googleMapsConfigured()) {
+    try {
+      const geo = await geocodeAddress(label);
+      if (geo?.lat != null) return { lat: geo.lat, lng: geo.lng };
+    } catch {
+      /* fallback */
+    }
+  }
+  const geo = await nominatimGeocode(label);
+  if (geo?.lat != null) return { lat: geo.lat, lng: geo.lng };
+  return null;
+}
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const from = (searchParams.get("from") || "").trim();
   const to = (searchParams.get("to") || "").trim();
-  let fromLat = searchParams.get("fromLat");
-  let fromLng = searchParams.get("fromLng");
-  let toLat = searchParams.get("toLat");
-  let toLng = searchParams.get("toLng");
+  const fromPoint = await resolvePoint(num(searchParams.get("fromLat")), num(searchParams.get("fromLng")), from);
+  const toPoint = await resolvePoint(num(searchParams.get("toLat")), num(searchParams.get("toLng")), to);
+
+  if (!fromPoint) {
+    return Response.json({ error: "Select a pickup place first." }, { status: 400 });
+  }
+  if (!toPoint) {
+    return Response.json({ error: "Select a drop place first." }, { status: 400 });
+  }
 
   try {
-    if (!fromLat || !fromLng) {
-      if (!from) {
-        return Response.json({ error: "from or fromLat/fromLng required" }, { status: 400 });
+    if (googleMapsConfigured()) {
+      try {
+        const route = await computeDrivingRoute(fromPoint.lat, fromPoint.lng, toPoint.lat, toPoint.lng);
+        return Response.json({
+          success: true,
+          fromLat: fromPoint.lat,
+          fromLng: fromPoint.lng,
+          toLat: toPoint.lat,
+          toLng: toPoint.lng,
+          distanceKm: route.distanceKm,
+          durationMin: route.durationMin,
+          geometry: route.geometry,
+          estimated: false
+        });
+      } catch (err) {
+        if (err instanceof GoogleMapsError && err.status === 429) {
+          return Response.json({ error: "Distance lookup is busy. Try again shortly." }, { status: 429 });
+        }
       }
-      const local = coordsForPlaceLabel(from);
-      const geo = local || (await geocodeAddress(from));
-      if (!geo?.lat || !geo?.lng) {
-        return Response.json({ error: "Could not geocode pickup" }, { status: 400 });
-      }
-      fromLat = geo.lat;
-      fromLng = geo.lng;
     }
 
-    if (!toLat || !toLng) {
-      if (!to) {
-        return Response.json({ error: "to or toLat/toLng required" }, { status: 400 });
-      }
-      const local = coordsForPlaceLabel(to);
-      const geo = local || (await geocodeAddress(to));
-      if (!geo?.lat || !geo?.lng) {
-        return Response.json({ error: "Could not geocode drop" }, { status: 400 });
-      }
-      toLat = geo.lat;
-      toLng = geo.lng;
-    }
-
-    const lat1 = Number(fromLat);
-    const lng1 = Number(fromLng);
-    const lat2 = Number(toLat);
-    const lng2 = Number(toLng);
-
-    let route = await getDrivingRoute(lat1, lng1, lat2, lng2);
+    const route = await getDrivingRoute(fromPoint.lat, fromPoint.lng, toPoint.lat, toPoint.lng);
     if (!route) {
-      const distanceKm = estimateRoadDistanceKm(lat1, lng1, lat2, lng2);
-      route = {
-        distanceKm,
-        durationMin: estimateDurationMin(distanceKm),
-        geometry: [
-          [lat1, lng1],
-          [lat2, lng2]
-        ],
-        estimated: true
-      };
+      return Response.json({ error: "No driving route between these locations." }, { status: 404 });
     }
 
     return Response.json({
       success: true,
-      fromLat: lat1,
-      fromLng: lng1,
-      toLat: lat2,
-      toLng: lng2,
+      fromLat: fromPoint.lat,
+      fromLng: fromPoint.lng,
+      toLat: toPoint.lat,
+      toLng: toPoint.lng,
       distanceKm: route.distanceKm,
       durationMin: route.durationMin,
       geometry: route.geometry,

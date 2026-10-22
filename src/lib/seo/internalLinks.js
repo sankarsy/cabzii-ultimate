@@ -1,6 +1,7 @@
 import { SEO_CITIES, MAIN_PAGE_CITY_SLUGS, cityBySlug } from "./cities";
 import { cityCabLandingPath, actingDriverLandingPath, airportTaxiPublicPath } from "../cityCabPaths";
-import { SEO_ROUTES, routesForCity } from "./routes";
+import { pickOutstationRoutes } from "../cityOutstationRoutes";
+import { SEO_ROUTES } from "./routes";
 import { SEO_SERVICES, servicePath } from "./services";
 import { isPackageDoorwayService } from "./packageDoorways";
 import { isKeepRankingServicePage, isKeepRouteSlug, KEEP_ACTING_DRIVER_CITY_SLUGS } from "./keepLivePages";
@@ -22,7 +23,7 @@ export const CORE_INTERNAL_LINKS = [
 export const INTERNAL_LINK_CITIES = MAIN_PAGE_CITY_SLUGS;
 
 /** Top cities for service landing cross-links (SEO). */
-export const SERVICE_LINK_CITIES = ["chennai"];
+export const SERVICE_LINK_CITIES = MAIN_PAGE_CITY_SLUGS;
 
 function citiesBySlugs(slugs) {
   return slugs.map((slug) => SEO_CITIES.find((c) => c.slug === slug)).filter(Boolean);
@@ -59,11 +60,7 @@ export function actingDriverLinks(limit = INTERNAL_LINK_CITIES.length) {
 /** All services for one city. */
 export function serviceLinks(citySlug = "chennai", limit = SEO_SERVICES.length) {
   const city = SEO_CITIES.find((c) => c.slug === citySlug) || SEO_CITIES[0];
-  return SEO_SERVICES.filter(
-    (svc) =>
-      !isPackageDoorwayService(svc.slug) &&
-      (svc.slug === "airport-taxi" ? city.slug === "chennai" : isKeepRankingServicePage(svc.slug, city.slug))
-  )
+  return SEO_SERVICES.filter((svc) => !isPackageDoorwayService(svc.slug) && isKeepRankingServicePage(svc.slug, city.slug))
     .slice(0, limit)
     .map((svc) => ({
     href: servicePath(svc, city),
@@ -108,18 +105,10 @@ export function routeLinks(limit = SEO_ROUTES.length) {
 }
 
 export function routeLinksForCity(citySlug, limit = 6) {
-  const seen = new Set();
-  const out = [];
-  for (const route of routesForCity(citySlug)) {
-    if (!route?.slug || seen.has(route.slug) || !isKeepRouteSlug(route.slug)) continue;
-    seen.add(route.slug);
-    out.push({
-      href: routePublicPath(route.slug),
-      label: formatRouteLabel(route)
-    });
-    if (out.length >= limit) break;
-  }
-  return out;
+  return pickOutstationRoutes(citySlug, { direction: "from", limit }).map((route) => ({
+    href: route.href,
+    label: `${route.originName} → ${route.otherName}`
+  }));
 }
 
 function resolveLinkCity(citySlug) {

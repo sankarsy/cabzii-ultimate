@@ -7,11 +7,11 @@ import { CALL_DRIVER_TARIFF } from "./call-drivers-chennai";
 import { applyCityCabCms } from "./city-cabs";
 import {
   actingDriverLandingPath,
-  airportCabBookingPath,
+  airportTaxiPublicPath,
   cityCabLandingPath,
-  isActingDriverHubCity,
   ACTING_DRIVER_HUB_CITIES
 } from "../lib/cityCabPaths";
+import { isKeepAirportCity, isKeepSeoCity } from "../lib/seo/keepLivePages";
 
 function clampText(value, max) {
   const text = String(value || "").trim();
@@ -51,7 +51,7 @@ function buildActingDriverFaqs(city) {
 }
 
 export function buildActingDriverHubData(city) {
-  if (!city || !isActingDriverHubCity(city.slug)) return null;
+  if (!city) return null;
   const seeded = ACTING_DRIVER_HUB_SEO[city.slug];
   const name = city.name;
   const areas = cityAreas(city.slug);
@@ -80,8 +80,8 @@ export function buildActingDriverHubData(city) {
   return {
     city,
     path: actingDriverLandingPath(city.slug),
-    cityHubPath: city.slug === "chennai" ? cityCabLandingPath(city.slug) : "/cabs",
-    airportPath: city.slug === "chennai" ? airportCabBookingPath(city.slug) : "/cabs",
+    cityHubPath: isKeepSeoCity(city.slug) ? cityCabLandingPath(city.slug) : "/cabs",
+    airportPath: isKeepAirportCity(city.slug) ? airportTaxiPublicPath(city.slug) : "/cabs",
     callDriverPath: "/call-driver",
     title: clampText(seeded?.title || `Acting Driver in ${name} | Call Driver | ${SITE_NAME}`, 60),
     description: clampText(

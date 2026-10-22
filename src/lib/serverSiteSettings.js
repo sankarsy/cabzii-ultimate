@@ -1,5 +1,5 @@
 import { isLiveApiHostProtected } from "./liveApiHostGuard";
-import { getBackendUrl } from "./seo";
+import { getBackendUrl } from "./seo/constants";
 import { DEFAULT_SITE_SETTINGS } from "./siteSettingsDefaults";
 import { fetchSeoMenuLinks } from "./serverCatalog";
 import { SEO_REVALIDATE_SECONDS } from "./revalidation/constants";

@@ -13,7 +13,7 @@ import {
   vehiclePhotoAlt
 } from "../../lib/catalogDisplay";
 import { formatCabSeatLabel, inferPassengerSeats } from "../../lib/cabSeats";
-import { cabFuelBadgeClass, cabFuelLabel } from "../../lib/cabListing";
+import { cabFuelBadgeClass, cabFuelLabel, cabTypeBucket } from "../../lib/cabListing";
 import { resolveCabImage } from "../../lib/vehicleImages";
 import { cabSlabForTrip, tripToSearchQuery } from "../../lib/mmtTrip";
 import { FuelIcon, LuggageIcon, PersonIcon, SnowflakeIcon } from "../icons";
@@ -33,14 +33,21 @@ export default function MmtCabResultCard({ cab, trip, layout = "row", catalogMod
   const catalogPerKm = catalogMode ? getCatalogPerKmFare(cab, slabs) : null;
   const slab = catalogMode ? null : cabSlabForTrip(slabs, trip);
   const fare = catalogMode ? null : resolveCabTripFare(cab, slab, trip);
-  const total = catalogMode ? catalogPerKm?.perKmRate || Number(cab.price) || 0 : fare?.total || Number(cab.price) || 0;
+  const total = catalogMode
+    ? catalogPerKm?.perKmRate || Number(cab.price) || 0
+    : Number(fare?.total) > 0
+      ? Number(fare.total)
+      : 0;
   const usesDistance = !catalogMode && fare?.usesDistance;
   const passengerSeats = inferPassengerSeats(cab);
   const seatLabel = formatCabSeatLabel(cab);
   const bags = cab.bags ?? (passengerSeats >= 6 ? 3 : 2);
   const imageSrc = resolveCabImage(cab);
   const vehicleName = getCabVehicleName(cab);
-  const imageAlt = cab.imageAlt || vehiclePhotoAlt(cab);
+  const imageAlt = /gallery photo|all india/i.test(String(cab.imageAlt || ""))
+    ? vehiclePhotoAlt(cab)
+    : cab.imageAlt || vehiclePhotoAlt(cab);
+  const typeLabel = cabTypeBucket(cab);
   const ratingText = formatRating(cab);
   const fuelLabel = cabFuelLabel(cab);
 
@@ -75,6 +82,55 @@ export default function MmtCabResultCard({ cab, trip, layout = "row", catalogMod
     roundTrip: Boolean(trip?.roundTrip),
     fareNote: catalogMode ? catalogPerKm?.fareNote : usesDistance ? fare?.fareNote : "package fare"
   };
+
+  if (layout === "fasttrack") {
+    const extraKm = fare?.perKmRate || slab?.extraKm;
+    const tripKm = Number(trip?.distanceKm) > 0 ? Math.round(Number(trip.distanceKm)) : 0;
+    const localDefaultKm =
+      trip?.tripType === "local" || trip?.tripType === "airport" || trip?.tripType === "hourly" ? 40 : 0;
+    const includedKm = Number(slab?.includedKm) > 0 ? Number(slab.includedKm) : tripKm || localDefaultKm;
+    const kmLine = includedKm
+      ? `${includedKm} km included.${extraKm ? ` After that ₹${Number(extraKm).toFixed(0)}/km` : ""}`
+      : extraKm
+        ? `₹${Number(extraKm).toFixed(0)}/km`
+        : "Quoted fare for this trip";
+    return (
+      <Link
+        href={href}
+        onClick={trackSelect}
+        className="flex items-start gap-2.5 rounded-xl border border-slate-200 bg-white p-2.5 shadow-[0_1px_4px_rgba(15,23,42,0.05)] sm:items-center sm:gap-4 sm:p-4"
+      >
+        <div className="relative flex h-14 w-[4.5rem] shrink-0 items-center justify-center overflow-hidden rounded-lg bg-[#fff8e8] sm:h-[88px] sm:w-[128px]">
+          <CatalogCardImage
+            src={imageSrc}
+            alt={imageAlt}
+            product={cab}
+            sizes="128px"
+            className="object-contain p-1"
+          />
+        </div>
+        <div className="min-w-0 flex-1">
+          <h3 className="text-[13px] font-extrabold leading-snug text-slate-900 sm:text-[16px]">
+            {vehicleName} · {passengerSeats} seats
+          </h3>
+          <p className="mt-0.5 text-[11px] text-slate-500 sm:text-[12px]">{typeLabel}</p>
+          <p className="mt-1 text-[11px] leading-snug text-slate-600 sm:text-[12px]">{kmLine}</p>
+          <div className="mt-2 flex items-center justify-between gap-2 sm:hidden">
+            <p className="text-[15px] font-extrabold leading-none text-slate-900">{formatINR(total)}</p>
+            <span className="inline-flex min-h-8 items-center justify-center rounded-lg bg-amber-400 px-3 py-1.5 text-[11px] font-extrabold text-slate-900">
+              Book
+            </span>
+          </div>
+        </div>
+        <div className="hidden shrink-0 flex-col items-end justify-center gap-2 pl-1 sm:flex">
+          <p className="text-[18px] font-extrabold leading-none text-slate-900 sm:text-[20px]">{formatINR(total)}</p>
+          <span className="inline-flex min-h-9 min-w-[7.25rem] items-center justify-center rounded-lg bg-amber-400 px-3 py-2 text-[12px] font-extrabold text-slate-900 hover:bg-amber-500 sm:min-w-[8.25rem]">
+            Book a ride
+          </span>
+        </div>
+      </Link>
+    );
+  }
 
   if (layout === "card") {
     return (

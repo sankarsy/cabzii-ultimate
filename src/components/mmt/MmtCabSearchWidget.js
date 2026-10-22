@@ -5,13 +5,14 @@ import { useTodayStr, HydrateSafeDate } from "../../lib/useTodayStr";
 import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
 import PlaceAutocomplete from "../PlaceAutocomplete";
-import { CalendarIcon, ClockIcon, SearchIcon, TwoWayIcon } from "../icons";
+import { SearchIcon, TwoWayIcon } from "../icons";
+import { NativeDateField, NativeTimeField } from "../ui/NativeDateTimeField";
 import { SEARCH_FIELD_ICON_CHIPS, SEARCH_FIELD_ICONS } from "../icons/heroIcons";
 import { EmtHeroPriceHint } from "../emt/EmtHeroPills";
 import { formatTime12, addDays, openNativePicker } from "../../lib/emt/heroDates";
 import { applyDistanceToTrip, fetchTripDistance } from "../../lib/fetchTripDistance";
 import { coordsForPlaceLabel } from "../../lib/indiaCityCoords";
-import { HOURLY_PACKAGES, todayStr, tripNeedsDrop, tripToSearchQuery } from "../../lib/mmtTrip";
+import { cabResultsHref, HOURLY_PACKAGES, todayStr, tripNeedsDrop } from "../../lib/mmtTrip";
 import { writeSelectedCity } from "../../lib/locationPriority";
 import { SegmentedOption } from "../ui/RadioOption";
 import { trackEvent } from "../../lib/analytics";
@@ -211,7 +212,7 @@ export default function MmtCabSearchWidget({
       route: [trip.from, trip.to].filter(Boolean).join(" → "),
       cta_location: "cab_search_widget"
     });
-    router.push(`/cabs/results?${tripToSearchQuery(trip).toString()}`);
+    router.push(cabResultsHref(trip));
   }
 
   function handlePickupDate(next) {
@@ -251,32 +252,13 @@ export default function MmtCabSearchWidget({
     </div>
   ) : (
     <>
-      <div className="cabzii-search-cell">
-        <label className="text-xs font-semibold uppercase tracking-wide text-slate-500">Pickup Date</label>
-        <div className="relative">
-          <CalendarIcon className="pointer-events-none absolute left-0 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" aria-hidden />
-          <input
-            type="date"
-          min={today || undefined}
-            value={date}
-            onChange={(e) => handlePickupDate(e.target.value)}
-            onClick={openNativePicker}
-            className="w-full max-w-full min-w-0 border-0 bg-transparent pl-7 pr-1 text-base font-bold text-slate-900 focus:outline-none sm:text-lg"
-          />
-        </div>
+      <div className="cabzii-search-cell min-w-0">
+        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Pickup Date</p>
+        <NativeDateField value={date} onChange={handlePickupDate} min={today} label="" ariaLabel="Pickup date" />
       </div>
-      <div className="cabzii-search-cell">
-        <label className="text-xs font-semibold uppercase tracking-wide text-slate-500">Pickup Time</label>
-        <div className="relative">
-          <ClockIcon className="pointer-events-none absolute left-0 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" aria-hidden />
-          <input
-            type="time"
-            value={time}
-            onChange={(e) => setTime(e.target.value)}
-            onClick={openNativePicker}
-            className="w-full max-w-full min-w-0 border-0 bg-transparent pl-7 pr-1 text-base font-bold text-slate-900 focus:outline-none sm:text-lg"
-          />
-        </div>
+      <div className="cabzii-search-cell min-w-0">
+        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Pickup Time</p>
+        <NativeTimeField value={time} onChange={setTime} label="" ariaLabel="Pickup time" />
       </div>
     </>
   );
@@ -417,6 +399,7 @@ export default function MmtCabSearchWidget({
               placeholder={heroMode ? "Going to" : "City / area"}
               value={drop}
               onChange={setDrop}
+              allowCurrentLocation={false}
               onResolved={(area) => {
                 setToCoords(area?.lat != null ? { lat: area.lat, lng: area.lng } : null);
                 if (area?.city) writeSelectedCity(area.city);
@@ -461,6 +444,7 @@ export default function MmtCabSearchWidget({
                   placeholder={heroMode ? "Going to" : "Drop location"}
                   value={drop}
                   onChange={setDrop}
+                  allowCurrentLocation={false}
                   onResolved={(area) => {
                     setToCoords(area?.lat != null ? { lat: area.lat, lng: area.lng } : null);
                   }}
@@ -623,8 +607,8 @@ export default function MmtCabSearchWidget({
           </div>
           {searchCard}
           <div className="mt-4 flex justify-end">
-            <p className="rounded-md border border-white/40 bg-white/10 px-3 py-1.5 text-xs font-bold text-white backdrop-blur-sm">
-              Fares shown before you confirm
+            <p className="rounded-full border border-white/40 bg-white/10 px-3.5 py-1.5 text-xs font-bold text-white backdrop-blur-sm">
+              Pay 50% to confirm · driver follows
             </p>
           </div>
         </>

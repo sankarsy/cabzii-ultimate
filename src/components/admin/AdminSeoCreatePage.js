@@ -1,16 +1,18 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { SEO_CITIES } from "../../lib/seo/cities";
+import { useState } from "react";
 import { RANKING_SERVICE_SLUGS } from "../../lib/seo/packageDoorways";
 import { createRankingSeoPage } from "../../lib/admin/adminSeoApi";
+import { useAdminCities } from "../../lib/admin/useAdminCities";
+import CitySelect from "./cms/CitySelect";
 
 const KINDS = [
   { id: "landing", label: "Custom landing", hint: "New URL at /pages/your-slug" },
-  { id: "city", label: "City cab hub", hint: "/{city} (chennai, trichy, madurai, coimbatore)" },
-  { id: "acting-driver", label: "Acting driver city", hint: "/{city}/acting-driver (chennai, trichy, madurai, coimbatore)" },
-  { id: "service", label: "Service page", hint: "/services/{slug}/chennai — airport-taxi, outstation-cab, one-way-cab or tempo-traveller only" },
-  { id: "route", label: "Route page", hint: "/routes/{from}-to-{to}-cab" }
+  { id: "city", label: "City cab hub", hint: "/cab-booking/{city} — pick an active city from Cities" },
+  { id: "airport", label: "Airport taxi", hint: "Chennai uses /chennai/airport-cab-booking; other cities use /services/airport-taxi/{city}" },
+  { id: "acting-driver", label: "Acting driver city", hint: "/acting-driver/{city}" },
+  { id: "service", label: "Service page", hint: "/services/{slug}/{city} — airport-taxi, outstation-cab, one-way-cab or tempo-traveller" },
+  { id: "route", label: "Route page", hint: "/{from}/outstation/{from}-to-{to}" }
 ];
 
 function inputCls() {
@@ -28,12 +30,7 @@ function Field({ label, children, hint, count }) {
   );
 }
 
-function cityName(slug) {
-  return SEO_CITIES.find((c) => c.slug === slug)?.name || slug;
-}
-
-function suggestCopy(kind, form) {
-  const name = cityName(form.citySlug);
+function suggestCopy(kind, form, name) {
   if (kind === "acting-driver" && form.citySlug) {
     const title = `Call Drivers in ${name} | Hire Acting Drivers | Cabzii`;
     return {
@@ -41,6 +38,14 @@ function suggestCopy(kind, form) {
       seoTitle: title.length <= 60 ? title : `Call Drivers in ${name} | Acting Driver | Cabzii`,
       seoDescription: `Hire a Cabzii call driver / acting driver in ${name} for your own car — city, outstation and airport. Pay 50% to confirm. Fuel and driver included; tolls extra.`,
       seoKeywords: `acting driver in ${name.toLowerCase()}, outstation acting driver, call driver ${name.toLowerCase()}, cabzii`
+    };
+  }
+  if (kind === "airport" && form.citySlug) {
+    return {
+      productName: `${name} airport taxi`,
+      seoTitle: `Airport Taxi ${name} | Pickup & Drop | Cabzii`.slice(0, 60),
+      seoDescription: `Book ${name} airport taxi pickup and drop with AC cabs, flight buffer time and instant confirmation on cabzii.in. Fares show before you pay.`,
+      seoKeywords: `airport taxi ${name.toLowerCase()}, ${name.toLowerCase()} airport cab, airport pickup ${name.toLowerCase()}, cabzii`
     };
   }
   if (kind === "city" && form.citySlug) {
@@ -73,12 +78,13 @@ export default function AdminSeoCreatePage({ open, token, pageSeo = {}, onClose,
     ctaLabel: "Book now"
   });
 
-  const cities = useMemo(() => SEO_CITIES.slice().sort((a, b) => a.name.localeCompare(b.name)), []);
+  const { cities } = useAdminCities({ token, activeOnly: true });
+  const selectedCityName = cities.find((city) => city.slug === form.citySlug)?.name || form.citySlug;
 
   if (!open) return null;
 
   const applySuggest = () => {
-    const next = suggestCopy(kind, form);
+    const next = suggestCopy(kind, form, selectedCityName);
     if (next) setForm((p) => ({ ...p, ...next }));
   };
 
@@ -134,15 +140,9 @@ export default function AdminSeoCreatePage({ open, token, pageSeo = {}, onClose,
             </Field>
           ) : null}
 
-          {kind === "city" || kind === "acting-driver" ? (
+          {kind === "city" || kind === "acting-driver" || kind === "airport" || kind === "service" ? (
             <Field label="City *">
-              <select className={inputCls()} value={form.citySlug} onChange={(e) => setForm((p) => ({ ...p, citySlug: e.target.value }))}>
-                {cities.map((city) => (
-                  <option key={city.slug} value={city.slug}>
-                    {city.name}
-                  </option>
-                ))}
-              </select>
+              <CitySelect token={token} value={form.citySlug} onChange={(citySlug) => setForm((p) => ({ ...p, citySlug }))} />
             </Field>
           ) : null}
 
@@ -162,17 +162,17 @@ export default function AdminSeoCreatePage({ open, token, pageSeo = {}, onClose,
           {kind === "route" ? (
             <div className="grid gap-3 sm:grid-cols-2">
               <Field label="From city *">
-                <input className={inputCls()} value={form.fromCitySlug} onChange={(e) => setForm((p) => ({ ...p, fromCitySlug: e.target.value }))} placeholder="chennai" required />
+                <CitySelect token={token} value={form.fromCitySlug} onChange={(fromCitySlug) => setForm((p) => ({ ...p, fromCitySlug }))} excludeSlug={form.toCitySlug} />
               </Field>
               <Field label="To city *">
-                <input className={inputCls()} value={form.toCitySlug} onChange={(e) => setForm((p) => ({ ...p, toCitySlug: e.target.value }))} placeholder="tirupati" required />
+                <CitySelect token={token} value={form.toCitySlug} onChange={(toCitySlug) => setForm((p) => ({ ...p, toCitySlug }))} excludeSlug={form.fromCitySlug} />
               </Field>
             </div>
           ) : null}
 
-          {(kind === "city" || kind === "acting-driver") && form.citySlug ? (
+          {(kind === "city" || kind === "acting-driver" || kind === "airport") && form.citySlug ? (
             <button type="button" onClick={applySuggest} className="text-xs font-semibold text-sky-700 hover:underline">
-              Fill ranking copy for {cityName(form.citySlug)}
+              Fill ranking copy for {selectedCityName}
             </button>
           ) : null}
 

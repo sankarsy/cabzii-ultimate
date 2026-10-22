@@ -1,4 +1,4 @@
-import { geocodeAddress as googleGeocode, getGoogleMapsApiKey, reverseGeocode as googleReverse } from "../../../lib/googleMapsServer";
+import { geocodeAddress, GoogleMapsError, googleMapsConfigured, reverseGeocode } from "../../../lib/googleMapsServer";
 import { geocodeAddress as nominatimGeocode, reverseGeocode as nominatimReverse } from "../../../lib/nominatimServer";
 
 export async function GET(request) {
@@ -7,14 +7,20 @@ export async function GET(request) {
   const pincode = (searchParams.get("pincode") || "").trim();
   const lat = searchParams.get("lat");
   const lng = searchParams.get("lng");
-  const apiKey = getGoogleMapsApiKey();
 
   try {
     if (lat && lng) {
-      let data = await nominatimReverse(Number(lat), Number(lng));
-      if (!data && apiKey) {
-        data = await googleReverse(Number(lat), Number(lng), apiKey);
+      let data = null;
+      if (googleMapsConfigured()) {
+        try {
+          data = await reverseGeocode(Number(lat), Number(lng));
+        } catch (err) {
+          if (err instanceof GoogleMapsError && err.status === 429) {
+            return Response.json({ error: "Location lookup is busy. Try again shortly." }, { status: 429 });
+          }
+        }
       }
+      if (!data) data = await nominatimReverse(Number(lat), Number(lng));
       if (!data) return Response.json({ error: "Location not found" }, { status: 404 });
       return Response.json({ success: true, data });
     }
@@ -24,13 +30,18 @@ export async function GET(request) {
       return Response.json({ error: "address, pincode, or lat/lng required" }, { status: 400 });
     }
 
-    let data = await nominatimGeocode(query);
-    if (!data && apiKey) {
-      data = await googleGeocode(query, apiKey);
+    let data = null;
+    if (googleMapsConfigured()) {
+      try {
+        data = await geocodeAddress(query);
+      } catch {
+        data = null;
+      }
     }
+    if (!data) data = await nominatimGeocode(query);
     if (!data) return Response.json({ error: "Location not found" }, { status: 404 });
     return Response.json({ success: true, data });
   } catch {
-    return Response.json({ error: "Geocode request failed" }, { status: 500 });
+    return Response.json({ error: "Could not look up that location." }, { status: 502 });
   }
 }

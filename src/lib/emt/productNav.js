@@ -18,8 +18,8 @@ export function productTabFromPath(pathname, heroTab = "cabs") {
 }
 
 export function productTabHref(tabId) {
-  if (tabId === "drivers") return "/?tab=drivers";
-  if (tabId === "buses") return "/?tab=buses";
-  if (tabId === "holidays") return "/?tab=holidays";
+  if (tabId === "drivers") return "/call-driver";
+  if (tabId === "buses") return "/buses";
+  if (tabId === "holidays") return "/holidays";
   return "/";
 }

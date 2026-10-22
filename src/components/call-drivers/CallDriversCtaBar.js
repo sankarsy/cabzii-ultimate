@@ -4,13 +4,18 @@ import { Phone } from "lucide-react";
 import WhatsAppIcon from "../WhatsAppIcon";
 import { trackLead } from "../../lib/analytics";
 
-export default function CallDriversCtaBar({ telHref, whatsappHref, phoneDisplay }) {
+export default function CallDriversCtaBar({
+  telHref,
+  whatsappHref,
+  phoneDisplay,
+  sourcePage = "/acting-driver/chennai"
+}) {
   function onCall() {
-    trackLead("phone", { source_page: "/call-drivers-chennai", cta_location: "acting_driver_landing" });
+    trackLead("phone", { source_page: sourcePage, cta_location: "acting_driver_landing" });
   }
 
   function onWhatsapp() {
-    trackLead("whatsapp", { source_page: "/call-drivers-chennai", cta_location: "acting_driver_landing" });
+    trackLead("whatsapp", { source_page: sourcePage, cta_location: "acting_driver_landing" });
   }
 
   return (

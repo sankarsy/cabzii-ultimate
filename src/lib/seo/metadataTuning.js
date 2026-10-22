@@ -67,7 +67,13 @@ export function tunedActingDriverKeywords(city) {
     "cabzii acting driver"
   ];
   if (city.slug === "chennai") {
-    return ["acting driver in chennai", "call driver in chennai", "acting driver chennai", ...base];
+    return [
+      "acting driver in chennai",
+      "call driver chennai",
+      "driver for my own car chennai",
+      "outstation acting driver chennai",
+      "acting driver near me"
+    ];
   }
   if (city.slug === "tirupati") {
     return ["acting driver tirupati", "driver on hire tirupati", ...base];

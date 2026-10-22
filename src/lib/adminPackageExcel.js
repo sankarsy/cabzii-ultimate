@@ -405,7 +405,6 @@ export async function importPackageRows({ tabKey, rows, apiBase, authHeaders, on
 export async function importAllPackagesFromWorkbook({ parsed, authHeaders, onProgress }) {
   const jobs = [
     { tabKey: "cabs", rows: parsed.cabs?.length ? parsed.cabs : [], base: "/api/cabs" },
-    { tabKey: "drivers", rows: parsed.drivers?.length ? parsed.drivers : [], base: "/api/drivers" },
     { tabKey: "packages", rows: parsed.packages?.length ? parsed.packages : [], base: "/api/packages" }
   ];
 

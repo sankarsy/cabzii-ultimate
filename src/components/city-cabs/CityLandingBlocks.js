@@ -60,18 +60,28 @@ export function ServiceCards({ title, subtitle, items }) {
   );
 }
 
-export function WhyGrid({ title, items }) {
+export function WhyGrid({ title, items, align = "center" }) {
   if (!items?.length) return null;
+  const left = align === "left";
   return (
-    <section className="bg-[#f4f6fa] py-5 sm:py-7">
+    <section className="bg-white py-8 sm:py-10">
       <div className="section-shell">
-        <h2 className="text-center text-base font-bold text-slate-900 sm:text-lg">{title}</h2>
-        <ul className="mt-3 grid gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
+        <h2 className={`${left ? "text-left" : "text-center"} text-lg font-bold text-slate-900 sm:text-xl`}>{title}</h2>
+        <ul className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {items.map((item) => {
             const Icon = item.icon;
             return (
-              <li key={item.title} className="rounded-xl border border-slate-200 bg-white p-3 text-center shadow-sm sm:p-4">
-                {Icon ? <Icon className="mx-auto h-5 w-5 text-[var(--cabzii-brand)] sm:h-6 sm:w-6" strokeWidth={1.6} aria-hidden /> : null}
+              <li
+                key={item.title}
+                className={`rounded-xl border border-slate-200 bg-[#f8fafc] p-3 sm:p-4 ${left ? "text-left" : "text-center"}`}
+              >
+                {Icon ? (
+                  <Icon
+                    className={`${left ? "" : "mx-auto "}h-5 w-5 text-[var(--cabzii-brand)] sm:h-6 sm:w-6`}
+                    strokeWidth={1.6}
+                    aria-hidden
+                  />
+                ) : null}
                 <h3 className="mt-1.5 text-sm font-bold text-slate-900">{item.title}</h3>
                 <p className="mt-1 text-[11px] leading-relaxed text-slate-600 sm:text-xs">{item.body}</p>
               </li>
@@ -105,18 +115,22 @@ export function HowToSteps({ title, subtitle, steps }) {
 export function RouteFareGrid({ title, subtitle, routes }) {
   if (!routes?.length) return null;
   return (
-    <section className="section-shell pb-5 sm:pb-8">
-      <h2 className="text-base font-bold text-slate-900 sm:text-lg">{title}</h2>
-      {subtitle ? <p className="mt-1 text-xs text-slate-600 sm:text-sm">{subtitle}</p> : null}
-      <ul className="mt-3 grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
-        {routes.map((route) => (
-          <li key={route.href}>
-            <Link href={route.href} className="block rounded-xl border border-slate-200 bg-white p-3 hover:border-sky-300 sm:p-4">
-              <h3 className="text-sm font-bold text-slate-900">{route.label}</h3>
-              <p className="mt-1 text-[11px] text-slate-500 sm:text-xs">
-                {route.distance || "Distance on route page"}
-                {route.duration ? ` · ${route.duration}` : ""}
-              </p>
+    <section className="bg-white py-8 sm:py-10">
+      <div className="section-shell">
+        <h2 className="text-center text-lg font-bold text-slate-900 sm:text-xl">{title}</h2>
+        {subtitle ? <p className="mx-auto mt-1 max-w-2xl text-center text-xs text-slate-500 sm:text-sm">{subtitle}</p> : null}
+        <ul className="mt-5 grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
+          {routes.map((route) => (
+            <li key={route.href} className="min-w-0">
+              <Link href={route.href} className="block rounded-xl border border-slate-200 bg-[#f8fafc] p-3 hover:border-sky-300 sm:p-4">
+                <h3 className="text-sm font-bold text-slate-900">{route.label}</h3>
+                {route.distance || route.duration ? (
+                  <p className="mt-1 text-[11px] text-slate-500 sm:text-xs">
+                    {route.distance}
+                    {route.distance && route.duration ? " · " : ""}
+                    {route.duration}
+                  </p>
+                ) : null}
               <p className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs font-bold text-slate-900 sm:text-sm">
                 {route.sedanFrom ? (
                   <span>
@@ -137,11 +151,12 @@ export function RouteFareGrid({ title, subtitle, routes }) {
                   </span>
                 ) : null}
               </p>
-            </Link>
-          </li>
-        ))}
-      </ul>
-      <ApproxPriceNote />
+              </Link>
+            </li>
+          ))}
+        </ul>
+        <ApproxPriceNote />
+      </div>
     </section>
   );
 }
@@ -199,16 +214,54 @@ export function ContactNap({ title, source, message }) {
 export function PlaceGrid({ title, places }) {
   if (!places?.length) return null;
   return (
-    <section className="cabzii-seo-block">
-      <h2>{title}</h2>
-      <ul className="mt-3 grid gap-3 sm:grid-cols-2">
-        {places.map((place) => (
-          <li key={place.name} className="rounded-xl border border-slate-200 bg-white p-4">
-            <h3 className="text-sm font-bold text-slate-900">{place.name}</h3>
-            <p className="mt-1 text-sm text-slate-600">{place.subtitle}</p>
-          </li>
-        ))}
-      </ul>
+    <section className="bg-[#f4f6fa] py-8 sm:py-10">
+      <div className="section-shell">
+        <h2 className="text-center text-lg font-bold text-slate-900 sm:text-xl">{title}</h2>
+        <ul className="mt-5 grid gap-3 sm:grid-cols-2">
+          {places.map((place) => {
+            const inner = (
+              <>
+                <h3 className="text-sm font-bold text-slate-900">{place.name}</h3>
+                {place.subtitle ? <p className="mt-1 text-xs leading-relaxed text-slate-600 sm:text-sm">{place.subtitle}</p> : null}
+              </>
+            );
+            return (
+              <li key={place.name}>
+                {place.href ? (
+                  <Link href={place.href} className="block h-full rounded-xl border border-slate-200 bg-white p-4 hover:border-sky-300">
+                    {inner}
+                  </Link>
+                ) : (
+                  <div className="h-full rounded-xl border border-slate-200 bg-white p-4">{inner}</div>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    </section>
+  );
+}
+
+export function CityServiceGrid({ title, items }) {
+  if (!items?.length) return null;
+  return (
+    <section className="bg-white py-8 sm:py-10">
+      <div className="section-shell">
+        <h2 className="text-center text-lg font-bold text-slate-900 sm:text-xl">{title}</h2>
+        <ul className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-2.5 lg:grid-cols-4">
+          {items.map((item) => (
+            <li key={item.href} className="min-w-0">
+              <Link
+                href={item.href}
+                className="flex h-full items-center justify-center rounded-xl border border-slate-200 bg-slate-50 px-2 py-2.5 text-center text-[11px] font-semibold leading-snug text-slate-800 hover:border-sky-300 hover:bg-white sm:px-3 sm:py-3 sm:text-sm"
+              >
+                {item.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
     </section>
   );
 }

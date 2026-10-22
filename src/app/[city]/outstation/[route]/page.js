@@ -24,7 +24,9 @@ import {
   parseOutstationRouteSegment
 } from "../../../../lib/seo/outstationPaths";
 import { cityBySlug } from "../../../../lib/seo/cities";
+import { normalizeSeoCitySlug } from "../../../../config/seo-scope";
 import { SEO_REVALIDATE_SECONDS } from "../../../../lib/revalidation/constants";
+import { resolveDroppedSeoRedirect } from "../../../../lib/seo/keepLivePages";
 
 export const revalidate = SEO_REVALIDATE_SECONDS;
 export const dynamicParams = true;
@@ -41,22 +43,21 @@ export function generateStaticParams() {
 }
 
 async function loadRoute(params) {
-  const city = cityBySlug(params.city);
+  const citySlug = normalizeSeoCitySlug(params.city);
+  const city = cityBySlug(citySlug);
   const parsed = parseOutstationRouteSegment(params.route);
   if (!city || !parsed) return { city: city || null, parsed, route: null, path: "" };
 
-  if (parsed.fromToken !== params.city) {
-    return {
-      city,
-      parsed,
-      route: null,
-      path: "",
-      redirectTo: outstationPath(parsed.fromToken, parsed.toToken)
-    };
+  const fromToken = normalizeSeoCitySlug(parsed.fromToken);
+  const toToken = normalizeSeoCitySlug(parsed.toToken);
+  const canonical = outstationPath(fromToken, toToken);
+  const current = `/${String(params.city || "").toLowerCase()}/outstation/${String(params.route || "").toLowerCase()}`;
+  if (canonical !== current) {
+    return { city, parsed, route: null, path: "", redirectTo: canonical };
   }
 
-  const route = await resolveRouteBySlug(parsed.legacySlug);
-  const path = route ? outstationPathFromLegacySlug(route.slug) : outstationPath(parsed.fromToken, parsed.toToken);
+  const route = await resolveRouteBySlug(`${fromToken}-to-${toToken}-cab`);
+  const path = route ? outstationPathFromLegacySlug(route.slug) : canonical;
   return { city, parsed, route, path };
 }
 
@@ -100,6 +101,8 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function OutstationRoutePage({ params }) {
+  const dropped = resolveDroppedSeoRedirect(`/${params.city}/outstation/${params.route}`);
+  if (dropped) permanentRedirect(dropped);
   const loaded = await loadRoute(params);
   if (loaded.redirectTo) permanentRedirect(loaded.redirectTo);
   if (!loaded.route) notFound();

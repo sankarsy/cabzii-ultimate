@@ -5,8 +5,8 @@ export const DEFAULT_CALL_DRIVER_PAGE = {
     "You book a Cabzii Call Driver service. A professional driver is assigned after booking — you do not pick an individual driver.",
   sections: [
     {
-      heading: "Call driver in Chennai for your own car",
-      body: "<p>Cabzii’s call driver and acting driver service in Chennai is for customers who already have a car and need a professional driver. Book a local city driver, an outstation driver, or an airport call driver without browsing a public driver list. Cabzii assigns a professional driver after you confirm the booking.</p>"
+      heading: "Call Driver for your own car",
+      body: "<p>Cabzii Call Driver is for customers who already have a car and need a professional driver. Book local hours, an outstation day, or an airport chauffeur without browsing a public driver list. Cabzii assigns a professional after you confirm. For Chennai-specific areas and fare notes, use the <a href=\"/acting-driver/chennai\">acting driver in Chennai</a> page.</p>"
     },
     {
       heading: "How to book",
@@ -14,7 +14,7 @@ export const DEFAULT_CALL_DRIVER_PAGE = {
     },
     {
       heading: "Outstation, airport, monthly and corporate",
-      body: "<p>Outstation driver Chennai packages cover full-day highway trips in your vehicle. Airport call driver Chennai is driver-only pickup or drop — not an airport taxi. Monthly driver Chennai and school pickup requests are quoted by Cabzii. Corporate driver service Chennai is available for offices, events and regular staff transport. Valet parking drivers can be booked for functions with automatic supervisor planning.</p>"
+      body: "<p>Outstation Call Driver covers full-day highway trips in your vehicle. Airport Call Driver is chauffeur-only pickup or drop — not an airport taxi. Monthly and school pickup requests are quoted. Corporate Call Driver is for offices, events and regular staff transport. Valet parking can be booked for functions with supervisor planning.</p>"
     },
     {
       heading: "Safety and professional drivers",
@@ -22,7 +22,7 @@ export const DEFAULT_CALL_DRIVER_PAGE = {
     },
     {
       heading: "Related Chennai bookings",
-      body: "<p>Need a Cabzii vehicle as well? Use <a href=\"/chennai\">cab booking Chennai</a> or <a href=\"/chennai/airport-cab-booking\">Chennai airport taxi</a>. City guide: <a href=\"/chennai/acting-driver\">acting driver in Chennai</a>. Published cab rates: <a href=\"/tariff\">tariff</a>.</p>"
+      body: "<p>Need a Cabzii vehicle as well? Use <a href=\"/cab-booking/chennai\">cab booking Chennai</a> or <a href=\"/chennai/airport-cab-booking\">Chennai airport taxi</a>. City guide: <a href=\"/acting-driver/chennai\">acting driver in Chennai</a>. Published cab rates: <a href=\"/tariff\">tariff</a>.</p>"
     }
   ],
   services: {}

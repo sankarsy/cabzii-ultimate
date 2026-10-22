@@ -97,6 +97,10 @@ export default function CabResultsModifyBar({ initialTrip }) {
                 value={search.pickup}
                 onChange={search.setPickup}
                 onResolved={(item) => {
+                  if (!item?.label) {
+                    search.setFromCoords(null);
+                    return;
+                  }
                   search.setPickup(item.label);
                   if (item.lat != null) search.setFromCoords({ lat: item.lat, lng: item.lng });
                 }}
@@ -110,7 +114,12 @@ export default function CabResultsModifyBar({ initialTrip }) {
                   placeholder="Drop city"
                   value={search.drop}
                   onChange={search.setDrop}
+                  allowCurrentLocation={false}
                   onResolved={(item) => {
+                    if (!item?.label) {
+                      search.setToCoords(null);
+                      return;
+                    }
                     search.setDrop(item.label);
                     if (item.lat != null) search.setToCoords({ lat: item.lat, lng: item.lng });
                   }}

@@ -1,0 +1,67 @@
+{
+  "programmaticPages": 450,
+  "seoCities": 45,
+  "seoRoutes": 180,
+  "seoServices": 11,
+  "db": {
+    "packages": 10,
+    "blogs": 7,
+    "seoCityPages": 0,
+    "seoRoutes": 0,
+    "seoServices": 0,
+    "seoLandings": 0,
+    "cmsPages": 0,
+    "siteSettings": 1
+  },
+  "csvRows": 483,
+  "allowlistY": 92,
+  "allowlistN": 391,
+  "offThemePackages": [
+    {
+      "name": "Manali & Solang Adventure",
+      "url": "/tour-packages/manali-solang-adventure-manali"
+    },
+    {
+      "name": "Rajasthan Forts & Palaces",
+      "url": "/tour-packages/rajasthan-forts-palaces-jaipur"
+    },
+    {
+      "name": "Goa Beach & Nightlife Escape",
+      "url": "/tour-packages/goa-beach-nightlife-escape-goa"
+    },
+    {
+      "name": "Kerala Backwater & Munnar",
+      "url": "/tour-packages/kerala-backwater-munnar-kochi"
+    },
+    {
+      "name": "Andaman Honeymoon Bliss",
+      "url": "/tour-packages/andaman-honeymoon-bliss-port-blair"
+    }
+  ],
+  "byType": {
+    "tour package": 10,
+    "blog": 7,
+    "City hub": 45,
+    "Airport cab": 1,
+    "Acting driver": 45,
+    "Service × city": 179,
+    "Route": 180,
+    "Homepage": 1,
+    "Cabs listing": 1,
+    "Drivers category": 1,
+    "Acting driver hub": 1,
+    "Services hub": 1,
+    "Routes hub": 1,
+    "Call Driver": 1,
+    "Acting drivers Chennai": 1,
+    "Holiday packages": 1,
+    "Blog listing": 1,
+    "About page": 1,
+    "Contact page": 1,
+    "FAQ page": 1,
+    "Locations hub": 1,
+    "Reviews page": 1,
+    "Tariff page": 1
+  },
+  "outFile": "C:\\cabzii-ultimate\\cabzii-ultimate\\reports\\audit-before.csv"
+}

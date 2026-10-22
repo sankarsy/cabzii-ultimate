@@ -14,6 +14,9 @@ import {
 import { actingDriverLandingPath, airportCabBookingPath, cityCabLandingPath } from "../../lib/cityCabPaths";
 import { CALL_DRIVER_TARIFF } from "../../data/call-drivers-chennai";
 import { CALL_DRIVER_SERVICES } from "../../lib/callDriver";
+import CallDriversCtaBar from "../call-drivers/CallDriversCtaBar";
+import { ORG_PHONE } from "../../lib/seo/constants";
+import { CABZII_PHONE_DIGITS, telUrl, whatsappBookingUrl } from "../../lib/conversion";
 import { CarFront, Clock3, ShieldCheck, UserRound } from "lucide-react";
 
 const DRIVER_TRUST = [
@@ -39,10 +42,24 @@ export default function ActingDriverLandingPage({ data, services = CALL_DRIVER_S
               { name: "Acting driver", path: data.path }
             ]}
           />
-          <h1 className="mt-3 text-center text-lg font-bold leading-tight tracking-tight text-slate-900 sm:text-xl md:text-2xl">
+          <h1 className="px-1 text-center text-lg font-bold leading-tight tracking-tight text-slate-900 sm:text-xl md:text-2xl">
             {data.h1}
           </h1>
-          <p className="mx-auto mt-2 max-w-2xl text-center text-xs text-slate-600 sm:text-sm">{data.lead}</p>
+          <p className="mx-auto mt-2 max-w-2xl px-1 text-center text-xs text-slate-600 sm:text-sm">{data.lead}</p>
+          <p className="mx-auto mt-1 max-w-2xl text-center text-xs font-semibold text-slate-800 sm:text-sm">
+            Local from ₹{local.standard} for {local.minHours} hours · extra hour ₹{local.extraHourStandard}
+          </p>
+          <div className="mt-4 flex justify-center">
+            <CallDriversCtaBar
+              telHref={telUrl(ORG_PHONE)}
+              whatsappHref={whatsappBookingUrl({
+                phone: CABZII_PHONE_DIGITS,
+                message: `Hi Cabzii, I need a Call Driver / acting driver in ${city.name}.\nPickup:\nDate:\nHours:\nVehicle:`
+              })}
+              phoneDisplay="+91 99441 97416"
+              sourcePage={data.path || actingDriverLandingPath(city.slug)}
+            />
+          </div>
         </div>
       </div>
 
@@ -114,7 +131,7 @@ export default function ActingDriverLandingPage({ data, services = CALL_DRIVER_S
 
         {data.extraBody ? (
           <div
-            className="prose prose-slate cabzii-seo-block max-w-none text-sm text-slate-700"
+            className="prose prose-slate cabzii-seo-block max-w-none overflow-x-auto break-words text-sm text-slate-700 [&_img]:max-w-full"
             dangerouslySetInnerHTML={{ __html: data.extraBody }}
           />
         ) : null}

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { applyDistanceToTrip, fetchTripDistance } from "../../lib/fetchTripDistance";
 import { coordsForPlaceLabel } from "../../lib/indiaCityCoords";
-import { todayStr, tripNeedsDrop, tripToSearchQuery } from "../../lib/mmtTrip";
+import { cabResultsHref, todayStr, tripNeedsDrop } from "../../lib/mmtTrip";
 import { addDays } from "../../lib/emt/heroDates";
 import { useTodayStr } from "../../lib/useTodayStr";
 import { trackEvent } from "../../lib/analytics";
@@ -158,7 +158,7 @@ export function useCabModifySearch(initialTrip) {
       route: [nextTrip.from, nextTrip.to].filter(Boolean).join(" → "),
       cta_location: "cab_results_modify_bar"
     });
-    router.push(`/cabs/results?${tripToSearchQuery(nextTrip).toString()}`);
+    router.push(cabResultsHref(nextTrip));
     return true;
   }
 

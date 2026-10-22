@@ -3,9 +3,10 @@
  * Title ≤ 60 chars · Description 120–155 chars · Keywords at start.
  */
 
+import { serviceCitySeo } from "../../data/serviceCitySeo";
 import { SEO_SERVICES } from "./services";
-import { todayStr } from "../mmtTrip";
 import { AIRPORT_BY_CITY, airportInfoForCity, cityHasCommercialAirport } from "./airports";
+import { airportTaxiPublicPath, cityCabLandingPath } from "../cityCabPaths";
 
 export { AIRPORT_BY_CITY } from "./airports";
 
@@ -140,13 +141,13 @@ const SERVICE_META_OVERRIDES = {
   "chennai:airport-taxi": {
     title: formatSerpTitle("Chennai Airport Taxi", "Airport Pickup & Drop"),
     description: clampDescription(
-      "Book Chennai airport taxi (MAA) for pickup, drop and city transfers. Share terminal and flight time. Swift Dzire local packages from ₹1,200 (4 Hrs / 40 Km) on the published tariff."
+      "Book Chennai airport taxi (MAA) for pickup, drop and city transfers. Share terminal and flight time. Swift Dzire fares on the published tariff."
     )
   },
   "chennai:local-taxi": {
-    title: formatSerpTitle("Chennai Local Taxi", "Hourly & City Rides"),
+    title: formatSerpTitle("Chennai Call Taxi", "Cab Booking Online"),
     description: clampDescription(
-      "Chennai local taxi service on Cabzii — point-to-point rides and 4hr/8hr packages across OMR, Anna Nagar, T. Nagar and more. Transparent fares, book online."
+      "Chennai call taxi and cab booking on Cabzii — city rides across OMR, Anna Nagar and T. Nagar. Transparent fares, book online."
     )
   },
   "chennai:outstation-cab": {
@@ -256,33 +257,33 @@ const SERVICE_META_OVERRIDES = {
 /** Cab hub /cab-booking/{city} */
 const CAB_BOOKING_META = {
   chennai: {
-    title: formatSerpTitle("Chennai Cab Booking", "Local, Airport & Outstation"),
+    title: formatSerpTitle("Chennai Cab Booking", "Call Taxi Online"),
     description: clampDescription(
-      "Book cabs in Chennai with Cabzii — airport taxi, local packages, outstation and one-way trips. Upfront fares and WhatsApp support."
+      "Book Chennai call taxi and cab booking on Cabzii — airport taxi, outstation and one-way trips. Upfront fares and WhatsApp support."
     )
   },
   salem: {
-    title: formatSerpTitle("Cab Booking Salem", "Outstation & Local Taxi"),
+    title: formatSerpTitle("Cab Booking Salem", "Call Taxi Online"),
     description: clampDescription(
-      "Cab booking in Salem on Cabzii — outstation to Chennai and Coimbatore, local packages and one-way cabs. Transparent fares online."
+      "Cab booking in Salem on Cabzii — outstation to Chennai and Coimbatore, call taxi and one-way cabs. Transparent fares online."
     )
   },
   vellore: {
-    title: formatSerpTitle("Cab Booking Vellore", "Outstation & Local Taxi"),
+    title: formatSerpTitle("Cab Booking Vellore", "Call Taxi Online"),
     description: clampDescription(
-      "Book cabs in Vellore with Cabzii — Chennai trips, CMC/VIT transfers and local hire. Sedan, SUV and Innova with fares shown before you confirm."
+      "Book Vellore call taxi and cab booking with Cabzii — Chennai trips, CMC/VIT transfers. Sedan, SUV and Innova with fares shown before you confirm."
     )
   },
   erode: {
-    title: formatSerpTitle("Cab Booking Erode", "Outstation & Local"),
+    title: formatSerpTitle("Cab Booking Erode", "Call Taxi Online"),
     description: clampDescription(
-      "Cab booking in Erode on Cabzii — outstation to Chennai and Coimbatore, local taxi packages and one-way trips. Compare fares and book online."
+      "Cab booking in Erode on Cabzii — outstation to Chennai and Coimbatore, call taxi and one-way trips. Compare fares and book online."
     )
   },
   hosur: {
     title: formatSerpTitle("Cab Booking Hosur", "Bengaluru & Chennai"),
     description: clampDescription(
-      "Book cabs in Hosur with Cabzii — quick trips to Bengaluru and Chennai, local packages and outstation hire. Upfront fares."
+      "Book Hosur call taxi and cab booking with Cabzii — quick trips to Bengaluru and Chennai, and outstation hire. Upfront fares."
     )
   },
   madurai: {
@@ -294,7 +295,7 @@ const CAB_BOOKING_META = {
   bengaluru: {
     title: formatSerpTitle("Bengaluru Cab Booking", "Airport Taxi & Outstation"),
     description: clampDescription(
-      "Book cabs in Bengaluru with Cabzii.in. Airport drops, outstation trips and local hire. Fares shown before you confirm."
+      "Book Bengaluru call taxi and cab booking with Cabzii.in. Airport drops and outstation trips. Fares shown before you confirm."
     )
   },
   hyderabad: {
@@ -312,7 +313,7 @@ const CAB_BOOKING_META = {
   trichy: {
     title: formatSerpTitle("Cab Booking Trichy", "Online Taxi & Rental"),
     description: clampDescription(
-      "Cab booking in Trichy on Cabzii.in — local hourly rental, outstation and one-way cabs to Chennai and Madurai. Compare fares and book online."
+      "Cab booking in Trichy on Cabzii.in — call taxi, outstation and one-way cabs to Chennai and Madurai. Compare fares and book online."
     )
   },
   kodaikanal: {
@@ -444,6 +445,13 @@ export function getServiceMeta(service, city) {
   const key = `${city.slug}:${service.slug}`;
   const override = SERVICE_META_OVERRIDES[key];
   if (override) return override;
+  const seeded = serviceCitySeo(city.slug, service.slug);
+  if (seeded?.description) {
+    return {
+      title: formatSerpTitle(`${service.name} ${city.name}`, "Book Online"),
+      description: clampDescription(seeded.description)
+    };
+  }
 
   if (service.slug === "hourly-rental") {
     return {
@@ -536,41 +544,41 @@ export function getCabBookingMeta(city) {
   const variants = hasAirport
     ? [
         {
-          title: formatSerpTitle(`${city.name} Cab Booking`, "Airport Taxi & Packages"),
+          title: formatSerpTitle(`${city.name} Cab Booking`, "Call Taxi Online"),
           description: clampDescription(
-            `Book cabs in ${city.name} with Cabzii.in. Outstation, airport taxi and local hire. Transparent fares.`
+            `Book ${city.name} call taxi and cab booking with Cabzii.in. Outstation and airport taxi. Transparent fares.`
           )
         },
         {
-          title: formatSerpTitle(`Cab Booking ${city.name}`, "Online Taxi Service"),
+          title: formatSerpTitle(`Cab Booking ${city.name}`, "Call Taxi Service"),
           description: clampDescription(
-            `Cab booking in ${city.name} made easy — compare outstation, airport and hourly packages on Cabzii.in. Professional drivers, upfront fares.`
+            `Cab booking in ${city.name} made easy — call taxi, outstation and airport on Cabzii.in. Professional drivers, upfront fares.`
           )
         },
         {
-          title: formatSerpTitle(`Taxi in ${city.name}`, "Book Cabs Online"),
+          title: formatSerpTitle(`${city.name} Call Taxi`, "Book Cabs Online"),
           description: clampDescription(
-            `Need a taxi in ${city.name}? Book local, airport and outstation cabs on Cabzii.in with transparent fares.`
+            `Need a taxi in ${city.name}? Book call taxi, airport and outstation cabs on Cabzii.in with transparent fares.`
           )
         }
       ]
     : [
         {
-          title: formatSerpTitle(`${city.name} Cab Booking`, "Outstation & Local Taxi"),
+          title: formatSerpTitle(`${city.name} Cab Booking`, "Call Taxi Online"),
           description: clampDescription(
-            `Book cabs in ${city.name} with Cabzii.in — local packages, outstation and one-way trips. Transparent fares and WhatsApp support.`
+            `Book ${city.name} call taxi and cab booking with Cabzii.in — outstation and one-way trips. Transparent fares and WhatsApp support.`
           )
         },
         {
-          title: formatSerpTitle(`Cab Booking ${city.name}`, "Online Taxi Service"),
+          title: formatSerpTitle(`Cab Booking ${city.name}`, "Call Taxi Service"),
           description: clampDescription(
-            `Cab booking in ${city.name} — compare local hourly and outstation packages on Cabzii.in. Professional drivers, upfront fares.`
+            `Cab booking in ${city.name} — call taxi and outstation on Cabzii.in. Professional drivers, upfront fares.`
           )
         },
         {
-          title: formatSerpTitle(`Taxi in ${city.name}`, "Book Cabs Online"),
+          title: formatSerpTitle(`${city.name} Call Taxi`, "Book Cabs Online"),
           description: clampDescription(
-            `Need a taxi in ${city.name}? Book local and outstation cabs on Cabzii.in with transparent fares.`
+            `Need a taxi in ${city.name}? Book call taxi and outstation cabs on Cabzii.in with transparent fares.`
           )
         }
       ];
@@ -670,7 +678,7 @@ export function getServiceH1(service, city) {
     if (service.slug === "driver-on-hire") return `Driver on Hire in ${city.name}`;
     if (service.slug === "chauffeur-service") return `Chauffeur Service in ${city.name}`;
     if (service.slug === "hourly-rental") return `Hourly Cab Rental in ${city.name}`;
-    if (service.slug === "local-taxi") return `Local Taxi in ${city.name}`;
+    if (service.slug === "local-taxi") return `Call Taxi in ${city.name}`;
     return `Car Rental in ${city.name}`;
   }
   if (service.slug === "one-way-cab") return `One-Way Cabs in ${city.name}`;
@@ -678,14 +686,14 @@ export function getServiceH1(service, city) {
 }
 
 export function getCabBookingH1(city) {
-  if (city.slug === "chennai") return "Cab Booking in Chennai — Airport, Local & Outstation";
+  if (city.slug === "chennai") return "Cab Booking in Chennai — Call Taxi Online";
   if (city.slug === "madurai") return "Cab Booking Madurai — Online Taxi & Outstation";
   if (city.slug === "coimbatore") return "Cab Booking in Coimbatore — Online Taxi Service";
-  if (city.slug === "trichy") return "Cab Booking Trichy — Online Taxi & Local Rental";
+  if (city.slug === "trichy") return "Cab Booking Trichy — Call Taxi Online";
   if (city.slug === "kodaikanal") return "Cab Booking Kodaikanal — Hill Station Taxi";
-  if (city.slug === "salem") return "Cab Booking in Salem — Outstation & Local Taxi";
+  if (city.slug === "salem") return "Cab Booking in Salem — Call Taxi Online";
   if (city.slug === "vellore") return "Cab Booking in Vellore — Online Taxi Service";
-  return `Cab Booking in ${city.name} — Online Taxi Service`;
+  return `Cab Booking in ${city.name} — Call Taxi Online`;
 }
 
 /** Search results deep-link for service landing CTAs */
@@ -694,40 +702,23 @@ export function serviceSearchHref(service, city) {
     const q = new URLSearchParams({ city: city.name });
     return `/holidays?${q.toString()}`;
   }
-
-  const base = new URLSearchParams({
-    from: city.name,
-    date: todayStr(),
-    time: "09:00"
-  });
-
-  if (service.slug === "airport-taxi") {
-    base.set("serviceTripType", "airport");
-    base.set("to", city.name);
-    base.set("direction", "pickup");
-  } else if (service.slug === "hourly-rental") {
-    base.set("serviceTripType", "hourly");
-    base.set("from", city.slug === "bengaluru" ? "Kempegowda International Airport, Bengaluru" : city.name);
-    base.set("to", city.name);
-    base.set("city", city.name);
-    base.set("packageHours", city.slug === "bengaluru" ? "12" : "8");
-  } else if (
+  if (service.slug === "airport-taxi") return airportTaxiPublicPath(city.slug);
+  if (
+    service.slug === "hourly-rental" ||
     service.slug === "car-rental" ||
     service.slug === "cab-rental" ||
     service.slug === "local-taxi"
   ) {
-    base.set("serviceTripType", "local");
-    base.set("to", city.name);
-    base.set("packageHours", "8");
-  } else {
-    base.set("serviceTripType", "outstation");
-    base.set("to", "");
+    return cityCabLandingPath(city.slug);
   }
-
-  return `/cabs/results?${base.toString()}`;
+  return `/services/outstation-cab/${city.slug}`;
 }
 
 export function serviceMetaKeywords(service, city) {
+  const seeded = serviceCitySeo(city.slug, service.slug);
+  if (seeded?.keywords) {
+    return seeded.keywords.split(",").map((part) => part.trim()).filter(Boolean);
+  }
   const cityLower = city.name.toLowerCase();
   const templateId = SERVICE_TEMPLATE[service.slug] || "outstation";
   const base = [
@@ -789,7 +780,7 @@ export function serviceMetaKeywords(service, city) {
     `car rental ${cityLower}`,
     `cab rental in ${cityLower}`,
     `cab rental ${cityLower}`,
-    `local taxi ${cityLower}`
+    `call taxi ${cityLower}`
   ];
   if (city.slug === "bengaluru") {
     rentalKw.unshift("car rental in bangalore", "car rental bangalore", "cab rental bangalore");
@@ -953,9 +944,10 @@ export function routeMetaKeywords(route) {
   const from = route.fromCity.name.toLowerCase();
   const to = route.toCity.name.toLowerCase();
   return [
-    `one way cab ${from} to ${to}`,
+    `${from} to ${to} cab`,
     `${from} to ${to} taxi`,
+    `one way cab ${from} to ${to}`,
     `outstation cab ${from}`,
-    "cabzii one way cab"
+    `cabzii ${from} ${to}`
   ];
 }

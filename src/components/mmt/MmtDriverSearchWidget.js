@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
 import PlaceAutocomplete from "../PlaceAutocomplete";
-import { CalendarIcon, ClockIcon, SearchIcon, TwoWayIcon } from "../icons";
+import { SearchIcon, TwoWayIcon } from "../icons";
+import { NativeDateField, NativeTimeField } from "../ui/NativeDateTimeField";
 import { SEARCH_FIELD_ICON_CHIPS, SEARCH_FIELD_ICONS } from "../icons/heroIcons";
 import { EmtHeroPriceHint } from "../emt/EmtHeroPills";
 import { formatTime12, addDays, openNativePicker } from "../../lib/emt/heroDates";
@@ -186,7 +187,7 @@ export default function MmtDriverSearchWidget({
       }
     }
 
-    router.push(`/drivers/results?${driverTripToSearchQuery(trip).toString()}`);
+    router.push("/call-driver");
   }
 
   function handlePickupDate(next) {
@@ -226,32 +227,13 @@ export default function MmtDriverSearchWidget({
     </div>
   ) : (
     <>
-      <div className="flex flex-col justify-center gap-1 bg-white p-4">
-        <label className="text-xs font-medium uppercase tracking-wide text-slate-500">Pickup Date</label>
-        <div className="relative">
-          <CalendarIcon className="pointer-events-none absolute left-0 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" aria-hidden />
-          <input
-            type="date"
-            min={today || undefined}
-            value={date}
-            onChange={(e) => handlePickupDate(e.target.value)}
-            onClick={openNativePicker}
-            className="w-full border-0 bg-transparent pl-7 text-lg font-bold text-slate-900 focus:outline-none"
-          />
-        </div>
+      <div className="flex min-w-0 flex-col justify-center gap-1 bg-white p-4">
+        <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Pickup Date</p>
+        <NativeDateField value={date} onChange={handlePickupDate} min={today} label="" ariaLabel="Pickup date" />
       </div>
-      <div className="flex flex-col justify-center gap-1 bg-white p-4">
-        <label className="text-xs font-medium uppercase tracking-wide text-slate-500">Pickup Time</label>
-        <div className="relative">
-          <ClockIcon className="pointer-events-none absolute left-0 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" aria-hidden />
-          <input
-            type="time"
-            value={time}
-            onChange={(e) => setTime(e.target.value)}
-            onClick={openNativePicker}
-            className="w-full border-0 bg-transparent pl-7 text-lg font-bold text-slate-900 focus:outline-none"
-          />
-        </div>
+      <div className="flex min-w-0 flex-col justify-center gap-1 bg-white p-4">
+        <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Pickup Time</p>
+        <NativeTimeField value={time} onChange={setTime} label="" ariaLabel="Pickup time" />
       </div>
     </>
   );
@@ -390,6 +372,7 @@ export default function MmtDriverSearchWidget({
             placeholder={heroMode ? "Going to" : "City / area"}
             value={drop}
             onChange={setDrop}
+            allowCurrentLocation={false}
             onResolved={(area) => {
               setToCoords(area?.lat != null ? { lat: area.lat, lng: area.lng } : null);
               if (area?.city) writeSelectedCity(area.city);
@@ -434,6 +417,7 @@ export default function MmtDriverSearchWidget({
                 placeholder={heroMode ? "Going to" : "Drop location"}
                 value={drop}
                 onChange={setDrop}
+                allowCurrentLocation={false}
                 onResolved={(area) => {
                   setToCoords(area?.lat != null ? { lat: area.lat, lng: area.lng } : null);
                 }}

@@ -1,11 +1,13 @@
 import TravelLayoutClient from "../../components/mmt/TravelLayoutClient";
 import JsonLd from "../../components/seo/JsonLd";
-import { buildPageMetadata, SEO_CITIES, locationsIndexJsonLd } from "../../lib/seo";
+import { buildPageMetadata, MAIN_PAGE_CITY_SLUGS, cityBySlug, locationsIndexJsonLd } from "../../lib/seo";
+
+const LIVE_CITIES = MAIN_PAGE_CITY_SLUGS.map((slug) => cityBySlug(slug)).filter(Boolean);
 
 export const metadata = buildPageMetadata({
   title: "Cab & Taxi Service Locations in South India | Cabzii",
   description:
-    "Cabzii service areas across Chennai, Bengaluru, Hyderabad, Coimbatore, Madurai, Tirupati and 20+ cities. Book cabs, acting drivers and holiday packages online.",
+    "Cabzii service areas across Chennai, Madurai, Tirupati, Trichy, Coimbatore and Vellore. Book cabs, acting drivers and holiday packages online.",
   path: "/locations",
   keywords: [
     "cab service locations",
@@ -19,7 +21,7 @@ export const metadata = buildPageMetadata({
 export default function LocationsLayout({ children }) {
   return (
     <TravelLayoutClient>
-      <JsonLd data={locationsIndexJsonLd(SEO_CITIES)} />
+      <JsonLd data={locationsIndexJsonLd(LIVE_CITIES)} />
       {children}
     </TravelLayoutClient>
   );

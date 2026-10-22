@@ -6,14 +6,12 @@ import RelatedSeoLinks from "./seo/RelatedSeoLinks";
 import SeoPageView from "./seo/SeoPageView";
 import { peerCitiesForHub, isTamilNaduCity, isPrimaryFocusCity } from "../lib/seo";
 import { actingDriverLandingPath } from "../lib/cityCabPaths";
-import { classifyRoute } from "../lib/seo/indexation";
 import { getCityFaqs } from "../lib/seo/content";
 import { cityHasCommercialAirport } from "../lib/seo/airports";
 import { tunedActingDriverH1 } from "../lib/seo/metadataTuning";
 import { servicesForCityHub } from "../lib/seo/programmaticMeta";
-import { routesForCity } from "../lib/seo/routes";
+import { pickOutstationRoutes } from "../lib/cityOutstationRoutes";
 import { servicePath } from "../lib/seo/services";
-import { routePublicPath } from "../lib/seo/outstationPaths";
 
 export default function CitySeoPage({ city, extraBody = "", headingOverride = "", faqsOverride = null }) {
   const title = headingOverride || tunedActingDriverH1(city);
@@ -22,10 +20,7 @@ export default function CitySeoPage({ city, extraBody = "", headingOverride = ""
     Array.isArray(faqsOverride) && faqsOverride.length
       ? faqsOverride
       : getCityFaqs(city, "driver");
-  const cityRoutes = routesForCity(city.slug)
-    .filter((route) => classifyRoute(route).indexable)
-    .sort((a, b) => classifyRoute(b).commercialScore - classifyRoute(a).commercialScore)
-    .slice(0, 8);
+  const cityRoutes = pickOutstationRoutes(city.slug, { direction: "from", limit: 8 });
   const topServices = servicesForCityHub(city.slug, 4);
 
   return (
@@ -96,12 +91,12 @@ export default function CitySeoPage({ city, extraBody = "", headingOverride = ""
           <h2>Popular routes from {city.name}</h2>
           <ul className="mt-2.5 flex flex-wrap gap-1.5">
             {cityRoutes.map((route) => (
-              <li key={route.slug}>
+              <li key={route.href}>
                 <Link
-                  href={routePublicPath(route.slug)}
+                  href={route.href}
                   className="inline-block rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:text-[var(--cabzii-brand)]"
                 >
-                  {route.fromCity.name} → {route.toCity.name}
+                  {route.originName} → {route.otherName}
                 </Link>
               </li>
             ))}

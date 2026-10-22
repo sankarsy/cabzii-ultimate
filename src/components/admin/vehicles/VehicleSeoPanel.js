@@ -654,7 +654,7 @@ export default function VehicleSeoPanel({ form, patch, disabled = false, pathPre
           <textarea className={`${inputCls()} min-h-[72px]`} disabled={disabled} value={form.shortDescription || ""} onChange={(e) => patch({ shortDescription: e.target.value })} />
         </Field>
         <div className="flex items-center justify-between gap-2">
-          <p className="text-xs font-semibold text-slate-600">Long SEO Content</p>
+          <p className="text-xs font-semibold text-slate-600">SEO page content (shown below the cab list)</p>
           <button type="button" className="text-[11px] font-semibold text-sky-700" onClick={() => setEditorDark((v) => !v)}>
             {editorDark ? "Light editor" : "Dark editor"}
           </button>

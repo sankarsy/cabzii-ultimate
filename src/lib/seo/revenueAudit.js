@@ -218,7 +218,7 @@ const STATIC_MONEY_PAGES = [
     vendorSupplyLabel: "HQ market — supply assumed stronger",
     bookingPath: "/call-driver",
     cta: "Choose Call Driver service",
-    duplicateRisk: "same intent as /chennai/acting-driver (guide vs book)",
+    duplicateRisk: "booking product vs /acting-driver/chennai city guide — keep titles distinct",
     searchIntent: 8,
     commercialIntent: 9,
     bookingPotential: 9,

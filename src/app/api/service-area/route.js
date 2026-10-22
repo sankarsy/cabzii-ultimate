@@ -23,7 +23,7 @@ export async function GET(request) {
 
   if (apiKey && (pincode || address)) {
     try {
-      const geo = await geocodeAddress(pincode ? `${pincode}, India` : address, apiKey);
+      const geo = await geocodeAddress(pincode ? `${pincode}, India` : address);
       if (geo) {
         resolved = {
           city: geo.city || city,

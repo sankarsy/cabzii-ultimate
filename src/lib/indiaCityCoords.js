@@ -23,6 +23,10 @@ const CITY_COORDS = {
   ooty: { lat: 11.4064, lng: 76.6932, city: "Udhagamandalam" },
   udhagamandalam: { lat: 11.4064, lng: 76.6932, city: "Udhagamandalam" },
   kodaikanal: { lat: 10.2381, lng: 77.4892, city: "Kodaikanal" },
+  sabarimala: { lat: 9.4346, lng: 77.0811, city: "Sabarimala" },
+  sabarimalai: { lat: 9.4346, lng: 77.0811, city: "Sabarimala" },
+  pamba: { lat: 9.408, lng: 77.08, city: "Pamba" },
+  ayyappankovil: { lat: 9.8384, lng: 77.0276, city: "Ayyappan Kovil" },
   kanchipuram: { lat: 12.8342, lng: 79.7036, city: "Kanchipuram" },
   tirunelveli: { lat: 8.7139, lng: 77.7567, city: "Tirunelveli" },
   thanjavur: { lat: 10.787, lng: 79.1378, city: "Thanjavur" },
@@ -53,6 +57,35 @@ export function coordsForPlaceLabel(label) {
     }
   }
   return null;
+}
+
+function haversineKm(lat1, lng1, lat2, lng2) {
+  const toRad = (n) => (Number(n) * Math.PI) / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLng = toRad(lng2 - lng1);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+  return 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+const MAX_GPS_CITY_KM = 80;
+
+/** Closest catalog city for a one-shot GPS pin. Not a live tracker. */
+export function nearestCityFromCoords(lat, lng) {
+  const userLat = Number(lat);
+  const userLng = Number(lng);
+  if (!Number.isFinite(userLat) || !Number.isFinite(userLng)) return null;
+  let best = null;
+  const seen = new Set();
+  for (const row of Object.values(CITY_COORDS)) {
+    if (!row?.city || seen.has(row.city)) continue;
+    seen.add(row.city);
+    const km = haversineKm(userLat, userLng, row.lat, row.lng);
+    if (!best || km < best.km) best = { name: row.city, km };
+  }
+  if (!best || best.km > MAX_GPS_CITY_KM) return null;
+  return best;
 }
 
 export function enrichPredictionWithCoords(prediction) {

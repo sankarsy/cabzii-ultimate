@@ -1,23 +1,16 @@
-import Link from "next/link";
-import { routeToDriverSearchHref, routeToTrip } from "../../lib/routeTrip";
+import { routeToTrip } from "../../lib/routeTrip";
 import Breadcrumbs from "./Breadcrumbs";
-import FaqSection from "./FaqSection";
 import SeoRouteCabListing from "./SeoRouteCabListing";
-import { servicePath, SEO_SERVICES } from "../../lib/seo/services";
+import OutstationPageBelow, { SeoPageArticle } from "../city-cabs/OutstationPageBelow";
 import ChennaiClusterLinks from "./ChennaiClusterLinks";
 import SeoPageView from "./SeoPageView";
 import { cityCabLandingPath } from "../../lib/cityCabPaths";
-import TrackedLeadCtas from "../conversion/TrackedLeadCtas";
-import { outstationHubPath, reverseRoutePublicPath, routePublicPath } from "../../lib/seo/outstationPaths";
+import { outstationHubPath, routePublicPath } from "../../lib/seo/outstationPaths";
 
 export default function RouteLandingPage({ route, faqs, extraBody = "", cabs = [], path: pathProp }) {
-  const { fromCity, toCity, distance, duration, sedanFrom, suvFrom, slug } = route;
+  const { fromCity, toCity, slug } = route;
   const path = pathProp || routePublicPath(slug);
-  const driverHref = routeToDriverSearchHref(route);
   const trip = routeToTrip(route);
-  const reversePath = reverseRoutePublicPath(fromCity.slug, toCity.slug);
-  const airportSvc = SEO_SERVICES.find((s) => s.slug === "airport-taxi");
-  const outstationSvc = SEO_SERVICES.find((s) => s.slug === "outstation-cab");
 
   return (
     <div>
@@ -38,180 +31,18 @@ export default function RouteLandingPage({ route, faqs, extraBody = "", cabs = [
             { name: `${fromCity.name} to ${toCity.name}`, path }
           ]}
         />
-        <h1>
-          {fromCity.name} To {toCity.name} Taxi Service
-        </h1>
-        <p>
-          {fromCity.name} to {toCity.name} taxi distance: {distance}. Typical travel time {duration}. Tolls extra unless
-          listed.
-        </p>
       </div>
 
       <SeoRouteCabListing initialTrip={trip} initialCabs={cabs} />
 
-      <article className="section-shell cabzii-seo-landing pt-2">
-        <section className="cabzii-seo-block">
-        <h2>Distance &amp; travel time</h2>
-        <div className="mt-2 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-          <table className="w-full text-left text-[11px] sm:text-xs">
-            <tbody>
-              <tr className="border-b border-slate-100">
-                <th className="px-3 py-2 font-semibold text-slate-700">Route</th>
-                <td className="px-3 py-2 text-slate-600">
-                  {fromCity.name} → {toCity.name}
-                </td>
-              </tr>
-              <tr className="border-b border-slate-100">
-                <th className="px-3 py-2 font-semibold text-slate-700">Pickup location</th>
-                <td className="px-3 py-2 text-slate-600">{fromCity.name}</td>
-              </tr>
-              <tr className="border-b border-slate-100">
-                <th className="px-3 py-2 font-semibold text-slate-700">Drop location</th>
-                <td className="px-3 py-2 text-slate-600">{toCity.name}</td>
-              </tr>
-              <tr className="border-b border-slate-100">
-                <th className="px-3 py-2 font-semibold text-slate-700">Distance</th>
-                <td className="px-3 py-2 text-slate-600">{distance}</td>
-              </tr>
-              <tr>
-                <th className="px-3 py-2 font-semibold text-slate-700">Travel time</th>
-                <td className="px-3 py-2 text-slate-600">{duration}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <section className="cabzii-seo-block">
-        <h2>Cab fare &amp; pricing</h2>
-        <div className="mt-2 overflow-hidden rounded-xl border border-slate-200 bg-slate-50 shadow-sm">
-          <table className="w-full text-left text-[11px] sm:text-xs">
-            <tbody>
-              <tr className="border-b border-slate-100 bg-white">
-                <th className="px-3 py-2 font-semibold text-slate-700">Sedan (Dzire / Amaze)</th>
-                <td className="px-3 py-2 font-bold text-slate-900">from ₹{sedanFrom.toLocaleString("en-IN")}</td>
-              </tr>
-              <tr className="bg-white">
-                <th className="px-3 py-2 font-semibold text-slate-700">SUV / Innova</th>
-                <td className="px-3 py-2 font-bold text-slate-900">from ₹{suvFrom.toLocaleString("en-IN")}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <p className="mt-1.5 text-[10px] text-slate-500">
-          Indicative one-way starting fares for the smallest listed vehicle. Exact quote depends on date, vehicle and tolls — shown on Cabzii before you pay. Tolls, parking and state taxes are extra unless listed.
-        </p>
-        <div className="mt-3">
-          <TrackedLeadCtas from={fromCity.name} to={toCity.name} source="route_fare" compact />
-        </div>
-      </section>
-
-      {extraBody ? (
-        <div
-          className="prose prose-slate cabzii-seo-block max-w-none text-xs text-slate-700"
-          dangerouslySetInnerHTML={{ __html: extraBody }}
-        />
-      ) : null}
-
-      <section className="cabzii-seo-block">
-        <h2>Why choose Cabzii for this route?</h2>
-        <ul className="cabzii-seo-card-list mt-2.5 grid gap-2 sm:grid-cols-2">
-          {[
-            "True one-way pricing — no return empty charge confusion",
-            `Highway-experienced drivers on ${fromCity.name} – ${toCity.name}`,
-            "Sedan, SUV, Innova and tempo for groups",
-            "WhatsApp support before and during your trip",
-            "Upfront fare breakdown before you pay"
-          ].map((item) => (
-            <li
-              key={item}
-              className="rounded-xl border border-slate-200 bg-white text-slate-700 shadow-sm"
-            >
-              {item}
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section className="cabzii-seo-block">
-        <h2>Related services &amp; links</h2>
-        <ul className="mt-2.5 flex flex-wrap gap-1.5">
-          <li>
-            <Link href={cityCabLandingPath(fromCity.slug)} className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:text-[var(--cabzii-brand)]">
-              Cab booking {fromCity.name}
-            </Link>
-          </li>
-          {outstationSvc ? (
-            <li>
-              <Link href={servicePath(outstationSvc, fromCity)} className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:text-[var(--cabzii-brand)]">
-                Outstation cab {fromCity.name}
-              </Link>
-            </li>
-          ) : null}
-          <li>
-            <Link href={`/services/one-way-cab/${fromCity.slug}`} className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:text-[var(--cabzii-brand)]">
-              One-way cab {fromCity.name}
-            </Link>
-          </li>
-          <li>
-            <Link href={cityCabLandingPath(toCity.slug)} className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:text-[var(--cabzii-brand)]">
-              Cabs in {toCity.name}
-            </Link>
-          </li>
-          <li>
-            <Link href="/cabs" className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:text-[var(--cabzii-brand)]">
-              Vehicle options
-            </Link>
-          </li>
-          {fromCity.slug === "chennai" && airportSvc ? (
-            <li>
-              <Link href={servicePath(airportSvc, fromCity)} className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:text-[var(--cabzii-brand)]">
-                Airport taxi Chennai
-              </Link>
-            </li>
-          ) : null}
-          <li>
-            <Link href={reversePath} className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:text-[var(--cabzii-brand)]">
-              {toCity.name} → {fromCity.name} cab
-            </Link>
-          </li>
-          <li>
-            <Link href={driverHref} className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:text-[var(--cabzii-brand)]">
-              Acting driver · same route
-            </Link>
-          </li>
+      <OutstationPageBelow fromName={fromCity.name} fromSlug={fromCity.slug} toName={toCity.name} faqs={faqs}>
+        <div>
+          <SeoPageArticle html={extraBody} />
           {fromCity.slug === "chennai" ? (
-            <li>
-              <Link href="/tariff" className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:text-[var(--cabzii-brand)]">
-                Chennai cab tariff
-              </Link>
-            </li>
+            <ChennaiClusterLinks title="More Chennai services" excludeHref={path} />
           ) : null}
-        </ul>
-      </section>
-
-      <FaqSection title={`${fromCity.name} to ${toCity.name} cab — FAQ`} faqs={faqs} />
-
-      {fromCity.slug === "chennai" ? (
-        <ChennaiClusterLinks title="More Chennai services" excludeHref={path} />
-      ) : null}
-
-      <section className="cabzii-seo-block rounded-xl bg-[var(--cabzii-brand)] p-3.5 text-white sm:p-4">
-        <h2 className="!text-white text-sm font-bold sm:text-base">Book {fromCity.name} to {toCity.name} cab now</h2>
-        <p className="mt-1 text-[11px] text-blue-100 sm:text-xs">
-          Instant online quote · Professional drivers · WhatsApp and phone support
-        </p>
-        <div className="mt-2.5 flex flex-wrap gap-1.5">
-          <Link
-            href="#cabs"
-            className="cabzii-btn cabzii-btn-sm cabzii-tap rounded-full bg-white font-bold text-[var(--cabzii-brand)] hover:bg-slate-100"
-          >
-            Select a cab above
-          </Link>
-          <TrackedLeadCtas from={fromCity.name} to={toCity.name} source="route_footer" compact />
         </div>
-      </section>
-      </article>
+      </OutstationPageBelow>
     </div>
   );
 }

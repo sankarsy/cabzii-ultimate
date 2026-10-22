@@ -10,6 +10,7 @@ import { resolvePageLinkGroups } from "../../lib/seo/pageLinks";
 import { DEFAULT_HQ_CITY } from "../../lib/vehicleAdminConfig";
 import HomeHowToBook from "./HomeHowToBook";
 import HomeShowcaseCarousel from "./HomeShowcaseCarousel";
+import CityScopedShowcase from "./CityScopedShowcase";
 import HomeBlogTeasers from "./HomeBlogTeasers";
 import HomeFleetLoader from "./HomeFleetLoader";
 
@@ -50,8 +51,8 @@ export default function HomeBelowFold({
   return (
     <>
       <HomeShowcaseCarousel section="offers" cards={showcase.offers} />
-      <HomeShowcaseCarousel section="services" cards={showcase.services} />
-      <HomeShowcaseCarousel section="routes" cards={showcase.routes} />
+      <CityScopedShowcase section="services" />
+      <CityScopedShowcase section="routes" />
 
       {cabs.length ? <HomeFleetGrid cabs={cabs} /> : <HomeFleetLoader />}
 

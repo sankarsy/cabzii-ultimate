@@ -2,6 +2,8 @@
  * Client helper for Enterprise AI SEO APIs.
  */
 
+import { computeRankingSeoScore } from "./seo/rankingSeoScore";
+
 const inflight = new Map();
 
 export async function callAiSeo(task, payload = {}, { token, signal } = {}) {
@@ -36,6 +38,13 @@ export async function callAiSeo(task, payload = {}, { token, signal } = {}) {
   }
 }
 
+function titleCaseSlug(slug) {
+  return String(slug || "")
+    .replace(/[-_]+/g, " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase())
+    .trim();
+}
+
 export function buildAiPayload(form = {}, pathPrefix = "/cabs") {
   return {
     vehicleName: form.vehicleName || form.title || form.name || form.operator || "",
@@ -60,5 +69,40 @@ export function buildAiPayload(form = {}, pathPrefix = "/cabs") {
     customPrompt: form.customPrompt || form.aiPrompt || "",
     pathPrefix,
     images: form.images || []
+  };
+}
+
+export function buildRankingAiPayload(form = {}, row = {}, customPrompt = "") {
+  const city = titleCaseSlug(row.citySlug) || "Tamil Nadu";
+  const name = form.productName || row.productName || row.h1 || row.typeLabel || "Cabzii page";
+  const rank = computeRankingSeoScore({ form, path: row.path || "", citySlug: row.citySlug || "" });
+  const gaps = rank.checks
+    .filter((check) => check.status !== "pass")
+    .map((check) => `${check.label}: ${check.message}`)
+    .join("; ");
+  return {
+    pageKind: "ranking",
+    pageType: row.typeLabel || row.type || "ranking page",
+    path: row.path || "",
+    pathPrefix: row.path || "/",
+    vehicleName: name,
+    title: name,
+    name,
+    h1: name,
+    city,
+    state: "Tamil Nadu",
+    category: row.typeLabel || row.type || "",
+    type: row.type || "",
+    seoTitle: form.seoTitle || "",
+    seoDescription: form.seoDescription || "",
+    keywords: form.seoKeywords || "",
+    seoKeywords: form.seoKeywords || "",
+    intro: form.intro || "",
+    html: form.html || "",
+    faqs: Array.isArray(form.faqs) ? form.faqs : [],
+    content: form.html || form.intro || form.seoDescription || "",
+    longSeoContent: form.html || "",
+    rankGaps: gaps,
+    customPrompt: [customPrompt, gaps ? `Current score ${rank.score}/100. Fix: ${gaps}` : ""].filter(Boolean).join("\n")
   };
 }

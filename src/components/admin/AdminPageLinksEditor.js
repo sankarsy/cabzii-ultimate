@@ -100,7 +100,7 @@ export default function AdminPageLinksEditor({ groups = [], onChange, onLoadDefa
                     className={inputCls()}
                     value={link.href || ""}
                     onChange={(e) => updateLink(groupIndex, linkIndex, { href: e.target.value })}
-                    placeholder="/chennai"
+                    placeholder="/cab-booking/chennai"
                   />
                   <input
                     className={`sm:col-span-2 ${inputCls()}`}
@@ -114,7 +114,7 @@ export default function AdminPageLinksEditor({ groups = [], onChange, onLoadDefa
                   <div className="mt-2 space-y-1.5 border-t border-slate-100 pt-2">
                     <p className="text-[11px] font-semibold text-slate-500">Destinations under this city</p>
                     {(link.children || []).map((child, childIndex) => (
-                      <div key={`${linkIndex}-${childIndex}`} className="grid gap-1.5 sm:grid-cols-[1fr_1fr_auto]">
+                      <div key={`${linkIndex}-${childIndex}`} className="grid gap-1.5 lg:grid-cols-[minmax(10rem,14rem)_minmax(0,1fr)_auto]">
                         <input
                           className={inputCls()}
                           value={child.label || ""}
@@ -125,7 +125,7 @@ export default function AdminPageLinksEditor({ groups = [], onChange, onLoadDefa
                           className={inputCls()}
                           value={child.href || ""}
                           onChange={(e) => updateChild(groupIndex, linkIndex, childIndex, { href: e.target.value })}
-                          placeholder="/routes/chennai-to-pondicherry-cab"
+                          placeholder="/chennai/outstation/chennai-to-pondicherry"
                         />
                         <button
                           type="button"

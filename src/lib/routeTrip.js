@@ -2,7 +2,7 @@ import { cityBySlug } from "./seo/cities";
 import { lookupRouteTripData } from "./seo/routeCatalog";
 import { driverTripToSearchQuery } from "./driverTrip";
 import { coordsForPlaceLabel } from "./indiaCityCoords";
-import { todayStr, tripToSearchQuery } from "./mmtTrip";
+import { cabResultsHref, todayStr, tripToSearchQuery } from "./mmtTrip";
 
 /** Parse km from route row or lookup hub matrix (e.g. Chennai → Tirupati ≈ 135 km). */
 export function parseRouteDistanceKm(route) {
@@ -54,13 +54,11 @@ export function routeToTrip(route, { roundTrip = false } = {}) {
 }
 
 export function routeToCabSearchHref(route, options) {
-  const trip = routeToTrip(route, options);
-  return `/cabs/results?${tripToSearchQuery(trip).toString()}`;
+  return cabResultsHref(routeToTrip(route, options));
 }
 
-export function routeToDriverSearchHref(route, options) {
-  const trip = routeToTrip(route, options);
-  return `/drivers/results?${driverTripToSearchQuery(trip).toString()}`;
+export function routeToDriverSearchHref() {
+  return "/call-driver";
 }
 
 /** Home hero modify link — prefills search widget */

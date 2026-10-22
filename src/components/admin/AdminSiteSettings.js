@@ -72,8 +72,12 @@ function stripMeta(data) {
   return rest;
 }
 
-export default function AdminSiteSettings({ token, isSuperAdmin }) {
-  const [activeSection, setActiveSection] = useState("general");
+export default function AdminSiteSettings({ token, isSuperAdmin, initialSection = "general" }) {
+  const [activeSection, setActiveSection] = useState(initialSection);
+
+  useEffect(() => {
+    if (initialSection) setActiveSection(initialSection);
+  }, [initialSection]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");

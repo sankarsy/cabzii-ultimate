@@ -64,9 +64,9 @@ export function bookingWhatsappMessage({
     return "Hi Cabzii, I want to book a Call Driver / acting driver in Chennai. Pickup: ___. Date: ___. Please share fare and availability.";
   }
 
-  const actingHub = path.match(/^\/([a-z0-9-]+)\/acting-driver\/?$/);
+  const actingHub = path.match(/^\/(?:acting-driver\/([a-z0-9-]+)|([a-z0-9-]+)\/acting-driver)\/?$/);
   if (actingHub) {
-    const place = titleFromSlug(actingHub[1]);
+    const place = titleFromSlug(actingHub[1] || actingHub[2]);
     return `Hi Cabzii, I want to book a Call Driver / acting driver in ${place}. Pickup: ___. Date: ___. Please share fare and availability.`;
   }
 

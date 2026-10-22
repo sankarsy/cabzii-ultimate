@@ -10,7 +10,9 @@ import {
   cabFuelOptions,
   cabModelOptions,
   cabTypeBucket,
+  cabTypeRank,
   cabTypeOptions,
+  CAB_TYPE_ORDER,
   formatRatesLine
 } from "../../lib/cabListing";
 import { cabSlabForTrip } from "../../lib/mmtTrip";
@@ -159,13 +161,15 @@ export default function MmtCabResults({
       list = list.filter((c) => cabTripPrice(c, trip) <= priceCap);
     }
     list.sort((a, b) => {
-      if (sort === "price-asc") return cabTripPrice(a, trip) - cabTripPrice(b, trip);
+      const typeDiff = cabTypeRank(a) - cabTypeRank(b);
+      if (typeDiff !== 0) return typeDiff;
       if (sort === "ratings") {
         const ra = Number(formatRating(a) || a.rating || 0);
         const rb = Number(formatRating(b) || b.rating || 0);
         return rb - ra;
       }
-      return getCabVehicleName(a).localeCompare(getCabVehicleName(b));
+      if (sort === "title") return getCabVehicleName(a).localeCompare(getCabVehicleName(b));
+      return cabTripPrice(a, trip) - cabTripPrice(b, trip);
     });
     return list;
   }, [cabs, sort, typeFilters, modelFilters, fuelFilters, acOnly, priceCap, trip, catalogMode]);
@@ -182,6 +186,7 @@ export default function MmtCabResults({
   const ratesLine = !catalogMode ? formatRatesLine(trip) : "";
   const showCoupon = !catalogMode && trip?.tripType === "outstation";
   const listingLayout = !embedded && !catalogMode;
+  const fasttrackLayout = listLayout === "fasttrack";
 
   const mmtFilters = (
     <aside className="h-fit rounded-xl border border-slate-200 bg-white px-4 py-3">
@@ -261,7 +266,7 @@ export default function MmtCabResults({
     </aside>
   );
 
-  const useCardGrid = catalogMode && listLayout !== "row";
+  const useCardGrid = catalogMode && listLayout !== "row" && !fasttrackLayout;
   const cards = useCardGrid ? (
     <div className="cabzii-catalog-grid pt-1">
       {filtered.map((cab) => (
@@ -271,12 +276,13 @@ export default function MmtCabResults({
       ))}
     </div>
   ) : (
-    <div className="space-y-3">
+    <div className={fasttrackLayout ? "space-y-2.5" : "space-y-3"}>
       {filtered.map((cab) => (
         <MmtCabResultCard
           key={String(cab._id ?? cab.id)}
           cab={cab}
           trip={trip}
+          layout={fasttrackLayout ? "fasttrack" : "row"}
           catalogMode={catalogMode}
           displayCity={displayCity}
         />
@@ -286,7 +292,7 @@ export default function MmtCabResults({
 
   const list = (
     <div className="min-w-0 space-y-3">
-      {listingLayout ? (
+      {fasttrackLayout ? null : listingLayout ? (
         <>
           <div className="hidden overflow-hidden rounded-xl bg-gradient-to-r from-[#1a56db] via-[#1648b8] to-[#0f2f7a] px-3 py-3 lg:block sm:px-6">
             <div className="grid grid-cols-3 divide-x divide-white/20 text-center text-[11px] font-semibold text-white sm:text-[13px]">

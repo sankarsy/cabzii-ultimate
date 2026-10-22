@@ -1,9 +1,7 @@
 /** Canonical redirects for marketing-friendly URLs (prompt spec + SEO). */
 import {
-  actingDriverLandingPath,
   airportCabBookingPath,
   cityCabLandingPath,
-  isActingDriverHubCity,
   isAirportCabBookingCity,
   TRICHY_CITY_ALIASES
 } from "../cityCabPaths";
@@ -14,20 +12,37 @@ import { resolveDroppedSeoRedirect } from "../seo/keepLivePages";
 export const PUBLIC_ROUTE_REDIRECTS = {
   "/cars": "/cabs",
   "/blog": "/blogs",
+  "/bangalore": "/cabs",
+  "/cab-booking/bangalore": "/cabs",
+  "/cab-booking/bengaluru": "/cabs",
+  "/acting-driver/bangalore": "/call-driver",
+  "/acting-driver/bengaluru": "/call-driver",
+  "/puducherry": "/cab-booking/pondicherry",
+  "/cab-booking/puducherry": "/cab-booking/pondicherry",
+  "/pondichery": "/cab-booking/pondicherry",
+  "/kodai": "/cab-booking/kodaikanal",
+  "/udhagamandalam": "/cab-booking/ooty",
+  "/sabarimalai": "/cab-booking/sabarimala",
+  "/pamba": "/cab-booking/sabarimala",
+  "/ayyappan-kovil": "/cab-booking/ayyappankovil",
+  "/ayyappankoil": "/cab-booking/ayyappankovil",
   "/profile": "/account",
   "/bookings": "/my-bookings",
   "/outstation-cabs": "/services/outstation-cab/chennai",
   "/airport-taxi": "/chennai/airport-cab-booking",
-  "/local-rental": "/chennai",
+  "/local-rental": "/cab-booking/chennai",
   "/one-way-cabs": "/services/one-way-cab/chennai",
   "/driver-service": "/call-driver",
-  "/call-driver-chennai": "/chennai/acting-driver",
-  "/acting-driver-chennai": "/chennai/acting-driver",
-  "/call-drivers-chennai": "/chennai/acting-driver",
+  "/drivers": "/call-driver",
+  "/call-driver-chennai": "/acting-driver/chennai",
+  "/acting-driver-chennai": "/acting-driver/chennai",
+  "/call-drivers-chennai": "/acting-driver/chennai",
   "/chennai-airport-taxi": "/chennai/airport-cab-booking",
   "/chennai-to-tirupati-cab": "/chennai/outstation/chennai-to-tirupati",
-  "/chennai-to-pondicherry-cab": "/chennai/outstation/chennai-to-pondicherry",
-  "/routes/chennai-to-bengaluru-cab": "/chennai/outstation/chennai-to-bangalore",
+  "/chennai-to-pondicherry-cab": "/services/outstation-cab/chennai",
+  "/routes/chennai-to-bengaluru-cab": "/services/outstation-cab/chennai",
+  "/services/outstation-cab/bengaluru": "/cabs",
+  "/services/airport-taxi/bengaluru": "/cabs"
 };
 
 const VEHICLE_SLUG_MAP = {
@@ -56,6 +71,9 @@ export function resolvePublicRouteRedirect(pathname) {
   if (PUBLIC_ROUTE_REDIRECTS[pathname]) {
     return PUBLIC_ROUTE_REDIRECTS[pathname];
   }
+  if (/^\/drivers(\/|$)/.test(String(pathname || ""))) {
+    return "/call-driver";
+  }
   if (/^\/(hotels|flights|trains)(\/|$)/.test(String(pathname || ""))) {
     return "/";
   }
@@ -65,7 +83,8 @@ export function resolvePublicRouteRedirect(pathname) {
   }
   const trichyAlias = String(pathname || "").match(/^\/([a-z0-9-]+)(\/.*)?$/);
   if (trichyAlias && TRICHY_CITY_ALIASES.includes(trichyAlias[1])) {
-    return "/cabs";
+    const rest = trichyAlias[2] || "";
+    return rest ? `/trichy${rest}` : cityCabLandingPath("trichy");
   }
   const legacyAirport = String(pathname || "").match(/^\/services\/airport-taxi\/([a-z0-9-]+)\/?$/);
   if (legacyAirport && isAirportCabBookingCity(legacyAirport[1])) {
@@ -75,14 +94,10 @@ export function resolvePublicRouteRedirect(pathname) {
   if (packageService && isPackageDoorwayService(packageService[1])) {
     return packageDoorwayCanonicalPath(packageService[1], packageService[2]);
   }
-  const legacyActing = String(pathname || "").match(/^\/acting-driver\/([a-z0-9-]+)\/?$/);
-  if (legacyActing && isActingDriverHubCity(legacyActing[1])) {
-    return actingDriverLandingPath(legacyActing[1]);
-  }
   const outstationFromLegacy = parseLegacyRoutesPathname(pathname);
   if (outstationFromLegacy) return outstationFromLegacy;
   const legacyCityHub = String(pathname || "").match(/^\/car-rental\/([a-z0-9-]+)-city-cabs\/?$/);
-  if (legacyCityHub) return `/${legacyCityHub[1]}`;
+  if (legacyCityHub) return cityCabLandingPath(legacyCityHub[1]);
   const cabSuffix = String(pathname || "").match(/^\/([a-z0-9-]+)\/outstation\/([a-z0-9-]+)-to-([a-z0-9-]+)-cab\/?$/);
   if (cabSuffix) return outstationPath(cabSuffix[1], cabSuffix[3]);
   const carsMatch = pathname.match(/^\/cars\/([^/]+)\/?$/);

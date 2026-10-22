@@ -48,6 +48,8 @@ export default function PaymentPage({ searchParams }) {
   const [email, setEmail] = useState("");
   const [pickup, setPickup] = useState(firstParam(searchParams?.pickup));
   const [drop, setDrop] = useState(firstParam(searchParams?.drop));
+  const [pickupPlace, setPickupPlace] = useState(null);
+  const [dropPlace, setDropPlace] = useState(null);
   const [date, setDate] = useState(() => toDateInputValue(firstParam(searchParams?.date)));
   const [time, setTime] = useState(() =>
     toTimeInputValue(firstParam(searchParams?.time) || firstParam(searchParams?.pickupTime))
@@ -95,7 +97,11 @@ export default function PaymentPage({ searchParams }) {
     to: drop || cabTrip.to,
     roundTrip: cabTrip.roundTrip,
     date: date || cabTrip.date,
-    ...tripCoords
+    ...tripCoords,
+    fromLat: pickupPlace?.lat ?? tripCoords.fromLat,
+    fromLng: pickupPlace?.lng ?? tripCoords.fromLng,
+    toLat: dropPlace?.lat ?? tripCoords.toLat,
+    toLng: dropPlace?.lng ?? tripCoords.toLng
   };
 
   useEffect(() => {
@@ -206,15 +212,13 @@ export default function PaymentPage({ searchParams }) {
       ? `/buses/passenger?id=${encodeURIComponent(itemId)}&seats=${encodeURIComponent(busSeats)}&boarding=${encodeURIComponent(pickup)}&dropping=${encodeURIComponent(drop)}&total=${total}&date=${encodeURIComponent(date)}`
       : type === "cab" && itemId
       ? `/cabs/${itemId}`
-      : type === "driver" && itemId
-        ? `/drivers/${itemId}`
+      : type === "driver"
+        ? "/call-driver"
         : type === "tour" && (firstParam(searchParams?.slug) || itemId)
           ? `/holidays/${firstParam(searchParams?.slug) || itemId}`
           : type === "tour"
             ? "/holidays"
-      : type === "driver"
-        ? "/call-driver"
-        : "/drivers";
+            : "/cabs";
 
   const bookingType = type === "tour" ? "tour" : type === "driver" ? "driver" : type === "bus" ? "bus" : "cab";
   const bookLabel =
@@ -315,10 +319,10 @@ export default function PaymentPage({ searchParams }) {
           persons: type === "tour" ? tourPersons : undefined,
           amount: total,
           paymentMethod: "cash",
-          pickupLat: tripCoords.fromLat ?? undefined,
-          pickupLng: tripCoords.fromLng ?? undefined,
-          dropLat: tripCoords.toLat ?? undefined,
-          dropLng: tripCoords.toLng ?? undefined,
+          pickupLat: paymentTrip.fromLat ?? undefined,
+          pickupLng: paymentTrip.fromLng ?? undefined,
+          dropLat: paymentTrip.toLat ?? undefined,
+          dropLng: paymentTrip.toLng ?? undefined,
           distanceKm: tripCoords.distanceKm ?? undefined,
           durationMin: tripCoords.durationMin ?? undefined,
           ...(appliedCoupon ? { coupon: appliedCoupon } : {}),
@@ -401,6 +405,11 @@ export default function PaymentPage({ searchParams }) {
                   placeholder="Search pickup address"
                   value={pickup}
                   onChange={setPickup}
+                  allowCurrentLocation
+                  onResolved={(area) => {
+                    setPickupPlace(area?.lat != null ? area : null);
+                    if (area?.label) setPickup(area.label);
+                  }}
                   className="w-full"
                 />
               )}
@@ -412,6 +421,11 @@ export default function PaymentPage({ searchParams }) {
                   placeholder="Search drop address"
                   value={drop}
                   onChange={setDrop}
+                  allowCurrentLocation={false}
+                  onResolved={(area) => {
+                    setDropPlace(area?.lat != null ? area : null);
+                    if (area?.label) setDrop(area.label);
+                  }}
                   className="w-full"
                 />
               </div>

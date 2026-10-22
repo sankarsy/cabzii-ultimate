@@ -47,7 +47,7 @@ export default function SimilarDrivers({ currentDriverId, vendor }) {
             Other verified drivers{vendor ? ` from ${vendor} and partners` : " available to book"}.
           </p>
         </div>
-        <Link href="/drivers" className="text-xs font-semibold text-[#0056D2] hover:underline">
+        <Link href="/call-driver" className="text-xs font-semibold text-[#0056D2] hover:underline">
           View all drivers →
         </Link>
       </div>

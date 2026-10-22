@@ -7,14 +7,12 @@ import {
   SITE_URL,
   getBackendUrl,
   servicePath,
-  routePublicPath,
-  outstationHubPath,
-  parseLegacyRouteSlug
+  routePublicPath
 } from "../lib/seo";
 import { SEO_REVALIDATE_SECONDS } from "../lib/revalidation/constants";
 import { classifyCityHub, classifyRoute, classifyServiceCity } from "../lib/seo/indexation";
-import { airportCabBookingPath, cityCabLandingPath, actingDriverLandingPath, isAirportCabBookingCity, isActingDriverHubCity } from "../lib/cityCabPaths";
-import { KEEP_ACTING_DRIVER_CITY_SLUGS } from "../lib/seo/keepLivePages";
+import { airportCabBookingPath, cityCabLandingPath, actingDriverLandingPath, isAirportCabBookingCity, isActingDriverHubCity, seoCityPublicPath } from "../lib/cityCabPaths";
+import { isKeepAirportCity, isKeepRouteSlug, isKeepSeoCity, KEEP_ACTING_DRIVER_CITY_SLUGS } from "../lib/seo/keepLivePages";
 import { catalogPublicPath } from "../lib/catalogProduct";
 import { isLiveApiHostProtected } from "../lib/liveApiHostGuard";
 import { resolveProductImageSeo } from "../lib/dynamicImageSeo";
@@ -62,7 +60,6 @@ export default async function sitemap() {
     { url: `${base}/acting-driver`, lastModified: now, changeFrequency: "weekly", priority: 0.9, images: [HERO_IMAGE] },
     { url: `${base}/cab-booking`, lastModified: now, changeFrequency: "weekly", priority: 0.88, images: [HERO_IMAGE] },
     { url: `${base}/car-rental`, lastModified: now, changeFrequency: "weekly", priority: 0.9, images: [HERO_IMAGE] },
-    { url: `${base}/drivers`, lastModified: now, changeFrequency: "weekly", priority: 0.7, images: [HERO_IMAGE] },
     { url: `${base}/holidays`, lastModified: now, changeFrequency: "daily", priority: 0.92, images: [HERO_IMAGE] },
     { url: `${base}/services`, lastModified: now, changeFrequency: "weekly", priority: 0.88, images: [HERO_IMAGE] },
     { url: `${base}/routes`, lastModified: now, changeFrequency: "weekly", priority: 0.88, images: [HERO_IMAGE] },
@@ -131,13 +128,14 @@ export default async function sitemap() {
     ];
   });
 
-  const [cabs, packages, blogPosts, cmsServices, cmsRoutes, cmsLandings] = await Promise.all([
+  const [cabs, packages, blogPosts, cmsServices, cmsRoutes, cmsLandings, cmsCityPages] = await Promise.all([
     fetchAllIds("/cabs"),
     fetchAllIds("/packages"),
     fetchAllIds("/blogs"),
     fetchAllIds("/seo-services"),
     fetchAllIds("/seo-routes"),
-    fetchAllIds("/seo-landings")
+    fetchAllIds("/seo-landings"),
+    fetchAllIds("/seo-city-pages")
   ]);
 
   const cmsServiceSlugs = new Set((cmsServices || []).filter((s) => s.slug && s.published !== false).map((s) => s.slug));
@@ -150,7 +148,7 @@ export default async function sitemap() {
       .map((service) => {
         const policy = classifyServiceCity(service.slug, city.slug);
         if (!policy.indexable) return null;
-        if (service.slug === "airport-taxi" && isAirportCabBookingCity(city.slug)) return null;
+        if (service.slug === "airport-taxi" && (isAirportCabBookingCity(city.slug) || !isKeepAirportCity(city.slug))) return null;
         return {
           url: `${base}${servicePath(service, city)}`,
           lastModified: now,
@@ -171,7 +169,7 @@ export default async function sitemap() {
         .map((city) => {
           const policy = classifyServiceCity(service.slug, city.slug);
           if (!policy.indexable) return null;
-          if (service.slug === "airport-taxi" && isAirportCabBookingCity(city.slug)) return null;
+          if (service.slug === "airport-taxi" && (isAirportCabBookingCity(city.slug) || !isKeepAirportCity(city.slug))) return null;
           return {
             url: `${base}/services/${service.slug}/${city.slug}`,
             lastModified: service.updatedAt ? new Date(service.updatedAt) : now,
@@ -196,23 +194,10 @@ export default async function sitemap() {
     })
     .filter(Boolean);
 
-  const outstationHubPages = [
-    ...new Set(FEATURED_ROUTE_SLUGS.map((slug) => parseLegacyRouteSlug(slug)?.fromToken).filter(Boolean))
-  ]
-    .map((citySlug) => {
-      const policy = classifyCityHub(citySlug, "cab-booking");
-      if (!policy.indexable) return null;
-      return {
-        url: `${base}${outstationHubPath(citySlug)}`,
-        lastModified: now,
-        changeFrequency: "weekly",
-        priority: 0.86
-      };
-    })
-    .filter(Boolean);
+  const outstationHubPages = [];
 
   const cmsRoutePages = (cmsRoutes || [])
-    .filter((route) => route.slug && route.published !== false)
+    .filter((route) => route.slug && route.published !== false && isKeepRouteSlug(route.slug))
     .map((route) => {
       const policy = classifyRoute(
         {
@@ -305,10 +290,21 @@ export default async function sitemap() {
       priority: 0.8
     }));
 
+  const cmsCityPageRoutes = (cmsCityPages || [])
+    .filter((item) => item.citySlug && item.published !== false && isKeepSeoCity(item.citySlug))
+    .filter((item) => !String(item.seoMeta?.robots || "").toLowerCase().includes("noindex"))
+    .map((item) => ({
+      url: `${base}${item.publicPath || seoCityPublicPath(item.pageType, item.citySlug)}`,
+      lastModified: item.updatedAt ? new Date(item.updatedAt) : now,
+      changeFrequency: "weekly",
+      priority: item.pageType === "cab-booking" ? 0.95 : 0.9
+    }));
+
   return dedupeSitemapEntries([
     ...staticRoutes,
     ...cityRoutes,
     ...actingDriverKeepPages,
+    ...cmsCityPageRoutes,
     ...staticServiceRoutes,
     ...cmsServiceRoutes,
     ...staticRoutePages,

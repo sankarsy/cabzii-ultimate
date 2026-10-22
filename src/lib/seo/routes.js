@@ -1,4 +1,4 @@
-import { cityBySlug } from "./cities";
+import { cityBySlug, displayCityFromSlug } from "./cities";
 import { buildExpandedRoutes, lookupRouteTripData } from "./routeCatalog";
 import { FEATURED_ROUTE_SLUGS, ROUTE_CITY_SLUG_ALIASES } from "./featuredRoutes";
 
@@ -453,7 +453,7 @@ export function synthesizeRouteFromSlug(slug) {
   if (!parsed) return null;
 
   const fromCity = cityBySlug(parsed.from);
-  const toCity = cityBySlug(parsed.to);
+  const toCity = displayCityFromSlug(parsed.to);
   if (!fromCity || !toCity) return null;
 
   const existing = SEO_ROUTES.find((r) => r.slug === parsed.slug);

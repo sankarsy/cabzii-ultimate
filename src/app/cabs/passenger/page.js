@@ -16,13 +16,19 @@ import { trackEvent } from "../../../lib/analytics";
 import { beaconSeoEvent } from "../../../lib/seoAttribution";
 import { upsertEnquiry } from "../../../lib/enquiryCapture";
 import { couponDiscountAmount } from "../../../lib/paymentMethods";
+import { useCategoryRouteFares } from "../../../lib/useCategoryRouteFares";
 
 function PassengerContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const tripParsed = parseTripSearchParams(searchParams);
   const { route } = useTripRoute(tripParsed);
-  const trip = useMemo(() => mergeTripDistance(tripParsed, route), [tripParsed, route]);
+  const routedTrip = useMemo(() => mergeTripDistance(tripParsed, route), [tripParsed, route]);
+  const categoryFares = useCategoryRouteFares(routedTrip);
+  const trip = useMemo(
+    () => (categoryFares ? { ...routedTrip, categoryFares } : routedTrip),
+    [routedTrip, categoryFares]
+  );
   const cabId = searchParams.get("cabId") || searchParams.get("id");
 
   const [cab, setCab] = useState(null);

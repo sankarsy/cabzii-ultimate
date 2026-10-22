@@ -1,24 +1,4 @@
-import { estimateDurationMin, estimateRoadDistanceKm } from "./openRouteService";
 import { hasRouteEndpoints } from "./tripCoords";
-
-export function estimateDistanceForTrip(trip) {
-  if (!hasRouteEndpoints(trip)) return null;
-  const distanceKm = estimateRoadDistanceKm(
-    trip.fromLat,
-    trip.fromLng,
-    trip.toLat,
-    trip.toLng
-  );
-  return {
-    fromLat: trip.fromLat,
-    fromLng: trip.fromLng,
-    toLat: trip.toLat,
-    toLng: trip.toLng,
-    distanceKm,
-    durationMin: estimateDurationMin(distanceKm),
-    estimated: true
-  };
-}
 
 export async function fetchTripDistance(trip) {
   const params = new URLSearchParams();
@@ -32,19 +12,16 @@ export async function fetchTripDistance(trip) {
     if (trip?.to) params.set("to", trip.to);
   }
 
-  try {
-    const res = await fetch(`/api/distance?${params}`, { cache: "no-store" });
-    const json = await res.json();
-    if (res.ok && json?.distanceKm) {
-      return json;
-    }
-  } catch {
-    /* fall through to estimate */
+  if (![...params.keys()].length) {
+    throw new Error("Select pickup and drop places first.");
   }
 
-  const estimate = estimateDistanceForTrip(trip);
-  if (estimate) return estimate;
-  throw new Error("Distance unavailable");
+  const res = await fetch(`/api/distance?${params}`, { cache: "no-store" });
+  const json = await res.json().catch(() => ({}));
+  if (res.ok && json?.distanceKm) {
+    return json;
+  }
+  throw new Error(json?.error || "Driving distance unavailable");
 }
 
 export function applyDistanceToTrip(trip, distanceData) {

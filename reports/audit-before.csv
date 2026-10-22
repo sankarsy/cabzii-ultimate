@@ -1,0 +1,484 @@
+type,product name,URL,title,title_len,description,description_len,keywords,status,in-allowlist
+tour package,Manali & Solang Adventure,/tour-packages/manali-solang-adventure-manali,Manali Solang Adventure — cabzii.in,35,"Snow activities, Rohtang permit guidance and SUV recommended for mountain roads.",80,"Manali package, Solang Valley tour, Himachal adventure holiday",complete|OFF_THEME,Y
+tour package,Varanasi Ganga Aarti Experience,/tour-packages/varanasi-ganga-aarti-experience-varanasi,Varanasi Ganga Aarti Package — Kashi Yatra | cabzii.in,54,"Spiritual Varanasi stay with evening Ganga aarti, Kashi Vishwanath visit and private cab transfers.",99,"Varanasi package, Ganga aarti tour, Kashi pilgrimage holiday",complete,Y
+tour package,Rajasthan Forts & Palaces,/tour-packages/rajasthan-forts-palaces-jaipur,Rajasthan Forts & Palaces — cabzii.in,37,"Jaipur, Udaipur and Jodhpur heritage circuit with tempo traveller option for larger families.",93,"Rajasthan tour package, Jaipur Udaipur holiday, heritage India trip",complete|OFF_THEME,Y
+tour package,Shirdi Sai Baba Pilgrimage,/tour-packages/shirdi-sai-baba-pilgrimage-shirdi,Shirdi Sai Baba Pilgrimage — cabzii.in holidays,47,Comfortable Shirdi darshan package with queue assistance tips and cab upgrade to Innova or tempo.,97,"Shirdi package, Sai Baba pilgrimage, Shirdi tour from Mumbai Pune",complete,Y
+tour package,Ooty & Kodaikanal Family Hills,/tour-packages/ooty-kodaikanal-family-hills-ooty,Ooty Kodaikanal Family Package — cabzii.in,42,"Kid-friendly hill stations with toy train, lake boating and tempo traveller for extended family.",96,"Ooty Kodaikanal family package, Tamil Nadu hill holiday, Nilgiri tour",complete,Y
+tour package,Goa Beach & Nightlife Escape,/tour-packages/goa-beach-nightlife-escape-goa,Goa Beach Escape — cabzii.in,28,"North Goa beaches, water sports add-ons and SUV or sedan cab for airport–hotel–beach hops.",90,"Goa holiday package, beach tour Goa, North Goa cab package",complete|OFF_THEME,Y
+tour package,Kerala Backwater & Munnar,/tour-packages/kerala-backwater-munnar-kochi,Kerala Backwater & Munnar — cabzii.in,37,"Houseboat night, Munnar tea gardens and Innova-friendly hill roads. Toll, permit & driver bata extra.",101,"Kerala package, backwater holiday, Munnar tour Kerala",complete|OFF_THEME,Y
+tour package,Andaman Honeymoon Bliss,/tour-packages/andaman-honeymoon-bliss-port-blair,Andaman Honeymoon Bliss — cabzii.in,35,"Romantic Andaman itinerary with ferry coordination, beach resorts and private island transfers.",95,"Andaman honeymoon package, Havelock holiday, couple trip Andaman",complete|OFF_THEME,Y
+tour package,Tirupati Balaji Darshan,/tour-packages/tirupati-balaji-darshan-tirupati,"Chennai to Tirupati Car Rental From ₹3,999 | Cabzii",51,"Book Tirupati Balaji Darshan in Tirupati from ₹3,999. Verified drivers, airport & outstation. Book now on Cabzii.",113,"chennai to tirupati car rental, chennai to tirupati cab, chennai to tirupati taxi, chennai tirupati cab, chennai to tirupati car, tirupati car rental from chennai, tirupati taxi from chennai, chennai to tirumala cab, chennai to tirupati one way cab, chennai to tirupati round trip cab, tirupati balaji darshan cab",complete,Y
+tour package,Rameswaram & Madurai Temple Circuit,/tour-packages/rameswaram-madurai-temple-circuit-rameswaram,Rameswaram Madurai Temple Circuit — cabzii.in,45,"Classic Tamil Nadu temple yatra covering Rameswaram, Madurai and en-route darshan with flexible cab type.",105,"Rameswaram Madurai tour, South India pilgrimage, temple circuit package",complete,Y
+blog,Cab Booking in Chennai — Complete Guide 2026,/blog/cab-booking-in-chennai-complete-guide-2026,Cab Booking in Chennai — Complete Guide 2026 | Acting Driver & Taxi Near Me,75,"Complete 2026 guide: cab booking in Chennai, acting driver in Chennai, call driver, taxi booking near me, travels near me & Tirupati taxi from Chennai. Book online on cabzii.in.",177,"cab booking in chennai, acting driver in chennai, call driver in chennai, taxi booking near me, travels near me, tirupati taxi chennai, chennai taxi, travels in chennai, cabzii",complete,Y
+blog,Chennai to Pondicherry: One-Way vs Round Trip Fares Explained,/blog/post-3-chennai-to-pondicherry-one-way-vs-round-trip-fares-explained,Chennai–Pondicherry Cab Fares | Cabzii Blog,43,Understand outstation fare components for the popular Chennai–Pondy weekend route.,82,"Chennai Pondicherry cab, one way cab fare, ECR road trip",complete,Y
+blog,Acting Driver vs Cab: When Each Option Saves You Money,/blog/post-4-acting-driver-vs-cab-when-each-option-saves-you-money,Acting Driver vs Cab | Cabzii Blog,34,Decide between acting driver packages and full cab rental for city and outstation plans.,88,"acting driver Chennai, chauffeur vs cab, driver on hire",complete,Y
+blog,"Tirupati Darshan: Best Time, Queue Tips & Cab Packages",/blog/post-1-tirupati-darshan-best-time-queue-tips-cab-packages,Tirupati Darshan Guide | Cabzii Blog,36,"Practical Tirupati pilgrimage advice plus how to book sedan, Innova or tempo on cabzii.in.",90,"Tirupati darshan tips, Tirupati cab package, Balaji travel guide",complete,Y
+blog,How to Pick the Right Cab Type for Holiday Packages,/blog/post-2-how-to-pick-the-right-cab-type-for-holiday-packages,Cab Type for Holiday Packages | Cabzii Blog,43,"Choose sedan, SUV, Innova or tempo when booking holiday packages. Toll, permit & driver bata extra.",99,"holiday cab type, sedan vs Innova tour, tempo traveller pilgrimage",complete,Y
+blog,Airport Taxi Chennai: Terminal Pickup Checklist,/blog/post-6-airport-taxi-chennai-terminal-pickup-checklist,Chennai Airport Taxi Checklist | Cabzii Blog,44,Stress-free Chennai airport transfers with the right terminal and fare transparency.,84,"Chennai airport taxi, MAA cab booking, airport pickup tips",complete,Y
+blog,Top 5 Pilgrimage Circuits You Can Book on cabzii.in,/blog/post-5-top-5-pilgrimage-circuits-you-can-book-on-cabzii-in,Top Pilgrimage Circuits on Cabzii | Blog,40,Explore curated pilgrimage holiday packages with flat package fare and flexible vehicle upgrades.,97,"pilgrimage packages India, temple tour booking, cabzii holidays",complete,Y
+City hub,Cab booking Chennai,/cab-booking/chennai,Cab booking Chennai,19,,0,,partial,Y
+Airport cab,Chennai airport cab booking,/chennai/airport-cab-booking,Chennai airport cab booking,27,,0,,partial,Y
+Acting driver,Acting driver Chennai,/acting-driver/chennai,Acting driver Chennai,21,,0,,partial,Y
+Service × city,Outstation Cab — Chennai,/services/outstation-cab/chennai,Outstation Cab — Chennai,24,,0,,partial,Y
+Service × city,One Way Cab — Chennai,/services/one-way-cab/chennai,One Way Cab — Chennai,21,,0,,partial,Y
+Service × city,Tempo Traveller — Chennai,/services/tempo-traveller/chennai,Tempo Traveller — Chennai,25,,0,,partial,Y
+City hub,Cab booking Bengaluru,/cab-booking/bengaluru,Cab booking Bengaluru,21,,0,,partial,Y
+Acting driver,Acting driver Bengaluru,/acting-driver/bengaluru,Acting driver Bengaluru,23,,0,,partial,Y
+Service × city,Airport Taxi — Bengaluru,/services/airport-taxi/bengaluru,Airport Taxi — Bengaluru,24,,0,,partial,Y
+Service × city,Outstation Cab — Bengaluru,/services/outstation-cab/bengaluru,Outstation Cab — Bengaluru,26,,0,,partial,Y
+Service × city,One Way Cab — Bengaluru,/services/one-way-cab/bengaluru,One Way Cab — Bengaluru,23,,0,,partial,Y
+Service × city,Tempo Traveller — Bengaluru,/services/tempo-traveller/bengaluru,Tempo Traveller — Bengaluru,27,,0,,partial,Y
+City hub,Cab booking Hyderabad,/cab-booking/hyderabad,Cab booking Hyderabad,21,,0,,partial,N
+Acting driver,Acting driver Hyderabad,/acting-driver/hyderabad,Acting driver Hyderabad,23,,0,,partial,N
+Service × city,Airport Taxi — Hyderabad,/services/airport-taxi/hyderabad,Airport Taxi — Hyderabad,24,,0,,partial,N
+Service × city,Outstation Cab — Hyderabad,/services/outstation-cab/hyderabad,Outstation Cab — Hyderabad,26,,0,,partial,N
+Service × city,One Way Cab — Hyderabad,/services/one-way-cab/hyderabad,One Way Cab — Hyderabad,23,,0,,partial,N
+Service × city,Tempo Traveller — Hyderabad,/services/tempo-traveller/hyderabad,Tempo Traveller — Hyderabad,27,,0,,partial,N
+City hub,Cab booking Coimbatore,/cab-booking/coimbatore,Cab booking Coimbatore,22,,0,,partial,Y
+Acting driver,Acting driver Coimbatore,/acting-driver/coimbatore,Acting driver Coimbatore,24,,0,,partial,Y
+Service × city,Airport Taxi — Coimbatore,/services/airport-taxi/coimbatore,Airport Taxi — Coimbatore,25,,0,,partial,Y
+Service × city,Outstation Cab — Coimbatore,/services/outstation-cab/coimbatore,Outstation Cab — Coimbatore,27,,0,,partial,Y
+Service × city,One Way Cab — Coimbatore,/services/one-way-cab/coimbatore,One Way Cab — Coimbatore,24,,0,,partial,Y
+Service × city,Tempo Traveller — Coimbatore,/services/tempo-traveller/coimbatore,Tempo Traveller — Coimbatore,28,,0,,partial,Y
+City hub,Cab booking Mysore,/cab-booking/mysore,Cab booking Mysore,18,,0,,partial,N
+Acting driver,Acting driver Mysore,/acting-driver/mysore,Acting driver Mysore,20,,0,,partial,N
+Service × city,Airport Taxi — Mysore,/services/airport-taxi/mysore,Airport Taxi — Mysore,21,,0,,partial,N
+Service × city,Outstation Cab — Mysore,/services/outstation-cab/mysore,Outstation Cab — Mysore,23,,0,,partial,N
+Service × city,One Way Cab — Mysore,/services/one-way-cab/mysore,One Way Cab — Mysore,20,,0,,partial,N
+Service × city,Tempo Traveller — Mysore,/services/tempo-traveller/mysore,Tempo Traveller — Mysore,24,,0,,partial,N
+City hub,Cab booking Pondicherry,/cab-booking/pondicherry,Cab booking Pondicherry,23,,0,,partial,N
+Acting driver,Acting driver Pondicherry,/acting-driver/pondicherry,Acting driver Pondicherry,25,,0,,partial,N
+Service × city,Airport Taxi — Pondicherry,/services/airport-taxi/pondicherry,Airport Taxi — Pondicherry,26,,0,,partial,N
+Service × city,Outstation Cab — Pondicherry,/services/outstation-cab/pondicherry,Outstation Cab — Pondicherry,28,,0,,partial,N
+Service × city,One Way Cab — Pondicherry,/services/one-way-cab/pondicherry,One Way Cab — Pondicherry,25,,0,,partial,N
+Service × city,Tempo Traveller — Pondicherry,/services/tempo-traveller/pondicherry,Tempo Traveller — Pondicherry,29,,0,,partial,N
+City hub,Cab booking Tirupati,/cab-booking/tirupati,Cab booking Tirupati,20,,0,,partial,N
+Acting driver,Acting driver Tirupati,/acting-driver/tirupati,Acting driver Tirupati,22,,0,,partial,N
+Service × city,Airport Taxi — Tirupati,/services/airport-taxi/tirupati,Airport Taxi — Tirupati,23,,0,,partial,N
+Service × city,Outstation Cab — Tirupati,/services/outstation-cab/tirupati,Outstation Cab — Tirupati,25,,0,,partial,N
+Service × city,One Way Cab — Tirupati,/services/one-way-cab/tirupati,One Way Cab — Tirupati,22,,0,,partial,N
+Service × city,Tempo Traveller — Tirupati,/services/tempo-traveller/tirupati,Tempo Traveller — Tirupati,26,,0,,partial,N
+City hub,Cab booking Vellore,/cab-booking/vellore,Cab booking Vellore,19,,0,,partial,Y
+Acting driver,Acting driver Vellore,/acting-driver/vellore,Acting driver Vellore,21,,0,,partial,Y
+Service × city,Airport Taxi — Vellore,/services/airport-taxi/vellore,Airport Taxi — Vellore,22,,0,,partial,Y
+Service × city,Outstation Cab — Vellore,/services/outstation-cab/vellore,Outstation Cab — Vellore,24,,0,,partial,Y
+Service × city,One Way Cab — Vellore,/services/one-way-cab/vellore,One Way Cab — Vellore,21,,0,,partial,Y
+Service × city,Tempo Traveller — Vellore,/services/tempo-traveller/vellore,Tempo Traveller — Vellore,25,,0,,partial,Y
+City hub,Cab booking Salem,/cab-booking/salem,Cab booking Salem,17,,0,,partial,N
+Acting driver,Acting driver Salem,/acting-driver/salem,Acting driver Salem,19,,0,,partial,N
+Service × city,Airport Taxi — Salem,/services/airport-taxi/salem,Airport Taxi — Salem,20,,0,,partial,N
+Service × city,Outstation Cab — Salem,/services/outstation-cab/salem,Outstation Cab — Salem,22,,0,,partial,N
+Service × city,One Way Cab — Salem,/services/one-way-cab/salem,One Way Cab — Salem,19,,0,,partial,N
+Service × city,Tempo Traveller — Salem,/services/tempo-traveller/salem,Tempo Traveller — Salem,23,,0,,partial,N
+City hub,Cab booking Madurai,/cab-booking/madurai,Cab booking Madurai,19,,0,,partial,N
+Acting driver,Acting driver Madurai,/acting-driver/madurai,Acting driver Madurai,21,,0,,partial,N
+Service × city,Airport Taxi — Madurai,/services/airport-taxi/madurai,Airport Taxi — Madurai,22,,0,,partial,N
+Service × city,Outstation Cab — Madurai,/services/outstation-cab/madurai,Outstation Cab — Madurai,24,,0,,partial,N
+Service × city,One Way Cab — Madurai,/services/one-way-cab/madurai,One Way Cab — Madurai,21,,0,,partial,N
+Service × city,Tempo Traveller — Madurai,/services/tempo-traveller/madurai,Tempo Traveller — Madurai,25,,0,,partial,N
+City hub,Cab booking Trichy,/cab-booking/trichy,Cab booking Trichy,18,,0,,partial,Y
+Acting driver,Acting driver Trichy,/acting-driver/trichy,Acting driver Trichy,20,,0,,partial,Y
+Service × city,Airport Taxi — Trichy,/services/airport-taxi/trichy,Airport Taxi — Trichy,21,,0,,partial,Y
+Service × city,Outstation Cab — Trichy,/services/outstation-cab/trichy,Outstation Cab — Trichy,23,,0,,partial,Y
+Service × city,One Way Cab — Trichy,/services/one-way-cab/trichy,One Way Cab — Trichy,20,,0,,partial,Y
+Service × city,Tempo Traveller — Trichy,/services/tempo-traveller/trichy,Tempo Traveller — Trichy,24,,0,,partial,Y
+City hub,Cab booking Kodaikanal,/cab-booking/kodaikanal,Cab booking Kodaikanal,22,,0,,partial,N
+Acting driver,Acting driver Kodaikanal,/acting-driver/kodaikanal,Acting driver Kodaikanal,24,,0,,partial,N
+Service × city,Airport Taxi — Kodaikanal,/services/airport-taxi/kodaikanal,Airport Taxi — Kodaikanal,25,,0,,partial,N
+Service × city,Outstation Cab — Kodaikanal,/services/outstation-cab/kodaikanal,Outstation Cab — Kodaikanal,27,,0,,partial,N
+Service × city,One Way Cab — Kodaikanal,/services/one-way-cab/kodaikanal,One Way Cab — Kodaikanal,24,,0,,partial,N
+Service × city,Tempo Traveller — Kodaikanal,/services/tempo-traveller/kodaikanal,Tempo Traveller — Kodaikanal,28,,0,,partial,N
+City hub,Cab booking Erode,/cab-booking/erode,Cab booking Erode,17,,0,,partial,N
+Acting driver,Acting driver Erode,/acting-driver/erode,Acting driver Erode,19,,0,,partial,N
+Service × city,Airport Taxi — Erode,/services/airport-taxi/erode,Airport Taxi — Erode,20,,0,,partial,N
+Service × city,Outstation Cab — Erode,/services/outstation-cab/erode,Outstation Cab — Erode,22,,0,,partial,N
+Service × city,One Way Cab — Erode,/services/one-way-cab/erode,One Way Cab — Erode,19,,0,,partial,N
+Service × city,Tempo Traveller — Erode,/services/tempo-traveller/erode,Tempo Traveller — Erode,23,,0,,partial,N
+City hub,Cab booking Hosur,/cab-booking/hosur,Cab booking Hosur,17,,0,,partial,N
+Acting driver,Acting driver Hosur,/acting-driver/hosur,Acting driver Hosur,19,,0,,partial,N
+Service × city,Airport Taxi — Hosur,/services/airport-taxi/hosur,Airport Taxi — Hosur,20,,0,,partial,N
+Service × city,Outstation Cab — Hosur,/services/outstation-cab/hosur,Outstation Cab — Hosur,22,,0,,partial,N
+Service × city,One Way Cab — Hosur,/services/one-way-cab/hosur,One Way Cab — Hosur,19,,0,,partial,N
+Service × city,Tempo Traveller — Hosur,/services/tempo-traveller/hosur,Tempo Traveller — Hosur,23,,0,,partial,N
+City hub,Cab booking Tirunelveli,/cab-booking/tirunelveli,Cab booking Tirunelveli,23,,0,,partial,N
+Acting driver,Acting driver Tirunelveli,/acting-driver/tirunelveli,Acting driver Tirunelveli,25,,0,,partial,N
+Service × city,Airport Taxi — Tirunelveli,/services/airport-taxi/tirunelveli,Airport Taxi — Tirunelveli,26,,0,,partial,N
+Service × city,Outstation Cab — Tirunelveli,/services/outstation-cab/tirunelveli,Outstation Cab — Tirunelveli,28,,0,,partial,N
+Service × city,One Way Cab — Tirunelveli,/services/one-way-cab/tirunelveli,One Way Cab — Tirunelveli,25,,0,,partial,N
+Service × city,Tempo Traveller — Tirunelveli,/services/tempo-traveller/tirunelveli,Tempo Traveller — Tirunelveli,29,,0,,partial,N
+City hub,Cab booking Rameswaram,/cab-booking/rameswaram,Cab booking Rameswaram,22,,0,,partial,N
+Acting driver,Acting driver Rameswaram,/acting-driver/rameswaram,Acting driver Rameswaram,24,,0,,partial,N
+Service × city,Airport Taxi — Rameswaram,/services/airport-taxi/rameswaram,Airport Taxi — Rameswaram,25,,0,,partial,N
+Service × city,Outstation Cab — Rameswaram,/services/outstation-cab/rameswaram,Outstation Cab — Rameswaram,27,,0,,partial,N
+Service × city,One Way Cab — Rameswaram,/services/one-way-cab/rameswaram,One Way Cab — Rameswaram,24,,0,,partial,N
+Service × city,Tempo Traveller — Rameswaram,/services/tempo-traveller/rameswaram,Tempo Traveller — Rameswaram,28,,0,,partial,N
+City hub,Cab booking Ooty,/cab-booking/ooty,Cab booking Ooty,16,,0,,partial,N
+Acting driver,Acting driver Ooty,/acting-driver/ooty,Acting driver Ooty,18,,0,,partial,N
+Service × city,Airport Taxi — Ooty,/services/airport-taxi/ooty,Airport Taxi — Ooty,19,,0,,partial,N
+Service × city,Outstation Cab — Ooty,/services/outstation-cab/ooty,Outstation Cab — Ooty,21,,0,,partial,N
+Service × city,One Way Cab — Ooty,/services/one-way-cab/ooty,One Way Cab — Ooty,18,,0,,partial,N
+Service × city,Tempo Traveller — Ooty,/services/tempo-traveller/ooty,Tempo Traveller — Ooty,22,,0,,partial,N
+City hub,Cab booking Kanchipuram,/cab-booking/kanchipuram,Cab booking Kanchipuram,23,,0,,partial,N
+Acting driver,Acting driver Kanchipuram,/acting-driver/kanchipuram,Acting driver Kanchipuram,25,,0,,partial,N
+Service × city,Airport Taxi — Kanchipuram,/services/airport-taxi/kanchipuram,Airport Taxi — Kanchipuram,26,,0,,partial,N
+Service × city,Outstation Cab — Kanchipuram,/services/outstation-cab/kanchipuram,Outstation Cab — Kanchipuram,28,,0,,partial,N
+Service × city,One Way Cab — Kanchipuram,/services/one-way-cab/kanchipuram,One Way Cab — Kanchipuram,25,,0,,partial,N
+Service × city,Tempo Traveller — Kanchipuram,/services/tempo-traveller/kanchipuram,Tempo Traveller — Kanchipuram,29,,0,,partial,N
+City hub,Cab booking Tiruvannamalai,/cab-booking/tiruvannamalai,Cab booking Tiruvannamalai,26,,0,,partial,N
+Acting driver,Acting driver Tiruvannamalai,/acting-driver/tiruvannamalai,Acting driver Tiruvannamalai,28,,0,,partial,N
+Service × city,Airport Taxi — Tiruvannamalai,/services/airport-taxi/tiruvannamalai,Airport Taxi — Tiruvannamalai,29,,0,,partial,N
+Service × city,Outstation Cab — Tiruvannamalai,/services/outstation-cab/tiruvannamalai,Outstation Cab — Tiruvannamalai,31,,0,,partial,N
+Service × city,One Way Cab — Tiruvannamalai,/services/one-way-cab/tiruvannamalai,One Way Cab — Tiruvannamalai,28,,0,,partial,N
+Service × city,Tempo Traveller — Tiruvannamalai,/services/tempo-traveller/tiruvannamalai,Tempo Traveller — Tiruvannamalai,32,,0,,partial,N
+City hub,Cab booking Thanjavur,/cab-booking/thanjavur,Cab booking Thanjavur,21,,0,,partial,N
+Acting driver,Acting driver Thanjavur,/acting-driver/thanjavur,Acting driver Thanjavur,23,,0,,partial,N
+Service × city,Airport Taxi — Thanjavur,/services/airport-taxi/thanjavur,Airport Taxi — Thanjavur,24,,0,,partial,N
+Service × city,Outstation Cab — Thanjavur,/services/outstation-cab/thanjavur,Outstation Cab — Thanjavur,26,,0,,partial,N
+Service × city,One Way Cab — Thanjavur,/services/one-way-cab/thanjavur,One Way Cab — Thanjavur,23,,0,,partial,N
+Service × city,Tempo Traveller — Thanjavur,/services/tempo-traveller/thanjavur,Tempo Traveller — Thanjavur,27,,0,,partial,N
+City hub,Cab booking Kumbakonam,/cab-booking/kumbakonam,Cab booking Kumbakonam,22,,0,,partial,N
+Acting driver,Acting driver Kumbakonam,/acting-driver/kumbakonam,Acting driver Kumbakonam,24,,0,,partial,N
+Service × city,Airport Taxi — Kumbakonam,/services/airport-taxi/kumbakonam,Airport Taxi — Kumbakonam,25,,0,,partial,N
+Service × city,Outstation Cab — Kumbakonam,/services/outstation-cab/kumbakonam,Outstation Cab — Kumbakonam,27,,0,,partial,N
+Service × city,One Way Cab — Kumbakonam,/services/one-way-cab/kumbakonam,One Way Cab — Kumbakonam,24,,0,,partial,N
+Service × city,Tempo Traveller — Kumbakonam,/services/tempo-traveller/kumbakonam,Tempo Traveller — Kumbakonam,28,,0,,partial,N
+City hub,Cab booking Palani,/cab-booking/palani,Cab booking Palani,18,,0,,partial,N
+Acting driver,Acting driver Palani,/acting-driver/palani,Acting driver Palani,20,,0,,partial,N
+Service × city,Airport Taxi — Palani,/services/airport-taxi/palani,Airport Taxi — Palani,21,,0,,partial,N
+Service × city,Outstation Cab — Palani,/services/outstation-cab/palani,Outstation Cab — Palani,23,,0,,partial,N
+Service × city,One Way Cab — Palani,/services/one-way-cab/palani,One Way Cab — Palani,20,,0,,partial,N
+Service × city,Tempo Traveller — Palani,/services/tempo-traveller/palani,Tempo Traveller — Palani,24,,0,,partial,N
+City hub,Cab booking Chidambaram,/cab-booking/chidambaram,Cab booking Chidambaram,23,,0,,partial,N
+Acting driver,Acting driver Chidambaram,/acting-driver/chidambaram,Acting driver Chidambaram,25,,0,,partial,N
+Service × city,Airport Taxi — Chidambaram,/services/airport-taxi/chidambaram,Airport Taxi — Chidambaram,26,,0,,partial,N
+Service × city,Outstation Cab — Chidambaram,/services/outstation-cab/chidambaram,Outstation Cab — Chidambaram,28,,0,,partial,N
+Service × city,One Way Cab — Chidambaram,/services/one-way-cab/chidambaram,One Way Cab — Chidambaram,25,,0,,partial,N
+Service × city,Tempo Traveller — Chidambaram,/services/tempo-traveller/chidambaram,Tempo Traveller — Chidambaram,29,,0,,partial,N
+City hub,Cab booking Kanyakumari,/cab-booking/kanyakumari,Cab booking Kanyakumari,23,,0,,partial,N
+Acting driver,Acting driver Kanyakumari,/acting-driver/kanyakumari,Acting driver Kanyakumari,25,,0,,partial,N
+Service × city,Airport Taxi — Kanyakumari,/services/airport-taxi/kanyakumari,Airport Taxi — Kanyakumari,26,,0,,partial,N
+Service × city,Outstation Cab — Kanyakumari,/services/outstation-cab/kanyakumari,Outstation Cab — Kanyakumari,28,,0,,partial,N
+Service × city,One Way Cab — Kanyakumari,/services/one-way-cab/kanyakumari,One Way Cab — Kanyakumari,25,,0,,partial,N
+Service × city,Tempo Traveller — Kanyakumari,/services/tempo-traveller/kanyakumari,Tempo Traveller — Kanyakumari,29,,0,,partial,N
+City hub,Cab booking Velankanni,/cab-booking/velankanni,Cab booking Velankanni,22,,0,,partial,N
+Acting driver,Acting driver Velankanni,/acting-driver/velankanni,Acting driver Velankanni,24,,0,,partial,N
+Service × city,Airport Taxi — Velankanni,/services/airport-taxi/velankanni,Airport Taxi — Velankanni,25,,0,,partial,N
+Service × city,Outstation Cab — Velankanni,/services/outstation-cab/velankanni,Outstation Cab — Velankanni,27,,0,,partial,N
+Service × city,One Way Cab — Velankanni,/services/one-way-cab/velankanni,One Way Cab — Velankanni,24,,0,,partial,N
+Service × city,Tempo Traveller — Velankanni,/services/tempo-traveller/velankanni,Tempo Traveller — Velankanni,28,,0,,partial,N
+City hub,Cab booking Thoothukudi,/cab-booking/thoothukudi,Cab booking Thoothukudi,23,,0,,partial,N
+Acting driver,Acting driver Thoothukudi,/acting-driver/thoothukudi,Acting driver Thoothukudi,25,,0,,partial,N
+Service × city,Airport Taxi — Thoothukudi,/services/airport-taxi/thoothukudi,Airport Taxi — Thoothukudi,26,,0,,partial,N
+Service × city,Outstation Cab — Thoothukudi,/services/outstation-cab/thoothukudi,Outstation Cab — Thoothukudi,28,,0,,partial,N
+Service × city,One Way Cab — Thoothukudi,/services/one-way-cab/thoothukudi,One Way Cab — Thoothukudi,25,,0,,partial,N
+Service × city,Tempo Traveller — Thoothukudi,/services/tempo-traveller/thoothukudi,Tempo Traveller — Thoothukudi,29,,0,,partial,N
+City hub,Cab booking Tiruppur,/cab-booking/tiruppur,Cab booking Tiruppur,20,,0,,partial,N
+Acting driver,Acting driver Tiruppur,/acting-driver/tiruppur,Acting driver Tiruppur,22,,0,,partial,N
+Service × city,Airport Taxi — Tiruppur,/services/airport-taxi/tiruppur,Airport Taxi — Tiruppur,23,,0,,partial,N
+Service × city,Outstation Cab — Tiruppur,/services/outstation-cab/tiruppur,Outstation Cab — Tiruppur,25,,0,,partial,N
+Service × city,One Way Cab — Tiruppur,/services/one-way-cab/tiruppur,One Way Cab — Tiruppur,22,,0,,partial,N
+Service × city,Tempo Traveller — Tiruppur,/services/tempo-traveller/tiruppur,Tempo Traveller — Tiruppur,26,,0,,partial,N
+City hub,Cab booking Nagercoil,/cab-booking/nagercoil,Cab booking Nagercoil,21,,0,,partial,N
+Acting driver,Acting driver Nagercoil,/acting-driver/nagercoil,Acting driver Nagercoil,23,,0,,partial,N
+Service × city,Airport Taxi — Nagercoil,/services/airport-taxi/nagercoil,Airport Taxi — Nagercoil,24,,0,,partial,N
+Service × city,Outstation Cab — Nagercoil,/services/outstation-cab/nagercoil,Outstation Cab — Nagercoil,26,,0,,partial,N
+Service × city,One Way Cab — Nagercoil,/services/one-way-cab/nagercoil,One Way Cab — Nagercoil,23,,0,,partial,N
+Service × city,Tempo Traveller — Nagercoil,/services/tempo-traveller/nagercoil,Tempo Traveller — Nagercoil,27,,0,,partial,N
+City hub,Cab booking Dindigul,/cab-booking/dindigul,Cab booking Dindigul,20,,0,,partial,N
+Acting driver,Acting driver Dindigul,/acting-driver/dindigul,Acting driver Dindigul,22,,0,,partial,N
+Service × city,Airport Taxi — Dindigul,/services/airport-taxi/dindigul,Airport Taxi — Dindigul,23,,0,,partial,N
+Service × city,Outstation Cab — Dindigul,/services/outstation-cab/dindigul,Outstation Cab — Dindigul,25,,0,,partial,N
+Service × city,One Way Cab — Dindigul,/services/one-way-cab/dindigul,One Way Cab — Dindigul,22,,0,,partial,N
+Service × city,Tempo Traveller — Dindigul,/services/tempo-traveller/dindigul,Tempo Traveller — Dindigul,26,,0,,partial,N
+City hub,Cab booking Karur,/cab-booking/karur,Cab booking Karur,17,,0,,partial,N
+Acting driver,Acting driver Karur,/acting-driver/karur,Acting driver Karur,19,,0,,partial,N
+Service × city,Airport Taxi — Karur,/services/airport-taxi/karur,Airport Taxi — Karur,20,,0,,partial,N
+Service × city,Outstation Cab — Karur,/services/outstation-cab/karur,Outstation Cab — Karur,22,,0,,partial,N
+Service × city,One Way Cab — Karur,/services/one-way-cab/karur,One Way Cab — Karur,19,,0,,partial,N
+Service × city,Tempo Traveller — Karur,/services/tempo-traveller/karur,Tempo Traveller — Karur,23,,0,,partial,N
+City hub,Cab booking Villupuram,/cab-booking/villupuram,Cab booking Villupuram,22,,0,,partial,N
+Acting driver,Acting driver Villupuram,/acting-driver/villupuram,Acting driver Villupuram,24,,0,,partial,N
+Service × city,Airport Taxi — Villupuram,/services/airport-taxi/villupuram,Airport Taxi — Villupuram,25,,0,,partial,N
+Service × city,Outstation Cab — Villupuram,/services/outstation-cab/villupuram,Outstation Cab — Villupuram,27,,0,,partial,N
+Service × city,One Way Cab — Villupuram,/services/one-way-cab/villupuram,One Way Cab — Villupuram,24,,0,,partial,N
+Service × city,Tempo Traveller — Villupuram,/services/tempo-traveller/villupuram,Tempo Traveller — Villupuram,28,,0,,partial,N
+City hub,Cab booking Karaikudi,/cab-booking/karaikudi,Cab booking Karaikudi,21,,0,,partial,N
+Acting driver,Acting driver Karaikudi,/acting-driver/karaikudi,Acting driver Karaikudi,23,,0,,partial,N
+Service × city,Airport Taxi — Karaikudi,/services/airport-taxi/karaikudi,Airport Taxi — Karaikudi,24,,0,,partial,N
+Service × city,Outstation Cab — Karaikudi,/services/outstation-cab/karaikudi,Outstation Cab — Karaikudi,26,,0,,partial,N
+Service × city,One Way Cab — Karaikudi,/services/one-way-cab/karaikudi,One Way Cab — Karaikudi,23,,0,,partial,N
+Service × city,Tempo Traveller — Karaikudi,/services/tempo-traveller/karaikudi,Tempo Traveller — Karaikudi,27,,0,,partial,N
+City hub,Cab booking Theni,/cab-booking/theni,Cab booking Theni,17,,0,,partial,N
+Acting driver,Acting driver Theni,/acting-driver/theni,Acting driver Theni,19,,0,,partial,N
+Service × city,Airport Taxi — Theni,/services/airport-taxi/theni,Airport Taxi — Theni,20,,0,,partial,N
+Service × city,Outstation Cab — Theni,/services/outstation-cab/theni,Outstation Cab — Theni,22,,0,,partial,N
+Service × city,One Way Cab — Theni,/services/one-way-cab/theni,One Way Cab — Theni,19,,0,,partial,N
+Service × city,Tempo Traveller — Theni,/services/tempo-traveller/theni,Tempo Traveller — Theni,23,,0,,partial,N
+City hub,Cab booking Nagapattinam,/cab-booking/nagapattinam,Cab booking Nagapattinam,24,,0,,partial,N
+Acting driver,Acting driver Nagapattinam,/acting-driver/nagapattinam,Acting driver Nagapattinam,26,,0,,partial,N
+Service × city,Airport Taxi — Nagapattinam,/services/airport-taxi/nagapattinam,Airport Taxi — Nagapattinam,27,,0,,partial,N
+Service × city,Outstation Cab — Nagapattinam,/services/outstation-cab/nagapattinam,Outstation Cab — Nagapattinam,29,,0,,partial,N
+Service × city,One Way Cab — Nagapattinam,/services/one-way-cab/nagapattinam,One Way Cab — Nagapattinam,26,,0,,partial,N
+Service × city,Tempo Traveller — Nagapattinam,/services/tempo-traveller/nagapattinam,Tempo Traveller — Nagapattinam,30,,0,,partial,N
+City hub,Cab booking Thiruchendur,/cab-booking/thiruchendur,Cab booking Thiruchendur,24,,0,,partial,N
+Acting driver,Acting driver Thiruchendur,/acting-driver/thiruchendur,Acting driver Thiruchendur,26,,0,,partial,N
+Service × city,Airport Taxi — Thiruchendur,/services/airport-taxi/thiruchendur,Airport Taxi — Thiruchendur,27,,0,,partial,N
+Service × city,Outstation Cab — Thiruchendur,/services/outstation-cab/thiruchendur,Outstation Cab — Thiruchendur,29,,0,,partial,N
+Service × city,One Way Cab — Thiruchendur,/services/one-way-cab/thiruchendur,One Way Cab — Thiruchendur,26,,0,,partial,N
+Service × city,Tempo Traveller — Thiruchendur,/services/tempo-traveller/thiruchendur,Tempo Traveller — Thiruchendur,30,,0,,partial,N
+City hub,Cab booking Mumbai,/cab-booking/mumbai,Cab booking Mumbai,18,,0,,partial,N
+Acting driver,Acting driver Mumbai,/acting-driver/mumbai,Acting driver Mumbai,20,,0,,partial,N
+Service × city,Airport Taxi — Mumbai,/services/airport-taxi/mumbai,Airport Taxi — Mumbai,21,,0,,partial,N
+Service × city,Outstation Cab — Mumbai,/services/outstation-cab/mumbai,Outstation Cab — Mumbai,23,,0,,partial,N
+Service × city,One Way Cab — Mumbai,/services/one-way-cab/mumbai,One Way Cab — Mumbai,20,,0,,partial,N
+Service × city,Tempo Traveller — Mumbai,/services/tempo-traveller/mumbai,Tempo Traveller — Mumbai,24,,0,,partial,N
+City hub,Cab booking Delhi,/cab-booking/delhi,Cab booking Delhi,17,,0,,partial,N
+Acting driver,Acting driver Delhi,/acting-driver/delhi,Acting driver Delhi,19,,0,,partial,N
+Service × city,Airport Taxi — Delhi,/services/airport-taxi/delhi,Airport Taxi — Delhi,20,,0,,partial,N
+Service × city,Outstation Cab — Delhi,/services/outstation-cab/delhi,Outstation Cab — Delhi,22,,0,,partial,N
+Service × city,One Way Cab — Delhi,/services/one-way-cab/delhi,One Way Cab — Delhi,19,,0,,partial,N
+Service × city,Tempo Traveller — Delhi,/services/tempo-traveller/delhi,Tempo Traveller — Delhi,23,,0,,partial,N
+City hub,Cab booking Pune,/cab-booking/pune,Cab booking Pune,16,,0,,partial,N
+Acting driver,Acting driver Pune,/acting-driver/pune,Acting driver Pune,18,,0,,partial,N
+Service × city,Airport Taxi — Pune,/services/airport-taxi/pune,Airport Taxi — Pune,19,,0,,partial,N
+Service × city,Outstation Cab — Pune,/services/outstation-cab/pune,Outstation Cab — Pune,21,,0,,partial,N
+Service × city,One Way Cab — Pune,/services/one-way-cab/pune,One Way Cab — Pune,18,,0,,partial,N
+Service × city,Tempo Traveller — Pune,/services/tempo-traveller/pune,Tempo Traveller — Pune,22,,0,,partial,N
+City hub,Cab booking Kolkata,/cab-booking/kolkata,Cab booking Kolkata,19,,0,,partial,N
+Acting driver,Acting driver Kolkata,/acting-driver/kolkata,Acting driver Kolkata,21,,0,,partial,N
+Service × city,Airport Taxi — Kolkata,/services/airport-taxi/kolkata,Airport Taxi — Kolkata,22,,0,,partial,N
+Service × city,Outstation Cab — Kolkata,/services/outstation-cab/kolkata,Outstation Cab — Kolkata,24,,0,,partial,N
+Service × city,One Way Cab — Kolkata,/services/one-way-cab/kolkata,One Way Cab — Kolkata,21,,0,,partial,N
+Service × city,Tempo Traveller — Kolkata,/services/tempo-traveller/kolkata,Tempo Traveller — Kolkata,25,,0,,partial,N
+City hub,Cab booking Kochi,/cab-booking/kochi,Cab booking Kochi,17,,0,,partial,N
+Acting driver,Acting driver Kochi,/acting-driver/kochi,Acting driver Kochi,19,,0,,partial,N
+Service × city,Airport Taxi — Kochi,/services/airport-taxi/kochi,Airport Taxi — Kochi,20,,0,,partial,N
+Service × city,Outstation Cab — Kochi,/services/outstation-cab/kochi,Outstation Cab — Kochi,22,,0,,partial,N
+Service × city,One Way Cab — Kochi,/services/one-way-cab/kochi,One Way Cab — Kochi,19,,0,,partial,N
+Service × city,Tempo Traveller — Kochi,/services/tempo-traveller/kochi,Tempo Traveller — Kochi,23,,0,,partial,N
+City hub,Cab booking Visakhapatnam,/cab-booking/visakhapatnam,Cab booking Visakhapatnam,25,,0,,partial,N
+Acting driver,Acting driver Visakhapatnam,/acting-driver/visakhapatnam,Acting driver Visakhapatnam,27,,0,,partial,N
+Service × city,Airport Taxi — Visakhapatnam,/services/airport-taxi/visakhapatnam,Airport Taxi — Visakhapatnam,28,,0,,partial,N
+Service × city,Outstation Cab — Visakhapatnam,/services/outstation-cab/visakhapatnam,Outstation Cab — Visakhapatnam,30,,0,,partial,N
+Service × city,One Way Cab — Visakhapatnam,/services/one-way-cab/visakhapatnam,One Way Cab — Visakhapatnam,27,,0,,partial,N
+Service × city,Tempo Traveller — Visakhapatnam,/services/tempo-traveller/visakhapatnam,Tempo Traveller — Visakhapatnam,31,,0,,partial,N
+City hub,Cab booking Goa,/cab-booking/goa,Cab booking Goa,15,,0,,partial,N
+Acting driver,Acting driver Goa,/acting-driver/goa,Acting driver Goa,17,,0,,partial,N
+Service × city,Airport Taxi — Goa,/services/airport-taxi/goa,Airport Taxi — Goa,18,,0,,partial,N
+Service × city,Outstation Cab — Goa,/services/outstation-cab/goa,Outstation Cab — Goa,20,,0,,partial,N
+Service × city,One Way Cab — Goa,/services/one-way-cab/goa,One Way Cab — Goa,17,,0,,partial,N
+Service × city,Tempo Traveller — Goa,/services/tempo-traveller/goa,Tempo Traveller — Goa,21,,0,,partial,N
+City hub,Cab booking Jaipur,/cab-booking/jaipur,Cab booking Jaipur,18,,0,,partial,N
+Acting driver,Acting driver Jaipur,/acting-driver/jaipur,Acting driver Jaipur,20,,0,,partial,N
+Service × city,Airport Taxi — Jaipur,/services/airport-taxi/jaipur,Airport Taxi — Jaipur,21,,0,,partial,N
+Service × city,Outstation Cab — Jaipur,/services/outstation-cab/jaipur,Outstation Cab — Jaipur,23,,0,,partial,N
+Service × city,One Way Cab — Jaipur,/services/one-way-cab/jaipur,One Way Cab — Jaipur,20,,0,,partial,N
+Service × city,Tempo Traveller — Jaipur,/services/tempo-traveller/jaipur,Tempo Traveller — Jaipur,24,,0,,partial,N
+City hub,Cab booking Ahmedabad,/cab-booking/ahmedabad,Cab booking Ahmedabad,21,,0,,partial,N
+Acting driver,Acting driver Ahmedabad,/acting-driver/ahmedabad,Acting driver Ahmedabad,23,,0,,partial,N
+Service × city,Airport Taxi — Ahmedabad,/services/airport-taxi/ahmedabad,Airport Taxi — Ahmedabad,24,,0,,partial,N
+Service × city,Outstation Cab — Ahmedabad,/services/outstation-cab/ahmedabad,Outstation Cab — Ahmedabad,26,,0,,partial,N
+Service × city,One Way Cab — Ahmedabad,/services/one-way-cab/ahmedabad,One Way Cab — Ahmedabad,23,,0,,partial,N
+Service × city,Tempo Traveller — Ahmedabad,/services/tempo-traveller/ahmedabad,Tempo Traveller — Ahmedabad,27,,0,,partial,N
+City hub,Cab booking Chandigarh,/cab-booking/chandigarh,Cab booking Chandigarh,22,,0,,partial,N
+Acting driver,Acting driver Chandigarh,/acting-driver/chandigarh,Acting driver Chandigarh,24,,0,,partial,N
+Service × city,Airport Taxi — Chandigarh,/services/airport-taxi/chandigarh,Airport Taxi — Chandigarh,25,,0,,partial,N
+Service × city,Outstation Cab — Chandigarh,/services/outstation-cab/chandigarh,Outstation Cab — Chandigarh,27,,0,,partial,N
+Service × city,One Way Cab — Chandigarh,/services/one-way-cab/chandigarh,One Way Cab — Chandigarh,24,,0,,partial,N
+Service × city,Tempo Traveller — Chandigarh,/services/tempo-traveller/chandigarh,Tempo Traveller — Chandigarh,28,,0,,partial,N
+Route,Ahmedabad → Chennai,/ahmedabad/outstation/ahmedabad-to-chennai,Ahmedabad → Chennai,19,,0,,partial,N
+Route,Bengaluru → Chennai,/bengaluru/outstation/bengaluru-to-chennai,Bengaluru → Chennai,19,,0,,partial,Y
+Route,Bengaluru → Coimbatore,/bengaluru/outstation/bengaluru-to-coimbatore,Bengaluru → Coimbatore,22,,0,,partial,N
+Route,Bengaluru → Hosur,/bengaluru/outstation/bengaluru-to-hosur,Bengaluru → Hosur,17,,0,,partial,N
+Route,Bengaluru → Hyderabad,/bengaluru/outstation/bengaluru-to-hyderabad,Bengaluru → Hyderabad,21,,0,,partial,N
+Route,Bengaluru → Kochi,/bengaluru/outstation/bengaluru-to-kochi,Bengaluru → Kochi,17,,0,,partial,N
+Route,Bengaluru → Madurai,/bengaluru/outstation/bengaluru-to-madurai,Bengaluru → Madurai,19,,0,,partial,Y
+Route,Bengaluru → Mysore,/bengaluru/outstation/bengaluru-to-mysore,Bengaluru → Mysore,18,,0,,partial,Y
+Route,Bengaluru → Pondicherry,/bengaluru/outstation/bengaluru-to-pondicherry,Bengaluru → Pondicherry,23,,0,,partial,N
+Route,Bengaluru → Salem,/bengaluru/outstation/bengaluru-to-salem,Bengaluru → Salem,17,,0,,partial,N
+Route,Bengaluru → Tirupati,/bengaluru/outstation/bengaluru-to-tirupati,Bengaluru → Tirupati,20,,0,,partial,Y
+Route,Bengaluru → Trichy,/bengaluru/outstation/bengaluru-to-trichy,Bengaluru → Trichy,18,,0,,partial,N
+Route,Bengaluru → Vellore,/bengaluru/outstation/bengaluru-to-vellore,Bengaluru → Vellore,19,,0,,partial,Y
+Route,Chandigarh → Chennai,/chandigarh/outstation/chandigarh-to-chennai,Chandigarh → Chennai,20,,0,,partial,N
+Route,Chennai → Ahmedabad,/chennai/outstation/chennai-to-ahmedabad,Chennai → Ahmedabad,19,,0,,partial,N
+Route,Chennai → Bengaluru,/chennai/outstation/chennai-to-bangalore,Chennai → Bengaluru,19,,0,,partial,Y
+Route,Chennai → Chandigarh,/chennai/outstation/chennai-to-chandigarh,Chennai → Chandigarh,20,,0,,partial,N
+Route,Chennai → Chidambaram,/chennai/outstation/chennai-to-chidambaram,Chennai → Chidambaram,21,,0,,partial,Y
+Route,Chennai → Coimbatore,/chennai/outstation/chennai-to-coimbatore,Chennai → Coimbatore,20,,0,,partial,Y
+Route,Chennai → Delhi,/chennai/outstation/chennai-to-delhi,Chennai → Delhi,15,,0,,partial,N
+Route,Chennai → Dindigul,/chennai/outstation/chennai-to-dindigul,Chennai → Dindigul,18,,0,,partial,N
+Route,Chennai → Erode,/chennai/outstation/chennai-to-erode,Chennai → Erode,15,,0,,partial,N
+Route,Chennai → Goa,/chennai/outstation/chennai-to-goa,Chennai → Goa,13,,0,,partial,N
+Route,Chennai → Hosur,/chennai/outstation/chennai-to-hosur,Chennai → Hosur,15,,0,,partial,N
+Route,Chennai → Hyderabad,/chennai/outstation/chennai-to-hyderabad,Chennai → Hyderabad,19,,0,,partial,N
+Route,Chennai → Jaipur,/chennai/outstation/chennai-to-jaipur,Chennai → Jaipur,16,,0,,partial,N
+Route,Chennai → Kanchipuram,/chennai/outstation/chennai-to-kanchipuram,Chennai → Kanchipuram,21,,0,,partial,Y
+Route,Chennai → Kanyakumari,/chennai/outstation/chennai-to-kanyakumari,Chennai → Kanyakumari,21,,0,,partial,Y
+Route,Chennai → Karaikudi,/chennai/outstation/chennai-to-karaikudi,Chennai → Karaikudi,19,,0,,partial,N
+Route,Chennai → Karur,/chennai/outstation/chennai-to-karur,Chennai → Karur,15,,0,,partial,N
+Route,Chennai → Kochi,/chennai/outstation/chennai-to-kochi,Chennai → Kochi,15,,0,,partial,N
+Route,Chennai → Kodaikanal,/chennai/outstation/chennai-to-kodaikanal,Chennai → Kodaikanal,20,,0,,partial,N
+Route,Chennai → Kolkata,/chennai/outstation/chennai-to-kolkata,Chennai → Kolkata,17,,0,,partial,N
+Route,Chennai → Kumbakonam,/chennai/outstation/chennai-to-kumbakonam,Chennai → Kumbakonam,20,,0,,partial,Y
+Route,Chennai → Madurai,/chennai/outstation/chennai-to-madurai,Chennai → Madurai,17,,0,,partial,Y
+Route,Chennai → Mumbai,/chennai/outstation/chennai-to-mumbai,Chennai → Mumbai,16,,0,,partial,N
+Route,Chennai → Mysore,/chennai/outstation/chennai-to-mysore,Chennai → Mysore,16,,0,,partial,N
+Route,Chennai → Nagapattinam,/chennai/outstation/chennai-to-nagapattinam,Chennai → Nagapattinam,22,,0,,partial,N
+Route,Chennai → Nagercoil,/chennai/outstation/chennai-to-nagercoil,Chennai → Nagercoil,19,,0,,partial,N
+Route,Chennai → Ooty,/chennai/outstation/chennai-to-ooty,Chennai → Ooty,14,,0,,partial,N
+Route,Chennai → Palani,/chennai/outstation/chennai-to-palani,Chennai → Palani,16,,0,,partial,Y
+Route,Chennai → Pondicherry,/chennai/outstation/chennai-to-pondicherry,Chennai → Pondicherry,21,,0,,partial,Y
+Route,Chennai → Pune,/chennai/outstation/chennai-to-pune,Chennai → Pune,14,,0,,partial,N
+Route,Chennai → Rameswaram,/chennai/outstation/chennai-to-rameswaram,Chennai → Rameswaram,20,,0,,partial,Y
+Route,Chennai → Salem,/chennai/outstation/chennai-to-salem,Chennai → Salem,15,,0,,partial,N
+Route,Chennai → Thanjavur,/chennai/outstation/chennai-to-thanjavur,Chennai → Thanjavur,19,,0,,partial,Y
+Route,Chennai → Theni,/chennai/outstation/chennai-to-theni,Chennai → Theni,15,,0,,partial,N
+Route,Chennai → Thiruchendur,/chennai/outstation/chennai-to-thiruchendur,Chennai → Thiruchendur,22,,0,,partial,N
+Route,Chennai → Thoothukudi,/chennai/outstation/chennai-to-thoothukudi,Chennai → Thoothukudi,21,,0,,partial,N
+Route,Chennai → Tirunelveli,/chennai/outstation/chennai-to-tirunelveli,Chennai → Tirunelveli,21,,0,,partial,N
+Route,Chennai → Tirupati,/chennai/outstation/chennai-to-tirupati,Chennai → Tirupati,18,,0,,partial,Y
+Route,Chennai → Tiruppur,/chennai/outstation/chennai-to-tiruppur,Chennai → Tiruppur,18,,0,,partial,N
+Route,Chennai → Tiruvannamalai,/chennai/outstation/chennai-to-tiruvannamalai,Chennai → Tiruvannamalai,24,,0,,partial,Y
+Route,Chennai → Trichy,/chennai/outstation/chennai-to-trichy,Chennai → Trichy,16,,0,,partial,Y
+Route,Chennai → Velankanni,/chennai/outstation/chennai-to-velankanni,Chennai → Velankanni,20,,0,,partial,Y
+Route,Chennai → Vellore,/chennai/outstation/chennai-to-vellore,Chennai → Vellore,17,,0,,partial,Y
+Route,Chennai → Villupuram,/chennai/outstation/chennai-to-villupuram,Chennai → Villupuram,20,,0,,partial,N
+Route,Chennai → Visakhapatnam,/chennai/outstation/chennai-to-visakhapatnam,Chennai → Visakhapatnam,23,,0,,partial,N
+Route,Chidambaram → Chennai,/chidambaram/outstation/chidambaram-to-chennai,Chidambaram → Chennai,21,,0,,partial,N
+Route,Chidambaram → Pondicherry,/chidambaram/outstation/chidambaram-to-pondicherry,Chidambaram → Pondicherry,25,,0,,partial,N
+Route,Coimbatore → Bengaluru,/coimbatore/outstation/coimbatore-to-bengaluru,Coimbatore → Bengaluru,22,,0,,partial,N
+Route,Coimbatore → Chennai,/coimbatore/outstation/coimbatore-to-chennai,Coimbatore → Chennai,20,,0,,partial,Y
+Route,Coimbatore → Hyderabad,/coimbatore/outstation/coimbatore-to-hyderabad,Coimbatore → Hyderabad,22,,0,,partial,N
+Route,Coimbatore → Karur,/coimbatore/outstation/coimbatore-to-karur,Coimbatore → Karur,18,,0,,partial,N
+Route,Coimbatore → Kodaikanal,/coimbatore/outstation/coimbatore-to-kodaikanal,Coimbatore → Kodaikanal,23,,0,,partial,N
+Route,Coimbatore → Madurai,/coimbatore/outstation/coimbatore-to-madurai,Coimbatore → Madurai,20,,0,,partial,Y
+Route,Coimbatore → Ooty,/coimbatore/outstation/coimbatore-to-ooty,Coimbatore → Ooty,17,,0,,partial,Y
+Route,Coimbatore → Palani,/coimbatore/outstation/coimbatore-to-palani,Coimbatore → Palani,19,,0,,partial,Y
+Route,Coimbatore → Pondicherry,/coimbatore/outstation/coimbatore-to-pondicherry,Coimbatore → Pondicherry,24,,0,,partial,N
+Route,Coimbatore → Rameswaram,/coimbatore/outstation/coimbatore-to-rameswaram,Coimbatore → Rameswaram,23,,0,,partial,Y
+Route,Coimbatore → Salem,/coimbatore/outstation/coimbatore-to-salem,Coimbatore → Salem,18,,0,,partial,N
+Route,Coimbatore → Tirupati,/coimbatore/outstation/coimbatore-to-tirupati,Coimbatore → Tirupati,21,,0,,partial,Y
+Route,Coimbatore → Tiruppur,/coimbatore/outstation/coimbatore-to-tiruppur,Coimbatore → Tiruppur,21,,0,,partial,N
+Route,Coimbatore → Trichy,/coimbatore/outstation/coimbatore-to-trichy,Coimbatore → Trichy,19,,0,,partial,N
+Route,Delhi → Chennai,/delhi/outstation/delhi-to-chennai,Delhi → Chennai,15,,0,,partial,N
+Route,Dindigul → Chennai,/dindigul/outstation/dindigul-to-chennai,Dindigul → Chennai,18,,0,,partial,N
+Route,Dindigul → Madurai,/dindigul/outstation/dindigul-to-madurai,Dindigul → Madurai,18,,0,,partial,N
+Route,Erode → Chennai,/erode/outstation/erode-to-chennai,Erode → Chennai,15,,0,,partial,N
+Route,Goa → Chennai,/goa/outstation/goa-to-chennai,Goa → Chennai,13,,0,,partial,N
+Route,Hosur → Bengaluru,/hosur/outstation/hosur-to-bengaluru,Hosur → Bengaluru,17,,0,,partial,N
+Route,Hosur → Chennai,/hosur/outstation/hosur-to-chennai,Hosur → Chennai,15,,0,,partial,N
+Route,Hyderabad → Bengaluru,/hyderabad/outstation/hyderabad-to-bengaluru,Hyderabad → Bengaluru,21,,0,,partial,N
+Route,Hyderabad → Chennai,/hyderabad/outstation/hyderabad-to-chennai,Hyderabad → Chennai,19,,0,,partial,N
+Route,Hyderabad → Coimbatore,/hyderabad/outstation/hyderabad-to-coimbatore,Hyderabad → Coimbatore,22,,0,,partial,N
+Route,Hyderabad → Madurai,/hyderabad/outstation/hyderabad-to-madurai,Hyderabad → Madurai,19,,0,,partial,N
+Route,Hyderabad → Tirupati,/hyderabad/outstation/hyderabad-to-tirupati,Hyderabad → Tirupati,20,,0,,partial,Y
+Route,Hyderabad → Visakhapatnam,/hyderabad/outstation/hyderabad-to-visakhapatnam,Hyderabad → Visakhapatnam,25,,0,,partial,N
+Route,Jaipur → Chennai,/jaipur/outstation/jaipur-to-chennai,Jaipur → Chennai,16,,0,,partial,N
+Route,Kanchipuram → Chennai,/kanchipuram/outstation/kanchipuram-to-chennai,Kanchipuram → Chennai,21,,0,,partial,N
+Route,Kanchipuram → Tirupati,/kanchipuram/outstation/kanchipuram-to-tirupati,Kanchipuram → Tirupati,22,,0,,partial,Y
+Route,Kanyakumari → Chennai,/kanyakumari/outstation/kanyakumari-to-chennai,Kanyakumari → Chennai,21,,0,,partial,N
+Route,Kanyakumari → Madurai,/kanyakumari/outstation/kanyakumari-to-madurai,Kanyakumari → Madurai,21,,0,,partial,N
+Route,Kanyakumari → Nagercoil,/kanyakumari/outstation/kanyakumari-to-nagercoil,Kanyakumari → Nagercoil,23,,0,,partial,N
+Route,Karaikudi → Chennai,/karaikudi/outstation/karaikudi-to-chennai,Karaikudi → Chennai,19,,0,,partial,N
+Route,Karaikudi → Madurai,/karaikudi/outstation/karaikudi-to-madurai,Karaikudi → Madurai,19,,0,,partial,N
+Route,Karur → Chennai,/karur/outstation/karur-to-chennai,Karur → Chennai,15,,0,,partial,N
+Route,Karur → Coimbatore,/karur/outstation/karur-to-coimbatore,Karur → Coimbatore,18,,0,,partial,N
+Route,Kochi → Bengaluru,/kochi/outstation/kochi-to-bengaluru,Kochi → Bengaluru,17,,0,,partial,N
+Route,Kochi → Chennai,/kochi/outstation/kochi-to-chennai,Kochi → Chennai,15,,0,,partial,N
+Route,Kodaikanal → Chennai,/kodaikanal/outstation/kodaikanal-to-chennai,Kodaikanal → Chennai,20,,0,,partial,N
+Route,Kodaikanal → Coimbatore,/kodaikanal/outstation/kodaikanal-to-coimbatore,Kodaikanal → Coimbatore,23,,0,,partial,N
+Route,Kodaikanal → Madurai,/kodaikanal/outstation/kodaikanal-to-madurai,Kodaikanal → Madurai,20,,0,,partial,N
+Route,Kolkata → Chennai,/kolkata/outstation/kolkata-to-chennai,Kolkata → Chennai,17,,0,,partial,N
+Route,Kumbakonam → Chennai,/kumbakonam/outstation/kumbakonam-to-chennai,Kumbakonam → Chennai,20,,0,,partial,N
+Route,Kumbakonam → Trichy,/kumbakonam/outstation/kumbakonam-to-trichy,Kumbakonam → Trichy,19,,0,,partial,N
+Route,Madurai → Bengaluru,/madurai/outstation/madurai-to-bengaluru,Madurai → Bengaluru,19,,0,,partial,N
+Route,Madurai → Chennai,/madurai/outstation/madurai-to-chennai,Madurai → Chennai,17,,0,,partial,N
+Route,Madurai → Coimbatore,/madurai/outstation/madurai-to-coimbatore,Madurai → Coimbatore,20,,0,,partial,N
+Route,Madurai → Dindigul,/madurai/outstation/madurai-to-dindigul,Madurai → Dindigul,18,,0,,partial,N
+Route,Madurai → Hyderabad,/madurai/outstation/madurai-to-hyderabad,Madurai → Hyderabad,19,,0,,partial,N
+Route,Madurai → Kanyakumari,/madurai/outstation/madurai-to-kanyakumari,Madurai → Kanyakumari,21,,0,,partial,N
+Route,Madurai → Karaikudi,/madurai/outstation/madurai-to-karaikudi,Madurai → Karaikudi,19,,0,,partial,N
+Route,Madurai → Kodaikanal,/madurai/outstation/madurai-to-kodaikanal,Madurai → Kodaikanal,20,,0,,partial,N
+Route,Madurai → Palani,/madurai/outstation/madurai-to-palani,Madurai → Palani,16,,0,,partial,N
+Route,Madurai → Rameswaram,/madurai/outstation/madurai-to-rameswaram,Madurai → Rameswaram,20,,0,,partial,N
+Route,Madurai → Theni,/madurai/outstation/madurai-to-theni,Madurai → Theni,15,,0,,partial,N
+Route,Madurai → Thiruchendur,/madurai/outstation/madurai-to-thiruchendur,Madurai → Thiruchendur,22,,0,,partial,N
+Route,Madurai → Thoothukudi,/madurai/outstation/madurai-to-thoothukudi,Madurai → Thoothukudi,21,,0,,partial,N
+Route,Madurai → Tirunelveli,/madurai/outstation/madurai-to-tirunelveli,Madurai → Tirunelveli,21,,0,,partial,N
+Route,Madurai → Tirupati,/madurai/outstation/madurai-to-tirupati,Madurai → Tirupati,18,,0,,partial,N
+Route,Madurai → Trichy,/madurai/outstation/madurai-to-trichy,Madurai → Trichy,16,,0,,partial,N
+Route,Mumbai → Chennai,/mumbai/outstation/mumbai-to-chennai,Mumbai → Chennai,16,,0,,partial,N
+Route,Mysore → Bengaluru,/mysore/outstation/mysore-to-bengaluru,Mysore → Bengaluru,18,,0,,partial,N
+Route,Mysore → Chennai,/mysore/outstation/mysore-to-chennai,Mysore → Chennai,16,,0,,partial,N
+Route,Nagapattinam → Chennai,/nagapattinam/outstation/nagapattinam-to-chennai,Nagapattinam → Chennai,22,,0,,partial,N
+Route,Nagercoil → Chennai,/nagercoil/outstation/nagercoil-to-chennai,Nagercoil → Chennai,19,,0,,partial,N
+Route,Nagercoil → Kanyakumari,/nagercoil/outstation/nagercoil-to-kanyakumari,Nagercoil → Kanyakumari,23,,0,,partial,N
+Route,Ooty → Chennai,/ooty/outstation/ooty-to-chennai,Ooty → Chennai,14,,0,,partial,N
+Route,Ooty → Coimbatore,/ooty/outstation/ooty-to-coimbatore,Ooty → Coimbatore,17,,0,,partial,N
+Route,Palani → Chennai,/palani/outstation/palani-to-chennai,Palani → Chennai,16,,0,,partial,N
+Route,Palani → Coimbatore,/palani/outstation/palani-to-coimbatore,Palani → Coimbatore,19,,0,,partial,N
+Route,Palani → Madurai,/palani/outstation/palani-to-madurai,Palani → Madurai,16,,0,,partial,N
+Route,Pondicherry → Bengaluru,/pondicherry/outstation/pondicherry-to-bengaluru,Pondicherry → Bengaluru,23,,0,,partial,N
+Route,Pondicherry → Chennai,/pondicherry/outstation/pondicherry-to-chennai,Pondicherry → Chennai,21,,0,,partial,N
+Route,Pondicherry → Chidambaram,/pondicherry/outstation/pondicherry-to-chidambaram,Pondicherry → Chidambaram,25,,0,,partial,N
+Route,Pondicherry → Coimbatore,/pondicherry/outstation/pondicherry-to-coimbatore,Pondicherry → Coimbatore,24,,0,,partial,N
+Route,Pondicherry → Tirupati,/pondicherry/outstation/pondicherry-to-tirupati,Pondicherry → Tirupati,22,,0,,partial,N
+Route,Pune → Chennai,/pune/outstation/pune-to-chennai,Pune → Chennai,14,,0,,partial,N
+Route,Rameswaram → Chennai,/rameswaram/outstation/rameswaram-to-chennai,Rameswaram → Chennai,20,,0,,partial,N
+Route,Rameswaram → Coimbatore,/rameswaram/outstation/rameswaram-to-coimbatore,Rameswaram → Coimbatore,23,,0,,partial,N
+Route,Rameswaram → Madurai,/rameswaram/outstation/rameswaram-to-madurai,Rameswaram → Madurai,20,,0,,partial,N
+Route,Salem → Bengaluru,/salem/outstation/salem-to-bengaluru,Salem → Bengaluru,17,,0,,partial,N
+Route,Salem → Chennai,/salem/outstation/salem-to-chennai,Salem → Chennai,15,,0,,partial,N
+Route,Salem → Coimbatore,/salem/outstation/salem-to-coimbatore,Salem → Coimbatore,18,,0,,partial,N
+Route,Salem → Tirupati,/salem/outstation/salem-to-tirupati,Salem → Tirupati,16,,0,,partial,N
+Route,Thanjavur → Chennai,/thanjavur/outstation/thanjavur-to-chennai,Thanjavur → Chennai,19,,0,,partial,N
+Route,Thanjavur → Trichy,/thanjavur/outstation/thanjavur-to-trichy,Thanjavur → Trichy,18,,0,,partial,N
+Route,Theni → Chennai,/theni/outstation/theni-to-chennai,Theni → Chennai,15,,0,,partial,N
+Route,Theni → Madurai,/theni/outstation/theni-to-madurai,Theni → Madurai,15,,0,,partial,N
+Route,Thiruchendur → Chennai,/thiruchendur/outstation/thiruchendur-to-chennai,Thiruchendur → Chennai,22,,0,,partial,N
+Route,Thiruchendur → Madurai,/thiruchendur/outstation/thiruchendur-to-madurai,Thiruchendur → Madurai,22,,0,,partial,N
+Route,Thiruchendur → Thoothukudi,/thiruchendur/outstation/thiruchendur-to-thoothukudi,Thiruchendur → Thoothukudi,26,,0,,partial,N
+Route,Thoothukudi → Chennai,/thoothukudi/outstation/thoothukudi-to-chennai,Thoothukudi → Chennai,21,,0,,partial,N
+Route,Thoothukudi → Madurai,/thoothukudi/outstation/thoothukudi-to-madurai,Thoothukudi → Madurai,21,,0,,partial,N
+Route,Thoothukudi → Thiruchendur,/thoothukudi/outstation/thoothukudi-to-thiruchendur,Thoothukudi → Thiruchendur,26,,0,,partial,N
+Route,Tirunelveli → Chennai,/tirunelveli/outstation/tirunelveli-to-chennai,Tirunelveli → Chennai,21,,0,,partial,N
+Route,Tirunelveli → Madurai,/tirunelveli/outstation/tirunelveli-to-madurai,Tirunelveli → Madurai,21,,0,,partial,N
+Route,Tirupati → Bengaluru,/tirupati/outstation/tirupati-to-bengaluru,Tirupati → Bengaluru,20,,0,,partial,N
+Route,Tirupati → Chennai,/tirupati/outstation/tirupati-to-chennai,Tirupati → Chennai,18,,0,,partial,N
+Route,Tirupati → Coimbatore,/tirupati/outstation/tirupati-to-coimbatore,Tirupati → Coimbatore,21,,0,,partial,N
+Route,Tirupati → Hyderabad,/tirupati/outstation/tirupati-to-hyderabad,Tirupati → Hyderabad,20,,0,,partial,N
+Route,Tiruppur → Chennai,/tiruppur/outstation/tiruppur-to-chennai,Tiruppur → Chennai,18,,0,,partial,N
+Route,Tiruppur → Coimbatore,/tiruppur/outstation/tiruppur-to-coimbatore,Tiruppur → Coimbatore,21,,0,,partial,N
+Route,Tiruvannamalai → Chennai,/tiruvannamalai/outstation/tiruvannamalai-to-chennai,Tiruvannamalai → Chennai,24,,0,,partial,N
+Route,Trichy → Bengaluru,/trichy/outstation/trichy-to-bengaluru,Trichy → Bengaluru,18,,0,,partial,N
+Route,Trichy → Chennai,/trichy/outstation/trichy-to-chennai,Trichy → Chennai,16,,0,,partial,Y
+Route,Trichy → Coimbatore,/trichy/outstation/trichy-to-coimbatore,Trichy → Coimbatore,19,,0,,partial,N
+Route,Trichy → Kumbakonam,/trichy/outstation/trichy-to-kumbakonam,Trichy → Kumbakonam,19,,0,,partial,N
+Route,Trichy → Madurai,/trichy/outstation/trichy-to-madurai,Trichy → Madurai,16,,0,,partial,Y
+Route,Trichy → Thanjavur,/trichy/outstation/trichy-to-thanjavur,Trichy → Thanjavur,18,,0,,partial,Y
+Route,Trichy → Tirupati,/trichy/outstation/trichy-to-tirupati,Trichy → Tirupati,17,,0,,partial,Y
+Route,Trichy → Velankanni,/trichy/outstation/trichy-to-velankanni,Trichy → Velankanni,19,,0,,partial,Y
+Route,Velankanni → Chennai,/velankanni/outstation/velankanni-to-chennai,Velankanni → Chennai,20,,0,,partial,N
+Route,Velankanni → Trichy,/velankanni/outstation/velankanni-to-trichy,Velankanni → Trichy,19,,0,,partial,N
+Route,Vellore → Bengaluru,/vellore/outstation/vellore-to-bengaluru,Vellore → Bengaluru,19,,0,,partial,Y
+Route,Vellore → Chennai,/vellore/outstation/vellore-to-chennai,Vellore → Chennai,17,,0,,partial,Y
+Route,Vellore → Tirupati,/vellore/outstation/vellore-to-tirupati,Vellore → Tirupati,18,,0,,partial,Y
+Route,Villupuram → Chennai,/villupuram/outstation/villupuram-to-chennai,Villupuram → Chennai,20,,0,,partial,N
+Route,Visakhapatnam → Chennai,/visakhapatnam/outstation/visakhapatnam-to-chennai,Visakhapatnam → Chennai,23,,0,,partial,N
+Route,Visakhapatnam → Hyderabad,/visakhapatnam/outstation/visakhapatnam-to-hyderabad,Visakhapatnam → Hyderabad,25,,0,,partial,N
+Homepage,Cabzii Home,/,Cab Booking in Chennai | Airport Taxi | Cabzii,46,"Book Cabzii cabs in Chennai for airport taxi, local packages and outstation trips. Hatchback to Innova — fares shown before you confirm, with WhatsApp support.",159,"cab booking chennai, airport taxi, outstation cab, one way cab, acting driver, cabzii",complete,Y
+Cabs listing,Book Cabs Online,/cabs,"Cab Booking Chennai | Airport Taxi, Local & Outstation…",55,"Book Swift Dzire, Honda Amaze, Ertiga, Toyota Innova Crysta and Tempo Traveller with the Cabzii tariff. Outstation, airport and local cab booking on cabzii.in.",159,"cab booking chennai, tour s taxi booking, dzire taxi, dezire taxi, wagon r taxi, wegon r, bolero taxi, boliro, innova crysta rental, car rental chennai, cab rental chennai, airport taxi, cabzii cabs",complete,Y
+Drivers category,Driver Hire,/drivers,Driver Hire & Chauffeur Service | Acting Driver | Cabzii,56,"Book acting driver, chauffeur and driver-on-hire on Cabzii. You book a service — Cabzii assigns a professional driver after confirmation.",137,"driver hire, acting driver, chauffeur service, call driver, cabzii drivers",complete,N
+Acting driver hub,Acting Driver,/acting-driver,Acting Driver | Hire a Driver for Your Own Car | Cabzii,55,"Acting driver and call driver on Cabzii — chauffeur for your own car. Open a city page, then book Call Driver. A driver is assigned after you confirm.",150,"acting driver, chauffeur on hire, driver for own car, cabzii acting driver",complete,N
+Services hub,Services,/services,Cab & Driver Services by City | Cabzii,38,"Cab rental, car rental, airport taxi, outstation and one-way services by city on Cabzii. Open the city you travel from.",119,"cab rental, airport taxi, outstation cab, car rental, cabzii services",complete,N
+Routes hub,Routes,/routes,Popular Cab Routes — One-Way & Outstation | Cabzii,50,"High-value cab routes such as Chennai–Tirupati and Chennai–Trichy with distance, fare context and WhatsApp support on Cabzii.",125,"chennai to tirupati cab, one way cab, outstation routes, cabzii routes",complete,N
+Call Driver,Call Driver Service,/call-driver,Book Call Driver | Acting Driver in Chennai | Cabzii,52,"Book a Cabzii Call Driver for your own car — city, outstation acting driver, airport chauffeur, monthly quote, corporate and valet. Fares before you confirm.",157,"call driver Chennai, acting driver in Chennai, outstation acting driver, driver for own car, airport call driver Chennai",complete,Y
+Acting drivers Chennai,Call Drivers in Chennai,/chennai/acting-driver,Call Drivers in Chennai | Hire Acting Drivers | Cabzii,54,"Hire call drivers in Chennai for your own car — city trips, outstation acting driver days and MAA airport chauffeur. Fares shown before you confirm.",148,"call drivers in Chennai, acting driver in Chennai, outstation acting driver, hire acting drivers Chennai, airport call driver Chennai",complete,N
+Holiday packages,Holiday Packages,/holidays,"Holiday Packages — Pilgrimage, Beach & Hill Trips",49,"Book pilgrimage, beach, heritage and family holiday packages on cabzii.in. Choose cab type — sedan, SUV, Innova or tempo.",121,"holiday packages India, pilgrimage tour, Tirupati package, cabzii holidays",complete,Y
+Blog listing,Travel Blog,/blogs,"Travel Blog — Cabs, Pilgrimage & Holiday Tips",45,"Guides on cab booking, pilgrimage packages, airport transfers and holiday planning on cabzii.in.",96,"cab booking tips, pilgrimage travel guide, cabzii blog",complete,Y
+About page,About Cabzii,/about,About Cabzii — Trusted Cab Booking Across India,47,"Cabzii is a cab booking platform for airport taxi, outstation, local packages and acting driver from Chennai and Tamil Nadu corridors.",134,"about cabzii, cab booking company India, cabzii.in about",complete,Y
+Contact page,Contact Cabzii,/contact,"Contact Cabzii — Call, WhatsApp & Email",39,"Reach Cabzii for cab quotes, booking help and support. Phone, WhatsApp and email.",81,"contact cabzii, cab booking support, cabzii phone number",complete,Y
+FAQ page,Cabzii FAQ,/faq,"FAQ — Cab Booking, Airport Taxi & Outstation Cabs | Cabzii",58,"Answers about cab booking on cabzii.in — fares, airport pickup, outstation trips, acting drivers, payment and cancellation.",123,"cab booking faq, airport taxi faq, cabzii help",complete,N
+Locations hub,Service Locations,/locations,Cab & Taxi Service Locations in South India | Cabzii,52,"Cabzii service areas across Chennai, Bengaluru, Hyderabad, Coimbatore, Madurai, Tirupati and 20+ cities. Book cabs online.",122,"cab service locations, taxi near me South India, cabzii cities",complete,N
+Reviews page,Customer Reviews,/testimonials,Customer Reviews & Ratings | Cabzii,35,"Read verified Cabzii customer reviews for cab booking, airport taxi, outstation trips and acting drivers across South India.",124,"cabzii reviews, cab booking reviews, taxi service ratings",complete,N
+Tariff page,Cab Rental Tariff,/tariff,"Cab Rental Tariff in Chennai | Car, Tempo Traveller & Mini Bus Rates | Cabzii",77,"Cabzii Chennai cab rental tariff — Swift Dzire from ₹1,200, Innova Crysta from ₹2,200, Tempo Traveller from ₹3,000, mini bus from ₹8,500. Extra km, extra hour and driver batta.",176,"cab rental tariff chennai, tempo traveller rental chennai price, innova crysta rental chennai, mini bus rental chennai, cabzii tariff",complete,Y

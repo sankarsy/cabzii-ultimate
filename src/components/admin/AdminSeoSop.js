@@ -3,7 +3,7 @@ import Link from "next/link";
 const STEPS = [
   {
     title: "1. Decide the page type",
-    body: "Rank city hubs, airport taxi, acting-driver cities, outstation/one-way/tempo services, routes, and holiday packages. Do not create SEO pages for cab fare slabs or Call Driver packages."
+    body: "Live ranking cities now: Chennai, Madurai, Tirupati, Trichy, Coimbatore, Vellore, Kanchipuram, Kodaikanal, Ooty, Pondicherry, Sabarimala, Ayyappan Kovil. Rank those hubs, airport taxi (not Kanchipuram / Kodaikanal / Ooty / Sabarimala / Ayyappan Kovil), acting-driver, outstation/one-way/tempo, the Tirupati route, and holiday packages. Create extra city pages yourself later. Do not create SEO pages for cab fare slabs or Call Driver packages."
   },
   {
     title: "2. Create or open the record",
@@ -53,7 +53,7 @@ export default function AdminSeoSop() {
                     Google SEO pages
                   </Link>
                 </td>
-                <td className="py-2 font-mono">/chennai</td>
+                <td className="py-2 font-mono">/cab-booking/chennai</td>
               </tr>
               <tr className="border-b border-slate-100">
                 <td className="py-2 pr-3">airport taxi Chennai</td>
@@ -73,7 +73,7 @@ export default function AdminSeoSop() {
                     Google SEO pages
                   </Link>
                 </td>
-                <td className="py-2 font-mono">/{"{city}"}/acting-driver</td>
+                <td className="py-2 font-mono">/acting-driver/{"{city}"}</td>
               </tr>
               <tr className="border-b border-slate-100">
                 <td className="py-2 pr-3">outstation / one-way / tempo traveller</td>
@@ -103,7 +103,7 @@ export default function AdminSeoSop() {
                     Catalog → Holidays
                   </Link>
                 </td>
-                <td className="py-2 font-mono">/holidays/…</td>
+                <td className="py-2 font-mono">/tour-packages/…</td>
               </tr>
               <tr>
                 <td className="py-2 pr-3">4 hr / 8 hr cab, local Call Driver package</td>

@@ -18,6 +18,7 @@ export const TAMIL_NADU_CITIES = [
   { name: "Sivakasi" },
   { name: "Karur" },
   { name: "Udhagamandalam", aliases: ["Ooty", "Udhagai"] },
+  { name: "Kodaikanal", aliases: ["Kodai"] },
   { name: "Hosur" },
   { name: "Nagercoil" },
   { name: "Kanchipuram", aliases: ["Kancheepuram"] },
@@ -46,7 +47,8 @@ export const TAMIL_NADU_CITIES = [
   { name: "Chengalpattu" },
   { name: "Villupuram" },
   { name: "Cumbum" },
-  { name: "Palani" }
+  { name: "Palani" },
+  { name: "Pondicherry", aliases: ["Puducherry", "Pondy"] }
 ];
 
 export function cityLabel(name) {

@@ -1,20 +1,49 @@
 import { getCabVehicleName } from "./catalogDisplay";
 import { estimateDurationMin } from "./openRouteService";
 
-const TYPE_ORDER = ["Hatchback", "Sedan", "SUV", "Van"];
+/** Compact cars first, then family, then group vans. */
+export const CAB_TYPE_ORDER = ["Hatchback", "Sedan", "SUV", "Van"];
 
 export function cabTypeBucket(cab = {}) {
-  const blob = `${cab.type || ""} ${cab.category || ""} ${cab.title || ""} ${cab.vehicleModel || ""}`.toLowerCase();
-  if (/tempo|traveller|van|bus|urbania|coach/.test(blob)) return "Van";
-  if (/innova|crysta|ertiga|xylo|xuv|fortuner|hycross|suv|mpv/.test(blob)) return "SUV";
-  if (/hatch|wagon|alto|i10|i20|celerio|tiago/.test(blob) && !/dzire/.test(blob)) return "Hatchback";
-  if (/sedan|dzire|etios|amaze|xcent|verna|ciaz/.test(blob)) return "Sedan";
+  const blob = [
+    cab.type,
+    cab.category,
+    cab.title,
+    cab.vehicleModel,
+    cab.vehicleName,
+    cab.model,
+    cab.name,
+    getCabVehicleName(cab)
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+  if (/tempo|traveller|urbania|mini\s*bus|\bbus\b|\bvan\b|coach/.test(blob)) return "Van";
+  if (
+    /innova|crysta|ertiga|xylo|xuv|fortuner|hycross|scorpio|harrier|safari|creta|seltos|carens|brezza|nexon|bolero|rumion|xl6|\bsuv\b|\bmpv\b|\bmuv\b/.test(
+      blob
+    )
+  ) {
+    return "SUV";
+  }
+  if (
+    /hatch|wagon|alto|i10|i20|celerio|tiago|punch|baleno|santro|figo|polo|jazz|ignis|glanza|kiger|magnite/.test(blob) ||
+    (/\bswift\b/.test(blob) && !/dzire/.test(blob))
+  ) {
+    return "Hatchback";
+  }
+  if (/sedan|dzire|etios|amaze|xcent|verna|ciaz|\baura\b|\bcity\b|slavia|virtus/.test(blob)) return "Sedan";
   const type = String(cab.type || "").trim();
-  if (/suv|mpv/i.test(type)) return "SUV";
+  if (/suv|mpv|muv/i.test(type)) return "SUV";
   if (/hatch/i.test(type)) return "Hatchback";
   if (/sedan/i.test(type)) return "Sedan";
   if (/van|tempo/i.test(type)) return "Van";
   return type || "Cab";
+}
+
+export function cabTypeRank(cab) {
+  const idx = CAB_TYPE_ORDER.indexOf(cabTypeBucket(cab));
+  return idx === -1 ? CAB_TYPE_ORDER.length : idx;
 }
 
 export function cabFuelLabel(cab = {}) {
@@ -43,12 +72,23 @@ export function countBy(list, keyFn) {
   return map;
 }
 
+/** One representative cab per Hatchback / Sedan / SUV / Van — FastTrack-style category list. */
+export function oneCabPerCategory(cabs = []) {
+  const picked = new Map();
+  for (const cab of cabs) {
+    const type = cabTypeBucket(cab);
+    if (!CAB_TYPE_ORDER.includes(type) || picked.has(type)) continue;
+    picked.set(type, cab);
+  }
+  return CAB_TYPE_ORDER.map((type) => picked.get(type)).filter(Boolean);
+}
+
 export function cabTypeOptions(cabs) {
   const counts = countBy(cabs, cabTypeBucket);
   const keys = Array.from(counts.keys());
   keys.sort((a, b) => {
-    const ia = TYPE_ORDER.indexOf(a);
-    const ib = TYPE_ORDER.indexOf(b);
+    const ia = CAB_TYPE_ORDER.indexOf(a);
+    const ib = CAB_TYPE_ORDER.indexOf(b);
     if (ia !== -1 || ib !== -1) return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
     return a.localeCompare(b);
   });

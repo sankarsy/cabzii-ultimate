@@ -1,5 +1,8 @@
 import { appendTripCoords, readTripCoords } from "./tripCoords";
 import { todayStr as istTodayStr } from "./istDate";
+import { citySlugFromPlaceLabel, outstationHrefFromTrip } from "./seo/outstationPaths";
+import { airportTaxiPublicPath, cityCabLandingPath } from "./cityCabPaths";
+import { num } from "./cabFare";
 
 /** Trip search params for cabzii.in cab booking flow. */
 
@@ -23,21 +26,24 @@ export function todayStr() {
   return istTodayStr();
 }
 
+function localHoursForTrip(trip) {
+  const kind = String(trip?.tripType || "").toLowerCase();
+  if (kind === "hourly") return num(trip?.packageHours, 8);
+  return 4;
+}
+
 export function cabPackageIdFromTrip(trip) {
   if (trip?.packageId || trip?.package) return trip.packageId || trip.package;
   if (trip?.tripType === "outstation") {
     return trip.roundTrip ? "outstation_twoway" : "outstation_oneway";
   }
   if (trip?.tripType === "hourly") {
-    const h = Number(trip.packageHours) || 8;
+    const h = num(trip?.packageHours, 8);
     if (h > 12) return "local_15hr";
     if (h > 7 && h !== 8) return "local_10hr";
     if (h <= 4) return "local_4hr";
     if (h === 5) return "local_5hr";
     return "local_1day";
-  }
-  if (trip?.tripType === "airport" || trip?.tripType === "local") {
-    return "local_4hr";
   }
   return "local_4hr";
 }
@@ -88,6 +94,35 @@ export function isValidTripSearch(trip) {
   if (!trip?.from?.trim()) return false;
   if (tripNeedsDrop(trip.tripType) && !trip?.to?.trim()) return false;
   return true;
+}
+
+/** Outstation city pairs use `/chennai/outstation/chennai-to-kanchipuram`. Other trips stay on /cabs/results. */
+export function cabResultsHref(trip) {
+  const type = String(trip?.tripType || "").toLowerCase();
+  if (type === "outstation") {
+    const pretty = outstationHrefFromTrip(trip);
+    if (pretty) return pretty;
+    const fromSlug = citySlugFromPlaceLabel(trip?.from || trip?.city);
+    if (fromSlug && !String(trip?.to || "").trim()) return `/services/outstation-cab/${fromSlug}`;
+  }
+  if (type === "airport") {
+    const slug = citySlugFromPlaceLabel(trip?.from || trip?.to || trip?.city);
+    const toSlug = citySlugFromPlaceLabel(trip?.to);
+    if (slug && (!String(trip?.to || "").trim() || toSlug === slug)) return airportTaxiPublicPath(slug);
+  }
+  if (type === "local") {
+    const slug = citySlugFromPlaceLabel(trip?.from || trip?.city);
+    if (slug) return cityCabLandingPath(slug);
+  }
+  return `/cabs/results?${tripToSearchQuery(trip).toString()}`;
+}
+
+/** Pretty path for `/cabs/results?...` when the trip is a known city pair / hub. */
+export function prettyPublicCabRedirect(searchParams) {
+  const trip = parseTripSearchParams(searchParams);
+  const href = cabResultsHref(trip);
+  if (!href || href.startsWith("/cabs/results")) return "";
+  return href;
 }
 
 export function tripToSearchQuery(trip) {
@@ -160,24 +195,41 @@ export function tripSummaryLabel(trip) {
   return `${trip.from} → ${trip.to} · ${rt} · ${trip.date} ${trip.time}`;
 }
 
+function isLocalSlab(slab) {
+  const id = String(slab?.id || slab?.packageType || "");
+  const group = String(slab?.group || "");
+  return group === "local" || id.includes("local") || id.includes("airport") || id === "hourly";
+}
+
+function slabPrice(slab) {
+  return num(slab?.price) > 0 ? num(slab.price) : num(slab?.originalPrice) || num(slab?.list);
+}
+
 /** Pick fare slab for search results / passenger page (shared with result cards). */
 export function cabSlabForTrip(slabs, trip) {
   if (!slabs?.length) return null;
+  const tripType = String(trip?.tripType || "").toLowerCase();
   const packageId = cabPackageIdFromTrip(trip);
-  const byPackage = slabs.find((s) => s.id === packageId);
+  const byPackage = slabs.find((s) => s.id === packageId && slabPrice(s) > 0);
   if (byPackage) return byPackage;
-  if (trip.tripType === "hourly") {
-    return slabs.find((s) => s.group === "local") || slabs[0];
-  }
-  if (trip.tripType === "airport" || trip.tripType === "local") {
-    return slabs.find((s) => s.id === "local_4hr") || slabs.find((s) => s.group === "local") || slabs[0];
-  }
-  if (trip.tripType === "outstation") {
+
+  if (tripType === "outstation") {
     return trip.roundTrip
       ? slabs.find((s) => s.id === "outstation_twoway") || slabs.find((s) => s.group === "outstation") || slabs[0]
       : slabs.find((s) => s.id === "outstation_oneway") || slabs.find((s) => s.group === "outstation") || slabs[0];
   }
-  return slabs[0];
+
+  const local = slabs.filter(isLocalSlab);
+  const priced = local.filter((s) => slabPrice(s) > 0);
+  const pool = priced.length ? priced : local;
+  const byHours = (hours) => pool.find((s) => num(s.includedHours) === hours);
+  const h = localHoursForTrip(trip);
+  if (h > 12 && byHours(15)) return byHours(15);
+  if (h > 7 && byHours(10)) return byHours(10);
+  if (h > 4 && byHours(8)) return byHours(8);
+  if (h <= 4 && byHours(4)) return byHours(4);
+  if (h <= 5 && byHours(5)) return byHours(5);
+  return byHours(4) || byHours(5) || byHours(8) || byHours(10) || byHours(15) || pool[0] || slabs[0];
 }
 
 export function tripToCabziiSearchParams(trip) {

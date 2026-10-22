@@ -43,7 +43,7 @@ export default function AdminCallDriverPage({ token, isSuperAdmin }) {
     seoKeywords: ""
   });
   const [chennaiSnippet, setChennaiSnippet] = useState({
-    productName: "Call Drivers in Chennai",
+    productName: "Acting Driver in Chennai",
     seoTitle: "",
     seoDescription: "",
     seoKeywords: ""
@@ -69,9 +69,13 @@ export default function AdminCallDriverPage({ token, isSuperAdmin }) {
         seoDescription: stored.seoDescription || "",
         seoKeywords: stored.seoKeywords || ""
       });
-      const chennai = data.pageSeo?.["/chennai/acting-driver"] || data.pageSeo?.["/call-drivers-chennai"] || {};
+      const chennai =
+        data.pageSeo?.["/acting-driver/chennai"] ||
+        data.pageSeo?.["/chennai/acting-driver"] ||
+        data.pageSeo?.["/call-drivers-chennai"] ||
+        {};
       setChennaiSnippet({
-        productName: chennai.productName || "Call Drivers in Chennai",
+        productName: chennai.productName || "Acting Driver in Chennai",
         seoTitle: chennai.seoTitle || "",
         seoDescription: chennai.seoDescription || "",
         seoKeywords: chennai.seoKeywords || ""
@@ -105,13 +109,7 @@ export default function AdminCallDriverPage({ token, isSuperAdmin }) {
               seoDescription: snippet.seoDescription,
               seoKeywords: snippet.seoKeywords
             },
-            "/call-drivers-chennai": {
-              productName: chennaiSnippet.productName,
-              seoTitle: chennaiSnippet.seoTitle,
-              seoDescription: chennaiSnippet.seoDescription,
-              seoKeywords: chennaiSnippet.seoKeywords
-            },
-            "/chennai/acting-driver": {
+            "/acting-driver/chennai": {
               productName: chennaiSnippet.productName,
               seoTitle: chennaiSnippet.seoTitle,
               seoDescription: chennaiSnippet.seoDescription,
@@ -300,7 +298,7 @@ export default function AdminCallDriverPage({ token, isSuperAdmin }) {
           </div>
           </div>
           <div className="space-y-4">
-            <h3 className="text-sm font-bold text-slate-900">Ranking page · /chennai/acting-driver</h3>
+            <h3 className="text-sm font-bold text-slate-900">Ranking page · /acting-driver/chennai</h3>
             <p className="text-xs text-slate-500">City acting-driver landings (Chennai, Trichy, Madurai, Coimbatore) use SEO city pages. H1, FAQs and body: Admin → SEO city pages, type Acting driver. This snippet still stores Google title/description for the Chennai URL.</p>
             <Field label="Product / H1 name">
               <input className={inputCls()} value={chennaiSnippet.productName} onChange={(e) => setChennaiSnippet((p) => ({ ...p, productName: e.target.value }))} />
@@ -317,7 +315,7 @@ export default function AdminCallDriverPage({ token, isSuperAdmin }) {
             <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
               <p className="text-xs font-semibold text-slate-700">Google preview</p>
               <p className="mt-2 text-base font-medium text-[#1a0dab]">{chennaiSnippet.seoTitle || "Meta title"}</p>
-              <p className="text-xs text-[#006621]">cabzii.in/chennai/acting-driver</p>
+              <p className="text-xs text-[#006621]">cabzii.in/acting-driver/chennai</p>
               <p className="mt-1 text-sm text-slate-600">{chennaiSnippet.seoDescription || "Meta description appears here."}</p>
             </div>
           </div>

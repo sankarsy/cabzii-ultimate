@@ -19,22 +19,11 @@ export const STATIC_PAGE_SEO_LIST = [
     type: "site",
     typeLabel: "Cabs listing",
     productName: "Book Cabs Online",
-    seoTitle: formatSerpTitle("Cab Booking Chennai", "Airport Taxi, Local & Outstation Cabs"),
+    seoTitle: formatSerpTitle("Book Cabs Online", "Compare Dzire to Tempo"),
     seoDescription:
-      "Book Swift Dzire, Honda Amaze, Ertiga, Toyota Innova Crysta and Tempo Traveller with the Cabzii tariff. Outstation, airport and local cab booking on cabzii.in.",
+      "Compare Swift Dzire, Ertiga, Innova Crysta and Tempo Traveller on Cabzii. Airport, local and outstation fares from the published tariff before you confirm.",
     seoKeywords:
-      "cab booking chennai, tour s taxi booking, dzire taxi, dezire taxi, wagon r taxi, wegon r, bolero taxi, boliro, innova crysta rental, car rental chennai, cab rental chennai, airport taxi, cabzii cabs"
-  },
-  {
-    id: "site:drivers",
-    path: "/drivers",
-    type: "site",
-    typeLabel: "Drivers category",
-    productName: "Driver Hire",
-    seoTitle: "Driver Hire & Chauffeur Service | Acting Driver | Cabzii",
-    seoDescription:
-      "Book acting driver, chauffeur and driver-on-hire on Cabzii. You book a service — Cabzii assigns a professional driver after confirmation.",
-    seoKeywords: "driver hire, acting driver, chauffeur service, call driver, cabzii drivers"
+      "book cabs online, compare cabs, innova crysta rental, tempo traveller, dzire taxi, cabzii cabs"
   },
   {
     id: "site:acting-driver",
@@ -42,10 +31,10 @@ export const STATIC_PAGE_SEO_LIST = [
     type: "site",
     typeLabel: "Acting driver hub",
     productName: "Acting Driver",
-    seoTitle: "Acting Driver | Hire a Driver for Your Own Car | Cabzii",
+    seoTitle: "Acting Driver by City | Hire Driver for Your Car | Cabzii",
     seoDescription:
-      "Acting driver and call driver on Cabzii — chauffeur for your own car. Open a city page, then book Call Driver. A driver is assigned after you confirm.",
-    seoKeywords: "acting driver, chauffeur on hire, driver for own car, cabzii acting driver"
+      "Choose a city acting-driver page, then book Call Driver for your own car. Local, outstation, airport chauffeur, monthly quote, corporate and valet.",
+    seoKeywords: "acting driver by city, chauffeur on hire, driver for own car, cabzii acting driver"
   },
   {
     id: "site:services",
@@ -75,23 +64,11 @@ export const STATIC_PAGE_SEO_LIST = [
     type: "site",
     typeLabel: "Call Driver",
     productName: "Call Driver Service",
-    seoTitle: "Book Call Driver | Acting Driver in Chennai | Cabzii",
+    seoTitle: "Book Call Driver | Driver for Your Own Car | Cabzii",
     seoDescription:
-      "Book a Cabzii Call Driver for your own car — city, outstation acting driver, airport chauffeur, monthly quote, corporate and valet. Fares before you confirm.",
+      "Book a Cabzii Call Driver for your own car — local hours, outstation days, airport chauffeur, monthly quote and valet. Fares shown before you confirm.",
     seoKeywords:
-      "call driver Chennai, acting driver in Chennai, outstation acting driver, driver for own car, airport call driver Chennai"
-  },
-  {
-    id: "site:call-drivers-chennai",
-    path: "/chennai/acting-driver",
-    type: "site",
-    typeLabel: "Acting drivers Chennai",
-    productName: "Call Drivers in Chennai",
-    seoTitle: "Call Drivers in Chennai | Hire Acting Drivers | Cabzii",
-    seoDescription:
-      "Hire call drivers in Chennai for your own car — city trips, outstation acting driver days and MAA airport chauffeur. Fares shown before you confirm.",
-    seoKeywords:
-      "call drivers in Chennai, acting driver in Chennai, outstation acting driver, hire acting drivers Chennai, airport call driver Chennai"
+      "book call driver, hire driver for own car, acting driver booking, airport chauffeur booking, monthly driver quote, cabzii call driver"
   },
   {
     id: "site:holidays",
@@ -155,7 +132,7 @@ export const STATIC_PAGE_SEO_LIST = [
     productName: "Service Locations",
     seoTitle: "Cab & Taxi Service Locations in South India | Cabzii",
     seoDescription:
-      "Cabzii service areas across Chennai, Bengaluru, Hyderabad, Coimbatore, Madurai, Tirupati and 20+ cities. Book cabs online.",
+      "Cabzii service areas across Chennai, Madurai, Tirupati, Trichy, Coimbatore and Vellore. Book cabs online.",
     seoKeywords: "cab service locations, taxi near me South India, cabzii cities"
   },
   {

@@ -2,59 +2,134 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Briefcase, Car, Clock, Plane } from "lucide-react";
 import PlaceAutocomplete from "../PlaceAutocomplete";
-import { HOURLY_PACKAGES, tripToSearchQuery } from "../../lib/mmtTrip";
+import { PickupDateTimeFields } from "../ui/NativeDateTimeField";
+import { cabResultsHref, HOURLY_PACKAGES } from "../../lib/mmtTrip";
 import { useTodayStr } from "../../lib/useTodayStr";
 
 const TRIP_TYPES = [
-  { id: "one-way", label: "One-way" },
-  { id: "round-trip", label: "Round-trip" },
-  { id: "airport", label: "Airport" },
-  { id: "local", label: "Local" }
+  { id: "local", label: "Local Trip", shortLabel: "Local", Icon: Car },
+  { id: "outstation", label: "Outstation", shortLabel: "Outstation", Icon: Briefcase },
+  { id: "hourly", label: "Hourly Rental", shortLabel: "Hourly", Icon: Clock },
+  { id: "airport", label: "Airport", shortLabel: "Airport", Icon: Plane }
 ];
 
-function toEngineTrip({ tripKind, from, to, date, cityName, packageHours }) {
+const fieldInputClass =
+  "w-full border-0 bg-transparent px-0 py-0.5 text-sm font-semibold text-slate-900 shadow-none outline-none ring-0 focus:ring-0";
+
+function toEngineTrip({ tripKind, from, to, date, time, cityName, packageHours, roundTrip }) {
+  const pickupTime = time || "09:00";
   if (tripKind === "airport") {
-    return { tripType: "airport", from, to, date, time: "09:00", roundTrip: false, city: cityName, direction: "pickup" };
+    return {
+      tripType: "airport",
+      from,
+      to,
+      date,
+      time: pickupTime,
+      roundTrip: false,
+      city: cityName,
+      direction: "pickup"
+    };
   }
-  if (tripKind === "local") {
+  if (tripKind === "hourly") {
     return {
       tripType: "hourly",
       from,
-      to: cityName,
+      to: to || cityName,
       date,
-      time: "09:00",
+      time: pickupTime,
       roundTrip: false,
       city: cityName,
       packageHours
     };
   }
+  if (tripKind === "outstation") {
+    return {
+      tripType: "outstation",
+      from,
+      to,
+      date,
+      time: pickupTime,
+      roundTrip: Boolean(roundTrip),
+      city: cityName
+    };
+  }
   return {
-    tripType: "outstation",
+    tripType: "local",
     from,
-    to,
+    to: to || cityName,
     date,
-    time: "09:00",
-    roundTrip: tripKind === "round-trip",
-    city: cityName
+    time: pickupTime,
+    roundTrip: false,
+    city: cityName,
+    packageHours
   };
 }
 
-export default function CityCabBookingWidget({ cityName, defaultFrom, airportLabel }) {
+function tripKindFromTrip(trip) {
+  if (!trip?.tripType) return "local";
+  if (trip.tripType === "hourly") return "hourly";
+  if (trip.tripType === "airport") return "airport";
+  if (trip.tripType === "outstation") return "outstation";
+  return "local";
+}
+
+export default function CityCabBookingWidget({
+  cityName,
+  defaultFrom,
+  defaultTo = "",
+  airportLabel,
+  initialTrip,
+  onSearch
+}) {
   const router = useRouter();
   const today = useTodayStr();
-  const [tripKind, setTripKind] = useState("one-way");
-  const [from, setFrom] = useState(defaultFrom || cityName);
-  const [to, setTo] = useState("");
-  const [date, setDate] = useState("");
-  const [packageHours, setPackageHours] = useState(8);
+  const [tripKind, setTripKind] = useState(() => tripKindFromTrip(initialTrip));
+  const [from, setFrom] = useState(defaultFrom || initialTrip?.from || cityName);
+  const [to, setTo] = useState(() => {
+    const start = defaultTo || initialTrip?.to || "";
+    return start === cityName ? "" : start;
+  });
+  const [fromCoords, setFromCoords] = useState(() =>
+    initialTrip?.fromLat != null ? { lat: initialTrip.fromLat, lng: initialTrip.fromLng } : null
+  );
+  const [toCoords, setToCoords] = useState(() =>
+    initialTrip?.toLat != null ? { lat: initialTrip.toLat, lng: initialTrip.toLng } : null
+  );
+  const [date, setDate] = useState(initialTrip?.date || "");
+  const [time, setTime] = useState(initialTrip?.time || "09:00");
+  const [packageHours, setPackageHours] = useState(Number(initialTrip?.packageHours) || 4);
+  const [roundTrip, setRoundTrip] = useState(Boolean(initialTrip?.roundTrip));
   const [error, setError] = useState("");
 
   useEffect(() => {
     if (today) setDate((prev) => prev || today);
   }, [today]);
 
-  const needsDrop = tripKind !== "local";
+  useEffect(() => {
+    if (!initialTrip) return;
+    setTripKind(tripKindFromTrip(initialTrip));
+    if (initialTrip.from) setFrom(initialTrip.from);
+    if (initialTrip.to) setTo(initialTrip.to === cityName ? "" : initialTrip.to);
+    setFromCoords(initialTrip.fromLat != null ? { lat: initialTrip.fromLat, lng: initialTrip.fromLng } : null);
+    setToCoords(initialTrip.toLat != null ? { lat: initialTrip.toLat, lng: initialTrip.toLng } : null);
+    if (initialTrip.date) setDate(initialTrip.date);
+    if (initialTrip.time) setTime(initialTrip.time);
+    if (initialTrip.packageHours) setPackageHours(Number(initialTrip.packageHours));
+    setRoundTrip(Boolean(initialTrip.roundTrip));
+  }, [cityName, initialTrip?.tripType, initialTrip?.from, initialTrip?.to, initialTrip?.date, initialTrip?.time, initialTrip?.packageHours, initialTrip?.roundTrip]);
+
+  const showDrop = tripKind !== "hourly";
+  const needsDrop = tripKind === "outstation" || tripKind === "airport";
+
+  function handleTripKind(id) {
+    setTripKind(id);
+    setError("");
+    if (id === "airport" && airportLabel && (!to || to === cityName)) {
+      setTo(airportLabel);
+    }
+  }
 
   function handleSearch(event) {
     event.preventDefault();
@@ -74,71 +149,111 @@ export default function CityCabBookingWidget({ cityName, defaultFrom, airportLab
       from: pickup,
       to: drop || cityName,
       date: date || today,
+      time,
       cityName,
-      packageHours
+      packageHours,
+      roundTrip: tripKind === "outstation" ? roundTrip : false
     });
-    router.push(`/cabs/results?${tripToSearchQuery(trip).toString()}`);
+    if (fromCoords?.lat != null) {
+      trip.fromLat = fromCoords.lat;
+      trip.fromLng = fromCoords.lng;
+    }
+    if (toCoords?.lat != null) {
+      trip.toLat = toCoords.lat;
+      trip.toLng = toCoords.lng;
+    }
+    if (onSearch) {
+      onSearch(trip);
+      return;
+    }
+    router.push(cabResultsHref(trip));
   }
 
   return (
     <form
       onSubmit={handleSearch}
-      className="rounded-2xl border border-slate-200 bg-white p-4 shadow-[var(--cabzii-shadow-card)] sm:p-5"
+      className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm sm:p-4"
       aria-label={`Book a cab in ${cityName}`}
     >
-      <p className="text-sm font-semibold text-slate-800">Book a cab in {cityName}</p>
-      <p className="mt-1 text-xs text-slate-500">One-way, round-trip, airport or local. Fares show before you pay.</p>
-
-      <fieldset className="mt-3">
+      <fieldset>
         <legend className="sr-only">Trip type</legend>
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-          {TRIP_TYPES.map((type) => (
-            <label
-              key={type.id}
-              className={`flex min-h-11 cursor-pointer items-center justify-center rounded-xl border px-2 text-xs font-semibold ${
-                tripKind === type.id
-                  ? "border-[var(--cabzii-brand)] bg-[var(--cabzii-brand)] text-white"
-                  : "border-slate-200 bg-slate-50 text-slate-700"
-              }`}
-            >
-              <input
-                type="radio"
-                name="trip-type"
-                value={type.id}
-                checked={tripKind === type.id}
-                onChange={() => setTripKind(type.id)}
-                className="sr-only"
-              />
-              {type.label}
-            </label>
-          ))}
+        <div className="grid grid-cols-4 gap-1.5">
+          {TRIP_TYPES.map((type) => {
+            const selected = tripKind === type.id;
+            const Icon = type.Icon;
+            return (
+              <label
+                key={type.id}
+                className={`flex min-h-[3.6rem] cursor-pointer flex-col items-center justify-center gap-0.5 rounded-xl border px-0.5 py-1.5 text-center transition sm:min-h-[4.5rem] sm:gap-1 sm:px-1 sm:py-2 ${
+                  selected
+                    ? "border-amber-300 bg-[#fff4cc] text-slate-900"
+                    : "border-slate-200 bg-slate-50 text-slate-600 hover:border-slate-300"
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="trip-type"
+                  value={type.id}
+                  checked={selected}
+                  onChange={() => handleTripKind(type.id)}
+                  className="sr-only"
+                />
+                <Icon className={`h-4 w-4 sm:h-5 sm:w-5 ${selected ? "text-amber-600" : "text-slate-500"}`} strokeWidth={1.7} />
+                <span className="text-[10px] font-bold leading-tight sm:hidden">{type.shortLabel}</span>
+                <span className="hidden text-[11px] font-bold leading-tight sm:inline">{type.label}</span>
+              </label>
+            );
+          })}
         </div>
       </fieldset>
 
-      <div className="mt-3 grid min-w-0 gap-3 sm:grid-cols-2">
-        <PlaceAutocomplete
-          label="From"
-          placeholder={tripKind === "airport" ? airportLabel || `${cityName} airport` : `Pickup in ${cityName}`}
-          value={from}
-          onChange={setFrom}
-        />
-        {needsDrop ? (
+      <div className="mt-3 space-y-2.5">
+        <div className="rounded-xl border border-slate-200 bg-white px-3 py-2">
+          <div className="mb-0.5 flex items-center gap-2">
+            <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" aria-hidden />
+            <span className="text-[11px] font-semibold text-slate-500">From</span>
+          </div>
           <PlaceAutocomplete
-            label="To"
-            placeholder={tripKind === "airport" ? "City or terminal drop" : "Destination city"}
-            value={to}
-            onChange={setTo}
+            placeholder={`Pickup in ${cityName}`}
+            value={from}
+            onChange={setFrom}
+            allowCurrentLocation
+            onResolved={(area) => {
+              setFromCoords(area?.lat != null ? { lat: area.lat, lng: area.lng } : null);
+              if (area?.label) setFrom(area.label);
+            }}
+            inputClassName={fieldInputClass}
           />
+        </div>
+
+        {showDrop ? (
+          <div className="rounded-xl border border-slate-200 bg-white px-3 py-2">
+            <div className="mb-0.5 flex items-center gap-2">
+              <span className="h-2.5 w-2.5 rounded-full bg-rose-500" aria-hidden />
+              <span className="text-[11px] font-semibold text-slate-500">To</span>
+            </div>
+            <PlaceAutocomplete
+              placeholder={tripKind === "airport" ? airportLabel || "Airport or city drop" : "Destination"}
+              value={to}
+              onChange={setTo}
+              allowCurrentLocation={false}
+              onResolved={(area) => {
+                setToCoords(area?.lat != null ? { lat: area.lat, lng: area.lng } : null);
+                if (area?.label) setTo(area.label);
+              }}
+              inputClassName={fieldInputClass}
+            />
+          </div>
         ) : (
-          <div>
-            <label htmlFor="city-cab-package" className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-              Local package
+          <div className="rounded-xl border border-slate-200 bg-white px-3 py-2">
+            <label htmlFor="city-cab-package" className="text-[11px] font-semibold text-slate-500">
+              Package
             </label>
             <select
               id="city-cab-package"
               value={packageHours}
               onChange={(event) => setPackageHours(Number(event.target.value))}
-              className="mt-1 min-h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-900"
+              className="mt-0.5 w-full border-0 bg-transparent px-0 text-sm font-semibold text-slate-900 outline-none"
             >
               {HOURLY_PACKAGES.map((pkg) => (
                 <option key={pkg.hours} value={pkg.hours}>
@@ -148,29 +263,39 @@ export default function CityCabBookingWidget({ cityName, defaultFrom, airportLab
             </select>
           </div>
         )}
+
+        <div className="rounded-xl border border-slate-200 bg-white px-3 py-2">
+          <p className="text-[11px] font-semibold text-slate-500">Pickup</p>
+          <PickupDateTimeFields
+            date={date}
+            time={time}
+            onDate={setDate}
+            onTime={setTime}
+            minDate={today}
+            className="mt-1"
+          />
+        </div>
       </div>
 
-      <div className="mt-3">
-        <label htmlFor="city-cab-date" className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-          Date
+      {tripKind === "outstation" ? (
+        <label className="mt-3 flex cursor-pointer items-center gap-2 text-sm font-semibold text-slate-700">
+          <input
+            type="checkbox"
+            checked={roundTrip}
+            onChange={(event) => setRoundTrip(event.target.checked)}
+            className="h-4 w-4 rounded border-slate-300 text-[#0b1b3a] focus:ring-[#0b1b3a]"
+          />
+          Round Trip
         </label>
-        <input
-          id="city-cab-date"
-          type="date"
-          min={today || undefined}
-          value={date}
-          onChange={(event) => setDate(event.target.value)}
-          className="mt-1 min-h-11 w-full min-w-0 max-w-full rounded-xl border border-slate-200 px-3 text-sm font-semibold text-slate-900"
-        />
-      </div>
+      ) : null}
 
-      {error ? <p className="mt-2 text-sm font-medium text-red-600">{error}</p> : null}
+      {error ? <p className="mt-2 text-sm font-medium text-rose-600">{error}</p> : null}
 
       <button
         type="submit"
-        className="mt-4 min-h-11 w-full rounded-xl bg-[var(--cabzii-brand)] px-4 text-sm font-semibold text-white hover:bg-[var(--cabzii-brand-hover)]"
+        className="mt-3 min-h-11 w-full rounded-xl bg-[#0b1b3a] px-4 text-sm font-bold text-white hover:bg-[#152a52]"
       >
-        Search {cityName} cabs
+        Search cabs
       </button>
     </form>
   );

@@ -510,6 +510,8 @@ export function cityAreas(citySlug) {
     pune: ["Hinjawadi", "Koregaon Park", "Viman Nagar", "Hadapsar", "PNQ Airport"],
     kolkata: ["Park Street", "Salt Lake", "Howrah", "New Town", "CCU Airport"],
     kochi: ["MG Road", "Marine Drive", "Kakkanad", "Fort Kochi", "COK Airport"],
+    sabarimala: ["Pamba", "Nilakkal", "Erumeli", "Chengannur", "Sannidhanam base"],
+    ayyappankovil: ["Ayyappan Kovil temple", "Idukki", "Thekkady approach", "Kumily road"],
     visakhapatnam: ["Beach Road", "RTC Complex", "Gajuwaka", "Madhurawada", "VTZ Airport"],
     goa: ["Panaji", "Calangute", "Margao", "Mapusa", "Airport"],
     jaipur: ["MI Road", "C-Scheme", "Malviya Nagar", "Amber", "JAI Airport"],

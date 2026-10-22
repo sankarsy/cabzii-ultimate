@@ -6,6 +6,7 @@ import { SEO_ROUTES } from "./seo/routes";
 import { SEO_SERVICES } from "./seo/services";
 import { isPackageDoorwayService, isRankingService } from "./seo/packageDoorways";
 import { routePublicPath } from "./seo/outstationPaths";
+import { isSeoScopeRoute } from "../config/seo-scope";
 
 export const CAB_PACKAGE_FIELDS = [
   { key: "local4hr", defaultLabel: "Local — 4 Hrs / 40 Km" },
@@ -770,43 +771,8 @@ export const CATALOG_TABS = {
     },
     required: ["title", "vendor", "type", "price"]
   },
-  drivers: {
-    label: "Driver catalog",
-    base: "/api/drivers",
-    form: "driver",
-    superAdminOnly: true,
-    sample: {
-      name: "Maruti Dzire",
-      vendor: "Your Vendor Name",
-      type: "local",
-      experience: "5 Years",
-      trips: 120,
-      rating: "4.9",
-      image: "",
-      gallery: [],
-      city: "Bengaluru",
-      location: "MG Road",
-      discountPercentage: 0,
-      languages: ["English", "Tamil"],
-      supportedVehicles: ["Sedan", "SUV"],
-      pricing: { hourly: 250, day: 3000, extraHour: 250 },
-      farePackageLabels: {
-        local4hr: "Local — 4 Hrs / 40 Km",
-        local8hr: "Local — 8 Hrs / 80 Km",
-        outstationRoundTrip: "Outstation — Round Trip",
-        outstationOneWay: "Outstation — One Way"
-      },
-      farePackages: {
-        local4hr: { originalPrice: 1000, price: 900, discountPercentage: 0, extraKmRate: 14, extraHourRate: 250 },
-        local8hr: { originalPrice: 3000, price: 2800, discountPercentage: 0, extraKmRate: 14, extraHourRate: 250 },
-        outstationRoundTrip: { originalPrice: 3600, price: 3400, discountPercentage: 0, extraKmRate: 16, extraHourRate: 250 },
-        outstationOneWay: { originalPrice: 3000, price: 2800, discountPercentage: 0, extraKmRate: 16, extraHourRate: 250 }
-      }
-    },
-    required: ["name"]
-  },
   packages: {
-    label: "Holiday packages",
+    label: "Holiday trips",
     base: "/api/packages",
     form: "tourPackage",
     superAdminOnly: false,
@@ -963,7 +929,10 @@ export const CATALOG_TABS = {
       toCitySlug: "bengaluru",
       distance: "350 km",
       duration: "6–7 hours",
+      hatchbackFrom: 3999,
       sedanFrom: 4500,
+      suvFrom: 6200,
+      vanFrom: 8500,
       published: true
     },
     required: ["seoTitle", "fromCitySlug", "toCitySlug"]
@@ -1030,8 +999,14 @@ export function mergeStaticSeoServices(cmsItems = []) {
 
 /** Built-in route pages (shown in admin until overridden by a saved CMS row with same slug). */
 export function mergeStaticSeoRoutes(cmsItems = []) {
-  const cmsSlugs = new Set((cmsItems || []).map((row) => row.slug).filter(Boolean));
-  const staticRows = SEO_ROUTES.filter((r) => r.slug && !cmsSlugs.has(r.slug)).map((r) => ({
+  const liveCms = (cmsItems || []).filter((row) => {
+    const from = row.fromCitySlug || row.from;
+    const to = row.toCitySlug || row.to;
+    if (from && to) return isSeoScopeRoute(from, to);
+    return SEO_ROUTES.some((route) => route.slug === row.slug && isSeoScopeRoute(route.from, route.to));
+  });
+  const cmsSlugs = new Set(liveCms.map((row) => row.slug).filter(Boolean));
+  const staticRows = SEO_ROUTES.filter((r) => r.slug && !cmsSlugs.has(r.slug) && isSeoScopeRoute(r.from, r.to)).map((r) => ({
     _id: `static:${r.slug}`,
     id: `static:${r.slug}`,
     slug: r.slug,
@@ -1041,15 +1016,31 @@ export function mergeStaticSeoRoutes(cmsItems = []) {
     toCitySlug: r.to,
     distance: r.distance || "",
     duration: r.duration || "",
+    hatchbackFrom: r.hatchbackFrom || 0,
     sedanFrom: r.sedanFrom || 0,
     suvFrom: r.suvFrom || 0,
+    vanFrom: r.vanFrom || 0,
     published: true,
     showInMenu: false,
     isStatic: true,
     source: "static",
     publicPath: routePublicPath(r.slug)
   }));
-  return [...(cmsItems || []), ...staticRows];
+  return [...liveCms, ...staticRows];
+}
+
+function robotsFlags(robots) {
+  const raw = String(robots || "index,follow").toLowerCase();
+  return {
+    robotsIndex: !raw.includes("noindex"),
+    robotsFollow: !raw.includes("nofollow")
+  };
+}
+
+function robotsString(form) {
+  const index = form.robotsIndex !== false ? "index" : "noindex";
+  const follow = form.robotsFollow !== false ? "follow" : "nofollow";
+  return `${index},${follow}`;
 }
 
 export function emptySeoCityPageForm() {
@@ -1068,11 +1059,21 @@ export function emptySeoCityPageForm() {
     airportDetails: "",
     popularLocations: "",
     popularRoutes: "",
+    canonicalUrl: "",
+    ogTitle: "",
+    ogDescription: "",
+    ogImage: "",
+    twitterTitle: "",
+    twitterDescription: "",
+    schemaJson: "",
+    robotsIndex: true,
+    robotsFollow: true,
     published: true
   };
 }
 
 export function seoCityPageFormFromItem(item) {
+  const meta = item?.seoMeta || {};
   return {
     pageType: item?.pageType || "cab-booking",
     citySlug: item?.citySlug || "",
@@ -1092,6 +1093,14 @@ export function seoCityPageFormFromItem(item) {
     airportDetails: item?.airportDetails || "",
     popularLocations: Array.isArray(item?.popularLocations) ? item.popularLocations.join(", ") : "",
     popularRoutes: Array.isArray(item?.popularRoutes) ? item.popularRoutes.join(", ") : "",
+    canonicalUrl: meta.canonicalUrl || "",
+    ogTitle: meta.ogTitle || "",
+    ogDescription: meta.ogDescription || "",
+    ogImage: meta.ogImage || item?.image || "",
+    twitterTitle: meta.twitterTitle || "",
+    twitterDescription: meta.twitterDescription || "",
+    schemaJson: item?.schemaJson || meta.schemaJson || "",
+    ...robotsFlags(meta.robots),
     published: item?.published !== false
   };
 }
@@ -1132,6 +1141,20 @@ export function seoCityPageFormToPayload(form) {
       .split(",")
       .map((s) => s.trim())
       .filter(Boolean),
+    schemaJson: String(form.schemaJson || "").trim(),
+    seoMeta: {
+      metaTitle: String(form.seoTitle || "").trim(),
+      metaDescription: String(form.seoDescription || "").trim(),
+      keywords: String(form.seo || "").trim(),
+      canonicalUrl: String(form.canonicalUrl || "").trim(),
+      robots: robotsString(form),
+      schemaJson: String(form.schemaJson || "").trim(),
+      ogTitle: String(form.ogTitle || "").trim(),
+      ogDescription: String(form.ogDescription || "").trim(),
+      ogImage: String(form.ogImage || "").trim(),
+      twitterTitle: String(form.twitterTitle || "").trim(),
+      twitterDescription: String(form.twitterDescription || "").trim()
+    },
     published: form.published !== false
   };
 }
@@ -1143,7 +1166,6 @@ export function buildCatalogListUrl(tabKey) {
   if (
     tab.adminList ||
     tabKey === "cabs" ||
-    tabKey === "drivers" ||
     tabKey === "packages" ||
     tabKey === "bookings" ||
     tabKey === "buses" ||
@@ -1277,8 +1299,10 @@ export function emptySeoRouteForm() {
     toCitySlug: "",
     distance: "",
     duration: "",
+    hatchbackFrom: 0,
     sedanFrom: 0,
     suvFrom: 0,
+    vanFrom: 0,
     highlights: "",
     body: "",
     seo: "",
@@ -1300,8 +1324,10 @@ export function seoRouteFormFromItem(item) {
     toCitySlug: item?.toCitySlug || "",
     distance: item?.distance || "",
     duration: item?.duration || "",
+    hatchbackFrom: numField(item?.hatchbackFrom),
     sedanFrom: numField(item?.sedanFrom),
     suvFrom: numField(item?.suvFrom),
+    vanFrom: numField(item?.vanFrom),
     highlights: Array.isArray(item?.highlights) ? item.highlights.join(", ") : "",
     body: item?.body || "",
     seo: item?.seo || "",
@@ -1323,8 +1349,10 @@ export function seoRouteFormToPayload(form) {
     toCitySlug: form.toCitySlug,
     distance: form.distance || "",
     duration: form.duration || "",
+    hatchbackFrom: numField(form.hatchbackFrom),
     sedanFrom: numField(form.sedanFrom),
     suvFrom: numField(form.suvFrom),
+    vanFrom: numField(form.vanFrom),
     highlights: form.highlights || "",
     body: form.body || "",
     seo: String(form.seo || "").trim(),

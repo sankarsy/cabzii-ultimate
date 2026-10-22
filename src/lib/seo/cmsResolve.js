@@ -121,9 +121,7 @@ export async function resolveRouteBySlug(slug) {
 
     const synthesized = synthesizeRouteFromSlug(slug);
     if (synthesized) {
-      const generated = getRouteLandingBody(synthesized);
-      const body = mergeLandingBody(synthesized.body, generated);
-      return { ...synthesized, body, source: synthesized.source || "synthesized" };
+      return { ...synthesized, body: synthesized.body || "", source: synthesized.source || "synthesized" };
     }
   }
 

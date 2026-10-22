@@ -2,7 +2,9 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import BlogCard from "../../components/BlogCard";
 import { resolveSiteSearchHref } from "../../lib/siteSearch";
+import { searchPublicCatalog } from "../../lib/siteSearchCatalog";
 import CabCard from "../../components/CabCard";
+import SearchHitList from "../../components/search/SearchHitList";
 import SearchPageSearchBar from "../../components/search/SearchPageSearchBar";
 import PackageCard from "../../components/PackageCard";
 import { catalogPublicPath } from "../../lib/catalogProduct";
@@ -18,13 +20,29 @@ const includesQuery = (query, values) => values.some((value) => normalize(String
 const SERVICE_SHORTCUTS = [
   { id: "cabs", label: "Book Cab", href: "/cabs", keywords: ["cab", "cabs", "taxi", "sedan", "suv", "innova", "tempo", "outstation", "one way"] },
   { id: "buses", label: "Bus tickets", href: "/buses", keywords: ["bus", "buses", "volvo", "sleeper", "seater"] },
-  { id: "airport", label: "Airport Taxi", href: "/cabs/results?serviceTripType=airport", keywords: ["airport", "transfer", "pickup", "drop"] },
+  { id: "airport", label: "Airport Taxi", href: "/chennai/airport-cab-booking", keywords: ["airport", "transfer", "pickup", "drop"] },
   { id: "drivers", label: "Call Driver", href: "/call-driver", keywords: ["driver", "drivers", "chauffeur", "acting driver", "call driver"] },
   {
     id: "holidays",
     label: "Temple Tours",
     href: "/holidays?category=pilgrimage",
-    keywords: ["holiday", "holidays", "package", "packages", "tour", "tours", "pilgrimage", "tirupati", "rameswaram", "madurai", "temple"]
+    keywords: [
+      "holiday",
+      "holidays",
+      "package",
+      "packages",
+      "tour",
+      "tours",
+      "pilgrimage",
+      "tirupati",
+      "rameswaram",
+      "madurai",
+      "temple",
+      "sabarimala",
+      "sabarimalai",
+      "ayyappa",
+      "ayyapa"
+    ]
   },
   { id: "routes", label: "Popular Routes", href: "/routes", keywords: ["route", "routes", "chennai", "bangalore", "madurai"] },
   { id: "blogs", label: "Blogs", href: "/blogs", keywords: ["blog", "blogs", "guide", "tips", "article"] }
@@ -91,6 +109,7 @@ export default async function SearchPage({ searchParams }) {
     : [];
 
   const shortcuts = matchingShortcuts(query);
+  const pageHits = query && !hasInstantBookingFilters ? searchPublicCatalog(rawQuery) : [];
 
   const showOnlyInstantBookingResults = hasInstantBookingFilters;
   const visibleDrivers = [];
@@ -103,30 +122,36 @@ export default async function SearchPage({ searchParams }) {
     visiblePackages.length +
     visibleBlogs.length +
     visibleTestimonials.length +
-    shortcuts.length;
+    shortcuts.length +
+    pageHits.length;
 
   return (
-    <div className="section-shell py-8">
-      <section className="py-6 md:py-10">
-        <h1 className="text-center text-2xl font-bold text-slate-900 sm:text-3xl">Search Cabzii</h1>
-        <p className="mt-2 text-center text-sm text-slate-600">Cabs · Buses · Call Driver · Holidays · Blogs</p>
-        <div className="mt-6">
-          <SearchPageSearchBar initialQuery={rawQuery} />
-        </div>
-
+    <div className="section-shell pb-[7.5rem] pt-5 sm:pb-12 sm:pt-8">
+      <section>
         {query ? (
-          <p className="mt-6 text-sm text-slate-600">
-            Showing results for <span className="font-semibold text-[var(--cabzii-brand)]">&quot;{rawQuery}&quot;</span>
-            {city ? (
-              <>
-                {" "}
-                in <span className="font-semibold">{city}</span>
-              </>
-            ) : null}{" "}
-            ({totalMatches} found)
-          </p>
+          <>
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">
+              {totalMatches} {totalMatches === 1 ? "result" : "results"}
+              {city ? ` in ${city}` : ""}
+            </p>
+            <h1 className="mt-0.5 text-xl font-extrabold tracking-tight text-slate-900 sm:text-2xl">
+              Results for &ldquo;{rawQuery}&rdquo;
+            </h1>
+            <div className="mt-3 lg:hidden">
+              <SearchPageSearchBar compact initialQuery={rawQuery} />
+            </div>
+          </>
         ) : (
-          <p className="mt-6 text-center text-sm text-slate-500">Type a city, vehicle (Dzire, Ertiga, Innova), cab type, holiday destination or service.</p>
+          <>
+            <h1 className="text-center text-2xl font-bold text-slate-900 sm:text-3xl">Search Cabzii</h1>
+            <p className="mt-2 text-center text-sm text-slate-600">Cabs · Buses · Call Driver · Holidays · Blogs</p>
+            <div className="mt-6">
+              <SearchPageSearchBar initialQuery={rawQuery} />
+            </div>
+            <p className="mt-6 text-center text-sm text-slate-500">
+              Type a city, vehicle (Dzire, Ertiga, Innova), cab type, holiday destination or service.
+            </p>
+          </>
         )}
 
         {hasInstantBookingFilters ? (
@@ -168,18 +193,19 @@ export default async function SearchPage({ searchParams }) {
             </div>
           </div>
         ) : (
-          <div className="mt-8 space-y-10">
+          <div className="mt-5 space-y-6 sm:mt-7 sm:space-y-8">
+            {pageHits.length > 0 ? <SearchHitList hits={pageHits} /> : null}
             {shortcuts.length > 0 ? (
               <section>
-                <h2 className="text-xl font-bold text-slate-900">Services</h2>
+                <h2 className="text-[13px] font-bold uppercase tracking-wide text-slate-500">Also browse</h2>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {shortcuts.map((s) => (
                     <Link
                       key={s.id}
                       href={s.href}
-                      className="rounded-full bg-[var(--cabzii-brand)] px-4 py-2 text-sm font-semibold text-white hover:bg-[var(--cabzii-brand-hover)]"
+                      className="rounded-full border border-slate-200 bg-white px-3.5 py-2 text-sm font-semibold text-slate-800 hover:border-[var(--cabzii-brand)] hover:text-[var(--cabzii-brand)]"
                     >
-                      Browse {s.label} →
+                      {s.label}
                     </Link>
                   ))}
                 </div>

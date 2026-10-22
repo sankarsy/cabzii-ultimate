@@ -154,7 +154,13 @@ export function classifyCityHub(citySlug, pageType = "cab-booking") {
     });
   }
 
-  if (isTamilNaduCity(slug) || slug === "pondicherry" || slug === "tirupati") {
+  if (
+    isTamilNaduCity(slug) ||
+    slug === "pondicherry" ||
+    slug === "tirupati" ||
+    slug === "sabarimala" ||
+    slug === "ayyappankovil"
+  ) {
     return policy({
       classification: SEO_CLASS.A,
       indexable: true,
@@ -280,7 +286,15 @@ export function classifyServiceCity(serviceSlug, citySlug) {
   if (["outstation-cab", "one-way-cab"].includes(service) && (isTamilNaduCity(city) || isPrimaryFocusCity(city))) {
     score += 14;
   }
-  if (isTamilNaduCity(city) || city === "pondicherry" || city === "tirupati") score += 10;
+  if (
+    isTamilNaduCity(city) ||
+    city === "pondicherry" ||
+    city === "tirupati" ||
+    city === "sabarimala" ||
+    city === "ayyappankovil"
+  ) {
+    score += 10;
+  }
   else if (isPrimaryFocusCity(city)) score += 6;
   else score -= 6;
 
@@ -333,12 +347,12 @@ export function classifyRoute(route = {}, { source } = {}) {
   }
 
   return policy({
-    classification: SEO_CLASS.C,
-    indexable: false,
-    commercialScore: 26,
+    classification: SEO_CLASS.B,
+    indexable: true,
+    commercialScore: 72,
     searchIntent: "route",
-    contentQuality: "template",
-    reason: "Mesh route outside featured corridors — keep URL, noindex"
+    contentQuality: "local",
+    reason: "Keep-city origin route"
   });
 }
 
@@ -354,12 +368,10 @@ export function highestCommercialPages() {
     { path: "/chennai/outstation/chennai-to-tirupati", commercialScore: 99, intent: "route" },
     { path: "/services/outstation-cab/chennai", commercialScore: 96, intent: "outstation" },
     { path: "/services/one-way-cab/chennai", commercialScore: 95, intent: "one-way" },
-    { path: "/chennai/acting-driver", commercialScore: 96, intent: "driver" },
+    { path: "/acting-driver/chennai", commercialScore: 96, intent: "driver" },
     { path: "/call-driver", commercialScore: 94, intent: "book-driver" },
     { path: "/tariff", commercialScore: 90, intent: "pricing" },
-    { path: "/services/tempo-traveller/chennai", commercialScore: 86, intent: "tempo" },
-    { path: "/chennai/outstation/chennai-to-pondicherry", commercialScore: 94, intent: "route" },
-    { path: "/chennai/outstation/chennai-to-bangalore", commercialScore: 94, intent: "route" }
+    { path: "/services/tempo-traveller/chennai", commercialScore: 86, intent: "tempo" }
   ];
 }
 

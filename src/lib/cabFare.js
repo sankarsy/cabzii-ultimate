@@ -9,6 +9,41 @@ export function packageYouPay(list) {
   return Math.max(0, num(list));
 }
 
+const INCLUDED_BY_TYPE = {
+  local_4hr: { hours: 4, km: 40 },
+  local_5hr: { hours: 5, km: 50 },
+  local_1day: { hours: 8, km: 80 },
+  local_8hr: { hours: 8, km: 80 },
+  local_10hr: { hours: 10, km: 100 },
+  local_15hr: { hours: 15, km: 150 }
+};
+
+function includedForPackage(packageType, hours = 0, km = 0) {
+  const defaults = INCLUDED_BY_TYPE[packageType] || {};
+  return {
+    includedHours: hours > 0 ? hours : defaults.hours || 0,
+    includedKm: km > 0 ? km : defaults.km || 0
+  };
+}
+
+function perKmFromCab(cab, pkg) {
+  if (num(cab?.pricePerKm) > 0) return num(cab.pricePerKm);
+  if (num(pkg?.extraKmRate) > 0) return num(pkg.extraKmRate);
+  const price = num(cab?.price);
+  if (price > 0 && price <= 30) return price;
+  return 0;
+}
+
+function localPackageFromRates(cab, hours, km) {
+  const hourly = num(cab?.hourlyRate);
+  if (hourly > 0) return Math.round(hourly * hours);
+  const perKm = perKmFromCab(cab);
+  if (perKm > 0 && km > 0) return Math.round(perKm * km * 2);
+  const starting = num(cab?.startingPrice);
+  if (starting > 30) return starting;
+  return 0;
+}
+
 function resolvePackageFare(pkg, cab, fallbackList) {
   const selling =
     num(pkg?.price) > 0
@@ -18,35 +53,26 @@ function resolvePackageFare(pkg, cab, fallbackList) {
         : num(pkg?.list) > 0
           ? num(pkg.list)
           : Math.max(num(fallbackList), 0);
-  const extraKm =
-    num(cab.pricePerKm) > 0
-      ? num(cab.pricePerKm)
-      : num(pkg?.extraKmRate) > 0
-        ? num(pkg.extraKmRate)
-        : Math.max(12, Math.floor(num(cab.price) / 10) || 12);
+  const extraKm = perKmFromCab(cab, pkg) || 14;
   const extraHr =
-    num(pkg?.extraHourRate) > 0
-      ? num(pkg.extraHourRate)
-      : num(cab.extraHourRate) || Math.max(12, Math.floor(num(cab.price) / 12) || 12);
+    num(pkg?.extraHourRate) > 0 ? num(pkg.extraHourRate) : num(cab?.extraHourRate) > 0 ? num(cab.extraHourRate) : 0;
 
   return { originalPrice: selling, price: selling, discountPercentage: 0, extraKm, extraHr };
 }
 
 function buildLegacySlabs(cab) {
-  const hourly = num(cab.hourlyRate);
   const day = num(cab.dayRate);
   const price = num(cab.price);
-  const local4 =
-    hourly > 0 ? Math.round(hourly * 4) : day > 0 ? Math.round(day * 0.55) : price > 0 ? Math.round(price * 0.4) : 0;
-  const local8 = day > 0 ? day : hourly > 0 ? Math.round(hourly * 8) : price > 0 ? Math.round(price * 0.72) : 0;
-  const outOne = price > 0 ? Math.round(price) : Math.max(local8, local4, 0);
-  const outTwo = day > 0 ? Math.round(day * 1.85) : Math.round(outOne * 1.62);
+  const local4 = localPackageFromRates(cab, 4, 40);
+  const local8 = day > 0 ? day : localPackageFromRates(cab, 8, 80);
+  const outOne = price > 30 ? Math.round(price) : Math.max(local8, local4, 0);
+  const outTwo = day > 0 ? Math.round(day * 1.85) : outOne > 0 ? Math.round(outOne * 1.62) : 0;
   return { local4, local8, outOne, outTwo };
 }
 
 const SLAB_META = [
-  { id: "local_4hr", group: "local", defaultLabel: "4 Hrs / 40 Km", key: "local4hr", legacy: "local4", popular: true },
-  { id: "local_1day", group: "local", defaultLabel: "8 Hrs / 80 Km", key: "local8hr", legacy: "local8" },
+  { id: "local_4hr", group: "local", defaultLabel: "4 Hrs / 40 Km", key: "local4hr", legacy: "local4", popular: true, includedHours: 4, includedKm: 40 },
+  { id: "local_1day", group: "local", defaultLabel: "8 Hrs / 80 Km", key: "local8hr", legacy: "local8", includedHours: 8, includedKm: 80 },
   {
     id: "outstation_oneway",
     group: "outstation",
@@ -106,10 +132,11 @@ function slabsFromDynamicPackages(cab) {
         legacy[meta?.legacy] || 0
       );
       if (legacyKey) keyUsed.add(legacyKey);
+      const included = includedForPackage(TYPE_TO_ID[row.packageType] || row.packageType, num(row.includedHours), num(row.includedKm));
       const label =
         row.packageName ||
-        (row.includedHours && row.includedKm
-          ? `${row.includedHours} Hr / ${row.includedKm} Km`
+        (included.includedHours && included.includedKm
+          ? `${included.includedHours} Hr / ${included.includedKm} Km`
           : meta?.defaultLabel || row.packageType);
 
       return {
@@ -125,8 +152,8 @@ function slabsFromDynamicPackages(cab) {
         note: row.packageType === "one_way" || row.packageType === "round_trip" ? "Per Trip Quote" : undefined,
         extraKm: fare.extraKm,
         extraHr: fare.extraHr,
-        includedKm: num(row.includedKm),
-        includedHours: num(row.includedHours),
+        includedKm: included.includedKm,
+        includedHours: included.includedHours,
         packageType: row.packageType
       };
     });
@@ -150,6 +177,8 @@ function slabsFromDynamicPackages(cab) {
       note: meta.note,
       extraKm: fare.extraKm,
       extraHr: fare.extraHr,
+      includedKm: meta.includedKm || 0,
+      includedHours: meta.includedHours || 0,
       packageType: meta.id
     });
   }
@@ -182,7 +211,9 @@ export function buildFareSlabs(cab) {
       popular: meta.popular,
       note: meta.note,
       extraKm: fare.extraKm,
-      extraHr: fare.extraHr
+      extraHr: fare.extraHr,
+      includedKm: meta.includedKm || 0,
+      includedHours: meta.includedHours || 0
     };
   });
 }
