@@ -5,10 +5,11 @@ import { telUrl, whatsappBookingUrl } from "../../lib/conversion";
 import TrackedLeadCtas from "../../components/conversion/TrackedLeadCtas";
 
 export const metadata = marketingMetadata({
-  title: "Contact Cabzii — Call, WhatsApp & Email",
-  description: "Reach Cabzii for cab quotes, booking help and support. Phone, WhatsApp and email.",
+  title: "Contact Cabzii — Call 9944197416, WhatsApp & Email",
+  description:
+    "Reach Cabzii for cab quotes, Call Driver and bus booking help. Call +91-9944197416, WhatsApp or email support@cabzii.com.",
   path: "/contact",
-  keywords: ["contact cabzii", "cab booking support", "cabzii phone number"]
+  keywords: ["contact cabzii", "cabzii phone 9944197416", "cab booking support"]
 });
 
 export default function ContactPage() {

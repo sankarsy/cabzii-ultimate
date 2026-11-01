@@ -217,7 +217,7 @@ export function organizationJsonLd(reviewStats) {
     "@type": "Organization",
     "@id": ORG_ID,
     name: SITE_NAME,
-    legalName: "Cabzii",
+    legalName: "UrbanWolf Technologies",
     alternateName: ["cabzii.in", "Cabzii Cabs", "Cabzii Travels"],
     url: SITE_URL,
     logo: {
@@ -228,7 +228,7 @@ export function organizationJsonLd(reviewStats) {
     },
     image: SITE_LOGO,
     description:
-      "Book cabs, taxis, airport transfers, outstation trips, acting drivers and tour packages across South India on Cabzii.in.",
+      "Cabzii (cabzii.in) is an UrbanWolf Technologies brand. Book chauffeur-driven cabs, airport taxi, outstation trips, acting drivers and bus tickets from Chennai across South India. Fares shown before you confirm.",
     email: ORG_EMAIL,
     telephone: ORG_PHONE,
     areaServed: { "@type": "Country", name: "India" },
@@ -312,7 +312,7 @@ export function taxiServiceJsonLd() {
     ],
     url: SITE_URL,
     description:
-      "Online cab, taxi, airport transfer, outstation, acting driver and tour package booking from Chennai across South India."
+      "Online cab, airport taxi, outstation, acting driver and bus ticket booking from Chennai across South India. Fares shown before you confirm."
   };
 }
 
@@ -545,44 +545,6 @@ export function productJsonLd({
       ...(lowPrice != null && highPrice != null && Number(lowPrice) !== Number(highPrice)
         ? { lowPrice, highPrice }
         : {})
-    })
-  };
-}
-
-/** Tour / holiday package — rich results with duration & inclusions. */
-export function tourPackageJsonLd({
-  name,
-  description,
-  urlPath,
-  image,
-  price,
-  lowPrice,
-  highPrice,
-  additionalBadges = [],
-  originCity
-}) {
-  const url = `${SITE_URL}${urlPath.startsWith("/") ? urlPath : `/${urlPath}`}`;
-  const extraProps = badgesToSchemaProperties(additionalBadges);
-
-  return {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    name,
-    description,
-    url,
-    image: absoluteImageUrl(image) || DEFAULT_OG_IMAGE,
-    brand: { "@type": "Brand", name: SITE_NAME },
-    category: "Holiday Tour Package",
-    ...(originCity
-      ? {
-          areaServed: { "@type": "City", name: originCity }
-        }
-      : {}),
-    ...(extraProps.length ? { additionalProperty: extraProps } : {}),
-    offers: buildOffers({
-      url,
-      price,
-      ...(lowPrice != null && highPrice != null ? { lowPrice, highPrice } : {})
     })
   };
 }

@@ -3,7 +3,7 @@ import { buildPageMetadata } from "../lib/seo";
 
 export const metadata = buildPageMetadata({
   title: "Page Not Found | Cabzii",
-  description: "The page you requested is not available. Browse cab booking, routes, airport taxi and tour packages on Cabzii.in.",
+  description: "The page you requested is not available. Browse cab booking, routes, airport taxi and acting drivers on Cabzii.in.",
   path: "/404",
   noindex: true
 });

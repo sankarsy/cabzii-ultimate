@@ -125,51 +125,6 @@ export const DEFAULT_SITE_SETTINGS = {
     }
   ],
   whatsappFab: { enabled: true, number: "9944197416" },
-  /** Explore-by-category cards on homepage — admin can upload photos per category. */
-  holidayCategories: [
-    {
-      id: "pilgrimage",
-      label: "Pilgrimage",
-      image: "",
-      desc: "Tirupati, Rameswaram, Madurai & more temple tours with cab, darshan & stay."
-    },
-    {
-      id: "beach",
-      label: "Beach",
-      image: "",
-      desc: "Goa, Pondicherry & coastal getaways — sun, sand and scenic ECR drives."
-    },
-    {
-      id: "hill",
-      label: "Hill Station",
-      image: "",
-      desc: "Ooty, Kodaikanal, Munnar & cool mountain escapes with sightseeing cabs."
-    },
-    {
-      id: "heritage",
-      label: "Heritage",
-      image: "",
-      desc: "Forts, palaces & UNESCO wonders — Mysore, Hampi, Thanjavur and beyond."
-    },
-    {
-      id: "honeymoon",
-      label: "Honeymoon",
-      image: "",
-      desc: "Romantic escapes with private cab, handpicked stays & flexible plans."
-    },
-    {
-      id: "adventure",
-      label: "Adventure",
-      image: "",
-      desc: "Safari trails, trekking bases & offbeat drives for thrill seekers."
-    },
-    {
-      id: "family",
-      label: "Family",
-      image: "",
-      desc: "Kid-friendly itineraries, spacious cabs & relaxed sightseeing for all ages."
-    }
-  ],
   pageSeo: {},
   callDriverSeo: {}
 };

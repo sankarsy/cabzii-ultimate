@@ -180,8 +180,6 @@ export const ICON_REGISTRY = {
   hotel: HotelIcon,
   bus: BusIcon,
   train: TrainIcon,
-  holiday: BackpackIcon,
-  holidays: BackpackIcon,
   backpack: BackpackIcon,
   luggage: LuggageIcon,
   fuel: FuelIcon,
@@ -202,10 +200,6 @@ export const HOME_CATEGORY_ICON_STYLES = {
   },
   drivers: {
     active: "bg-violet-50 text-violet-500 ring-1 ring-violet-100",
-    idle: "bg-slate-50/80 text-slate-500 ring-1 ring-slate-200"
-  },
-  holidays: {
-    active: "bg-emerald-50 text-emerald-500 ring-1 ring-emerald-100",
     idle: "bg-slate-50/80 text-slate-500 ring-1 ring-slate-200"
   },
   buses: {

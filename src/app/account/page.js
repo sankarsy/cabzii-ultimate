@@ -134,7 +134,7 @@ export default function AccountPage() {
           <AccountCard
             href="/my-bookings"
             title="My trips"
-            description="View upcoming and past cab, driver and holiday bookings."
+            description="View upcoming and past cab, driver and bus bookings."
           />
           <AccountCard
             href="/cabs"

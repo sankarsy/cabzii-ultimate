@@ -48,7 +48,7 @@ export function detectServiceKind(product = {}, forced = "") {
   if (/bus|volvo|sleeper|seater coach/.test(text)) return "bus";
   if (/hotel|resort|room/.test(text)) return "hotel";
   if (/flight|airline/.test(text)) return "flight";
-  if (/holiday|tour|pilgrimage|package|ooty|tirupati/.test(text)) return "holiday";
+  if (/holiday|tour package|honeymoon/.test(text)) return "cab";
   if (/tempo|traveller|van/.test(text)) return "tempo";
   if (/ertiga|innova|suv|xuv|creta/.test(text)) return "suv";
   return "cab";
@@ -188,7 +188,7 @@ export function suggestImageAlt(product = {}, { kind } = {}) {
     tempo: `${name} tempo traveller rental for group travel in ${loc}`,
     driver: `Professional acting driver service for safe travel in ${loc}`,
     bus: `${name} AC bus rental for group travel and outstation trips from ${loc}`,
-    holiday: `${name} holiday package with hotel stay and sightseeing in ${loc}`,
+    holiday: `${name} cab for airport, local and outstation travel in ${loc}`,
     hotel: `Premium hotel room with modern amenities in ${loc}`,
     flight: `Domestic and international flight booking service through Cabzii`,
     airport: `${loc} Airport pickup and drop cab service`

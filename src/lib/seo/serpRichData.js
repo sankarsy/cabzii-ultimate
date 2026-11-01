@@ -13,11 +13,11 @@ export const SERVICE_FLEET_BY_SLUG = {
 
 export const SITE_SITELINKS = [
   { name: "Cab Booking", path: "/chennai" },
-  { name: "Car Rental", path: "/services/car-rental/chennai" },
-  { name: "Cab Rental", path: "/services/cab-rental/chennai" },
   { name: "Airport Taxi", path: "/chennai/airport-cab-booking" },
-  { name: "Innova Crysta", path: "/cabs/mpv-toyota-innova-crysta" },
-  { name: "All Cabs", path: "/cabs" }
+  { name: "Outstation Cab", path: "/services/outstation-cab/chennai" },
+  { name: "Call Driver", path: "/call-driver" },
+  { name: "All Cabs", path: "/cabs" },
+  { name: "Earn with Cabzii", path: "/earn" }
 ];
 
 export function formatSerpPrice(amount, { prefix = "From" } = {}) {

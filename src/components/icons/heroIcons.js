@@ -2,23 +2,18 @@
  * Light Lucide icons for home hero, category tabs, themes, and feature chips.
  */
 import {
-  Binoculars,
   BookOpen,
   Bus,
   Car,
   CarTaxiFront,
-  Church,
   CircleUser,
-  Gem,
   MapPin,
-  Palmtree,
   Plane,
   Route,
   ShieldCheck,
   Sparkles,
   Star,
-  Umbrella,
-  UsersRound
+  Umbrella
 } from "./rscIcons";
 
 function wrapLucide(Icon, defaultStroke = 1.5) {
@@ -57,7 +52,6 @@ function DriverOutlineIcon(props) {
 /** Category tabs: Cabs, Hire a Driver, Buses */
 export const HERO_TAB_ICONS = {
   buses: wrapLucide(Bus, 1.6),
-  holidays: wrapLucide(Palmtree, 1.6),
   cabs: wrapLucide(CarTaxiFront, 1.6),
   drivers: DriverOutlineIcon
 };
@@ -103,7 +97,6 @@ export function getTrustIcon(iconKey) {
 /** Exclusive offers carousel */
 export const OFFER_ICONS = {
   car: wrapLucide(Car),
-  holiday: wrapLucide(Umbrella),
   route: wrapLucide(Route),
   airport: wrapLucide(Plane),
   driver: wrapLucide(CircleUser)
@@ -111,69 +104,6 @@ export const OFFER_ICONS = {
 
 export function getOfferIcon(iconKey) {
   return OFFER_ICONS[iconKey] || OFFER_ICONS.car;
-}
-
-/** Holiday theme tiles — square icon chips */
-export const HOLIDAY_THEME_ICONS = {
-  beach: wrapLucide(Palmtree),
-  pilgrimage: wrapLucide(Church),
-  safari: wrapLucide(Binoculars),
-  family: wrapLucide(UsersRound),
-  luxury: wrapLucide(Gem)
-};
-
-export const HOLIDAY_THEME_CHIP_STYLES = {
-  beach: "bg-sky-50 text-sky-400 ring-1 ring-sky-100",
-  pilgrimage: "bg-amber-50 text-amber-400 ring-1 ring-amber-100",
-  safari: "bg-emerald-50 text-emerald-400 ring-1 ring-emerald-100",
-  family: "bg-violet-50 text-violet-400 ring-1 ring-violet-100",
-  luxury: "bg-rose-50 text-rose-400 ring-1 ring-rose-100"
-};
-
-export const HOLIDAY_THEME_CHIP_STYLES_ON_DARK = {
-  beach: "bg-white/15 text-sky-100 ring-1 ring-white/25 backdrop-blur-sm",
-  pilgrimage: "bg-white/15 text-amber-100 ring-1 ring-white/25 backdrop-blur-sm",
-  safari: "bg-white/15 text-emerald-100 ring-1 ring-white/25 backdrop-blur-sm",
-  family: "bg-white/15 text-violet-100 ring-1 ring-white/25 backdrop-blur-sm",
-  luxury: "bg-white/15 text-rose-100 ring-1 ring-white/25 backdrop-blur-sm"
-};
-
-export const HOLIDAY_THEME_ICON_COLORS = {
-  beach: "text-sky-400",
-  pilgrimage: "text-amber-400",
-  safari: "text-emerald-400",
-  family: "text-violet-400",
-  luxury: "text-rose-400"
-};
-
-export const HOLIDAY_THEME_ICON_COLORS_ON_DARK = {
-  beach: "text-sky-100",
-  pilgrimage: "text-amber-100",
-  safari: "text-emerald-100",
-  family: "text-violet-100",
-  luxury: "text-rose-100"
-};
-
-/** @deprecated use HOLIDAY_THEME_ICON_COLORS — kept for any legacy imports */
-export const HOLIDAY_THEME_ICON_STYLES = {
-  beach: "text-sky-400",
-  pilgrimage: "text-amber-400",
-  safari: "text-emerald-400",
-  family: "text-violet-400",
-  luxury: "text-rose-400"
-};
-
-/** @deprecated */
-export const HOLIDAY_THEME_ICON_STYLES_ON_DARK = {
-  beach: "text-sky-200",
-  pilgrimage: "text-amber-200",
-  safari: "text-emerald-200",
-  family: "text-violet-200",
-  luxury: "text-rose-200"
-};
-
-export function getHolidayThemeIcon(iconKey) {
-  return HOLIDAY_THEME_ICONS[iconKey] || HOLIDAY_THEME_ICONS.beach;
 }
 
 /** Cab search FROM / TO field icons */

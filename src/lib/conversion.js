@@ -19,7 +19,7 @@ function asSearchParams(searchParams) {
 }
 
 /**
- * Page-aware WhatsApp copy so Tirupati cab, bus, holiday, etc. send the matching enquiry.
+ * Page-aware WhatsApp copy so Tirupati cab, bus, Call Driver, etc. send the matching enquiry.
  */
 export function bookingWhatsappMessage({
   pathname = "",
@@ -175,7 +175,7 @@ export function tripContextFromNextUrl(nextUrl = "") {
     let service = "Cab";
     if (path.includes("call-driver") || path.includes("driver")) service = "Call Driver";
     else if (path.includes("bus")) service = "Bus";
-    else if (path.includes("holiday") || path.includes("package")) service = "Holiday package";
+    else if (path.includes("earn")) service = "Earn with Cabzii";
     const tripType = q.get("serviceTripType") || q.get("tripType") || q.get("service") || "";
     return {
       service,

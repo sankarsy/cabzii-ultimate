@@ -40,16 +40,7 @@ export default function CancellationPolicyPage() {
               </section>
 
               <section>
-                <h2 className="text-base font-bold text-slate-900">2. Tour Package Bookings</h2>
-                <ul className="mt-1 list-disc space-y-1 pl-5">
-                  <li>More than 7 days before departure: up to 10% cancellation charge.</li>
-                  <li>3 to 7 days before departure: up to 30% cancellation charge.</li>
-                  <li>Less than 72 hours before departure: up to 100% cancellation charge.</li>
-                </ul>
-              </section>
-
-              <section>
-                <h2 className="text-base font-bold text-slate-900">3. Refund Timeline</h2>
+                <h2 className="text-base font-bold text-slate-900">2. Refund Timeline</h2>
                 <p className="mt-1">
                   Approved refunds are processed to the original payment method and typically reflect within 5 to 10 business
                   days, subject to bank and payment processor timelines.
@@ -57,21 +48,21 @@ export default function CancellationPolicyPage() {
               </section>
 
               <section>
-                <h2 className="text-base font-bold text-slate-900">4. Non-Refundable Components</h2>
+                <h2 className="text-base font-bold text-slate-900">3. Non-Refundable Components</h2>
                 <p className="mt-1">
                   Toll, permit, parking, peak-hour surcharge, and third-party charges already incurred may be non-refundable.
                 </p>
               </section>
 
               <section>
-                <h2 className="text-base font-bold text-slate-900">5. Reschedule Requests</h2>
+                <h2 className="text-base font-bold text-slate-900">4. Reschedule Requests</h2>
                 <p className="mt-1">
                   Date and time changes are subject to vehicle availability and fare revision at the time of modification.
                 </p>
               </section>
 
               <section>
-                <h2 className="text-base font-bold text-slate-900">6. Contact for Support</h2>
+                <h2 className="text-base font-bold text-slate-900">5. Contact for Support</h2>
                 <p className="mt-1">
                   For cancellation or refund help, contact Cabzii support with your booking ID and registered contact details.
                 </p>

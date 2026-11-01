@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import ImageUploadField from "./ImageUploadField";
 import { HOME_CARD_COPY } from "../../lib/homeShowcase";
 
-const ICON_OPTIONS = ["car", "holiday", "route", "airport", "driver"];
+const ICON_OPTIONS = ["car", "route", "airport", "driver"];
 const COLOR_OPTIONS = [
   "from-[var(--cabzii-brand)] to-blue-500",
   "from-rose-500 to-pink-400",

@@ -1,7 +1,8 @@
 const QUICK_LINKS = {
   cabs: "/cabs",
   drivers: "/call-driver",
-  holidays: "/chennai/outstation/chennai-to-tirupati",
+  buses: "/buses",
+  tirupati: "/chennai/outstation/chennai-to-tirupati",
   booking: "/cabs",
   testimonials: "/testimonials",
   locations: "/locations",
@@ -31,7 +32,7 @@ export function generateChatReply(message, { name = "there", history = [] } = {}
 
   if (pick(text, ["hi", "hello", "hey", "good morning", "good evening", "namaste"])) {
     return {
-      reply: `Hi ${firstName}! 👋 I'm Zii, your Cabzii travel assistant. Ask me about cab booking, airport taxis, outstation trips, acting drivers, or holiday packages.`,
+      reply: `Hi ${firstName}! 👋 I'm Zii, your Cabzii travel assistant. Ask me about cab booking, airport taxis, outstation trips, acting drivers, or bus tickets.`,
       suggestions: ["Book a cab", "Airport taxi fare", "Outstation routes", "Talk to support"]
     };
   }
@@ -80,10 +81,17 @@ export function generateChatReply(message, { name = "there", history = [] } = {}
     };
   }
 
-  if (pick(text, ["holiday", "tour", "package", "trip plan"])) {
+  if (pick(text, ["bus", "sleeper", "seater"])) {
     return {
-      reply: `Explore curated holiday packages across South India — beaches, temples, hill stations & more.\n\n👉 ${QUICK_LINKS.holidays}`,
-      suggestions: ["Weekend getaways", "Family tour packages"]
+      reply: `Book intercity bus tickets on Cabzii — AC seater and sleeper from Chennai and South India. Pick seats and boarding, then confirm.\n\n👉 ${QUICK_LINKS.buses}`,
+      suggestions: ["Book a bus", "Book a cab"]
+    };
+  }
+
+  if (pick(text, ["holiday package", "holiday tour", "honeymoon", "tour package"])) {
+    return {
+      reply: `Cabzii books cabs, acting drivers and bus tickets — not holiday tour packages. For temple trips, book an outstation cab such as Chennai to Tirupati.\n\n👉 ${QUICK_LINKS.tirupati}`,
+      suggestions: ["Chennai to Tirupati", "Book outstation cab"]
     };
   }
 
@@ -158,7 +166,7 @@ export function generateChatReply(message, { name = "there", history = [] } = {}
   }
 
   return {
-    reply: `I'm here to help with Cabzii bookings — cabs, airport transfers, outstation trips, acting drivers & tours. Try asking about a route, fare, or how to book.\n\nOr start booking: ${QUICK_LINKS.cabs}`,
+    reply: `I'm here to help with Cabzii bookings — cabs, airport transfers, outstation trips, acting drivers and bus tickets. Try asking about a route, fare, or how to book.\n\nOr start booking: ${QUICK_LINKS.cabs}`,
     suggestions: ["Book a cab", "Airport taxi", "Outstation fare", "Talk to support"]
   };
 }

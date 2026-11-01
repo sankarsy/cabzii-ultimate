@@ -26,7 +26,7 @@ export const metadata = {
     template: "%s | Cabzii"
   },
   description:
-    "Book cabs, taxis, airport transfers, outstation trips, acting drivers and tour packages across India. Fares shown before you confirm on Cabzii.in.",
+    "Book cabs, airport taxi, outstation trips, acting drivers and bus tickets from Chennai across South India. Fares shown before you confirm on Cabzii.in.",
   category: "travel",
   keywords: DEFAULT_KEYWORDS,
   icons: SITE_ICONS,

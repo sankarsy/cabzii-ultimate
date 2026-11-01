@@ -14,8 +14,7 @@ export function chennaiServiceUniqueHtml(slug) {
     "cab-rental": CHENNAI_CAB_RENTAL,
     "tempo-traveller": CHENNAI_TEMPO,
     "driver-on-hire": CHENNAI_DRIVER_ON_HIRE,
-    "chauffeur-service": CHENNAI_CHAUFFEUR,
-    "tour-packages": CHENNAI_TOURS
+    "chauffeur-service": CHENNAI_CHAUFFEUR
   };
   return extras[slug] || "";
 }
@@ -126,8 +125,8 @@ const CHENNAI_TEMPO = `
 <p>Tempo Traveller 12 and 13 seater local packages start from <strong>₹3,000 (5 Hrs / 50 Km)</strong> on the published van tariff. 18 seater local from ₹4,000 for the same 5-hour slab. Outstation vans have a <strong>300 km minimum</strong>. Extra km, extra hour and driver batta are listed on the tariff. Availability is shown at search.</p>
 
 <h2>When groups book Tempo from Chennai</h2>
-<p><strong>Local:</strong> weddings, airport group pickup, corporate outings. <strong>Outstation:</strong> family highway trips. <strong>Pilgrimage:</strong> Tirupati, Kanchipuram, Tiruvannamalai, Rameswaram circuits — use existing route pages plus this vehicle class. <strong>Multi-day:</strong> holiday packages on <a href="/holidays">holidays</a> when a vendor has listed a tour; otherwise book outstation van days.</p>
-<p>Related: <a href="/cab-booking/chennai">cab booking</a>, <a href="/services/outstation-cab/chennai">outstation</a>, <a href="/holidays?category=pilgrimage">pilgrimage packages</a>.</p>
+<p><strong>Local:</strong> weddings, airport group pickup, corporate outings. <strong>Outstation:</strong> family highway trips. <strong>Temple runs:</strong> Tirupati, Kanchipuram, Tiruvannamalai, Rameswaram circuits — use existing route pages plus this vehicle class. <strong>Multi-day:</strong> book outstation van days, not a holiday tour package.</p>
+<p>Related: <a href="/cab-booking/chennai">cab booking</a>, <a href="/services/outstation-cab/chennai">outstation</a>, <a href="/chennai/outstation/chennai-to-tirupati">Chennai to Tirupati</a>.</p>
 `;
 
 const CHENNAI_DRIVER_ON_HIRE = `
@@ -138,9 +137,4 @@ const CHENNAI_DRIVER_ON_HIRE = `
 const CHENNAI_CHAUFFEUR = `
 <h2>Chauffeur service in Chennai</h2>
 <p>Corporate days, wedding cars and multi-stop driving use the same Call Driver assignment as acting driver. City guide: <a href="/acting-driver/chennai">acting driver in Chennai</a>. Book: <a href="/call-driver">Call Driver</a>. A Cabzii taxi (vehicle included) is <a href="/cab-booking/chennai">cab booking</a>, not this page.</p>
-`;
-
-const CHENNAI_TOURS = `
-<h2>Holiday and pilgrimage packages from Chennai</h2>
-<p>Live itineraries are on <a href="/holidays">holiday packages</a>. Pilgrimage listings (Tirupati, Rameswaram–Madurai and similar circuits) use <a href="/holidays?category=pilgrimage">/holidays?category=pilgrimage</a> — not a /pilgrimage URL tree. Cab-only temple runs stay on route pages such as <a href="/routes/chennai-to-tirupati-cab">Chennai to Tirupati</a>.</p>
 `;

@@ -13,7 +13,7 @@ export const FLOATING_UI_HIDDEN_PREFIXES = [
 const CATALOG_LIST_SEGMENTS = new Set(["passenger", "results"]);
 
 /**
- * Product detail pages (cab/driver/holiday) use their own sticky booking bar on mobile.
+ * Product detail pages (cab/driver) use their own sticky booking bar on mobile.
  */
 export function isCatalogDetailPage(pathname) {
   if (!pathname) return false;

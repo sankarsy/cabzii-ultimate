@@ -18,7 +18,6 @@ import {
   LogIn,
   MapPin,
   MessageCircle,
-  Palmtree,
   Star,
   UserRound,
   Wallet,
@@ -30,15 +29,13 @@ import { EARN_NAV } from "../../lib/brand";
 const PRODUCT_ICON_TONES = {
   cabs: "text-sky-500",
   drivers: "text-violet-500",
-  buses: "text-orange-500",
-  holidays: "text-emerald-500"
+  buses: "text-orange-500"
 };
 
 const PRODUCT_ICONS = {
   cabs: CarFront,
   drivers: UserRound,
-  buses: Bus,
-  holidays: Palmtree
+  buses: Bus
 };
 
 const EXPLORE_LINKS = [
@@ -53,7 +50,7 @@ const EXPLORE_LINKS = [
 
 function ProductMenuGrid({ activeTab, onSelect, onNavigate }) {
   return (
-    <div className="cabzii-menu-products mx-3 mb-1 mt-1 grid grid-cols-4 gap-1.5" role="navigation" aria-label="Book Cabs, Driver, Buses or Holidays">
+    <div className="cabzii-menu-products mx-3 mb-1 mt-1 grid grid-cols-4 gap-1.5" role="navigation" aria-label="Book Cabs, Driver or Buses">
       {HERO_TABS.map((tab) => {
         const Icon = PRODUCT_ICONS[tab.id];
         const active = activeTab === tab.id;

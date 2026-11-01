@@ -1,4 +1,4 @@
-/** Shared additional-charge rows for cab, driver and holiday booking pages. */
+/** Shared additional-charge rows for cab and driver booking pages. */
 
 export function buildStandardChargeItems({ extraKm, extraHr, nightCharge, serviceCharges = {} }) {
   const sc = serviceCharges || {};
@@ -14,18 +14,5 @@ export function buildStandardChargeItems({ extraKm, extraHr, nightCharge, servic
     { label: "Out of City (>40 km)", value: sc.outOfCity != null ? String(sc.outOfCity) : "Per trip quote" },
     { label: "Driver Allowance", value: "Included" },
     { label: "Toll, Parking & State Tax", value: "As per actuals" }
-  ];
-}
-
-/** Holiday packages — toll, permit & driver bata billed separately from package fare. */
-export function buildTourChargeItems({
-  tollCharge = "As per actuals",
-  permitCharge = "As per actuals",
-  driverBata = "₹500/day"
-} = {}) {
-  return [
-    { label: "Toll", value: tollCharge },
-    { label: "Permit", value: permitCharge },
-    { label: "Driver Bata", value: driverBata }
   ];
 }

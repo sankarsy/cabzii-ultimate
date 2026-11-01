@@ -15,7 +15,7 @@ export default function ChennaiClusterLinks({
       <h2>{title}</h2>
       <p className="mt-1.5 text-[11px] text-slate-600 sm:text-xs">
         Cabzii’s Chennai bookings concentrate on airport transfers, local packages, outstation/one-way routes,
-        Tempo Traveller groups, acting drivers for your own car, and pilgrimage/holiday packages.
+        Tempo Traveller groups, and acting drivers for your own car.
       </p>
       <ul className="mt-2.5 flex flex-wrap gap-1.5">
         {links.map((item) => (

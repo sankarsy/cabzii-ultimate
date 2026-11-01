@@ -18,9 +18,9 @@ export default async function BlogsPage() {
     <>
       <JsonLd data={blogListingJsonLd(posts)} />
       <div className="section-shell py-10">
-        <h1 className="text-2xl font-bold text-slate-900">Travel blog</h1>
+        <h1 className="text-2xl font-bold text-slate-900">Cabzii blog</h1>
         <p className="mt-2 text-sm text-slate-600">
-          Tips on cabs, acting drivers, airport transfers and outstation planning from cabzii.in.
+          Tips on cabs, acting drivers, airport transfers, outstation trips and bus booking from cabzii.in.
         </p>
         <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2">
           {posts.map((post) => (

@@ -8,8 +8,7 @@ const SERVICE_OPTIONS = [
   { id: "airport", label: "Airport taxi" },
   { id: "outstation", label: "Outstation" },
   { id: "driver", label: "Hire a driver" },
-  { id: "bus", label: "Bus" },
-  { id: "tour", label: "Holiday" }
+  { id: "bus", label: "Bus" }
 ];
 
 export default function WriteReviewForm() {

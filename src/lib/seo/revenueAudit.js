@@ -253,19 +253,19 @@ const STATIC_MONEY_PAGES = [
     conversionReadiness: 8
   }),
   scoreRow({
-    url: "/holidays?category=pilgrimage",
-    pageType: "holidays",
+    url: "/chennai/outstation/chennai-to-tirupati",
+    pageType: "route",
     city: "chennai",
-    service: "pilgrimage",
+    service: "outstation-cab",
     origin: "chennai",
-    destination: "",
+    destination: "tirupati",
     commercialScore: 84,
     class: SEO_CLASS.A,
     indexable: true,
-    serviceAvailable: "package-catalog",
-    vendorSupplyLabel: "depends on listed packages",
-    bookingPath: "/holidays",
-    cta: "Book package",
+    serviceAvailable: "live-route",
+    vendorSupplyLabel: "live cab inventory",
+    bookingPath: "/chennai/outstation/chennai-to-tirupati",
+    cta: "Book cab",
     duplicateRisk: "do not add /pilgrimage tree",
     searchIntent: 8,
     commercialIntent: 8,
@@ -342,16 +342,15 @@ export function revenueSeoReport() {
   );
 
   const topPilgrimageOpportunities = [
-    { url: "/holidays?category=pilgrimage", note: "Existing package filter — do not build /pilgrimage/{temple}" },
-    { url: "/routes/chennai-to-tirupati-cab", note: "Highest cab-only darshan corridor" },
+    { url: "/chennai/outstation/chennai-to-tirupati", note: "Highest cab-only darshan corridor" },
+    { url: "/routes/chennai-to-tirupati-cab", note: "Legacy route alias for Tirupati cabs" },
     { url: "/routes/chennai-to-rameswaram-cab", note: "Long pilgrimage one-way" },
     { url: "/routes/chennai-to-kanchipuram-cab", note: "Short temple hop" },
     { url: "/routes/chennai-to-tiruvannamalai-cab", note: "Girivalam / Arunachaleswarar" },
     { url: "/routes/madurai-to-rameswaram-cab", note: "Same-day temple pairing" },
     { url: "/routes/chennai-to-madurai-cab", note: "Meenakshi + onward south" },
     { url: "/routes/chennai-to-kanyakumari-cab", note: "Long coastal/temple highway" },
-    { url: "/tirupati", note: "Destination hub — keep, do not spawn temple URLs" },
-    { url: "/services/tour-packages/chennai", note: "Chennai origin tour landing only" }
+    { url: "/tirupati", note: "Destination hub — keep, do not spawn temple URLs" }
   ];
 
   const topActingDriverOpportunities = top(
@@ -457,7 +456,7 @@ export function revenueSeoReport() {
       "Airport pickup + drop + city transfer mapped to one Chennai URL (done) — other cities still template",
       "Round-trip intent must stay on outstation pages (no /round-trip-cab)",
       "Acting driver synonyms stay on /{city}/acting-driver (legacy /acting-driver/{city} 301s) + /call-driver",
-      "Pilgrimage intent: holidays filter + temple routes — no /pilgrimage tree",
+      "Pilgrimage intent: outstation cab routes such as Chennai–Tirupati — no /pilgrimage tree",
       "Self-drive SERPs should not be chased; Cabzii is chauffeur-driven",
       "National airport pages exist but supply/content are weak — do not scale copy until supply is known"
     ],

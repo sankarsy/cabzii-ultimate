@@ -33,7 +33,7 @@ function Field({ label, children, hint }) {
 }
 
 /**
- * MrMed-style SEO & catalog fields for cabs, drivers, and tour packages.
+ * MrMed-style SEO & catalog fields for cabs and drivers.
  */
 export function AdminProductSeoSection({
   form,

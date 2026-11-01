@@ -24,6 +24,7 @@ export default function BlogCommercialLinks({ title = "", slug = "", excerpt = "
     : [
         { href: "/cabs", label: "Browse all cabs" },
         { href: "/call-driver", label: "Call Driver" },
+        { href: "/buses", label: "Bus tickets" },
         { href: "/acting-driver", label: "Acting driver cities" }
       ];
 
@@ -33,7 +34,7 @@ export default function BlogCommercialLinks({ title = "", slug = "", excerpt = "
       <p className="mt-1 text-sm text-slate-600">
         {city
           ? `Continue to ${city.name} cab, airport transfer, outstation and acting-driver pages.`
-          : "Continue to cabs, Call Driver, holidays and acting-driver pages."}
+          : "Continue to cabs, Call Driver, buses and acting-driver pages."}
       </p>
       <div className="mt-4 flex flex-wrap gap-3">
         {links.map((item) => (

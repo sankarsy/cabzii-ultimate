@@ -78,8 +78,8 @@ export function chennaiCabUniqueHtml() {
 <h2>Acting driver for your own car</h2>
 <p>If you already have a car, Cabzii Call Driver assigns a professional to drive it — local, airport chauffeur, outstation highway days, monthly/corporate quotes and valet for functions. The Chennai guide is <a href="/acting-driver/chennai">acting driver in Chennai</a>; booking starts at <a href="/call-driver">Call Driver</a>.</p>
 
-<h2>Pilgrimage and holiday packages from Chennai</h2>
-<p>Cabzii holiday packages include pilgrimage circuits (Tirupati, Rameswaram–Madurai) and hill/family trips such as Ooty–Kodaikanal. Transport origin is typically Chennai. Browse <a href="/holidays?category=pilgrimage">pilgrimage packages</a> or all <a href="/holidays">holiday packages</a>. Cab-only temple runs stay on existing route pages — there is no /pilgrimage URL tree.</p>
+<h2>Temple and family trips from Chennai</h2>
+<p>Cabzii does not sell holiday tour packages. For darshan and family highway trips, book an outstation or one-way cab — for example <a href="/chennai/outstation/chennai-to-tirupati">Chennai to Tirupati</a>. Group travel uses <a href="/services/tempo-traveller/chennai">Tempo Traveller Chennai</a>. Cab-only temple runs stay on existing route pages.</p>
 
 <h2>Indicative Chennai fares (published tariff)</h2>
 <p>Swift Dzire from ₹1,200 (4 Hrs / 40 Km). Innova Crysta from ₹2,200. Tempo Traveller 12 seater from ₹3,000 (5 Hrs / 50 Km). Outstation cars: 250 km minimum (Dzire from ₹3,250). Extra km, extra hour and driver batta are on the <a href="/tariff">tariff</a>. Live quotes can vary.</p>

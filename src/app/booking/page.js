@@ -20,9 +20,8 @@ function CabTourBooking({ searchParams }) {
   }, [itemType, itemId, router, searchParams?.step]);
 
   useEffect(() => {
-    if (!itemId || itemType === "cab" || itemType === "driver") return;
-    const base =
-      itemType === "tour" ? `/api/packages/${encodeURIComponent(itemId)}` : `/api/cabs/${encodeURIComponent(itemId)}`;
+    if (!itemId || itemType === "cab" || itemType === "driver" || itemType === "tour") return;
+    const base = `/api/cabs/${encodeURIComponent(itemId)}`;
     const loadItem = async () => {
       try {
         const res = await fetch(base, { cache: "no-store" });
@@ -37,7 +36,6 @@ function CabTourBooking({ searchParams }) {
 
   const baseFare = useMemo(() => {
     if (!selectedItem) return 0;
-    if (itemType === "tour") return Number(selectedItem.price) || 0;
     if (itemType === "driver") return Number(selectedItem.pricing?.day) || Number(selectedItem.pricing?.hourly) || 0;
     return Number(selectedItem.price) || 0;
   }, [itemType, selectedItem]);

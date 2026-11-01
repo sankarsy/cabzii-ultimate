@@ -2,33 +2,33 @@ import MarketingPageShell, { marketingMetadata } from "../../components/marketin
 import { aboutPageJsonLd } from "../../lib/seo";
 
 export const metadata = marketingMetadata({
-  title: "About Cabzii — Trusted Cab Booking Across India",
+  title: "About Cabzii — Cabs & Acting Driver in South India",
   description:
-    "Cabzii is a cab booking platform for airport taxi, outstation, local packages and acting driver from Chennai and Tamil Nadu corridors.",
+    "Cabzii is an UrbanWolf Technologies brand for chauffeur-driven cabs, airport taxi, outstation trips, acting drivers and bus tickets from Chennai across South India.",
   path: "/about",
-  keywords: ["about cabzii", "cab booking company India", "cabzii.in about"]
+  keywords: ["about cabzii", "urbanwolf technologies", "cab booking south india", "cabzii.in about"]
 });
 
 export default function AboutPage() {
   return (
     <MarketingPageShell
       title="About Cabzii"
-      subtitle="Premium cab, taxi and acting driver booking — built for trust, transparent fares and instant support."
+      subtitle="Chauffeur-driven cabs, acting drivers and bus tickets from Chennai — fares shown before you confirm."
       path="/about"
       breadcrumbs={[{ name: "About", path: "/about" }]}
       jsonLdExtra={[aboutPageJsonLd()]}
     >
       <p>
-        Cabzii (cabzii.in) is a cab booking platform focused on South India — Chennai, Bengaluru, Hyderabad, Coimbatore,
-        Madurai and more. We help you book airport taxis, outstation cabs, hourly rentals, one-way inter-city travel and
-        professional acting drivers.
+        Cabzii (cabzii.in) is an UrbanWolf Technologies brand focused on South India — Chennai, Madurai, Tirupati, Trichy,
+        Coimbatore, Vellore and connecting cities. Book airport taxis, outstation cabs, hourly local packages, one-way
+        inter-city travel, professional acting drivers and bus tickets.
       </p>
       <h2>What we stand for</h2>
       <ul>
         <li>Fares shown before you pay</li>
         <li>WhatsApp and phone support for bookings</li>
         <li>OTP checkout and booking confirmation</li>
-        <li>City, airport, route and acting-driver pages that match real Cabzii services</li>
+        <li>City, airport, route, bus and acting-driver pages that match live Cabzii services</li>
       </ul>
       <h2>Book in seconds</h2>
       <p>

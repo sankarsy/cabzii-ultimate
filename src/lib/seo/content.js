@@ -49,8 +49,8 @@ export const HOME_PAGE_FAQS = [
     "Yes. Search outstation one-way routes or browse route pages like Chennai–Tirupati for upfront sedan and SUV fares."
   ],
   [
-    "Can I book holiday packages on cabzii.in?",
-    "Yes. Browse Holidays for pilgrimage, beach, family and honeymoon tours with optional cab upgrades shown in each package."
+    "Can I book bus tickets on cabzii.in?",
+    "Yes. Open Buses, enter from and to cities, compare AC seater and sleeper options, pick seats and boarding, then confirm. Fares are shown before you pay."
   ],
   [
     "How do I cancel or change my booking?",
@@ -522,5 +522,5 @@ export function cityAreas(citySlug) {
 }
 
 export function relatedServicesForCity(citySlug) {
-  return SEO_SERVICES.filter((s) => s.slug !== "tour-packages").slice(0, 8);
+  return SEO_SERVICES.slice(0, 8);
 }

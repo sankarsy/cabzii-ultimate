@@ -34,8 +34,7 @@ export const SERVICE_TEMPLATE = {
   "local-taxi": "local_rental",
   "driver-on-hire": "local_rental",
   "chauffeur-service": "local_rental",
-  "tempo-traveller": "outstation",
-  "tour-packages": "outstation"
+  "tempo-traveller": "outstation"
 };
 
 /** Cities: which services appear first on /cab-booking/{city} (links to /services/...) */
@@ -48,7 +47,7 @@ export const CITY_PRIORITY_SERVICES = {
   goa: ["car-rental", "outstation-cab", "airport-taxi", "one-way-cab"],
   delhi: ["car-rental", "airport-taxi", "outstation-cab", "one-way-cab"],
   trichy: ["car-rental", "cab-rental", "local-taxi", "outstation-cab"],
-  kodaikanal: ["outstation-cab", "one-way-cab", "car-rental", "tour-packages"]
+  kodaikanal: ["outstation-cab", "one-way-cab", "car-rental"]
 };
 
 /** Explicit route slugs with tuned copy (others use route templates) */

@@ -2,14 +2,13 @@
 
 import { HERO_TABS } from "../../lib/emt/constants";
 import { cn } from "../../lib/emt/cn";
-import { Bus, CarFront, Palmtree, UserRound } from "../icons/rscIcons";
+import { Bus, CarFront, UserRound } from "../icons/rscIcons";
 import { useEffect, useRef } from "react";
 
 const TAB_ICONS = {
   cabs: CarFront,
   drivers: UserRound,
-  buses: Bus,
-  holidays: Palmtree
+  buses: Bus
 };
 
 const HOME_CATEGORY_ICON_STYLES = {
@@ -19,10 +18,6 @@ const HOME_CATEGORY_ICON_STYLES = {
   },
   drivers: {
     active: "bg-violet-50 text-violet-500 ring-1 ring-violet-100",
-    idle: "bg-slate-50/80 text-slate-500 ring-1 ring-slate-200"
-  },
-  holidays: {
-    active: "bg-emerald-50 text-emerald-500 ring-1 ring-emerald-100",
     idle: "bg-slate-50/80 text-slate-500 ring-1 ring-slate-200"
   },
   buses: {

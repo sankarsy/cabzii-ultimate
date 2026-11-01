@@ -85,13 +85,13 @@ export const DOMESTIC_OFFERS = [
 
 const CITY_SERVICE_EXTRAS = {
   chennai: { desc: "Airport taxi, local hire and outstation cabs with upfront fares.", fare: "From ₹1,200", image: IMG.chennai, iconKey: "car", color: "from-[var(--cabzii-brand)] to-blue-500" },
-  madurai: { desc: "Temple tours, airport taxi and outstation cabs in Madurai.", fare: "From ₹799", image: IMG.temple, iconKey: "holiday", color: "from-rose-500 to-pink-400" },
-  tirupati: { desc: "Darshan cabs, airport taxi and outstation returns from Tirupati.", fare: "From ₹899", image: IMG.temple, iconKey: "holiday", color: "from-rose-500 to-pink-400" },
+  madurai: { desc: "Temple tours, airport taxi and outstation cabs in Madurai.", fare: "From ₹799", image: IMG.temple, iconKey: "route", color: "from-rose-500 to-pink-400" },
+  tirupati: { desc: "Darshan cabs, airport taxi and outstation returns from Tirupati.", fare: "From ₹899", image: IMG.temple, iconKey: "route", color: "from-rose-500 to-pink-400" },
   trichy: { desc: "Airport drop, local taxi and one-way cabs from Trichy.", fare: "From ₹749", image: IMG.route, iconKey: "route", color: "from-slate-700 to-slate-500" },
   coimbatore: { desc: "Outstation and local taxi hire for Coimbatore and hill stations.", fare: "From ₹799", image: IMG.outstation, iconKey: "car", color: "from-amber-500 to-orange-400" },
   vellore: { desc: "Local taxi, hospital drops and outstation cabs from Vellore.", fare: "From ₹699", image: IMG.driver, iconKey: "driver", color: "from-slate-700 to-slate-500" },
   pondicherry: { desc: "White Town, Auroville and ECR cabs with local and outstation hire.", fare: "From ₹899", image: IMG.chennai, iconKey: "car", color: "from-sky-500 to-cyan-400" },
-  kanchipuram: { desc: "Temple town cabs, local hire and outstation from Kanchipuram.", fare: "From ₹699", image: IMG.temple, iconKey: "holiday", color: "from-rose-500 to-pink-400" },
+  kanchipuram: { desc: "Temple town cabs, local hire and outstation from Kanchipuram.", fare: "From ₹699", image: IMG.temple, iconKey: "route", color: "from-rose-500 to-pink-400" },
   ooty: { desc: "Hill-station taxi, local hire and outstation cabs in Ooty.", fare: "From ₹999", image: IMG.outstation, iconKey: "car", color: "from-emerald-500 to-teal-400" },
   kodaikanal: { desc: "Hill-station taxi and outstation cabs in Kodaikanal.", fare: "From ₹999", image: IMG.outstation, iconKey: "car", color: "from-emerald-500 to-teal-400" }
 };
@@ -117,10 +117,10 @@ export const CITY_SERVICE_CARDS = SEO_SCOPE_CITIES.map((city) => {
 });
 
 export const ROUTE_CARDS = [
-  { tag: "ONE WAY", title: "Chennai → Tirupati", desc: "Darshan one-way cab with flexible pickup.", iconKey: "holiday", color: "from-rose-500 to-pink-400", image: IMG.temple, href: "/chennai/outstation/chennai-to-tirupati", fare: "From ₹3,250" },
+  { tag: "ONE WAY", title: "Chennai → Tirupati", desc: "Darshan one-way cab with flexible pickup.", iconKey: "route", color: "from-rose-500 to-pink-400", image: IMG.temple, href: "/chennai/outstation/chennai-to-tirupati", fare: "From ₹3,250" },
   { tag: "ONE WAY", title: "Chennai → Pondicherry", desc: "ECR one-way cab with flexible pickup.", iconKey: "route", color: "from-sky-500 to-cyan-400", image: IMG.chennai, href: "/chennai/outstation/chennai-to-pondicherry", fare: "From ₹2,899" },
   { tag: "ONE WAY", title: "Chennai → Bengaluru", desc: "Highway one-way cab with upfront fares.", iconKey: "route", color: "from-emerald-500 to-teal-400", image: IMG.bengaluru, href: "/chennai/outstation/chennai-to-bengaluru", fare: "From ₹5,499" },
-  { tag: "ONE WAY", title: "Chennai → Madurai", desc: "Temple-city one-way cab from Chennai.", iconKey: "holiday", color: "from-amber-500 to-orange-400", image: IMG.temple, href: "/chennai/outstation/chennai-to-madurai", fare: "From ₹6,999" },
+  { tag: "ONE WAY", title: "Chennai → Madurai", desc: "Temple-city one-way cab from Chennai.", iconKey: "route", color: "from-amber-500 to-orange-400", image: IMG.temple, href: "/chennai/outstation/chennai-to-madurai", fare: "From ₹6,999" },
   { tag: "ONE WAY", title: "Chennai → Coimbatore", desc: "West Tamil Nadu one-way cab from Chennai.", iconKey: "route", color: "from-slate-700 to-slate-500", image: IMG.outstation, href: "/chennai/outstation/chennai-to-coimbatore", fare: "From ₹7,499" },
   { tag: "ONE WAY", title: "Chennai → Trichy", desc: "One-way cab from Chennai to Trichy.", iconKey: "route", color: "from-slate-700 to-slate-500", image: IMG.route, href: "/chennai/outstation/chennai-to-trichy", fare: "From ₹5,499" }
 ];

@@ -3,17 +3,18 @@ import { HOME_PAGE_FAQS } from "../../lib/seo/content";
 import { faqJsonLd } from "../../lib/seo";
 
 export const metadata = marketingMetadata({
-  title: "FAQ — Cab Booking, Airport Taxi & Outstation Cabs | Cabzii",
-  description: "Answers about cab booking on cabzii.in — fares, airport pickup, outstation trips, acting drivers, payment and cancellation.",
+  title: "FAQ — Cabs, Acting Driver & Bus Tickets | Cabzii",
+  description:
+    "Answers about cab booking on cabzii.in — fares, airport pickup, outstation trips, acting drivers, bus tickets, payment and cancellation.",
   path: "/faq",
-  keywords: ["cab booking faq", "airport taxi faq", "cabzii help"]
+  keywords: ["cab booking faq", "acting driver faq", "bus booking faq", "cabzii help"]
 });
 
 export default function FaqPage() {
   return (
     <MarketingPageShell
       title="Frequently asked questions"
-      subtitle="Everything you need to know about booking cabs, airport taxis and acting drivers on Cabzii."
+      subtitle="Cabs, airport taxi, outstation, acting drivers and bus tickets on Cabzii — fares shown before you confirm."
       path="/faq"
       breadcrumbs={[{ name: "FAQ", path: "/faq" }]}
       faqs={HOME_PAGE_FAQS}

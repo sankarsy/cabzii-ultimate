@@ -1,4 +1,4 @@
-/** Cabzii.in brand — domestic taxi & pilgrimage focus */
+/** Cabzii.in brand — cabs, acting driver and bus booking in South India */
 export const BRAND = {
   name: "Cabzii",
   domain: "cabzii.in",

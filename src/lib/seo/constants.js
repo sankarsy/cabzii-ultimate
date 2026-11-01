@@ -74,10 +74,9 @@ export const DEFAULT_KEYWORDS = [
   "outstation cab",
   "one-way cab",
   "acting driver",
-  "car rental",
+  "bus booking",
   "tempo traveller",
-  "tour packages",
-  "pilgrimage travel",
+  "call driver",
   "cabzii"
 ];
 

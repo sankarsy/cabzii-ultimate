@@ -31,7 +31,7 @@ export const STATIC_PAGE_SEO_LIST = [
     type: "site",
     typeLabel: "Acting driver hub",
     productName: "Acting Driver",
-    seoTitle: "Acting Driver by City | Hire Driver for Your Car | Cabzii",
+    seoTitle: "Acting Driver | Hire a Driver for Your Own Car | Cabzii",
     seoDescription:
       "Choose a city acting-driver page, then book Call Driver for your own car. Local, outstation, airport chauffeur, monthly quote, corporate and valet.",
     seoKeywords: "acting driver by city, chauffeur on hire, driver for own car, cabzii acting driver"
@@ -75,10 +75,10 @@ export const STATIC_PAGE_SEO_LIST = [
     path: "/blogs",
     type: "site",
     typeLabel: "Blog listing",
-    productName: "Travel Blog",
-    seoTitle: "Travel Blog — Cabs, Pilgrimage & Holiday Tips",
-    seoDescription: "Guides on cab booking, pilgrimage packages, airport transfers and holiday planning on cabzii.in.",
-    seoKeywords: "cab booking tips, pilgrimage travel guide, cabzii blog"
+    productName: "Cabzii Blog",
+    seoTitle: "Cabzii Blog — Cabs, Airport Taxi & Acting Driver Tips",
+    seoDescription: "Guides on cab booking, airport transfers, outstation trips and acting drivers on cabzii.in.",
+    seoKeywords: "cab booking tips, airport taxi guide, acting driver tips, cabzii blog"
   },
   {
     id: "site:about",
@@ -86,10 +86,10 @@ export const STATIC_PAGE_SEO_LIST = [
     type: "site",
     typeLabel: "About page",
     productName: "About Cabzii",
-    seoTitle: "About Cabzii — Trusted Cab Booking Across India",
+    seoTitle: "About Cabzii — Cabs & Acting Driver in South India",
     seoDescription:
-      "Cabzii is a cab booking platform for airport taxi, outstation, local packages and acting driver from Chennai and Tamil Nadu corridors.",
-    seoKeywords: "about cabzii, cab booking company India, cabzii.in about"
+      "Cabzii is an UrbanWolf Technologies brand for chauffeur-driven cabs, airport taxi, outstation trips, acting drivers and bus tickets from Chennai across South India.",
+    seoKeywords: "about cabzii, urbanwolf technologies, cab booking south india, cabzii.in about"
   },
   {
     id: "site:contact",
@@ -97,10 +97,10 @@ export const STATIC_PAGE_SEO_LIST = [
     type: "site",
     typeLabel: "Contact page",
     productName: "Contact Cabzii",
-    seoTitle: "Contact Cabzii — Call, WhatsApp & Email",
+    seoTitle: "Contact Cabzii — Call 9944197416, WhatsApp & Email",
     seoDescription:
-      "Reach Cabzii for cab quotes, booking help and support. Phone, WhatsApp and email.",
-    seoKeywords: "contact cabzii, cab booking support, cabzii phone number"
+      "Reach Cabzii for cab quotes, Call Driver and bus booking help. Call +91-9944197416, WhatsApp or email support@cabzii.com.",
+    seoKeywords: "contact cabzii, cabzii phone 9944197416, cab booking support"
   },
   {
     id: "site:faq",
@@ -108,10 +108,10 @@ export const STATIC_PAGE_SEO_LIST = [
     type: "site",
     typeLabel: "FAQ page",
     productName: "Cabzii FAQ",
-    seoTitle: "FAQ — Cab Booking, Airport Taxi & Outstation Cabs | Cabzii",
+    seoTitle: "FAQ — Cabs, Acting Driver & Bus Tickets | Cabzii",
     seoDescription:
-      "Answers about cab booking on cabzii.in — fares, airport pickup, outstation trips, acting drivers, payment and cancellation.",
-    seoKeywords: "cab booking faq, airport taxi faq, cabzii help"
+      "Answers about cab booking on cabzii.in — fares, airport pickup, outstation trips, acting drivers, bus tickets, payment and cancellation.",
+    seoKeywords: "cab booking faq, acting driver faq, bus booking faq, cabzii help"
   },
   {
     id: "site:locations",
@@ -121,7 +121,7 @@ export const STATIC_PAGE_SEO_LIST = [
     productName: "Service Locations",
     seoTitle: "Cab & Taxi Service Locations in South India | Cabzii",
     seoDescription:
-      "Cabzii service areas across Chennai, Madurai, Tirupati, Trichy, Coimbatore and Vellore. Book cabs online.",
+      "Cabzii service areas across Chennai, Madurai, Tirupati, Trichy, Coimbatore and Vellore. Book cabs, acting drivers and bus tickets online.",
     seoKeywords: "cab service locations, taxi near me South India, cabzii cities"
   },
   {
@@ -132,7 +132,7 @@ export const STATIC_PAGE_SEO_LIST = [
     productName: "Customer Reviews",
     seoTitle: "Customer Reviews & Ratings | Cabzii",
     seoDescription:
-      "Read verified Cabzii customer reviews for cab booking, airport taxi, outstation trips and acting drivers across South India.",
+      "Read verified Cabzii customer reviews for cab booking, airport taxi, outstation trips and acting drivers across South India. Write a review after your trip.",
     seoKeywords: "cabzii reviews, cab booking reviews, taxi service ratings"
   },
   {
@@ -159,6 +159,17 @@ export const STATIC_PAGE_SEO_LIST = [
       "Cabzii Chennai cab rental tariff — Swift Dzire from ₹1,200, Innova Crysta from ₹2,200, Tempo Traveller from ₹3,000, mini bus from ₹8,500. Extra km, extra hour and driver batta.",
     seoKeywords:
       "cab rental tariff chennai, tempo traveller rental chennai price, innova crysta rental chennai, mini bus rental chennai, cabzii tariff"
+  },
+  {
+    id: "site:buses",
+    path: "/buses",
+    type: "site",
+    typeLabel: "Bus booking",
+    productName: "Book Bus Tickets",
+    seoTitle: "Bus Tickets Online — AC Seater & Sleeper | Cabzii",
+    seoDescription:
+      "Search intercity bus tickets from Chennai and South India on Cabzii. Compare AC seater and sleeper, pick seats and boarding, then confirm. Fares shown before you pay.",
+    seoKeywords: "bus booking, bus tickets online, chennai bus, ac sleeper, cabzii buses"
   }
 ];
 

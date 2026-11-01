@@ -14,8 +14,7 @@ const STATUSES = [
 const SERVICES = [
   { id: "cab", label: "Cab" },
   { id: "driver", label: "Driver" },
-  { id: "bus", label: "Bus" },
-  { id: "tour", label: "Holiday" }
+  { id: "bus", label: "Bus" }
 ];
 
 export default function AdminQuoteLeads({ token }) {

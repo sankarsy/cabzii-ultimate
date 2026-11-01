@@ -32,7 +32,7 @@ const UNIQUE = {
 <p>Tolls, parking and driver batta treatment are listed in the fare breakdown before you pay. Do not assume they are always included.</p>
 
 <h2>Related pilgrimage travel</h2>
-<p>Same-intent searches (Tirupati taxi, Chennai Tirupati car rental, one-way darshan cab) stay on this URL. Temple packages with itinerary: <a href="/holidays?category=pilgrimage">pilgrimage packages</a>. Acting driver in your own car: <a href="/acting-driver/chennai">acting driver Chennai</a>.</p>
+<p>Same-intent searches (Tirupati taxi, Chennai Tirupati car rental, one-way darshan cab) stay on this URL. Acting driver in your own car: <a href="/acting-driver/chennai">acting driver Chennai</a>.</p>
 `,
 
   "chennai-to-pondicherry-cab": (route) => `
@@ -54,7 +54,7 @@ const UNIQUE = {
   "chennai-to-kanchipuram-cab": (route) => `
 <h2>Chennai to Kanchipuram cab</h2>
 <p>A short temple corridor: <strong>${route.distance}</strong>, typically <strong>${route.duration}</strong>. ${fareLine(route)} Same-day darshan at Kamakshi / Ekambareswarar is common; many riders still book one-way if they will stay overnight.</p>
-<p>Kanchipuram has no commercial passenger airport — visitors usually fly into MAA then take this cab. Round-trip wait: <a href="/services/outstation-cab/chennai">outstation cab Chennai</a>. Packages: <a href="/holidays?category=pilgrimage">pilgrimage holidays</a>.</p>
+<p>Kanchipuram has no commercial passenger airport — visitors usually fly into MAA then take this cab. Round-trip wait: <a href="/services/outstation-cab/chennai">outstation cab Chennai</a>.</p>
 `,
 
   "chennai-to-tiruvannamalai-cab": (route) => `
@@ -66,7 +66,7 @@ const UNIQUE = {
   "chennai-to-rameswaram-cab": (route) => `
 <h2>Chennai to Rameswaram pilgrimage cab</h2>
 <p>A long temple run: <strong>${route.distance}</strong>, typically <strong>${route.duration}</strong>, including the Pamban approach. ${fareLine(route)} Published outstation cars use a 250 km minimum plus extra km — the live quote is the number to trust, not a headline “from” figure alone.</p>
-<p>Many families split the journey via Trichy or Madurai. Shorter temple hop: <a href="/routes/madurai-to-rameswaram-cab">Madurai to Rameswaram</a>. Group vehicle: <a href="/services/tempo-traveller/chennai">Tempo Traveller</a>. Itineraries: <a href="/holidays?category=pilgrimage">pilgrimage packages</a>.</p>
+<p>Many families split the journey via Trichy or Madurai. Shorter temple hop: <a href="/routes/madurai-to-rameswaram-cab">Madurai to Rameswaram</a>. Group vehicle: <a href="/services/tempo-traveller/chennai">Tempo Traveller</a>.</p>
 `,
 
   "chennai-to-madurai-cab": (route) => `
@@ -126,7 +126,7 @@ const UNIQUE = {
   "chennai-to-palani-cab": (route) => `
 <h2>Chennai to Palani cab</h2>
 <p>Murugan temple corridor: <strong>${route.distance}</strong>, typically <strong>${route.duration}</strong>. ${fareLine(route)} Same-day return is long; many families stay overnight near the hill.</p>
-<p>Related pilgrimage: <a href="/routes/chennai-to-tirupati-cab">Chennai to Tirupati</a>, <a href="/holidays?category=pilgrimage">pilgrimage packages</a>. Round-trip wait: <a href="/services/outstation-cab/chennai">outstation cab Chennai</a>.</p>
+<p>Related temple cab: <a href="/chennai/outstation/chennai-to-tirupati">Chennai to Tirupati</a>. Round-trip wait: <a href="/services/outstation-cab/chennai">outstation cab Chennai</a>.</p>
 `,
 
   "chennai-to-chidambaram-cab": (route) => `

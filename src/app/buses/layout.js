@@ -1,12 +1,11 @@
 import { buildPageMetadata } from "../../lib/seo";
 
 export const metadata = buildPageMetadata({
-  title: "Bus Booking Online — AC Seater & Sleeper Tickets | Cabzii",
+  title: "Bus Tickets Online — AC Seater & Sleeper | Cabzii",
   description:
-    "Intercity bus tickets on Cabzii.in. This page is a booking tool, not a Cabzii SEO landing.",
+    "Search intercity bus tickets from Chennai and South India on Cabzii. Compare AC seater and sleeper, pick seats and boarding, then confirm. Fares shown before you pay.",
   path: "/buses",
-  noindex: true,
-  follow: true
+  keywords: ["bus booking", "bus tickets online", "chennai bus", "ac sleeper", "cabzii buses"]
 });
 
 export default function BusesLayout({ children }) {

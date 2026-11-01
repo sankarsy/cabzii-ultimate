@@ -10,7 +10,7 @@ export const ONBOARDING = {
   invalidName: "I didn't catch that. Share your name (at least 2 letters), or type Skip.",
   saving: "One moment — saving your details…",
   ready: (name) =>
-    `Perfect${name && name !== "Guest" ? `, ${firstName(name)}` : ""}! 🎉\n\nYou can ask me about cabs, airport taxis, outstation routes, acting drivers, or holiday packages. How can I help today?`
+    `Perfect${name && name !== "Guest" ? `, ${firstName(name)}` : ""}! 🎉\n\nYou can ask me about cabs, airport taxis, outstation routes, acting drivers, or bus tickets. How can I help today?`
 };
 
 function firstName(name) {

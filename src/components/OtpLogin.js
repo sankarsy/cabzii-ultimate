@@ -90,7 +90,7 @@ export default function OtpLogin({
       distanceKm: Number(trip.distanceKm) || 0,
       tripType: trip.tripType || trip.service || "",
       packageLabel: trip.packageLabel,
-      service: trip.service === "Call Driver" ? "driver" : trip.service === "Bus" ? "bus" : trip.service === "Holiday package" ? "tour" : "cab",
+      service: trip.service === "Call Driver" ? "driver" : trip.service === "Bus" ? "bus" : "cab",
       sourcePage: nextUrl,
       ctaLocation: "otp_login"
     });
@@ -241,7 +241,7 @@ export default function OtpLogin({
         body: JSON.stringify({
           mobile: mobileNumber,
           name: trip.name || "",
-          service: trip.service === "Call Driver" ? "driver" : trip.service === "Bus" ? "bus" : trip.service === "Holiday package" ? "tour" : "cab",
+          service: trip.service === "Call Driver" ? "driver" : trip.service === "Bus" ? "bus" : "cab",
           vehicleId: trip.vehicleId,
           vehicleName: trip.vehicleName,
           pickup: trip.pickup,

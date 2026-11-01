@@ -6,7 +6,7 @@ export default function manifest() {
     name: `${SITE_NAME} — Online Cab, Taxi & Driver Booking`,
     short_name: "Cabzii Cabs",
     description:
-      "Book cabs, taxis, airport transfers, outstation trips, acting drivers and tour packages across South India on cabzii.in.",
+      "Book cabs, taxis, airport transfers, outstation trips, acting drivers and bus tickets across South India on cabzii.in.",
     id: "/",
     start_url: "/?source=pwa",
     scope: "/",

@@ -3,18 +3,12 @@
 import Link from "next/link";
 
 export default function BookingForm({ selectedItem, itemType = "cab", onProceed, proceedHref }) {
-  const title =
-    itemType === "tour"
-      ? selectedItem?.name ?? "—"
-      : selectedItem?.name ?? selectedItem?.title ?? "—";
-  const provider =
-    itemType === "tour" ? selectedItem?.vendor ?? "—" : itemType === "driver" ? selectedItem?.vendor ?? "—" : selectedItem?.vendor ?? "—";
+  const title = selectedItem?.name ?? selectedItem?.title ?? "—";
+  const provider = selectedItem?.vendor ?? "—";
   const baseFare =
-    itemType === "tour"
-      ? Number(selectedItem?.price) || 0
-      : itemType === "driver"
-        ? Number(selectedItem?.pricing?.day) || Number(selectedItem?.pricing?.hourly) || 0
-        : Number(selectedItem?.price) || 0;
+    itemType === "driver"
+      ? Number(selectedItem?.pricing?.day) || Number(selectedItem?.pricing?.hourly) || 0
+      : Number(selectedItem?.price) || 0;
   const total = baseFare;
   const langLine =
     itemType === "driver" ? (selectedItem?.languages?.length ? selectedItem.languages.join(", ") : "—") : provider;
@@ -48,7 +42,7 @@ export default function BookingForm({ selectedItem, itemType = "cab", onProceed,
                   disabled
                   className="w-full cursor-not-allowed rounded-lg border border-slate-200 bg-slate-100 px-4 py-3 text-sm font-semibold text-slate-500"
                 >
-                  Load a cab, driver, or tour to continue
+                  Load a cab or driver to continue
                 </button>
               )}
             </form>
@@ -58,7 +52,7 @@ export default function BookingForm({ selectedItem, itemType = "cab", onProceed,
             <h3 className="text-xl font-bold text-slate-900">Booking Summary</h3>
             <div className="mt-4 space-y-2 text-sm text-slate-700">
               <div className="flex items-center justify-between">
-                <span>{itemType === "tour" ? "Tour Package" : itemType === "driver" ? "Driver" : "Cab Type"}</span>
+                <span>{itemType === "driver" ? "Driver" : "Cab Type"}</span>
                 <span className="max-w-[60%] text-right font-semibold">{title}</span>
               </div>
               <div className="flex items-center justify-between">

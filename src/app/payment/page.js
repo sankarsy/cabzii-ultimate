@@ -214,15 +214,11 @@ export default function PaymentPage({ searchParams }) {
       ? `/cabs/${itemId}`
       : type === "driver"
         ? "/call-driver"
-        : type === "tour" && (firstParam(searchParams?.slug) || itemId)
-          ? `/holidays/${firstParam(searchParams?.slug) || itemId}`
-          : type === "tour"
-            ? "/holidays"
-            : "/cabs";
+        : "/cabs";
 
-  const bookingType = type === "tour" ? "tour" : type === "driver" ? "driver" : type === "bus" ? "bus" : "cab";
+  const bookingType = type === "driver" ? "driver" : type === "bus" ? "bus" : "cab";
   const bookLabel =
-    type === "bus" ? "Book Bus" : type === "driver" ? "Book Call Driver" : type === "tour" ? "Book Package" : "Book Cab";
+    type === "bus" ? "Book Bus" : type === "driver" ? "Book Call Driver" : "Book Cab";
   const busSeats = firstParam(searchParams?.seats);
   const busOperator = firstParam(searchParams?.operator);
 

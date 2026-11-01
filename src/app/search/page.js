@@ -119,12 +119,12 @@ export default async function SearchPage({ searchParams }) {
         ) : (
           <>
             <h1 className="text-center text-2xl font-bold text-slate-900 sm:text-3xl">Search Cabzii</h1>
-            <p className="mt-2 text-center text-sm text-slate-600">Cabs · Buses · Call Driver · Holidays · Blogs</p>
+            <p className="mt-2 text-center text-sm text-slate-600">Cabs · Buses · Call Driver · Blog</p>
             <div className="mt-6">
               <SearchPageSearchBar initialQuery={rawQuery} />
             </div>
             <p className="mt-6 text-center text-sm text-slate-500">
-              Type a city, vehicle (Dzire, Ertiga, Innova), cab type, holiday destination or service.
+              Type a city, vehicle (Dzire, Ertiga, Innova), cab type, bus route or service.
             </p>
           </>
         )}

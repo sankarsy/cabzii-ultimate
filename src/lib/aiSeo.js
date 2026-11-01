@@ -287,8 +287,8 @@ Invoice-friendly corporate cab packages with Cabzii.
 ### Wedding travel
 Group travel options for wedding and family events.
 
-### Tour packages
-Combine cab hire with popular tour packages from Cabzii.
+### Bus tickets
+Book bus tickets alongside cabs and acting drivers on Cabzii.
 
 ### FAQs
 See FAQs on this page for fare, inclusions and booking steps.
@@ -446,7 +446,7 @@ Stay on this URL's intent only.`
             : `Write 900-1500 words Markdown SEO article for ${ctx.vehicle} rental in ${ctx.city}, ${ctx.state}.
 Price from ${ctx.price}. Seats: ${ctx.seats}. Brand: ${ctx.brand}. Category: ${ctx.category}.
 Start with ## ${ctx.vehicle} rental in ${ctx.city} (not #).
-Then use ## or ### for: Introduction, Vehicle Overview, Features, Pricing, Why Choose Cabzii, Popular Routes, Airport Transfer, Corporate Travel, Wedding Travel, Tour Packages, FAQs, Conclusion.
+Then use ## or ### for: Introduction, Vehicle Overview, Features, Pricing, Why Choose Cabzii, Popular Routes, Airport Transfer, Corporate Travel, Wedding Travel, FAQs, Conclusion.
 Use natural keywords. End with a CTA to book on Cabzii.`,
           ctx.pageKind === "ranking" ? { max_tokens: 3500 } : {}
         );

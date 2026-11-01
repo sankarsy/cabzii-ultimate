@@ -7,7 +7,7 @@ const LIVE_CITIES = MAIN_PAGE_CITY_SLUGS.map((slug) => cityBySlug(slug)).filter(
 export const metadata = buildPageMetadata({
   title: "Cab & Taxi Service Locations in South India | Cabzii",
   description:
-    "Cabzii service areas across Chennai, Madurai, Tirupati, Trichy, Coimbatore and Vellore. Book cabs, acting drivers and holiday packages online.",
+    "Cabzii service areas across Chennai, Madurai, Tirupati, Trichy, Coimbatore and Vellore. Book cabs, acting drivers and bus tickets online.",
   path: "/locations",
   keywords: [
     "cab service locations",

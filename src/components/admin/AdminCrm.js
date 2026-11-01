@@ -40,7 +40,6 @@ const PRODUCT_TYPES = [
   { id: "cab", label: "Cab" },
   { id: "bus", label: "Bus" },
   { id: "driver", label: "Driver" },
-  { id: "tour", label: "Holiday" },
   { id: "other", label: "Other" }
 ];
 
@@ -228,7 +227,7 @@ export default function AdminCrm({ token, isSuperAdmin }) {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="text-xl font-bold text-slate-900">CRM & lead pipeline</h2>
-          <p className="text-sm text-slate-600">Cabs, buses, drivers and holiday enquiries — from chat, website and bookings through to confirmation.</p>
+          <p className="text-sm text-slate-600">Cabs, buses and driver enquiries — from chat, website and bookings through to confirmation.</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <button
