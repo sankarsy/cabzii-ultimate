@@ -19,8 +19,6 @@ export function isCatalogDetailPage(pathname) {
   if (!pathname) return false;
   const cabDriver = pathname.match(/^\/(cabs|drivers)\/([^/]+)$/);
   if (cabDriver && !CATALOG_LIST_SEGMENTS.has(cabDriver[2])) return true;
-  if (/^\/tour-packages\/[^/]+$/.test(pathname)) return true;
-  if (/^\/holidays\/[^/]+$/.test(pathname)) return true;
   if (pathname.startsWith("/call-driver/book")) return true;
   if (pathname === "/call-drivers-chennai") return true;
   return false;

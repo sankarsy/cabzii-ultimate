@@ -9,7 +9,7 @@ import {
   parseExcelFile
 } from "../../lib/adminPackageExcel";
 
-const PACKAGE_TABS = new Set(["cabs", "drivers", "packages"]);
+const PACKAGE_TABS = new Set(["cabs", "drivers"]);
 
 export default function AdminPackageExcelToolbar({
   tabKey,
@@ -28,25 +28,19 @@ export default function AdminPackageExcelToolbar({
   if (!PACKAGE_TABS.has(tabKey)) return null;
 
   const authHeaders = token ? { authorization: `Bearer ${token}` } : {};
-  const apiBase = tabKey === "cabs" ? "/api/cabs" : tabKey === "drivers" ? "/api/drivers" : "/api/packages";
+  const apiBase = tabKey === "cabs" ? "/api/cabs" : "/api/drivers";
 
   async function fetchAllCatalog() {
     const headers = authHeaders;
-    const [cabsRes, driversRes, packagesRes] = await Promise.all([
+    const [cabsRes, driversRes] = await Promise.all([
       fetch("/api/cabs?limit=5000", { headers, cache: "no-store" }),
-      fetch("/api/drivers?admin=1&limit=5000", { headers, cache: "no-store" }),
-      fetch("/api/packages?limit=5000", { headers, cache: "no-store" })
+      fetch("/api/drivers?admin=1&limit=5000", { headers, cache: "no-store" })
     ]);
-    const [cabsJson, driversJson, packagesJson] = await Promise.all([
-      cabsRes.json(),
-      driversRes.json(),
-      packagesRes.json()
-    ]);
+    const [cabsJson, driversJson] = await Promise.all([cabsRes.json(), driversRes.json()]);
     const pick = (json) => (Array.isArray(json?.data) ? json.data : []);
     return {
       cabs: pick(cabsJson),
-      drivers: pick(driversJson),
-      packages: pick(packagesJson)
+      drivers: pick(driversJson)
     };
   }
 
@@ -79,7 +73,7 @@ export default function AdminPackageExcelToolbar({
       const all = await fetchAllCatalog();
       downloadAllPackagesExcel(all);
       setMessage(
-        `Downloaded all packages: ${all.cabs.length} cabs, ${all.drivers.length} drivers, ${all.packages.length} holiday packages.`
+        `Downloaded all packages: ${all.cabs.length} cabs, ${all.drivers.length} drivers.`
       );
     } catch (err) {
       setError(err.message || "Download failed");
@@ -98,7 +92,7 @@ export default function AdminPackageExcelToolbar({
     try {
       const parsed = await parseExcelFile(file);
       const hasMultiSheet =
-        (parsed.cabs?.length || 0) + (parsed.drivers?.length || 0) + (parsed.packages?.length || 0) > 0 &&
+        (parsed.cabs?.length || 0) + (parsed.drivers?.length || 0) > 0 &&
         parsed.sheetNames?.length > 1;
 
       let result;
@@ -114,9 +108,7 @@ export default function AdminPackageExcelToolbar({
             ? parsed.singleSheet
             : tabKey === "cabs"
               ? parsed.cabs
-              : tabKey === "drivers"
-                ? parsed.drivers
-                : parsed.packages;
+              : parsed.drivers;
 
         result = await importPackageRows({
           tabKey,
@@ -181,7 +173,7 @@ export default function AdminPackageExcelToolbar({
             onClick={handleDownloadAll}
             className={btn}
           >
-            {compact ? "All sheets" : "Download all (3 sheets)"}
+            {compact ? "All sheets" : "Download all (2 sheets)"}
           </button>
           {canEdit ? (
             <>

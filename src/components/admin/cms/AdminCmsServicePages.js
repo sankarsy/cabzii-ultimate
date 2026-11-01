@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ExternalLink, MapPin, Plus, RefreshCw, Search } from "lucide-react";
+import { ExternalLink, MapPin, Plus, RefreshCw, Search } from "../../icons/rscIcons";
 import { buildCatalogListUrl } from "../../../lib/adminCatalogConfig";
 import { isSeoScopeAirportCity, isSeoScopeCity } from "../../../config/seo-scope";
 import { useAdminCities } from "../../../lib/admin/useAdminCities";

@@ -72,7 +72,7 @@ export default function QuotePackageView({ quoteRef }) {
         </pre>
         <a
           href={pdfHref}
-          className="mt-5 inline-flex h-11 w-full max-w-xs items-center justify-center rounded-xl bg-[#0056D2] text-sm font-bold text-white hover:bg-[#0047b3]"
+          className="mt-5 inline-flex h-11 w-full max-w-xs items-center justify-center rounded-xl bg-[var(--cabzii-cta)] text-sm font-bold text-white hover:bg-[var(--cabzii-cta-hover)]"
         >
           Download PDF
         </a>

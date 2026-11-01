@@ -173,7 +173,7 @@ export default function PaymentBreakdown({
         </ul>
       ) : null}
 
-      <div className={`mt-4 rounded-xl bg-[#0056D2]/10 ${compact ? "p-3" : "p-4"}`}>
+      <div className={`mt-4 rounded-xl bg-[var(--cabzii-cta)]/10 ${compact ? "p-3" : "p-4"}`}>
         {Number(selection?.tripTotal) > 0 && Number(selection.tripTotal) > Number(total) ? (
           <dl className={`space-y-1 ${compact ? "text-[11px]" : "text-sm"} text-slate-700`}>
             <div className="flex items-center justify-between">
@@ -186,9 +186,9 @@ export default function PaymentBreakdown({
                 <dd className="font-semibold">− {inr(selection.couponDiscount)}</dd>
               </div>
             ) : null}
-            <div className="flex items-center justify-between border-t border-[#0056D2]/20 pt-2">
+            <div className="flex items-center justify-between border-t border-[var(--cabzii-cta)]/20 pt-2">
               <dt className="font-semibold text-slate-900">Pay now (50%)</dt>
-              <dd className={`font-bold text-[#0056D2] ${compact ? "text-base" : "text-xl"}`}>{inr(total)}</dd>
+              <dd className={`font-bold text-[var(--cabzii-cta)] ${compact ? "text-base" : "text-xl"}`}>{inr(total)}</dd>
             </div>
             <div className="flex items-center justify-between text-slate-600">
               <dt>Balance at pickup</dt>
@@ -199,7 +199,7 @@ export default function PaymentBreakdown({
           <>
             <div className="flex items-center justify-between">
               <span className="font-semibold text-slate-900">Total payable now</span>
-              <span className={`font-bold text-[#0056D2] ${compact ? "text-base" : "text-xl"}`}>{inr(total)}</span>
+              <span className={`font-bold text-[var(--cabzii-cta)] ${compact ? "text-base" : "text-xl"}`}>{inr(total)}</span>
             </div>
             {Number(selection?.couponDiscount) > 0 ? (
               <p className="mt-1 text-[10px] text-emerald-700">Coupon −{inr(selection.couponDiscount)}</p>
@@ -217,7 +217,7 @@ export default function PaymentBreakdown({
         <Link
           href={payHref}
           onClick={onProceed}
-          className={`mt-4 inline-flex w-full items-center justify-center rounded-xl bg-[#0056D2] font-bold text-white transition hover:bg-[#0047b3] ${
+          className={`mt-4 inline-flex w-full items-center justify-center rounded-xl bg-[var(--cabzii-cta)] font-bold text-white transition hover:bg-[var(--cabzii-cta-hover)] ${
             compact ? "px-3 py-2 text-xs" : "px-4 py-3 text-sm"
           }`}
         >

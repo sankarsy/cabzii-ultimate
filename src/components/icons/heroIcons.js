@@ -19,7 +19,7 @@ import {
   Star,
   Umbrella,
   UsersRound
-} from "lucide-react";
+} from "./rscIcons";
 
 function wrapLucide(Icon, defaultStroke = 1.5) {
   return function LucideIcon({ className = "h-5 w-5", strokeWidth = defaultStroke, ...props }) {
@@ -54,7 +54,7 @@ function DriverOutlineIcon(props) {
   );
 }
 
-/** Category tabs: Cabs, Hire a Driver, Buses, Holidays */
+/** Category tabs: Cabs, Hire a Driver, Buses */
 export const HERO_TAB_ICONS = {
   buses: wrapLucide(Bus, 1.6),
   holidays: wrapLucide(Palmtree, 1.6),

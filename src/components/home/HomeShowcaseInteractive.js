@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRef, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "../icons/rscIcons";
 
 function ScrollButton({ direction, onClick, label }) {
   const Icon = direction === "left" ? ChevronLeft : ChevronRight;

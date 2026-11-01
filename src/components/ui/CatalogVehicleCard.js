@@ -1,8 +1,11 @@
+"use client";
+
 import Link from "next/link";
 import CatalogCardImage from "../mmt/CatalogCardImage";
 import MmtCardPriceBlock from "../mmt/MmtCardPriceBlock";
 import VerifiedBadge from "./VerifiedBadge";
-import { ICON_SOFT_CLASS } from "../icons";
+
+const ICON_SOFT_CLASS = "text-slate-400";
 /**
  * Premium vertical vehicle/driver card — Uber/Ola-style layout.
  * Full-width image on top, content below, no side-squeeze on mobile.

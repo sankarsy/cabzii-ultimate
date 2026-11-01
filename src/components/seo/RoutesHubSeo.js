@@ -27,7 +27,7 @@ export default function RoutesHubSeo() {
           <li key={route.slug}>
             <Link
               href={routePublicPath(route.slug)}
-              className="block rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 hover:border-sky-300"
+              className="block rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 hover:border-[var(--cabzii-cta)]/40"
             >
               {formatRouteLabel(route)}
             </Link>

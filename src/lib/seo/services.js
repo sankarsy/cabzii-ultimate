@@ -81,14 +81,6 @@ export const SEO_SERVICES = [
     searchQuery: "hourly cab",
     priceFrom: 1200,
     highlights: ["4hr / 8hr local packages", "Ideal for errands & meetings", "Transparent extra hour rate"]
-  },
-  {
-    slug: "tour-packages",
-    name: "Holiday Packages",
-    primaryKeyword: "holiday packages",
-    searchQuery: "holiday package",
-    priceFrom: 6999,
-    highlights: ["Pilgrimage circuits", "Beach & hill getaways", "Tirupati, Kanchipuram & Rameswaram tours"]
   }
 ];
 

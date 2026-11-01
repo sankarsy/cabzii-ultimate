@@ -7,7 +7,6 @@ import { isRankingService } from "../seo/packageDoorways";
 const API_MAP = {
   cab: "cabs",
   driver: "drivers",
-  tour: "packages",
   blog: "blogs",
   service: "seoServices",
   route: "seoRoutes",

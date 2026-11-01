@@ -1,68 +1,20 @@
 /** Domestic taxi & pilgrimage focus — nav, hero, SEO, and chatbot copy. */
 export { DOMESTIC_OFFERS } from "./homeShowcase";
 export const DOMESTIC_TAGLINE =
-  "Premium taxi, airport transfer, outstation & temple tour packages across South India";
+  "Premium taxi, airport transfer, outstation and acting driver booking across South India";
 
 export const DOMESTIC_NAV_LINKS = [
   { href: "/cabs", label: "Book Cab" },
   { href: "/buses", label: "Bus tickets" },
   { href: "/chennai/airport-cab-booking", label: "Airport Taxi" },
-  { href: "/holidays?category=pilgrimage", label: "Temple Tours" },
-  { href: "/call-driver", label: "Call Driver" },
-  { href: "/holidays", label: "Tour Packages" }
+  { href: "/chennai/outstation/chennai-to-tirupati", label: "Chennai to Tirupati" },
+  { href: "/call-driver", label: "Call Driver" }
 ];
 
 /** Hero category tabs — domestic services only (no flights/hotels/trains/buses). */
 export const DOMESTIC_HERO_TABS = [
   { id: "cabs", label: "Cabs", iconKey: "car" },
-  { id: "holidays", label: "Temple Tours", iconKey: "holiday" },
   { id: "drivers", label: "Call Driver", iconKey: "driver" }
-];
-
-export const PILGRIMAGE_PACKAGES = [
-  {
-    name: "Tirupati Darshan",
-    slug: "tirupati",
-    href: "/tour-packages/tirupati-balaji-darshan-tirupati",
-    image: "/images/hero-banner.png",
-    fromPrice: "₹4,999",
-    tag: "Most booked"
-  },
-  {
-    name: "Rameswaram Temple",
-    slug: "rameswaram",
-    href: "/holidays?category=pilgrimage&q=rameswaram",
-    fromPrice: "₹5,499",
-    tag: "Popular"
-  },
-  {
-    name: "Madurai Temple Tour",
-    slug: "madurai",
-    href: "/holidays?category=pilgrimage&q=madurai",
-    fromPrice: "₹3,999",
-    tag: "Family favourite"
-  },
-  {
-    name: "Navagraha Temple Tour",
-    slug: "navagraha",
-    href: "/holidays?category=pilgrimage&q=navagraha",
-    fromPrice: "₹6,999",
-    tag: "Spiritual"
-  },
-  {
-    name: "South India Pilgrimage",
-    slug: "south-india",
-    href: "/holidays?category=pilgrimage",
-    fromPrice: "₹8,999",
-    tag: "Multi-city"
-  },
-  {
-    name: "Kashi Yatra Package",
-    slug: "kashi",
-    href: "/holidays?category=pilgrimage&q=kashi",
-    fromPrice: "₹12,999",
-    tag: "Premium"
-  }
 ];
 
 export const CRM_PIPELINE_STAGES = [
@@ -79,7 +31,7 @@ export const CHATBOT_QUICK_ACTIONS = [
   { label: "WhatsApp quote", type: "whatsapp", icon: "whatsapp" },
   { label: "Call now", type: "call", icon: "phone" },
   { label: "Book a cab", type: "message", text: "I want to book a cab" },
-  { label: "Tirupati package", type: "message", text: "Tirupati tour package fare" },
+  { label: "Chennai to Tirupati", type: "message", text: "Chennai to Tirupati cab fare" },
   { label: "Airport taxi", type: "message", text: "Chennai airport taxi fare" },
   { label: "Bangalore airport 12 hr", type: "message", text: "Bangalore Kempegowda airport pickup 12 hour cab package" },
   { label: "One way taxi", type: "message", text: "One way cab Chennai to Bangalore" }

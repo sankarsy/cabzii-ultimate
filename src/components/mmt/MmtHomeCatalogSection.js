@@ -1,5 +1,7 @@
+"use client";
+
 import Link from "next/link";
-import { ArrowLeftRight } from "lucide-react";
+import { ArrowLeftRight } from "../icons/rscIcons";
 import { CatalogGridSkeleton } from "../ui/Skeleton";
 
 export function MmtHomeCatalogScroll({ children }) {

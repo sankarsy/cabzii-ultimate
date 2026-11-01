@@ -2,40 +2,26 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Calendar, Check, ChevronRight, Fuel, Gauge, MapPin, Receipt } from "lucide-react";
 import { isLoggedIn } from "../../lib/auth";
-import { formatRating } from "../../lib/cabFare";
-import { cabTypeBucket } from "../../lib/cabListing";
 import { getCabVehicleName } from "../../lib/catalogDisplay";
 import { inferPassengerSeats } from "../../lib/cabSeats";
 import { formatMmtListingStamp } from "../../lib/emt/heroDates";
 import { formatInrCurrency } from "../../lib/formatInr";
-import { couponsForTrip } from "../../lib/paymentMethods";
 import { cabResultsHref } from "../../lib/mmtTrip";
 import { resolveCabImage } from "../../lib/vehicleImages";
-import { shortPlace } from "./useCabModifySearch";
-import { inputBaseClass } from "../../lib/typography";
+import { telUrl } from "../../lib/conversion";
+import { ORG_PHONE } from "../../lib/seo/constants";
+import OffersSheet from "../payment/OffersSheet";
 
 function reviewTripKind(trip) {
-  if (trip?.tripType === "outstation") {
-    return trip.roundTrip ? "Outstation Round Trip" : "Outstation One Way Trip";
-  }
-  if (trip?.tripType === "airport") return "Airport Transfer";
-  if (trip?.tripType === "hourly") return "Hourly Rental";
-  if (trip?.tripType === "local") return "Local Cab";
-  return "Cab booking";
+  if (trip?.tripType === "outstation") return trip.roundTrip ? "Outstation round trip" : "Outstation";
+  if (trip?.tripType === "airport") return "Airport";
+  if (trip?.tripType === "hourly") return "Hourly";
+  return "Local";
 }
 
-function InclusionRow({ icon: Icon, title, detail }) {
-  return (
-    <div className="flex gap-3 border-b border-slate-100 py-3 last:border-b-0">
-      <Icon className="mt-0.5 h-5 w-5 shrink-0 text-emerald-600" aria-hidden />
-      <div>
-        <p className="text-[14px] font-semibold text-slate-800">{title}</p>
-        {detail ? <p className="mt-0.5 text-[12px] text-slate-500">{detail}</p> : null}
-      </div>
-    </div>
-  );
+function fieldClass() {
+  return "w-full rounded-xl border border-slate-200 bg-white px-3.5 py-3 text-base text-slate-800 outline-none placeholder:text-slate-400 focus:border-[var(--cabzii-cta)] sm:text-sm";
 }
 
 export default function CabReviewBooking({
@@ -62,9 +48,8 @@ export default function CabReviewBooking({
   onPay,
   loginHref
 }) {
-  const [couponInput, setCouponInput] = useState("");
-  const [couponMsg, setCouponMsg] = useState("");
-  const [breakupOpen, setBreakupOpen] = useState(true);
+  const [offersOpen, setOffersOpen] = useState(false);
+  const [cabOpen, setCabOpen] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
 
   useEffect(() => {
@@ -76,338 +61,279 @@ export default function CabReviewBooking({
   }, [payMode, onPayMode]);
 
   const vehicleName = getCabVehicleName(cab);
-  const ratingText = formatRating(cab);
-  const typeLabel = String(cabTypeBucket(cab) || cab.type || "Cab").toUpperCase();
   const seats = inferPassengerSeats(cab);
-  const offers = couponsForTrip(trip);
   const km = Number(fare?.distanceKm || trip?.distanceKm) || 0;
   const perKm = Number(fare?.perKmRate) || Number(slab?.extraKm) || 0;
-  const includedKm = Number(slab?.includedKm) || 0;
-  const driverBatta = Number(fare?.driverBatta) || 0;
+  const includedKm = Number(slab?.includedKm) || km;
   const resultsHref = cabResultsHref(trip);
   const stamp = formatMmtListingStamp(trip.date, trip.time);
-  const fromLabel = shortPlace(trip.from) || pickup || "Pickup";
-  const toLabel = shortPlace(trip.to) || "Drop";
-  const advanceAmt = Math.round(netTotal * 0.5);
+  const pickupLabel = pickup || trip.from || "Pickup";
+  const dropLabel = trip.to || "";
+  const couponOff = Math.max(0, Number(fare.total) - Number(netTotal));
+  const kind = reviewTripKind(trip);
+  const kmLabel = includedKm > 0 ? String(includedKm) : km > 0 ? String(Math.round(km * 10) / 10) : "";
 
-  function applyCode(code) {
-    const normalized = String(code || "").trim().toUpperCase();
-    const match = offers.find((c) => c.code === normalized);
-    if (!match) {
-      setCouponMsg("This code does not apply to this trip.");
-      return;
-    }
-    onCoupon(match.code);
-    setCouponMsg(`${match.code} applied.`);
-    setCouponInput("");
-  }
-
-  const inclusions = [];
-  if (includedKm > 0) {
-    inclusions.push({
-      icon: Gauge,
-      title: `${Math.round(includedKm)} km included`,
-      detail: perKm > 0 ? `₹${perKm}/km applies beyond the included km` : null
-    });
-  } else if (fare?.usesDistance && km > 0) {
-    inclusions.push({
-      icon: Gauge,
-      title: `${Math.round(km)} km billed for this route`,
-      detail: perKm > 0 ? `₹${perKm}/km` : null
-    });
-  }
-  inclusions.push({
-    icon: Fuel,
-    title: "Fuel and driver service included",
-    detail: "Package fare covers fuel and the assigned driver"
-  });
-  inclusions.push({
-    icon: Receipt,
-    title: "Tolls, parking and GST extra",
-    detail: "Charged as incurred — not a fixed add-on on this quote"
-  });
+  const bookLabel = submitting ? "Processing…" : "Book";
 
   return (
-    <div className="min-h-screen bg-[#f4f5f7]">
-      <header className="cabzii-review-bar bg-[#0b1b3a]">
-        <div className="mx-auto flex w-full max-w-[var(--cabzii-content-max)] items-center justify-between px-4 py-3.5 sm:px-6">
-          <h1 className="text-[20px] font-semibold tracking-tight text-white sm:text-[22px]">Review booking</h1>
-          <Link href={resultsHref} className="text-[13px] font-semibold text-sky-300 hover:text-white">
-            Modify
-          </Link>
+    <div className="min-h-screen bg-[#f4f6fa] pb-[calc(5.75rem+env(safe-area-inset-bottom,0px))] lg:pb-8">
+      <header className="sticky top-0 z-30 border-b border-slate-200 bg-white pt-[env(safe-area-inset-top,0px)]">
+        <div className="mx-auto flex w-full max-w-5xl items-center justify-between px-4 py-3 sm:px-6">
+          <div className="flex min-w-0 items-center gap-3">
+            <Link
+              href={resultsHref}
+              className="flex h-9 w-9 items-center justify-center rounded-full text-slate-700 hover:bg-slate-100"
+              aria-label="Back to cabs"
+            >
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </Link>
+            <h1 className="text-[17px] font-extrabold tracking-tight text-slate-900">Review Booking</h1>
+          </div>
+          <a
+            href={telUrl(ORG_PHONE)}
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 text-[var(--cabzii-brand)] hover:bg-slate-50"
+            aria-label={`Call ${ORG_PHONE}`}
+          >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+              />
+            </svg>
+          </a>
         </div>
       </header>
 
-      <div className="section-shell grid items-start gap-5 py-5 pb-28 lg:grid-cols-[minmax(0,1fr)_22.5rem] lg:pb-5">
-        <div className="space-y-4">
-          <section className="overflow-hidden rounded-xl bg-[#e8f4ff] px-4 py-4 sm:px-5">
-            <p className="text-[13px] font-medium text-slate-600">{reviewTripKind(trip)}</p>
-            <div className="mt-2 flex flex-wrap items-start gap-6">
-              <div>
-                <p className="text-[18px] font-extrabold text-slate-900">{fromLabel}</p>
-                <p className="text-[12px] text-slate-500">{trip.from}</p>
+      <div className="mx-auto grid w-full max-w-5xl gap-4 px-4 py-5 sm:px-6 lg:grid-cols-2 lg:items-start">
+        <div className="space-y-3">
+          <section className="rounded-2xl border border-slate-200 bg-white p-4">
+            <p className="text-[13px] font-semibold text-slate-800">
+              {kind}
+              {kmLabel ? ` | ${kmLabel} km` : ""}
+            </p>
+            <div className="mt-3 space-y-3">
+              <div className="flex gap-2.5">
+                <span className="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full bg-emerald-500" aria-hidden />
+                <div className="min-w-0">
+                  <p className="text-[11px] font-medium text-slate-400">Pickup location</p>
+                  <input
+                    value={pickupLabel}
+                    onChange={(e) => onPickup(e.target.value)}
+                    className="mt-0.5 w-full bg-transparent text-base font-semibold leading-snug text-slate-800 outline-none sm:text-[13px]"
+                  />
+                </div>
               </div>
-              {trip.to ? (
-                <>
-                  <span className="mt-3 hidden text-slate-300 sm:inline" aria-hidden>
-                    ○ ——— ●
-                  </span>
-                  <div>
-                    <p className="text-[18px] font-extrabold text-slate-900">{toLabel}</p>
-                    <p className="text-[12px] text-slate-500">{trip.to}</p>
+              {dropLabel ? (
+                <div className="flex gap-2.5">
+                  <span className="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full bg-rose-500" aria-hidden />
+                  <div className="min-w-0">
+                    <p className="text-[11px] font-medium text-slate-400">Drop location</p>
+                    <p className="mt-0.5 text-[13px] font-semibold leading-snug text-slate-800">{dropLabel}</p>
                   </div>
-                </>
+                </div>
               ) : null}
             </div>
-            <p className="mt-3 flex items-center gap-1.5 text-[13px] text-slate-700">
-              <Calendar className="h-4 w-4 text-slate-500" aria-hidden />
-              {stamp}
-            </p>
           </section>
 
-          <section className="flex items-center justify-between gap-4 rounded-xl bg-white px-4 py-4 sm:px-5">
-            <div className="min-w-0">
-              <div className="flex flex-wrap items-center gap-2">
-                <h2 className="text-[17px] font-extrabold text-slate-900">{vehicleName}</h2>
-                {ratingText ? <span className="rounded bg-[#1a73e8] px-1.5 py-0.5 text-[11px] font-bold text-white">{ratingText}/5</span> : null}
+          <section className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3">
+            <div>
+              <p className="text-[11px] font-medium text-slate-400">Pickup Time</p>
+              <p className="mt-0.5 text-[14px] font-extrabold uppercase tracking-wide text-slate-900">{stamp || "NOW"}</p>
+            </div>
+            <svg className="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </section>
+
+          <section className="rounded-2xl border border-slate-200 bg-white">
+            <button
+              type="button"
+              onClick={() => setCabOpen((v) => !v)}
+              className="flex w-full items-center gap-3 px-4 py-3 text-left"
+            >
+              <img src={resolveCabImage(cab)} alt={vehicleName} className="h-12 w-[4.5rem] object-contain" />
+              <div className="min-w-0 flex-1">
+                <p className="text-[14px] font-extrabold text-slate-900">{vehicleName}</p>
+                <p className="text-[12px] text-slate-500">
+                  {seats} seats{kmLabel ? ` · ${kmLabel} km` : ""}
+                </p>
               </div>
-              <p className="mt-0.5 text-[13px] text-slate-500">or similar</p>
-              <p className="mt-2 text-[12px] font-semibold uppercase tracking-wide text-slate-600">
-                {typeLabel} · AC · {seats} Seats
-              </p>
-            </div>
-            <img
-              src={resolveCabImage(cab)}
-              alt={vehicleName}
-              className="h-[72px] w-[120px] shrink-0 object-contain"
-            />
-          </section>
-
-          <section className="rounded-xl bg-white px-4 py-2 sm:px-5">
-            <p className="pt-3 text-[11px] font-bold uppercase tracking-[0.14em] text-slate-400">Inclusions</p>
-            {inclusions.map((row) => (
-              <InclusionRow key={row.title} {...row} />
-            ))}
-            <Link href="/tariff" className="flex items-center justify-between py-3 text-[14px] font-semibold text-[#1a73e8]">
-              View policies
-              <ChevronRight className="h-4 w-4" />
-            </Link>
-          </section>
-
-          <section className="rounded-xl bg-white px-4 py-4 sm:px-5">
-            <h2 className="text-[16px] font-bold text-slate-900">Cancellation Policy</h2>
-            <p className="mt-2 text-[13px] leading-relaxed text-slate-600">
-              Time-based: more than 24 hours before pickup is a full refund after gateway deductions. 6–24 hours may attract
-              up to 25%. Under 6 hours or no-show may be up to 100%.
-            </p>
-            <Link href="/cancellation-policy" className="mt-2 inline-flex items-center gap-1 text-[13px] font-semibold text-[#1a73e8]">
-              View cancellation policy
-              <ChevronRight className="h-4 w-4" />
-            </Link>
-          </section>
-
-          <section className="rounded-xl bg-white px-4 py-5 sm:px-5">
-            <h2 className="text-[16px] font-bold text-slate-900">Traveller Details</h2>
-            <p className="mt-3 text-[11px] font-semibold uppercase tracking-wide text-slate-400">Pickup details</p>
-            <label className="mt-1 block">
-              <span className="sr-only">Pickup location</span>
-              <span className="relative">
-                <MapPin className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" aria-hidden />
-                <input
-                  value={pickup}
-                  onChange={(e) => onPickup(e.target.value)}
-                  className={`${inputBaseClass} pl-9`}
-                  placeholder="Enter pickup location"
-                />
-              </span>
-            </label>
-
-            <p className="mt-4 text-[11px] font-semibold uppercase tracking-wide text-slate-400">Traveller contact details</p>
-            <div className="mt-2 grid gap-3 sm:grid-cols-2">
-              <label className="block sm:col-span-2">
-                <span className="mb-1 block text-[10px] font-semibold uppercase tracking-wide text-slate-400">Full name</span>
-                <input value={name} onChange={(e) => onName(e.target.value)} autoComplete="name" className={inputBaseClass} placeholder="As on ID" />
-              </label>
-              <label className="block">
-                <span className="mb-1 block text-[10px] font-semibold uppercase tracking-wide text-slate-400">Mobile number</span>
-                <input
-                  value={phone}
-                  onChange={(e) => onPhone(e.target.value)}
-                  inputMode="numeric"
-                  autoComplete="tel"
-                  className={inputBaseClass}
-                  placeholder="10-digit mobile"
-                />
-              </label>
-              <label className="block">
-                <span className="mb-1 block text-[10px] font-semibold uppercase tracking-wide text-slate-400">Email ID</span>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => onEmail(e.target.value)}
-                  autoComplete="email"
-                  className={inputBaseClass}
-                  placeholder="name@email.com"
-                />
-              </label>
-            </div>
-            {error ? <p className="mt-3 text-sm text-rose-600">{error}</p> : null}
-            {!loggedIn && loginHref ? (
-              <p className="mt-3 text-[12px] text-slate-500">
-                Or{" "}
-                <Link href={loginHref} className="font-bold uppercase tracking-wide text-[#1a73e8]">
-                  Log into existing account
-                </Link>
-              </p>
+              <svg
+                className={`h-5 w-5 text-slate-400 transition ${cabOpen ? "rotate-180" : ""}`}
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+                aria-hidden
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            {cabOpen ? (
+              <ul className="space-y-1 border-t border-slate-100 px-4 py-3 text-[12px] text-slate-600">
+                {includedKm > 0 ? (
+                  <li>
+                    {includedKm} km included.
+                    {perKm > 0 ? ` After that ₹${Number(perKm).toFixed(0)}/km.` : ""}
+                  </li>
+                ) : null}
+                <li>Time-based cancellation — more than 24 hours before pickup is a full refund after gateway deductions.</li>
+                <li>Driver assigned after you confirm.</li>
+              </ul>
             ) : null}
-            <p className="mt-4 text-[12px] leading-relaxed text-slate-500">
-              By proceeding to book, I agree to Cabzii’s{" "}
-              <Link href="/terms-and-conditions" className="font-semibold text-[#1a73e8]">
-                Terms &amp; conditions
-              </Link>
-              ,{" "}
-              <Link href="/legal-declaration" className="font-semibold text-[#1a73e8]">
-                Legal declaration
-              </Link>{" "}
-              and{" "}
-              <Link href="/cancellation-policy" className="font-semibold text-[#1a73e8]">
-                Cancellation policy
-              </Link>
-              .
-            </p>
           </section>
         </div>
 
-        <aside className="space-y-4 lg:sticky lg:top-4">
-          <section className="rounded-xl bg-white p-4">
-            <h2 className="text-[15px] font-bold text-slate-900">Coupon &amp; Offers</h2>
-            <ul className="mt-3 space-y-2">
-              {offers.length ? (
-                offers.map((offer) => {
-                  const on = coupon === offer.code;
-                  return (
-                    <li key={offer.code}>
-                      <label className="flex cursor-pointer items-start gap-2.5 rounded-lg border border-slate-200 px-3 py-2.5">
-                        <input
-                          type="radio"
-                          name="coupon"
-                          checked={on}
-                          onChange={() => applyCode(offer.code)}
-                          className="mt-1 accent-[#1a73e8]"
-                        />
-                        <span>
-                          <span className="inline-flex items-center gap-1 text-[12px] font-extrabold text-emerald-700">
-                            <Check className="h-3.5 w-3.5" /> {offer.code}
-                          </span>
-                          <span className="mt-0.5 block text-[12px] text-slate-500">{offer.desc}</span>
-                        </span>
-                      </label>
-                    </li>
-                  );
-                })
-              ) : (
-                <li className="text-[12px] text-slate-500">No published coupon for this trip type.</li>
-              )}
-            </ul>
-            {coupon ? (
-              <button type="button" onClick={() => onCoupon("")} className="mt-2 text-[12px] font-semibold text-slate-500 hover:text-slate-800">
-                Remove coupon
-              </button>
+        <div className="space-y-3">
+          <section className="space-y-3 rounded-2xl border border-slate-200 bg-white p-4">
+            <button
+              type="button"
+              onClick={() => setOffersOpen(true)}
+              className={`${fieldClass()} flex items-center gap-3 text-left font-medium ${
+                coupon ? "text-emerald-700" : "text-slate-500"
+              }`}
+            >
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-50 text-slate-400">
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
+                  />
+                </svg>
+              </span>
+              <span className="min-w-0 flex-1">{coupon ? `${coupon} applied` : "Coupons and Offer"}</span>
+              <span className="text-slate-300">›</span>
+            </button>
+            <input
+              value={name}
+              onChange={(e) => onName(e.target.value)}
+              autoComplete="name"
+              className={fieldClass()}
+              placeholder="Name"
+            />
+            <input
+              value={phone}
+              onChange={(e) => onPhone(e.target.value)}
+              inputMode="numeric"
+              autoComplete="tel"
+              className={fieldClass()}
+              placeholder="Mobile number"
+            />
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => onEmail(e.target.value)}
+              autoComplete="email"
+              className={fieldClass()}
+              placeholder="Email (optional)"
+            />
+            <div className="flex items-center justify-between px-1 pt-1 text-[13px] text-slate-500">
+              <span>Payment Method</span>
+              <span className="inline-flex items-center gap-1.5 font-semibold text-emerald-700">
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"
+                  />
+                </svg>
+                By Cash
+              </span>
+            </div>
+            {error ? <p className="text-sm text-rose-600">{error}</p> : null}
+            {!loggedIn && loginHref ? (
+              <p className="text-[12px] text-slate-500">
+                You will sign in with OTP before payment.{" "}
+                <Link href={loginHref} className="font-semibold text-[var(--cabzii-cta)]">
+                  Login
+                </Link>
+              </p>
             ) : null}
-            <div className="mt-3 flex overflow-hidden rounded-lg border border-slate-200">
-              <input
-                value={couponInput}
-                onChange={(e) => setCouponInput(e.target.value)}
-                className="min-w-0 flex-1 px-3 py-2.5 text-[12px] font-semibold uppercase tracking-wide text-slate-700 outline-none"
-                placeholder="Enter a coupon"
-              />
+          </section>
+
+          <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+            <div className="space-y-2 bg-slate-50 px-4 py-4 text-[13px]">
+              <div className="flex justify-between text-slate-600">
+                <span>Estimated fare</span>
+                <span className="font-semibold text-slate-800">{formatInrCurrency(fare.total)}</span>
+              </div>
+              <div className="flex justify-between text-slate-600">
+                <span>Coupon &amp; Offer</span>
+                <span className={couponOff > 0 ? "font-semibold text-emerald-700" : "text-slate-400"}>
+                  {couponOff > 0 ? `−${formatInrCurrency(couponOff)}` : "—"}
+                </span>
+              </div>
+              <div className="flex justify-between text-[16px] font-extrabold text-slate-900">
+                <span>Total</span>
+                <span>{formatInrCurrency(netTotal)}</span>
+              </div>
+            </div>
+            {perKm > 0 ? (
+              <p className="flex items-center justify-between bg-[#eef6ff] px-4 py-2.5 text-[12px] text-sky-800">
+                <span className="inline-flex items-center gap-1.5">
+                  <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  Additional km fee
+                </span>
+                <span className="font-semibold">₹{Number(perKm).toFixed(0)}/km</span>
+              </p>
+            ) : null}
+            <div className="hidden p-3 lg:block">
+              <p className="mb-2 text-center text-[11px] text-slate-500">
+                Pay {formatInrCurrency(payable)} now (50% advance). Balance in cash at pickup.
+              </p>
               <button
                 type="button"
-                onClick={() => applyCode(couponInput)}
-                className="px-4 text-[12px] font-extrabold uppercase tracking-wide text-[#1a73e8]"
+                disabled={submitting}
+                onClick={onPay}
+                className="h-12 w-full rounded-xl bg-[var(--cabzii-cta)] text-[15px] font-extrabold text-white hover:bg-[var(--cabzii-cta-hover)] disabled:opacity-70"
               >
-                Apply
+                {bookLabel}
               </button>
             </div>
-            {couponMsg ? <p className="mt-2 text-[12px] text-slate-600">{couponMsg}</p> : null}
           </section>
-
-          <section className="rounded-xl bg-white p-4">
-            <h2 className="text-[15px] font-bold text-slate-900">Payment options</h2>
-            <p className="mt-1 text-[11px] text-slate-500">50% advance is required at booking. Balance at pickup, cash.</p>
-            <div className="mt-3 flex items-center justify-between gap-3 py-2">
-              <span className="flex items-center gap-2.5">
-                <input type="radio" name="payMode" checked readOnly className="accent-[#1a73e8]" aria-label="Pay 50% now" />
-                <span>
-                  <span className="block text-[14px] font-semibold text-slate-800">Pay 50% now</span>
-                  <span className="text-[12px] text-slate-500">Pay rest to the driver</span>
-                </span>
-              </span>
-              <span className="text-[14px] font-bold text-slate-900">{formatInrCurrency(advanceAmt)}</span>
-            </div>
-            <button
-              type="button"
-              disabled={submitting}
-              onClick={onPay}
-              className="mt-3 hidden h-12 w-full rounded-xl bg-[#1a73e8] text-[15px] font-extrabold uppercase tracking-wide text-white hover:bg-[#1565c0] disabled:opacity-70 lg:block"
-            >
-              {submitting ? "Processing…" : "Pay now"}
-            </button>
-            <button
-              type="button"
-              onClick={() => setBreakupOpen((v) => !v)}
-              className="mt-3 w-full text-center text-[13px] font-semibold text-[#1a73e8]"
-            >
-              {breakupOpen ? "Hide fare break up" : "Show fare break up"}
-            </button>
-            {breakupOpen ? (
-              <dl className="mt-2 space-y-1.5 border-t border-slate-100 pt-3 text-[13px]">
-                <div className="flex justify-between text-slate-600">
-                  <dt>Package fare</dt>
-                  <dd className="font-semibold text-slate-800">{formatInrCurrency(fare.total)}</dd>
-                </div>
-                {driverBatta > 0 ? (
-                  <div className="flex justify-between text-slate-500">
-                    <dt>Includes driver bata</dt>
-                    <dd>{formatInrCurrency(driverBatta)}</dd>
-                  </div>
-                ) : null}
-                {coupon ? (
-                  <div className="flex justify-between text-emerald-700">
-                    <dt>{coupon}</dt>
-                    <dd className="font-semibold">−{formatInrCurrency(Math.max(0, fare.total - netTotal))}</dd>
-                  </div>
-                ) : null}
-                <div className="flex justify-between text-slate-600">
-                  <dt>Tolls, parking &amp; GST</dt>
-                  <dd className="font-medium">Extra if applicable</dd>
-                </div>
-                <div className="flex justify-between border-t border-slate-100 pt-2 text-[14px] font-bold text-slate-900">
-                  <dt>Pay now</dt>
-                  <dd>{formatInrCurrency(payable)}</dd>
-                </div>
-              </dl>
-            ) : null}
-          </section>
-        </aside>
+        </div>
       </div>
 
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] lg:hidden">
-        <div className="mx-auto flex max-w-lg items-center gap-3">
-          <div className="min-w-0">
-            <p className="text-[16px] font-extrabold text-slate-900">{formatInrCurrency(payable)}</p>
-            <p className="text-[11px] text-slate-500">50% now · rest at pickup</p>
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-2.5 shadow-[0_-8px_24px_rgba(15,23,42,0.08)] lg:hidden">
+        <div className="mx-auto flex w-full max-w-5xl items-center gap-3">
+          <div className="min-w-0 flex-1">
+            <p className="text-[15px] font-extrabold leading-none text-slate-900">{formatInrCurrency(netTotal)}</p>
+            <p className="mt-1 text-[11px] text-slate-500">
+              Pay {formatInrCurrency(payable)} now · 50% advance
+            </p>
           </div>
           <button
             type="button"
             disabled={submitting}
             onClick={onPay}
-            className="h-11 flex-1 rounded-xl bg-[#1a73e8] text-[14px] font-extrabold uppercase tracking-wide text-white disabled:opacity-70"
+            className="h-12 min-w-[8.5rem] rounded-xl bg-[var(--cabzii-cta)] px-6 text-[15px] font-extrabold text-white hover:bg-[var(--cabzii-cta-hover)] disabled:opacity-70"
           >
-            {submitting ? "Processing…" : "Pay now"}
+            {bookLabel}
           </button>
         </div>
       </div>
+
+      <OffersSheet
+        open={offersOpen}
+        onClose={() => setOffersOpen(false)}
+        appliedCode={coupon}
+        trip={trip}
+        loginHref={loginHref || "/login"}
+        onApplyCoupon={(code) => {
+          onCoupon(code);
+          setOffersOpen(false);
+        }}
+      />
     </div>
   );
 }

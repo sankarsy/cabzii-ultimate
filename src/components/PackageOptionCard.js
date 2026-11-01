@@ -1,6 +1,6 @@
 "use client";
 
-import { Sparkles } from "lucide-react";
+import { Sparkles } from "./icons/rscIcons";
 import { formatInrCurrency } from "../lib/formatInr";
 import { APPROX_PRICE_LABEL } from "../lib/approxPrice";
 import { ClockIcon, ICON_SOFT_CLASS, RoadIcon, TwoWayIcon } from "./icons";
@@ -44,7 +44,7 @@ export default function PackageOptionCard({ pkg, selected, onSelect, compact = f
       </span>
 
       <p
-        className={`shrink-0 font-extrabold leading-none text-[#0056D2] ${
+        className={`shrink-0 font-extrabold leading-none text-[var(--cabzii-cta)] ${
           compact ? "mt-1 text-sm" : "mt-1.5 text-base sm:text-lg"
         }`}
       >
@@ -72,7 +72,7 @@ export default function PackageOptionCard({ pkg, selected, onSelect, compact = f
       <span
         className={`mx-auto flex shrink-0 items-center justify-center rounded-full border-2 ${
           compact ? "mt-1.5 h-3 w-3" : "mt-2 h-4 w-4"
-        } ${selected ? "border-[#0056D2] bg-[#0056D2]" : "border-slate-300 bg-white"}`}
+        } ${selected ? "border-[var(--cabzii-cta)] bg-[var(--cabzii-cta)]" : "border-slate-300 bg-white"}`}
         aria-hidden
       >
         {selected ? <span className={`rounded-full bg-white ${compact ? "h-1 w-1" : "h-1.5 w-1.5"}`} /> : null}

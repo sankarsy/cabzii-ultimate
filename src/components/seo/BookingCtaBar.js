@@ -41,7 +41,7 @@ export default function BookingCtaBar({
     >
       <Link
         href={bookHref}
-        className={`${btn} cabzii-btn-primary min-w-0`}
+        className={`${btn} cabzii-btn-cta min-w-0`}
         onClick={() => trackEvent("quote_request", leadParams)}
       >
         <span className="truncate">{bookLabel}</span>

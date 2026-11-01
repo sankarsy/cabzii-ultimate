@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Phone, X } from "lucide-react";
+import { Phone, X } from "../icons/rscIcons";
 import WhatsAppIcon from "../WhatsAppIcon";
 import { useSiteSettings } from "../SiteSettingsProvider";
 import { telUrl, whatsappBookingUrl } from "../../lib/conversion";

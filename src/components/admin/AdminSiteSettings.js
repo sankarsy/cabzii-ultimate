@@ -12,7 +12,6 @@ const SECTIONS = [
   { id: "heroStats", label: "Hero stats (counters)" },
   { id: "whyChooseUs", label: "Why Cabzii section" },
   { id: "homeSections", label: "Homepage sections" },
-  { id: "holidayCategories", label: "Explore by category photos" },
   { id: "whatsapp", label: "WhatsApp button" },
   { id: "callDriver", label: "Call Driver tariff" }
 ];

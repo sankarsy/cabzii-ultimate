@@ -1,3 +1,5 @@
+"use client";
+
 import EmtWhyChooseUs from "../emt/EmtWhyChooseUs";
 import MmtCabResultCard from "../mmt/MmtCabResultCard";
 import MmtHomeCatalogSection, { MmtHomeCatalogScroll, MmtHomeCatalogScrollItem } from "../mmt/MmtHomeCatalogSection";

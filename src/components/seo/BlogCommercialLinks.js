@@ -24,7 +24,6 @@ export default function BlogCommercialLinks({ title = "", slug = "", excerpt = "
     : [
         { href: "/cabs", label: "Browse all cabs" },
         { href: "/call-driver", label: "Call Driver" },
-        { href: "/holidays", label: "Holiday packages" },
         { href: "/acting-driver", label: "Acting driver cities" }
       ];
 
@@ -41,7 +40,7 @@ export default function BlogCommercialLinks({ title = "", slug = "", excerpt = "
           <Link
             key={item.href}
             href={item.href}
-            className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-800 hover:bg-slate-50 first:border-transparent first:bg-[#0056D2] first:text-white first:hover:bg-[#0047b3]"
+            className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-800 hover:bg-slate-50 first:border-transparent first:bg-[var(--cabzii-cta)] first:text-white first:hover:bg-[var(--cabzii-cta-hover)]"
           >
             {item.label}
           </Link>

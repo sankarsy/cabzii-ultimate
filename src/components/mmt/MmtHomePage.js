@@ -1,8 +1,11 @@
 "use client";
 
 import { Suspense, useEffect, useRef } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import EmtHeroSearch from "../emt/EmtHeroSearch";
+import SocialProofTicker from "../conversion/SocialProofTicker";
+import TrustStrip from "../ui/TrustStrip";
+import HomeBelowFold from "../home/HomeBelowFold";
 import MmtLayout from "./MmtLayout";
 import { HeroSearchProvider, useHeroSearch } from "../emt/HeroSearchContext";
 import HeroTabUrlSync from "../emt/HeroTabUrlSync";
@@ -11,9 +14,10 @@ import { isValidDriverTripSearch, parseDriverTripSearchParams } from "../../lib/
 import { isValidTripSearch, parseTripSearchParams } from "../../lib/mmtTrip";
 import { resolveProductTab } from "../../lib/emt/productNav";
 
-function HomeProviders({ displayCity, children }) {
+function HomeProviders({ displayCity, belowFold }) {
   const searchParams = useSearchParams();
-  const defaultTab = resolveProductTab(searchParams.get("tab"));
+  const requestedTab = resolveProductTab(searchParams.get("tab"));
+  const defaultTab = requestedTab === "drivers" ? "cabs" : requestedTab;
 
   return (
     <HeroSearchProvider defaultTab={defaultTab}>
@@ -22,15 +26,32 @@ function HomeProviders({ displayCity, children }) {
         <Suspense fallback={<EmtHeroSearch defaultCity={displayCity} initialCabTrip={null} initialDriverTrip={null} />}>
           <HeroFromUrl displayCity={displayCity} />
         </Suspense>
-        {children}
+        <SocialProofTicker />
+        <TrustStrip />
+        {belowFold}
       </MmtLayout>
     </HeroSearchProvider>
   );
 }
 
-export default function MmtHomePage({ children }) {
+export default function MmtHomePage({
+  cabs,
+  showcase,
+  blogs,
+  callDriverServices,
+  siteSettings
+}) {
   const { city: selectedCity } = useSelectedCity();
   const displayCity = selectedCity || "Chennai";
+  const belowFold = (
+    <HomeBelowFold
+      cabs={cabs}
+      showcase={showcase}
+      blogs={blogs}
+      callDriverServices={callDriverServices}
+      siteSettings={siteSettings}
+    />
+  );
 
   return (
     <Suspense
@@ -38,18 +59,21 @@ export default function MmtHomePage({ children }) {
         <HeroSearchProvider defaultTab="cabs">
           <MmtLayout>
             <EmtHeroSearch defaultCity={displayCity} initialCabTrip={null} initialDriverTrip={null} />
-            {children}
+            <SocialProofTicker />
+            <TrustStrip />
+            {belowFold}
           </MmtLayout>
         </HeroSearchProvider>
       }
     >
-      <HomeProviders displayCity={displayCity}>{children}</HomeProviders>
+      <HomeProviders displayCity={displayCity} belowFold={belowFold} />
     </Suspense>
   );
 }
 
 function ApplyLandingTab() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const hero = useHeroSearch();
   const applied = useRef(false);
 
@@ -57,8 +81,12 @@ function ApplyLandingTab() {
     if (applied.current) return;
     applied.current = true;
     const tab = resolveProductTab(searchParams.get("tab"));
+    if (tab === "drivers") {
+      router.replace("/call-driver");
+      return;
+    }
     if (tab !== "cabs") hero?.setActiveTab?.(tab);
-  }, [searchParams, hero]);
+  }, [searchParams, hero, router]);
 
   return null;
 }

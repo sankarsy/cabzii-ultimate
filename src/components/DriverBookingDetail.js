@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Star } from "lucide-react";
+import { Star } from "./icons/rscIcons";
 import { resolveMediaUrl } from "../lib/media";
 import PackageOptionCard from "./PackageOptionCard";
 import AdditionalChargesGrid from "./AdditionalChargesGrid";
@@ -167,7 +167,7 @@ function ServiceToggle({ serviceTab, setServiceTab }) {
         onClick={() => setServiceTab("local")}
         className={`inline-flex items-center gap-1 rounded-full px-4 py-1.5 text-xs font-semibold transition ${
           serviceTab === "local"
-            ? "bg-[#0056D2] text-white shadow-sm"
+            ? "bg-[var(--cabzii-cta)] text-white shadow-sm"
             : "text-slate-600 hover:text-slate-900"
         }`}
       >
@@ -179,7 +179,7 @@ function ServiceToggle({ serviceTab, setServiceTab }) {
         onClick={() => setServiceTab("outstation")}
         className={`inline-flex items-center gap-1 rounded-full px-4 py-1.5 text-xs font-semibold transition ${
           serviceTab === "outstation"
-            ? "bg-[#0056D2] text-white shadow-sm"
+            ? "bg-[var(--cabzii-cta)] text-white shadow-sm"
             : "text-slate-600 hover:text-slate-900"
         }`}
       >

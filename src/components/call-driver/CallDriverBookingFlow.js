@@ -12,13 +12,14 @@ import {
   inclusiveCalendarDays,
   todayISODate
 } from "../../lib/callDriver";
-import { authHeaders, buildLoginHref, getToken, isLoggedIn } from "../../lib/auth";
+import { authHeaders, buildLoginHref, getToken, getUser, isLoggedIn, normalizeMobileInput, sanitizeMobileInput } from "../../lib/auth";
 import { loadCheckoutDraft, saveCheckoutDraft } from "../../lib/checkoutStorage";
 import { upsertEnquiry } from "../../lib/enquiryCapture";
 import { formatInrCurrency } from "../../lib/formatInr";
 import { inputBaseClass, typo } from "../../lib/typography";
 import { SEARCH_FIELD_ICONS, SEARCH_FIELD_ICON_CHIPS } from "../icons/heroIcons";
 import { NativeDateField, NativeTimeField } from "../ui/NativeDateTimeField";
+import { formatEmtDate, formatTime12 } from "../../lib/emt/heroDates";
 
 const inputCls = `${inputBaseClass} max-sm:min-h-12`;
 const areaCls = `${inputBaseClass} h-auto min-h-[4.5rem] py-2.5`;
@@ -38,7 +39,6 @@ const SERVICE_HINTS = {
   corporate: "Office and event drivers · quoted from your schedule",
   valet: "Approx. from ₹600 / driver · 5 hrs min · 1 supervisor per 10 drivers"
 };
-
 function Field({ label, children, className = "", hint = "" }) {
   return (
     <label className={`block ${className}`}>
@@ -46,6 +46,29 @@ function Field({ label, children, className = "", hint = "" }) {
       <div className="mt-1.5">{children}</div>
       {hint ? <p className="mt-1 text-[11px] leading-snug text-slate-500">{hint}</p> : null}
     </label>
+  );
+}
+
+function Section({ title, hint, children }) {
+  return (
+    <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+      {title ? (
+        <div className="mb-4">
+          <h2 className="text-[15px] font-extrabold tracking-tight text-slate-900">{title}</h2>
+          {hint ? <p className="mt-0.5 text-xs text-slate-500">{hint}</p> : null}
+        </div>
+      ) : null}
+      <div className="space-y-4">{children}</div>
+    </section>
+  );
+}
+
+function DateTimeBox({ label, children }) {
+  return (
+    <div className="relative overflow-hidden rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 focus-within:border-[var(--cabzii-brand)] focus-within:ring-2 focus-within:ring-blue-100/80 [&_input[type=date]]:text-transparent [&_input[type=time]]:text-transparent">
+      <p className={typo.label}>{label}</p>
+      <div className="relative mt-0.5 min-h-7">{children}</div>
+    </div>
   );
 }
 
@@ -65,18 +88,76 @@ function Chip({ selected, onClick, children }) {
   );
 }
 
+function ServiceRail({ serviceId, onSelect, layout = "side" }) {
+  if (layout === "tiles") {
+    return (
+      <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-6 lg:hidden">
+        {CALL_DRIVER_SERVICES.map((item) => {
+          const selected = item.id === serviceId;
+          return (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => onSelect(item.id)}
+              className={`cabzii-tap flex min-h-[3.4rem] flex-col items-center justify-center rounded-xl border px-1 py-2 text-center transition ${
+                selected
+                  ? "border-[var(--cabzii-brand)] bg-[#e8f4ff] text-slate-900"
+                  : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
+              }`}
+            >
+              <span className="text-[12px] font-bold leading-tight">{item.shortTitle}</span>
+            </button>
+          );
+        })}
+      </div>
+    );
+  }
+  return (
+    <nav className="overflow-hidden rounded-xl bg-white" aria-label="Call Driver services">
+      <p className="border-b border-slate-100 px-3.5 py-3 text-[11px] font-bold uppercase tracking-wide text-slate-500">
+        Service
+      </p>
+      <ul>
+        {CALL_DRIVER_SERVICES.map((item) => {
+          const selected = item.id === serviceId;
+          return (
+            <li key={item.id}>
+              <button
+                type="button"
+                onClick={() => onSelect(item.id)}
+                className={`cabzii-tap flex w-full items-center gap-2.5 border-l-[3px] px-3.5 py-3 text-left text-sm font-bold transition ${
+                  selected
+                    ? "border-[var(--cabzii-brand)] bg-[#e8f4ff] text-[var(--cabzii-brand)]"
+                    : "border-transparent text-slate-600 hover:bg-slate-50"
+                }`}
+              >
+                {item.shortTitle}
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+    </nav>
+  );
+}
+
 function ChoiceCard({ selected, onClick, title, subtitle }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`cabzii-tap rounded-2xl border p-3.5 text-left transition ${
+      className={`cabzii-tap relative rounded-xl border p-3.5 text-left transition ${
         selected
-          ? "border-[var(--cabzii-brand)] bg-blue-50/70 shadow-sm ring-1 ring-[var(--cabzii-brand)]"
+          ? "border-[var(--cabzii-cta)] bg-orange-50 shadow-sm ring-1 ring-[var(--cabzii-cta)]"
           : "border-slate-200 bg-white hover:border-slate-300"
       }`}
     >
-      <span className="block text-sm font-bold text-slate-900">{title}</span>
+      {selected ? (
+        <span className="absolute right-2.5 top-2.5 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--cabzii-brand)] text-[11px] font-black text-white">
+          ✓
+        </span>
+      ) : null}
+      <span className="block pr-6 text-sm font-bold text-slate-900">{title}</span>
       <span className="mt-0.5 block text-[11px] leading-snug text-slate-500 sm:text-xs">{subtitle}</span>
     </button>
   );
@@ -85,6 +166,9 @@ function ChoiceCard({ selected, onClick, title, subtitle }) {
 function emptyForm(serviceId) {
   const today = todayISODate();
   return {
+    customerName: "",
+    phone: "",
+    email: "",
     pickup: "",
     drop: "",
     date: today,
@@ -119,17 +203,39 @@ function lineAmountLabel(line) {
   return formatInrCurrency(line?.amount || 0);
 }
 
+function formatBookingDate(iso) {
+  return formatEmtDate(iso) || iso || "";
+}
+
+function SummaryRow({ label, value }) {
+  if (!value) return null;
+  return (
+    <div className="flex justify-between gap-3 py-1.5 text-sm">
+      <span className="shrink-0 text-slate-500">{label}</span>
+      <span className="max-w-[65%] text-right font-semibold leading-snug text-slate-900">{value}</span>
+    </div>
+  );
+}
+
 function FareBreakdown({ quote, serviceId }) {
   if (!quote) {
-    return <p className="text-sm text-slate-500">Enter trip details to see the fare.</p>;
+    return (
+      <div className="py-2">
+        <p className="text-sm font-bold text-slate-900">Estimated fare</p>
+        <p className="mt-1 text-sm leading-relaxed text-slate-500">
+          Add pickup, drop, date and hours, then tap See fare.
+        </p>
+      </div>
+    );
   }
   if (quote.quoteOnly) {
-    return <p className="text-sm font-semibold text-slate-800">{quote.quoteMessage}</p>;
+    return <p className="text-sm font-semibold leading-relaxed text-slate-800">{quote.quoteMessage}</p>;
   }
   return (
     <>
       <p className={typo.label}>Estimated fare</p>
       <p className="mt-1 text-3xl font-extrabold tracking-tight text-slate-900">{formatInrCurrency(quote.total)}</p>
+      <p className="mt-0.5 text-[11px] font-semibold text-slate-500">50% advance to confirm</p>
       <ul className="mt-3 divide-y divide-slate-100 text-sm text-slate-600">
         {(quote.lines || []).map((line) => (
           <li key={line.label} className="flex justify-between gap-3 py-1.5">
@@ -156,7 +262,7 @@ function FareBreakdown({ quote, serviceId }) {
 export default function CallDriverBookingFlow() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const serviceId = searchParams.get("service") || "";
+  const serviceId = searchParams.get("service") || "local";
   const service = callDriverServiceById(serviceId);
   const [step, setStep] = useState(1);
   const [form, setForm] = useState(() => emptyForm(serviceId));
@@ -174,6 +280,7 @@ export default function CallDriverBookingFlow() {
     const date = searchParams.get("date") || draft.date || todayISODate();
     const pickupTime =
       searchParams.get("time") || searchParams.get("pickupTime") || draft.pickupTime || draft.time || "09:00";
+    const user = getUser();
     const next = emptyForm(serviceId);
     setForm({
       ...next,
@@ -181,7 +288,10 @@ export default function CallDriverBookingFlow() {
       drop,
       date,
       pickupTime,
-      returnDate: date
+      returnDate: date,
+      customerName: draft.customerName || user?.name || "",
+      phone: draft.phone || user?.mobileNumber || "",
+      email: draft.email || user?.email || ""
     });
     setQuote(null);
     setLiveQuote(null);
@@ -234,7 +344,7 @@ export default function CallDriverBookingFlow() {
         schoolName: form.schoolName,
         schoolShift: form.schoolShift,
         workingDays: Number(form.workingDays) || undefined,
-        parentContact: form.parentContact,
+        parentContact: form.phone,
         notes: form.requirement || form.notes
       };
     }
@@ -242,7 +352,7 @@ export default function CallDriverBookingFlow() {
       return {
         ...base,
         companyName: form.companyName,
-        contactPerson: form.contactPerson,
+        contactPerson: form.customerName,
         driversRequired: Number(form.driversRequired) || undefined,
         workingHours: form.workingHours,
         days: Number(form.days) || undefined,
@@ -376,23 +486,24 @@ export default function CallDriverBookingFlow() {
   }
 
   function validateStep1() {
+    if (!form.customerName.trim()) return "Enter your name.";
+    if (!normalizeMobileInput(form.phone)) return "Enter a valid 10-digit mobile number.";
     if (!form.date) return "Select a date.";
     if (!form.pickupTime) return "Select pickup time.";
     if (serviceId === "valet") {
       if (!form.eventLocation.trim()) return "Enter the event or location.";
       if (!form.driversRequired || Number(form.driversRequired) < 1) return "Enter number of drivers.";
+      if (Number(form.hours) < 5) return "Valet parking has a 5-hour minimum.";
       return "";
     }
     if (serviceId === "corporate") {
       if (!form.companyName.trim()) return "Enter company name.";
-      if (!form.contactPerson.trim()) return "Enter contact person.";
       if (!form.pickup.trim()) return "Enter pickup location.";
       return "";
     }
     if (serviceId === "school") {
       if (!form.pickup.trim()) return "Enter pickup location.";
       if (!form.schoolName.trim()) return "Enter school location.";
-      if (!form.parentContact.trim()) return "Enter parent contact.";
       return "";
     }
     if (!form.pickup.trim()) return "Enter pickup location.";
@@ -426,9 +537,9 @@ export default function CallDriverBookingFlow() {
   }
 
   function captureDriverEnquiry() {
-    const phone = form.parentContact || form.companyPhone || "";
+    const phone = normalizeMobileInput(form.phone) || form.parentContact || form.companyPhone || "";
     return upsertEnquiry({
-      name: form.contactPerson || form.companyName || "",
+      name: form.customerName || form.contactPerson || form.companyName || "",
       phone,
       pickup: pickupLabel,
       drop: dropLabel || form.schoolName || "",
@@ -454,7 +565,10 @@ export default function CallDriverBookingFlow() {
       vehicleName: vehicle,
       total: String(total),
       packageLine: vehicle,
-      serviceTripType: serviceId
+      serviceTripType: serviceId,
+      customerName: form.customerName.trim(),
+      phone: normalizeMobileInput(form.phone),
+      email: form.email.trim()
     });
     return new URLSearchParams({
       type: "driver",
@@ -467,7 +581,10 @@ export default function CallDriverBookingFlow() {
       total: String(total),
       package: vehicle,
       vehicle,
-      callDriver: "1"
+      callDriver: "1",
+      passengerName: form.customerName.trim(),
+      phone: normalizeMobileInput(form.phone),
+      email: form.email.trim()
     });
   }
 
@@ -496,8 +613,8 @@ export default function CallDriverBookingFlow() {
         method: "POST",
         headers: authHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify({
-          customerName: form.contactPerson || form.companyName || "Cabzii customer",
-          phone: form.parentContact || form.companyPhone || undefined,
+          customerName: form.customerName.trim() || form.contactPerson || form.companyName || "Cabzii customer",
+          phone: normalizeMobileInput(form.phone) || form.parentContact || form.companyPhone || undefined,
           type: "driver",
           pickup: pickupLabel,
           drop: dropLabel || form.schoolName || "",
@@ -542,62 +659,58 @@ export default function CallDriverBookingFlow() {
         : "See fare";
 
   return (
-    <div className="bg-slate-50 pb-28 sm:pb-10">
-      <div className="section-shell py-4 sm:py-8">
-        <div className="mx-auto w-full max-w-5xl">
-          <Link href="/call-driver" className="text-[12px] font-semibold text-[var(--cabzii-brand)]">
-            ← All Call Driver services
-          </Link>
-
-          <div className="mt-3 flex flex-wrap items-end justify-between gap-3">
-            <div className="min-w-0">
-              <p className={typo.eyebrow}>Call Driver · your car</p>
-              <h1 className="mt-1 text-[1.4rem] font-extrabold leading-tight tracking-tight text-slate-900 sm:text-2xl">
-                {service.title}
-              </h1>
-              <p className="mt-1 max-w-2xl text-sm text-slate-600">{SERVICE_HINTS[serviceId] || service.blurb}</p>
-            </div>
+    <div className="bg-[#f4f5f7] pb-28 lg:pb-10">
+      <header className="border-b border-slate-200 bg-white">
+        <div className="section-shell flex flex-wrap items-end justify-between gap-3 py-3.5 sm:py-4">
+          <div className="min-w-0">
+            <Link href="/call-driver" className="text-[12px] font-semibold text-[var(--cabzii-brand)]">
+              ← All Call Driver services
+            </Link>
+            <h1 className="mt-1 text-[1.35rem] font-extrabold leading-tight tracking-tight text-slate-900 sm:text-[1.6rem]">
+              {service.title}
+            </h1>
+            <p className="mt-0.5 max-w-xl text-sm text-slate-600">{SERVICE_HINTS[serviceId] || service.blurb}</p>
           </div>
-
-          <div className="mt-4 flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {CALL_DRIVER_SERVICES.map((item) => (
-              <Chip key={item.id} selected={item.id === serviceId} onClick={() => switchService(item.id)}>
-                {item.shortTitle}
-              </Chip>
-            ))}
-          </div>
-
-          <ol className="mt-4 flex max-w-md gap-2">
-            {[
-              { n: 1, label: "Trip details" },
-              { n: 2, label: service.quoteOnly ? "Request" : "Confirm fare" }
-            ].map((item) => (
-              <li
-                key={item.n}
-                className={`flex flex-1 items-center justify-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-bold sm:text-xs ${
-                  step === item.n ? "bg-[var(--cabzii-brand)] text-white" : "bg-white text-slate-500 ring-1 ring-slate-200"
-                }`}
-              >
-                <span>{item.n}</span>
-                <span>{item.label}</span>
-              </li>
-            ))}
+          <ol className="flex items-center gap-2 text-[12px] font-bold text-slate-400 sm:text-[13px]">
+            <li className={step === 1 ? "text-[var(--cabzii-brand)]" : ""}>1 Trip details</li>
+            <li aria-hidden className="text-slate-300">→</li>
+            <li className={step === 2 ? "text-[var(--cabzii-brand)]" : ""}>
+              2 {service.quoteOnly ? "Request" : "Confirm fare"}
+            </li>
           </ol>
+        </div>
+      </header>
 
+      <div className="section-shell py-4 sm:py-6">
+        <div className="mx-auto w-full max-w-6xl">
+          <div className="mb-4 lg:hidden">
+            <ServiceRail serviceId={serviceId} onSelect={switchService} layout="tiles" />
+          </div>
           {error ? (
-            <p className="mt-4 max-w-3xl rounded-xl bg-rose-50 px-3 py-2.5 text-sm font-medium text-rose-700">{error}</p>
+            <p className="mb-4 rounded-xl bg-rose-50 px-3 py-2.5 text-sm font-medium text-rose-700">{error}</p>
           ) : null}
 
-          <div className="mt-4 grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_19.5rem]">
-            <div>
+          <div className="grid items-start gap-5 lg:grid-cols-[11.5rem_minmax(0,1fr)_22.5rem]">
+            <div className="hidden lg:block">
+              <div className="sticky top-20">
+                <ServiceRail serviceId={serviceId} onSelect={switchService} />
+              </div>
+            </div>
+            <div className="space-y-4">
+              <section className="overflow-hidden rounded-xl bg-[#e8f4ff] px-4 py-4 sm:px-5">
+                <p className="text-[13px] font-medium text-slate-600">Call Driver · your car</p>
+                <p className="mt-1 text-[18px] font-extrabold text-slate-900">{service.title}</p>
+                <p className="mt-1 text-[13px] leading-relaxed text-slate-600">{SERVICE_HINTS[serviceId] || service.blurb}</p>
+              </section>
               {step === 1 ? (
                 <form
-                  className="space-y-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5"
+                  className="space-y-4"
                   onSubmit={(e) => {
                     e.preventDefault();
                     continueToQuote();
                   }}
                 >
+                  <Section title="Trip" hint="Pickup, drop, date and hours for this driver booking.">
                   {serviceId === "valet" ? (
                     <Field label="Event / location">
                       <input
@@ -684,54 +797,28 @@ export default function CallDriverBookingFlow() {
                   ) : null}
 
                   {serviceId === "corporate" ? (
-                    <>
-                      <Field label="Company name">
-                        <input
-                          className={inputCls}
-                          value={form.companyName}
-                          onChange={(e) => patch("companyName", e.target.value)}
-                          placeholder="Company name"
-                        />
-                      </Field>
-                      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                        <Field label="Contact person">
-                          <input
-                            className={inputCls}
-                            value={form.contactPerson}
-                            onChange={(e) => patch("contactPerson", e.target.value)}
-                            placeholder="Name"
-                          />
-                        </Field>
-                        <Field label="Phone">
-                          <input
-                            className={inputCls}
-                            inputMode="numeric"
-                            maxLength={10}
-                            value={form.companyPhone}
-                            onChange={(e) => patch("companyPhone", e.target.value)}
-                            placeholder="10-digit mobile"
-                          />
-                        </Field>
-                      </div>
-                    </>
+                    <Field label="Company name">
+                      <input
+                        className={inputCls}
+                        value={form.companyName}
+                        onChange={(e) => patch("companyName", e.target.value)}
+                        placeholder="Company name"
+                      />
+                    </Field>
                   ) : null}
 
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                    <Field label={serviceId === "outstation" ? "Travel date" : "Date"}>
-                      <div className={`${inputCls} !flex items-center`}>
-                        <NativeDateField value={form.date} onChange={setTravelDate} label="" ariaLabel="Travel date" />
-                      </div>
-                    </Field>
-                    <Field label="Pickup time">
-                      <div className={`${inputCls} !flex items-center`}>
-                        <NativeTimeField
-                          value={form.pickupTime}
-                          onChange={(next) => patch("pickupTime", next)}
-                          label=""
-                          ariaLabel="Pickup time"
-                        />
-                      </div>
-                    </Field>
+                    <DateTimeBox label={serviceId === "outstation" ? "Travel date" : "Date"}>
+                      <NativeDateField value={form.date} onChange={setTravelDate} label="" ariaLabel="Travel date" />
+                    </DateTimeBox>
+                    <DateTimeBox label="Pickup time">
+                      <NativeTimeField
+                        value={form.pickupTime}
+                        onChange={(next) => patch("pickupTime", next)}
+                        label=""
+                        ariaLabel="Pickup time"
+                      />
+                    </DateTimeBox>
                   </div>
 
                   {serviceId === "outstation" ? (
@@ -756,17 +843,18 @@ export default function CallDriverBookingFlow() {
 
                   {serviceId === "outstation" && form.tripMode !== "one_way" ? (
                     <>
-                      <Field label="Return date" hint={`${outstationDays} day${outstationDays === 1 ? "" : "s"} · ${outstationDays * PER_DAY_HOURS} hrs included`}>
-                        <div className={`${inputCls} !flex items-center`}>
-                          <NativeDateField
-                            value={form.returnDate}
-                            onChange={setReturnDate}
-                            min={form.date}
-                            label=""
-                            ariaLabel="Return date"
-                          />
-                        </div>
-                      </Field>
+                      <DateTimeBox label="Return date">
+                        <NativeDateField
+                          value={form.returnDate}
+                          onChange={setReturnDate}
+                          min={form.date}
+                          label=""
+                          ariaLabel="Return date"
+                        />
+                      </DateTimeBox>
+                      <p className="text-[11px] text-slate-500">
+                        {outstationDays} day{outstationDays === 1 ? "" : "s"} · {outstationDays * PER_DAY_HOURS} hrs included
+                      </p>
                       <div>
                         <p className={typo.label}>Days</p>
                         <div className="mt-1.5 flex flex-wrap gap-2">
@@ -815,28 +903,29 @@ export default function CallDriverBookingFlow() {
                   {hourChips.length ? (
                     <div>
                       <p className={typo.label}>Hours</p>
-                      <div className="mt-1.5 flex flex-wrap items-center gap-2">
+                      <div className="mt-1.5 grid grid-cols-3 gap-2 sm:grid-cols-6">
                         {hourChips.map((h) => (
-                          <Chip key={h} selected={Number(form.hours) === h} onClick={() => patch("hours", h)}>
+                          <button
+                            key={h}
+                            type="button"
+                            onClick={() => patch("hours", h)}
+                            className={`cabzii-tap min-h-11 rounded-xl text-sm font-bold ring-1 transition ${
+                              Number(form.hours) === h
+                                ? "bg-[var(--cabzii-brand)] text-white ring-[var(--cabzii-brand)]"
+                                : "bg-slate-50 text-slate-700 ring-slate-200 hover:bg-white"
+                            }`}
+                          >
                             {h} hrs
-                          </Chip>
+                          </button>
                         ))}
-                        <input
-                          type="number"
-                          min={serviceId === "valet" ? 5 : 3}
-                          className={`${inputCls} w-24`}
-                          value={form.hours}
-                          onChange={(e) => patch("hours", e.target.value)}
-                          aria-label="Custom hours"
-                        />
                       </div>
                     </div>
                   ) : null}
+                  </Section>
 
                   {showVehicleType ? (
-                    <div>
-                      <p className={typo.label}>Your car</p>
-                      <div className="mt-1.5 grid grid-cols-2 gap-2">
+                    <Section title="Your car" hint="The driver will drive this vehicle.">
+                      <div className="grid grid-cols-2 gap-2">
                         <ChoiceCard
                           selected={form.vehicleType === "standard"}
                           onClick={() => patch("vehicleType", "standard")}
@@ -850,7 +939,7 @@ export default function CallDriverBookingFlow() {
                           subtitle="Innova, SUV, similar"
                         />
                       </div>
-                      <Field label="Vehicle model (optional)" className="mt-3">
+                      <Field label="Vehicle model (optional)">
                         <input
                           className={inputCls}
                           value={form.vehicleModel}
@@ -858,24 +947,26 @@ export default function CallDriverBookingFlow() {
                           placeholder="e.g. Dzire, Innova"
                         />
                       </Field>
-                    </div>
+                    </Section>
                   ) : null}
 
                   {serviceId === "outstation" && form.tripMode !== "one_way" ? (
-                    <Field label="Estimated KM (optional)">
-                      <input
-                        type="number"
-                        min={0}
-                        className={inputCls}
-                        value={form.estimatedKm}
-                        onChange={(e) => patch("estimatedKm", e.target.value)}
-                        placeholder="Highway km, if you know it"
-                      />
-                    </Field>
+                    <Section title="Distance">
+                      <Field label="Estimated KM (optional)">
+                        <input
+                          type="number"
+                          min={0}
+                          className={inputCls}
+                          value={form.estimatedKm}
+                          onChange={(e) => patch("estimatedKm", e.target.value)}
+                          placeholder="Highway km, if you know it"
+                        />
+                      </Field>
+                    </Section>
                   ) : null}
 
                   {serviceId === "school" ? (
-                    <>
+                    <Section title="School schedule">
                       <div>
                         <p className={typo.label}>Shift</p>
                         <div className="mt-1.5 grid grid-cols-3 gap-2">
@@ -886,32 +977,20 @@ export default function CallDriverBookingFlow() {
                           ))}
                         </div>
                       </div>
-                      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                        <Field label="Working days / month">
-                          <input
-                            type="number"
-                            min={1}
-                            className={inputCls}
-                            value={form.workingDays}
-                            onChange={(e) => patch("workingDays", e.target.value)}
-                          />
-                        </Field>
-                        <Field label="Parent contact">
-                          <input
-                            className={inputCls}
-                            inputMode="numeric"
-                            maxLength={10}
-                            value={form.parentContact}
-                            onChange={(e) => patch("parentContact", e.target.value)}
-                            placeholder="10-digit mobile"
-                          />
-                        </Field>
-                      </div>
-                    </>
+                      <Field label="Working days / month">
+                        <input
+                          type="number"
+                          min={1}
+                          className={inputCls}
+                          value={form.workingDays}
+                          onChange={(e) => patch("workingDays", e.target.value)}
+                        />
+                      </Field>
+                    </Section>
                   ) : null}
 
                   {serviceId === "corporate" ? (
-                    <>
+                    <Section title="Requirement">
                       <div className="grid grid-cols-2 gap-3">
                         <Field label="Drivers needed">
                           <input
@@ -949,11 +1028,11 @@ export default function CallDriverBookingFlow() {
                           placeholder="Office travel, events, monthly driver…"
                         />
                       </Field>
-                    </>
+                    </Section>
                   ) : null}
 
                   {serviceId === "valet" ? (
-                    <div className="grid grid-cols-2 gap-3">
+                    <Section title="Valet team">
                       <Field label="Drivers">
                         <input
                           type="number"
@@ -963,64 +1042,115 @@ export default function CallDriverBookingFlow() {
                           onChange={(e) => patch("driversRequired", e.target.value)}
                         />
                       </Field>
+                    </Section>
+                  ) : null}
+
+                  <Section title="Your details" hint="Cabzii uses this to confirm the booking and assign a driver.">
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                      <Field label="Full name">
+                        <input
+                          className={inputCls}
+                          value={form.customerName}
+                          onChange={(e) => patch("customerName", e.target.value)}
+                          placeholder="Customer name"
+                          autoComplete="name"
+                        />
+                      </Field>
+                      <Field label="Mobile number">
+                        <input
+                          className={inputCls}
+                          inputMode="numeric"
+                          maxLength={10}
+                          value={form.phone}
+                          onChange={(e) => patch("phone", sanitizeMobileInput(e.target.value))}
+                          placeholder="10-digit mobile"
+                          autoComplete="tel"
+                        />
+                      </Field>
+                      <Field label="Email (optional)" className="sm:col-span-2">
+                        <input
+                          className={inputCls}
+                          type="email"
+                          value={form.email}
+                          onChange={(e) => patch("email", e.target.value)}
+                          placeholder="name@email.com"
+                          autoComplete="email"
+                        />
+                      </Field>
                     </div>
-                  ) : null}
-
-                  {serviceId !== "corporate" ? (
-                    <Field label="Notes (optional)">
-                      <textarea
-                        className={areaCls}
-                        rows={2}
-                        value={form.notes}
-                        onChange={(e) => patch("notes", e.target.value)}
-                        placeholder="Gate code, car details, instructions"
-                      />
-                    </Field>
-                  ) : null}
-
-                  <button type="submit" disabled={quoting} className="cabzii-btn cabzii-btn-cta cabzii-tap hidden min-h-12 w-full sm:flex">
-                    {primaryLabel}
-                  </button>
+                    {serviceId !== "corporate" ? (
+                      <Field label="Notes (optional)">
+                        <textarea
+                          className={areaCls}
+                          rows={2}
+                          value={form.notes}
+                          onChange={(e) => patch("notes", e.target.value)}
+                          placeholder="Gate code, car details, instructions"
+                        />
+                      </Field>
+                    ) : null}
+                  </Section>
                 </form>
               ) : null}
 
               {step === 2 && quote ? (
-                <div className="space-y-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5 lg:hidden">
-                  <FareBreakdown quote={quote} serviceId={serviceId} />
-                  <p className="rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-600">
-                    Driver: Professional Cabzii Driver. Assigned after booking.
-                  </p>
-                  <div className="hidden gap-3 sm:flex">
-                    <button type="button" onClick={() => setStep(1)} className="cabzii-btn cabzii-btn-secondary cabzii-tap min-h-12 flex-1">
-                      Back
-                    </button>
-                    {quote.quoteOnly ? (
-                      <button
-                        type="button"
-                        onClick={submitQuoteRequest}
-                        disabled={submitting}
-                        className="cabzii-btn cabzii-btn-cta cabzii-tap min-h-12 flex-[2]"
-                      >
-                        {submitting ? "Sending…" : service.cta}
-                      </button>
-                    ) : (
-                      <button type="button" onClick={goToCheckout} className="cabzii-btn cabzii-btn-cta cabzii-tap min-h-12 flex-[2]">
-                        Book this service
-                      </button>
-                    )}
+                <Section title="Review trip" hint="Check the details, then confirm the fare on the right.">
+                  <div className="divide-y divide-slate-100">
+                    <SummaryRow label="Service" value={service.title} />
+                    <SummaryRow label="Name" value={form.customerName} />
+                    <SummaryRow label="Mobile" value={form.phone} />
+                    <SummaryRow label="Pickup" value={pickupLabel} />
+                    <SummaryRow
+                      label="Drop"
+                      value={
+                        serviceId === "airport"
+                          ? form.airportDirection === "drop"
+                            ? form.airport
+                            : form.pickup
+                          : form.drop || form.schoolName || form.eventLocation
+                      }
+                    />
+                    <SummaryRow label="Date" value={formatBookingDate(form.date)} />
+                    <SummaryRow label="Time" value={formatTime12(form.pickupTime)} />
+                    {hourChips.length ? <SummaryRow label="Hours" value={`${form.hours} hrs`} /> : null}
+                    {showVehicleType ? (
+                      <SummaryRow
+                        label="Car"
+                        value={[form.vehicleType === "premium" ? "Luxury" : "Normal", form.vehicleModel].filter(Boolean).join(" · ")}
+                      />
+                    ) : null}
                   </div>
-                </div>
+                  <button type="button" onClick={() => setStep(1)} className="text-sm font-semibold text-[var(--cabzii-brand)]">
+                    Edit trip details
+                  </button>
+                  <div className="rounded-xl border border-slate-100 bg-slate-50 p-4 lg:hidden">
+                    <FareBreakdown quote={quote} serviceId={serviceId} />
+                  </div>
+                </Section>
               ) : null}
             </div>
 
-            <aside className="hidden lg:block">
-              <div className="sticky top-20 space-y-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+            <aside className="hidden space-y-4 lg:block lg:sticky lg:top-20">
+              <section className="rounded-xl bg-white p-4">
                 <FareBreakdown quote={displayQuote} serviceId={serviceId} />
-                <p className="rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-600">
-                  Professional Cabzii driver assigned after you confirm. 50% advance.
-                </p>
+                {displayQuote && !displayQuote.quoteOnly ? (
+                  <div className="mt-3 flex items-center justify-between gap-3 border-t border-slate-100 pt-3">
+                    <span>
+                      <span className="block text-[14px] font-semibold text-slate-800">Pay 50% now</span>
+                      <span className="text-[12px] text-slate-500">Pay rest to the driver</span>
+                    </span>
+                    <span className="text-[14px] font-bold text-slate-900">
+                      {formatInrCurrency(Math.round(Number(displayQuote.total || 0) * 0.5))}
+                    </span>
+                  </div>
+                ) : null}
+                {form.customerName || form.phone ? (
+                  <p className="mt-3 text-[12px] text-slate-500">
+                    {form.customerName || "Customer"} · {form.phone || "mobile"}
+                  </p>
+                ) : null}
                 {step === 2 && quote ? (
-                  <div className="flex flex-col gap-2">
+                  <div className="mt-3 flex flex-col gap-2">
                     <button type="button" onClick={() => setStep(1)} className="cabzii-btn cabzii-btn-secondary cabzii-tap min-h-11 w-full">
                       Edit details
                     </button>
@@ -1029,12 +1159,16 @@ export default function CallDriverBookingFlow() {
                         type="button"
                         onClick={submitQuoteRequest}
                         disabled={submitting}
-                        className="cabzii-btn cabzii-btn-cta cabzii-tap min-h-11 w-full"
+                        className="h-12 w-full rounded-xl bg-[#1a73e8] text-[15px] font-extrabold uppercase tracking-wide text-white hover:bg-[#1565c0] disabled:opacity-70"
                       >
                         {submitting ? "Sending…" : service.cta}
                       </button>
                     ) : (
-                      <button type="button" onClick={goToCheckout} className="cabzii-btn cabzii-btn-cta cabzii-tap min-h-11 w-full">
+                      <button
+                        type="button"
+                        onClick={goToCheckout}
+                        className="h-12 w-full rounded-xl bg-[#1a73e8] text-[15px] font-extrabold uppercase tracking-wide text-white hover:bg-[#1565c0]"
+                      >
                         Book this service
                       </button>
                     )}
@@ -1044,12 +1178,29 @@ export default function CallDriverBookingFlow() {
                     type="button"
                     disabled={quoting}
                     onClick={continueToQuote}
-                    className="cabzii-btn cabzii-btn-cta cabzii-tap min-h-11 w-full"
+                    className="mt-3 h-12 w-full rounded-xl bg-[#1a73e8] text-[15px] font-extrabold uppercase tracking-wide text-white hover:bg-[#1565c0] disabled:opacity-70"
                   >
                     {primaryLabel}
                   </button>
                 )}
-              </div>
+              </section>
+              <section className="rounded-xl bg-white p-4">
+                <h2 className="text-[15px] font-bold text-slate-900">Included</h2>
+                <ul className="mt-2 space-y-2 text-[13px] text-slate-600">
+                  <li className="flex gap-2">
+                    <span className="mt-0.5 font-black text-emerald-600">✓</span>
+                    Professional Cabzii driver assigned after you confirm
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="mt-0.5 font-black text-emerald-600">✓</span>
+                    Driver for your own car — vehicle not supplied
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="mt-0.5 font-black text-emerald-600">✓</span>
+                    50% advance to confirm · balance at pickup
+                  </li>
+                </ul>
+              </section>
             </aside>
           </div>
 

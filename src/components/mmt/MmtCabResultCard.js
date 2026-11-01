@@ -16,12 +16,13 @@ import { formatCabSeatLabel, inferPassengerSeats } from "../../lib/cabSeats";
 import { cabFuelBadgeClass, cabFuelLabel, cabTypeBucket } from "../../lib/cabListing";
 import { resolveCabImage } from "../../lib/vehicleImages";
 import { cabSlabForTrip, tripToSearchQuery } from "../../lib/mmtTrip";
-import { FuelIcon, LuggageIcon, PersonIcon, SnowflakeIcon } from "../icons";
+import { FuelIcon, LuggageIcon, PersonIcon, SnowflakeIcon } from "../icons/rscIcons";
 import CatalogCardImage from "./CatalogCardImage";
 import CatalogVehicleCard, { FeatureChip } from "../ui/CatalogVehicleCard";
 import MmtCardPriceBlock from "./MmtCardPriceBlock";
 import { trackEvent } from "../../lib/analytics";
 import { formatInrCurrency } from "../../lib/formatInr";
+import { couponsForTrip } from "../../lib/paymentMethods";
 
 function formatINR(n) {
   return formatInrCurrency(n);
@@ -85,15 +86,14 @@ export default function MmtCabResultCard({ cab, trip, layout = "row", catalogMod
 
   if (layout === "fasttrack") {
     const extraKm = fare?.perKmRate || slab?.extraKm;
-    const tripKm = Number(trip?.distanceKm) > 0 ? Math.round(Number(trip.distanceKm)) : 0;
-    const localDefaultKm =
-      trip?.tripType === "local" || trip?.tripType === "airport" || trip?.tripType === "hourly" ? 40 : 0;
-    const includedKm = Number(slab?.includedKm) > 0 ? Number(slab.includedKm) : tripKm || localDefaultKm;
+    const tripKm = Number(trip?.distanceKm) > 0 ? Math.round(Number(trip.distanceKm) * 10) / 10 : 0;
+    const includedKm = Number(slab?.includedKm) > 0 ? Number(slab.includedKm) : tripKm;
     const kmLine = includedKm
       ? `${includedKm} km included.${extraKm ? ` After that ₹${Number(extraKm).toFixed(0)}/km` : ""}`
       : extraKm
-        ? `₹${Number(extraKm).toFixed(0)}/km`
+        ? `₹${Number(extraKm).toFixed(0)}/km extra`
         : "Quoted fare for this trip";
+    const hasPromo = couponsForTrip(trip).length > 0;
     return (
       <Link
         href={href}
@@ -110,21 +110,32 @@ export default function MmtCabResultCard({ cab, trip, layout = "row", catalogMod
           />
         </div>
         <div className="min-w-0 flex-1">
-          <h3 className="text-[13px] font-extrabold leading-snug text-slate-900 sm:text-[16px]">
-            {vehicleName} · {passengerSeats} seats
-          </h3>
+          <div className="flex flex-wrap items-center gap-2">
+            <h3 className="text-[13px] font-extrabold leading-snug text-slate-900 sm:text-[16px]">
+              {vehicleName} · {passengerSeats} seats
+            </h3>
+            {hasPromo ? (
+              <span className="rounded bg-emerald-500 px-1.5 py-0.5 text-[9px] font-extrabold uppercase tracking-wide text-white">
+                Save with promo
+              </span>
+            ) : null}
+          </div>
           <p className="mt-0.5 text-[11px] text-slate-500 sm:text-[12px]">{typeLabel}</p>
           <p className="mt-1 text-[11px] leading-snug text-slate-600 sm:text-[12px]">{kmLine}</p>
+          <p className="mt-0.5 text-[11px] leading-snug text-slate-500 sm:text-[12px]">
+            Time-based cancellation. Driver assigned after you confirm.
+          </p>
           <div className="mt-2 flex items-center justify-between gap-2 sm:hidden">
             <p className="text-[15px] font-extrabold leading-none text-slate-900">{formatINR(total)}</p>
-            <span className="inline-flex min-h-8 items-center justify-center rounded-lg bg-amber-400 px-3 py-1.5 text-[11px] font-extrabold text-slate-900">
+            <span className="inline-flex min-h-10 items-center justify-center rounded-lg bg-[var(--cabzii-cta)] px-3.5 py-2 text-[12px] font-extrabold text-white">
               Book
             </span>
           </div>
         </div>
-        <div className="hidden shrink-0 flex-col items-end justify-center gap-2 pl-1 sm:flex">
+        <div className="hidden shrink-0 flex-col items-end justify-center gap-1.5 pl-1 sm:flex">
           <p className="text-[18px] font-extrabold leading-none text-slate-900 sm:text-[20px]">{formatINR(total)}</p>
-          <span className="inline-flex min-h-9 min-w-[7.25rem] items-center justify-center rounded-lg bg-amber-400 px-3 py-2 text-[12px] font-extrabold text-slate-900 hover:bg-amber-500 sm:min-w-[8.25rem]">
+          <p className="text-[10px] text-slate-400">Incl. tax where listed</p>
+          <span className="inline-flex min-h-9 min-w-[7.25rem] items-center justify-center rounded-lg bg-[var(--cabzii-cta)] px-3 py-2 text-[12px] font-extrabold text-white hover:bg-[var(--cabzii-cta-hover)] sm:min-w-[8.25rem]">
             Book a ride
           </span>
         </div>

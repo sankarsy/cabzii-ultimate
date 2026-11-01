@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { ArrowUpDown, Calendar, Check, X } from "lucide-react";
+import { ArrowUpDown, Calendar, Check, X } from "../icons/rscIcons";
 import PlaceAutocomplete from "../PlaceAutocomplete";
 import { formatMmtSheetDateParts, formatTime12, openNativePicker } from "../../lib/emt/heroDates";
 import { HOURLY_PACKAGES } from "../../lib/mmtTrip";

@@ -1,6 +1,6 @@
 "use client";
 
-import { Phone } from "lucide-react";
+import { Phone } from "../icons/rscIcons";
 import { usePathname } from "next/navigation";
 import WhatsAppIcon from "../WhatsAppIcon";
 import { useSiteSettings } from "../SiteSettingsProvider";

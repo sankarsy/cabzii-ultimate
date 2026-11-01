@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Briefcase, Car, Clock, Plane } from "lucide-react";
+import { Briefcase, Car, Clock, Plane } from "../icons/rscIcons";
 import PlaceAutocomplete from "../PlaceAutocomplete";
 import { PickupDateTimeFields } from "../ui/NativeDateTimeField";
 import { cabResultsHref, HOURLY_PACKAGES } from "../../lib/mmtTrip";
@@ -16,7 +16,7 @@ const TRIP_TYPES = [
 ];
 
 const fieldInputClass =
-  "w-full border-0 bg-transparent px-0 py-0.5 text-sm font-semibold text-slate-900 shadow-none outline-none ring-0 focus:ring-0";
+  "w-full border-0 bg-transparent px-0 py-0.5 text-base font-semibold text-slate-900 shadow-none outline-none ring-0 focus:ring-0 sm:text-sm";
 
 function toEngineTrip({ tripKind, from, to, date, time, cityName, packageHours, roundTrip }) {
   const pickupTime = time || "09:00";

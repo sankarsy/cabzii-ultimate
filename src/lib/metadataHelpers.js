@@ -1,9 +1,8 @@
 import { catalogPublicPath } from "./catalogProduct";
 import { resolveProductImageSeo } from "./dynamicImageSeo";
-import { buildPageMetadata, productJsonLd, tourPackageJsonLd } from "./seo";
+import { buildPageMetadata, productJsonLd } from "./seo";
 import { clampDescription } from "./seo/programmaticMeta";
-import { serpPriceLine, tourPackageSerpBadges, vehicleSerpBadges } from "./seo/serpRichData";
-import { packageDisplayPrice, packageSchemaPriceRange } from "./tourPackagePricing";
+import { serpPriceLine, vehicleSerpBadges } from "./seo/serpRichData";
 import { buildVehicleJsonLd, normalizeSeoCity, robotsIsNoindex, withPublicEnterpriseSeo } from "./vehicleEnterpriseSeo";
 
 function applyEnterpriseMetaOverrides(metadata, item, { pathPrefix = "/cabs", imageSeo = null } = {}) {
@@ -52,42 +51,10 @@ function applyEnterpriseMetaOverrides(metadata, item, { pathPrefix = "/cabs", im
   return metadata;
 }
 
-function tourPackageSeoPath(pkg) {
-  const slug = pkg?.slug ? String(pkg.slug).trim() : "";
-  return slug ? `/tour-packages/${slug}` : null;
-}
-
 function detailPath(item, basePath, fallbackId) {
   if (item?.slug) return catalogPublicPath(item, basePath);
   const key = fallbackId || item?._id || item?.id;
   return key ? `${basePath}/${key}` : basePath;
-}
-
-function tourPackageMetaFields(pkg, slug) {
-  const origin = pkg?.pricingOriginCity || pkg?.city || "Chennai";
-  const durationLabel =
-    pkg?.days > 0
-      ? `${pkg.days} Day${pkg.days > 1 ? "s" : ""}${pkg.nights > 0 ? ` / ${pkg.nights} Night${pkg.nights > 1 ? "s" : ""}` : ""}`
-      : pkg?.duration || "";
-  const fromPrice = packageDisplayPrice(pkg);
-  const title =
-    pkg?.seoTitle ||
-    `${pkg.name}${durationLabel ? ` — ${durationLabel}` : ""} | Book from ₹${Number(fromPrice || 0).toLocaleString("en-IN")}`;
-  const priceLine = serpPriceLine(fromPrice);
-  const description =
-    pkg?.seoDescription ||
-    pkg?.description?.slice(0, 158) ||
-    clampDescription(
-      `${priceLine}Book ${pkg.name} with ${pkg.vendor} on Cabzii.in — verified cabs and transparent pricing.`
-    );
-  const keywords = (pkg?.seo || "")
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean);
-  const imageSeo = resolveProductImageSeo(pkg, { kind: "holiday" });
-  const path = `/tour-packages/${pkg?.slug || slug}`;
-
-  return { origin, title, description, keywords, absoluteImage: imageSeo.ogUrl, path, imageSeo };
 }
 
 export function cabDetailMetadata(cab, id) {
@@ -233,113 +200,6 @@ export function driverDetailMetadata(driver, id) {
       ratingValue: enriched.rating,
       reviewCount: enriched.reviewCount,
       category: "Acting Driver & Chauffeur Service"
-    })
-  };
-}
-
-/** SEO landing page at /tour-packages/{slug} — indexable canonical URL. */
-export function tourPackageLandingMetadata(pkg, slug) {
-  if (!pkg) {
-    return {
-      metadata: buildPageMetadata({
-        title: "Tour Package Not Found",
-        description: "This tour package is not available on cabzii.in.",
-        path: `/tour-packages/${slug}`,
-        noindex: true
-      }),
-      jsonLd: null
-    };
-  }
-
-  const enriched = withPublicEnterpriseSeo(pkg);
-  const { origin, title, description, keywords, absoluteImage, path, imageSeo } = tourPackageMetaFields(enriched, slug);
-  const noindex = robotsIsNoindex(enriched.robots);
-  const metadata = applyEnterpriseMetaOverrides(
-    buildPageMetadata({
-      title,
-      description: enriched.shortDescription || description,
-      path,
-      keywords: keywords.length ? keywords : undefined,
-      image: absoluteImage || undefined,
-      imageAlt: imageSeo.alt,
-      imageWidth: imageSeo.width,
-      imageHeight: imageSeo.height,
-      noindex
-    }),
-    enriched,
-    { pathPrefix: "/tour-packages", imageSeo }
-  );
-
-  const priceRange = packageSchemaPriceRange(enriched);
-  return {
-    metadata,
-    jsonLd: tourPackageJsonLd({
-      name: enriched.name,
-      description: enriched.shortDescription || description,
-      urlPath: path,
-      image: absoluteImage || undefined,
-      price: packageDisplayPrice(enriched),
-      originCity: origin,
-      ...(priceRange || {}),
-      additionalBadges: tourPackageSerpBadges(enriched)
-    })
-  };
-}
-
-/** Booking page at /holidays/{id} — noindex when SEO landing exists. */
-export function packageDetailMetadata(pkg, id) {
-  if (!pkg) {
-    return {
-      metadata: buildPageMetadata({
-        title: "Holiday Package Not Found",
-        description: "This holiday package is not available on Cabzii.",
-        path: `/holidays/${id}`,
-        noindex: true
-      }),
-      jsonLd: null
-    };
-  }
-
-  const origin = pkg.pricingOriginCity || pkg.city || "Chennai";
-  const title = pkg.seoTitle || `${pkg.name} Tour Package from ${origin} | Cabzii`;
-  const fromPrice = packageDisplayPrice(pkg);
-  const priceLine = serpPriceLine(fromPrice);
-  const description =
-    pkg.seoDescription ||
-    clampDescription(
-      `${priceLine}Book ${pkg.name} with ${pkg.vendor} on Cabzii.in — hotel, sightseeing, meals & customizable itinerary. Instant confirmation.`
-    );
-  const keywords = (pkg.seo || "")
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean);
-  const imageSeo = resolveProductImageSeo(pkg, { kind: "holiday" });
-  const catalogPath = detailPath(pkg, "/holidays", id);
-  const seoLandingPath = tourPackageSeoPath(pkg);
-  const canonicalPath = seoLandingPath || catalogPath;
-  const priceRange = packageSchemaPriceRange(pkg);
-
-  return {
-    metadata: buildPageMetadata({
-      title,
-      description,
-      path: canonicalPath,
-      keywords: keywords.length ? keywords : undefined,
-      image: imageSeo.ogUrl || undefined,
-      imageAlt: imageSeo.alt,
-      imageWidth: imageSeo.width,
-      imageHeight: imageSeo.height,
-      noindex: Boolean(seoLandingPath)
-    }),
-    jsonLd: tourPackageJsonLd({
-      name: pkg.name,
-      description,
-      urlPath: canonicalPath,
-      image: imageSeo.absoluteUrl || undefined,
-      price: fromPrice,
-      originCity: origin,
-      ...(priceRange || {}),
-      additionalBadges: tourPackageSerpBadges(pkg)
     })
   };
 }

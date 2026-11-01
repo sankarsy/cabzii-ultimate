@@ -1,7 +1,7 @@
 const QUICK_LINKS = {
   cabs: "/cabs",
   drivers: "/call-driver",
-  holidays: "/holidays",
+  holidays: "/chennai/outstation/chennai-to-tirupati",
   booking: "/cabs",
   testimonials: "/testimonials",
   locations: "/locations",

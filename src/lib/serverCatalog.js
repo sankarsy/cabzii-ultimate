@@ -3,7 +3,6 @@ import { getBackendUrl } from "./seo/constants";
 import { SHOWCASE_FALLBACKS } from "./homeShowcase";
 import { filterActiveOffers } from "./offers";
 import { mergeCallDriverServices } from "./callDriver";
-import { canonicalizeHolidayHref } from "./holidayQuery";
 import { SEO_REVALIDATE_SECONDS } from "./revalidation/constants";
 import { normalizeCabList } from "./catalogNormalize";
 
@@ -53,11 +52,6 @@ export async function fetchCabById(id) {
 export async function fetchDriverById(id) {
   if (!id) return null;
   return fetchJson(`/drivers/${encodeURIComponent(id)}`);
-}
-
-export async function fetchPackageById(id) {
-  if (!id) return null;
-  return fetchJson(`/packages/${encodeURIComponent(id)}`);
 }
 
 export async function fetchCatalogList(resource, limit = 6) {
@@ -163,7 +157,7 @@ export async function fetchHomeShowcase(section) {
   const fallback = SHOWCASE_FALLBACKS[section] || SHOWCASE_FALLBACKS.offers || [];
   const source = rows.length ? rows : fallback;
   const cards = section === "offers" ? filterActiveOffers(source) : source;
-  return cards.map((card) => ({ ...card, href: canonicalizeHolidayHref(card.href) }));
+  return cards;
 }
 
 export async function fetchHomeCallDriverServices() {

@@ -1,11 +1,5 @@
 import "./globals.css";
 import { Inter } from "next/font/google";
-import SiteSettingsProvider from "../components/SiteSettingsProvider";
-import DeferredSiteChrome from "../components/DeferredSiteChrome";
-import StickyBookingBar from "../components/StickyBookingBar";
-import AnalyticsTags from "../components/AnalyticsTags";
-import ServiceWorkerRegister from "../components/ServiceWorkerRegister";
-import { fetchSiteSettings } from "../lib/serverSiteSettings";
 import { fetchSiteReviewStats } from "../lib/serverReviewStats";
 import { SITE_ICONS } from "../lib/brandAssets";
 import { DEFAULT_KEYWORDS, HOME_SEO_TITLE, SITE_URL, organizationJsonLd, taxiServiceJsonLd, websiteJsonLd } from "../lib/seo";
@@ -65,25 +59,26 @@ async function sitewideStructuredData() {
 }
 
 export default async function RootLayout({ children }) {
-  const siteSettings = await fetchSiteSettings();
   const structuredData = await sitewideStructuredData();
 
   return (
     <html lang="en-IN" suppressHydrationWarning>
       <head>
+        {process.env.NODE_ENV !== "production" ? (
+          <script
+            dangerouslySetInnerHTML={{
+              __html:
+                "try{navigator.serviceWorker&&navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(x){x.unregister()})});caches&&caches.keys().then(function(k){k.forEach(function(x){caches.delete(x)})});}catch(e){}"
+            }}
+          />
+        ) : null}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
       </head>
       <body className={inter.variable} suppressHydrationWarning>
-        <SiteSettingsProvider initialSettings={siteSettings}>
-          {children}
-          <StickyBookingBar />
-          <DeferredSiteChrome />
-        </SiteSettingsProvider>
-        <AnalyticsTags />
-        <ServiceWorkerRegister />
+        {children}
       </body>
     </html>
   );

@@ -1,5 +1,4 @@
 import { normalizeGalleryPaths, normalizeStoredImagePath } from "./media";
-import { DEFAULT_HOLIDAY_CAB_TYPES } from "./holidays";
 import { parseStops, stopsToLines } from "./busBooking";
 import { cancellationToText, parseCancellationText, parseRestStopsText, restStopsToText } from "./busExperience";
 import { SEO_ROUTES } from "./seo/routes";
@@ -389,8 +388,6 @@ export function driverFormToPayload(form) {
   };
 }
 
-const DEFAULT_CAB_TYPES_JSON = JSON.stringify(DEFAULT_HOLIDAY_CAB_TYPES, null, 2);
-
 export function emptyBusTripForm() {
   return {
     operator: "",
@@ -543,174 +540,6 @@ export function busTripFormToPayload(form) {
   };
 }
 
-export function emptyTourPackageForm() {
-  return {
-    ...emptyProductFields(),
-    name: "",
-    vendor: "",
-    category: "pilgrimage",
-    duration: "",
-    price: 0,
-    originalPrice: 0,
-    discountPercentage: 0,
-    image: "",
-    gallery: "",
-    city: "",
-    pricingOriginCity: "Chennai",
-    location: "",
-    tags: "",
-    cabTypes: DEFAULT_CAB_TYPES_JSON,
-    seoTitle: "",
-    seoDescription: "",
-    metaKeywords: "",
-    canonicalUrl: "",
-    schemaEnabled: true,
-    faq: [{ question: "", answer: "" }],
-    enterpriseSeo: {},
-    status: "active",
-    packageType: "tour-package",
-    state: "",
-    destination: "",
-    nights: 0,
-    days: 0,
-    description: "",
-    highlights: "",
-    inclusions: "",
-    exclusions: "",
-    termsAndConditions: "",
-    cancellationPolicy: "",
-    itinerary: ""
-  };
-}
-
-/** "1 | Arrival & temple visit | Pickup at 6am..." per line ⇄ [{day,title,details}] */
-export function itineraryToLines(itinerary) {
-  if (!Array.isArray(itinerary)) return "";
-  return itinerary.map((d) => [d.day, d.title, d.details].filter((x) => x !== undefined).join(" | ")).join("\n");
-}
-
-export function linesToItinerary(text) {
-  return String(text || "")
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .map((line, i) => {
-      const [day, title, ...rest] = line.split("|").map((s) => s.trim());
-      return {
-        day: Number(day) || i + 1,
-        title: title || "",
-        details: rest.join(" | ")
-      };
-    });
-}
-
-function linesToList(text) {
-  return String(text || "")
-    .split("\n")
-    .map((s) => s.trim())
-    .filter(Boolean);
-}
-
-export function tourPackageFormFromItem(item) {
-  const cabTypes =
-    Array.isArray(item?.cabTypes) && item.cabTypes.length
-      ? JSON.stringify(item.cabTypes, null, 2)
-      : DEFAULT_CAB_TYPES_JSON;
-  return {
-    ...productFieldsFromItem(item),
-    name: item?.name || "",
-    vendor: item?.vendor || "",
-    category: item?.category || "",
-    duration: item?.duration || "",
-    price: numField(item?.price),
-    originalPrice: numField(item?.originalPrice),
-    discountPercentage: numField(item?.discountPercentage),
-    image: item?.image || "",
-    gallery: Array.isArray(item?.gallery) ? item.gallery.join(", ") : "",
-    city: item?.city || "",
-    pricingOriginCity: item?.pricingOriginCity || "Chennai",
-    location: item?.location || "",
-    tags: Array.isArray(item?.tags) ? item.tags.join(", ") : "",
-    cabTypes,
-    seoTitle: item?.seoTitle || "",
-    seoDescription: item?.seoDescription || "",
-    metaKeywords: item?.metaKeywords || item?.seo || "",
-    canonicalUrl: item?.canonicalUrl || "",
-    schemaEnabled: item?.schemaEnabled !== false,
-    faq: Array.isArray(item?.faq) && item.faq.length ? item.faq : Array.isArray(item?.faqs) && item.faqs.length ? item.faqs : [{ question: "", answer: "" }],
-    enterpriseSeo: item?.enterpriseSeo && typeof item.enterpriseSeo === "object" ? item.enterpriseSeo : {},
-    status: item?.status === "inactive" ? "inactive" : "active",
-    packageType: item?.packageType || "tour-package",
-    state: item?.state || "",
-    destination: item?.destination || "",
-    nights: numField(item?.nights),
-    days: numField(item?.days),
-    description: item?.description || "",
-    highlights: Array.isArray(item?.highlights) ? item.highlights.join("\n") : "",
-    inclusions: Array.isArray(item?.inclusions) ? item.inclusions.join("\n") : "",
-    exclusions: Array.isArray(item?.exclusions) ? item.exclusions.join("\n") : "",
-    termsAndConditions: item?.termsAndConditions || "",
-    cancellationPolicy: item?.cancellationPolicy || "",
-    itinerary: itineraryToLines(item?.itinerary)
-  };
-}
-
-export function tourPackageFormToPayload(form) {
-  const cabTypesRaw = form.cabTypes;
-  let cabTypes = [];
-  if (typeof cabTypesRaw === "string" && cabTypesRaw.trim()) {
-    try {
-      cabTypes = JSON.parse(cabTypesRaw);
-    } catch {
-      cabTypes = [];
-    }
-  } else if (Array.isArray(cabTypesRaw)) {
-    cabTypes = cabTypesRaw;
-  }
-  return {
-    name: form.name,
-    vendor: form.vendor,
-    category: form.category || "",
-    duration: form.duration,
-    cabTypes,
-    price: numField(form.price),
-    originalPrice: numField(form.originalPrice),
-    discountPercentage: numField(form.discountPercentage),
-    image: normalizeStoredImagePath(form.image) || "",
-    gallery: normalizeGalleryPaths(form.gallery).slice(0, 3),
-    city: form.city || "",
-    pricingOriginCity: String(form.pricingOriginCity || "Chennai").trim() || "Chennai",
-    location: form.location || "",
-    tags: String(form.tags || "")
-      .split(",")
-      .map((t) => t.trim())
-      .filter(Boolean),
-    status: form.status === "inactive" ? "inactive" : "active",
-    packageType: form.packageType || "tour-package",
-    state: form.state || "",
-    destination: form.destination || "",
-    nights: numField(form.nights),
-    days: numField(form.days),
-    description: form.description || "",
-    highlights: linesToList(form.highlights),
-    inclusions: linesToList(form.inclusions),
-    exclusions: linesToList(form.exclusions),
-    termsAndConditions: form.termsAndConditions || "",
-    cancellationPolicy: form.cancellationPolicy || "",
-    itinerary: linesToItinerary(form.itinerary),
-    metaKeywords: form.metaKeywords || form.seo || "",
-    canonicalUrl: form.canonicalUrl || "",
-    schemaEnabled: form.schemaEnabled !== false,
-    faq: Array.isArray(form.faq)
-      ? form.faq
-          .filter((f) => f?.question?.trim() || f?.answer?.trim())
-          .map((f) => ({ question: String(f.question || ""), answer: String(f.answer || "") }))
-      : [],
-    enterpriseSeo: form.enterpriseSeo && typeof form.enterpriseSeo === "object" ? form.enterpriseSeo : {},
-    ...productFieldsToPayload(form)
-  };
-}
-
 export function formatCabPackageSummary(item) {
   const fp = item?.farePackages;
   if (!fp) return "No packages saved";
@@ -770,70 +599,6 @@ export const CATALOG_TABS = {
       seoDescription: ""
     },
     required: ["title", "vendor", "type", "price"]
-  },
-  packages: {
-    label: "Holiday trips",
-    base: "/api/packages",
-    form: "tourPackage",
-    superAdminOnly: false,
-    sample: {
-      name: "Tirupati Balaji Darshan",
-      vendor: "Your Vendor Name",
-      duration: "2 Days / 1 Night",
-      price: 6999,
-      originalPrice: 0,
-      discountPercentage: 0,
-      image: "/uploads/package.jpg",
-      gallery: ["/uploads/package.jpg"],
-      city: "Tirupati",
-      pricingOriginCity: "Chennai",
-      location: "Tirumala",
-      category: "pilgrimage",
-      destination: "Tirupati · Tirumala",
-      state: "Andhra Pradesh",
-      days: 2,
-      nights: 1,
-      description:
-        "Experience Tirupati Balaji Darshan with a curated pilgrimage package from Chennai. Travel in an AC cab with darshan planning support, hotel stay options and a verified tour partner on cabzii.in.\n\nToll, permit and driver bata are billed as per actuals.",
-      highlights: [
-        "Temple darshan planning support",
-        "AC cab with experienced driver",
-        "Flexible pickup from Chennai",
-        "Verified pilgrimage tour partner"
-      ],
-      inclusions: [
-        "AC cab with driver for the itinerary",
-        "Pickup & drop as selected at booking",
-        "Tour coordination support"
-      ],
-      exclusions: [
-        "Toll, parking & state permits (as actuals)",
-        "Temple entry / special darshan tickets",
-        "Meals & hotel extras not listed"
-      ],
-      itinerary: [
-        {
-          day: 1,
-          title: "Chennai to Tirupati · Local darshan",
-          details: "Pickup from your location, drive to Tirupati, temple visit support and overnight stay as per package."
-        },
-        {
-          day: 2,
-          title: "Morning visit & return to Chennai",
-          details: "Checkout after breakfast, remaining local visits if scheduled, and comfortable return to Chennai."
-        }
-      ],
-      cabTypes: [
-        { id: "sedan", label: "Sedan", seats: 4, multiplier: 1 },
-        { id: "suv", label: "SUV", seats: 6, multiplier: 1.12 },
-        { id: "innova", label: "Innova", seats: 7, multiplier: 1.18 },
-        { id: "tempo", label: "Tempo Traveller", seats: 12, multiplier: 1.35 }
-      ],
-      tags: ["Pilgrimage", "Tirupati"],
-      seoDescription:
-        "Book Tirupati Balaji Darshan package from Chennai on cabzii.in — AC cab options, transparent fares & instant confirmation."
-    },
-    required: ["name", "vendor", "price"]
   },
   buses: {
     label: "Buses",
@@ -1166,7 +931,6 @@ export function buildCatalogListUrl(tabKey) {
   if (
     tab.adminList ||
     tabKey === "cabs" ||
-    tabKey === "packages" ||
     tabKey === "bookings" ||
     tabKey === "buses" ||
     tabKey === "seoServices" ||

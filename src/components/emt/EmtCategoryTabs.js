@@ -2,15 +2,39 @@
 
 import { HERO_TABS } from "../../lib/emt/constants";
 import { cn } from "../../lib/emt/cn";
-import { HOME_CATEGORY_ICON_STYLES } from "../icons";
-import { HERO_TAB_ICONS } from "../icons/heroIcons";
+import { Bus, CarFront, Palmtree, UserRound } from "../icons/rscIcons";
 import { useEffect, useRef } from "react";
+
+const TAB_ICONS = {
+  cabs: CarFront,
+  drivers: UserRound,
+  buses: Bus,
+  holidays: Palmtree
+};
+
+const HOME_CATEGORY_ICON_STYLES = {
+  cabs: {
+    active: "bg-sky-50 text-sky-500 ring-1 ring-sky-100",
+    idle: "bg-slate-50/80 text-slate-500 ring-1 ring-slate-200"
+  },
+  drivers: {
+    active: "bg-violet-50 text-violet-500 ring-1 ring-violet-100",
+    idle: "bg-slate-50/80 text-slate-500 ring-1 ring-slate-200"
+  },
+  holidays: {
+    active: "bg-emerald-50 text-emerald-500 ring-1 ring-emerald-100",
+    idle: "bg-slate-50/80 text-slate-500 ring-1 ring-slate-200"
+  },
+  buses: {
+    active: "bg-orange-50 text-orange-500 ring-1 ring-orange-100",
+    idle: "bg-slate-50/80 text-slate-500 ring-1 ring-slate-200"
+  }
+};
 
 /* Light, colourful icon tones for the shell tabs (no dark slate icons) */
 const SHELL_ICON_TONES = {
-  cabs: "text-sky-500",
+  cabs: "text-[var(--cabzii-cta)]",
   drivers: "text-violet-500",
-  holidays: "text-emerald-500",
   buses: "text-orange-500"
 };
 
@@ -42,14 +66,14 @@ export default function EmtCategoryTabs({
     <div
       ref={scrollerRef}
       role="navigation"
-      aria-label="Book Cabs, Hire a Driver, Buses or Holidays"
+      aria-label="Book Cabs, Hire a Driver or Buses"
       className={`emt-category-scroll flex min-w-0 gap-0 overflow-x-auto px-1 sm:px-3 ${
         isNav ? "emt-nav-category-scroll" : isShell ? "emt-shell-category-scroll" : ""
       } ${className}`}
     >
       {HERO_TABS.map((tab) => {
         const isActive = activeTab === tab.id;
-        const TabIcon = HERO_TAB_ICONS[tab.id];
+        const TabIcon = TAB_ICONS[tab.id];
         const styles = HOME_CATEGORY_ICON_STYLES[tab.id] || HOME_CATEGORY_ICON_STYLES.cabs;
         const iconTone = isShell
           ? SHELL_ICON_TONES[tab.id] || SHELL_ICON_TONES.cabs

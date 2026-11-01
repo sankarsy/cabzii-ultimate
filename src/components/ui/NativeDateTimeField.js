@@ -1,6 +1,6 @@
 "use client";
 
-import { Calendar, Clock } from "lucide-react";
+import { Calendar, Clock } from "../icons/rscIcons";
 import { HydrateSafeDate } from "../../lib/useTodayStr";
 import { formatTime12, openNativePicker } from "../../lib/emt/heroDates";
 

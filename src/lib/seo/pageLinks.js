@@ -200,7 +200,6 @@ export function defaultHomePageLinkGroups() {
         { label: "Chennai tariff", href: "/tariff", hint: "", children: [] },
         { label: "All cabs", href: "/cabs", hint: "", children: [] },
         { label: "Call Driver", href: "/call-driver", hint: "", children: [] },
-        { label: "Tours", href: "/holidays", hint: "", children: [] },
         { label: "All routes", href: "/routes", hint: "", children: [] },
         { label: "Services", href: "/services", hint: "", children: [] },
         { label: "Blog", href: "/blogs", hint: "", children: [] }
@@ -214,7 +213,7 @@ export function defaultRelatedPageLinkGroups(pageKind = "cabs", citySlug = "") {
     {
       id: "related",
       title: "Related pages",
-      intro: "More ways to book cabs, drivers and tours on Cabzii.",
+      intro: "More ways to book cabs, drivers and routes on Cabzii.",
       layout: "pills",
       links: relatedLinksForPage(pageKind, citySlug).map((item) => ({
         ...item,

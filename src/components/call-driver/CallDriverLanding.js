@@ -2,22 +2,43 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { UserRound } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { UserRound } from "../icons/rscIcons";
 import CabziiBrowseHeader from "../mmt/CabziiBrowseHeader";
 import RelatedSeoLinks from "../seo/RelatedSeoLinks";
 import CallDriverServiceGrid from "./CallDriverServiceGrid";
 import { CALL_DRIVER_SERVICES, mergeCallDriverServices } from "../../lib/callDriver";
 import { DEFAULT_CALL_DRIVER_PAGE } from "../../lib/callDriverPage";
+import { callDriverCityPath, isLiveCallDriverCitySlug } from "../../lib/cityCabPaths";
+import { resolveScopedCity } from "../../lib/cityShowcase";
+import { useSelectedCity } from "../../lib/useSelectedCity";
 
 export default function CallDriverLanding({
   showSeoCopy = false,
-  title = DEFAULT_CALL_DRIVER_PAGE.title,
-  subtitle = DEFAULT_CALL_DRIVER_PAGE.subtitle,
+  city = { slug: "chennai", name: "Chennai" },
+  title,
+  subtitle,
   intro = DEFAULT_CALL_DRIVER_PAGE.intro,
   sections = DEFAULT_CALL_DRIVER_PAGE.sections
 }) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const { city: selectedCity, locating } = useSelectedCity();
+  const cityName = city?.name || "Chennai";
+  const heading = title || `Book Call Driver in ${cityName}`;
+  const lede =
+    subtitle || `Need a professional driver for your own car in ${cityName}? Choose the service you need.`;
   const [services, setServices] = useState(CALL_DRIVER_SERVICES);
-  const [pageCopy, setPageCopy] = useState({ title, subtitle, intro, sections });
+  const [pageCopy, setPageCopy] = useState({ intro, sections });
+
+  useEffect(() => {
+    if (locating) return;
+    if (pathname.startsWith("/call-driver/book")) return;
+    const scoped = resolveScopedCity(selectedCity);
+    const slug = isLiveCallDriverCitySlug(scoped.slug) ? scoped.slug : "chennai";
+    const target = callDriverCityPath(slug);
+    if (target !== pathname) router.replace(target);
+  }, [locating, pathname, router, selectedCity]);
 
   useEffect(() => {
     let cancelled = false;
@@ -28,8 +49,6 @@ export default function CallDriverLanding({
         if (json.data.services) setServices(mergeCallDriverServices(json.data.services));
         if (json.data.page) {
           setPageCopy({
-            title: json.data.page.title || title,
-            subtitle: json.data.page.subtitle || subtitle,
             intro: json.data.page.intro || intro,
             sections: Array.isArray(json.data.page.sections) && json.data.page.sections.length ? json.data.page.sections : sections
           });
@@ -39,23 +58,17 @@ export default function CallDriverLanding({
     return () => {
       cancelled = true;
     };
-  }, [title, subtitle, intro, sections]);
+  }, [intro, sections]);
 
   return (
     <>
-      <CabziiBrowseHeader
-        title={pageCopy.title}
-        subtitle={pageCopy.subtitle}
-        icon={UserRound}
-        breadcrumbs={[
-          { name: "Home", path: "/" },
-          { name: "Call Driver", path: "/call-driver" }
-        ]}
-      />
+      <CabziiBrowseHeader title={heading} subtitle={lede} icon={UserRound} />
 
       <div className="section-shell py-5 sm:py-8">
-        <p className="mb-4 text-[13px] leading-relaxed text-slate-600 sm:mb-5 sm:text-sm">{pageCopy.intro}</p>
-        <CallDriverServiceGrid services={services} />
+        <p className="mb-4 text-[13px] leading-relaxed text-slate-600 sm:mb-5 sm:text-sm">
+          {pageCopy.intro} Call Driver in {cityName} uses the same packages — Cabzii assigns a driver after you confirm.
+        </p>
+        <CallDriverServiceGrid services={services} pickup={cityName} />
       </div>
 
       {showSeoCopy ? (
@@ -65,7 +78,7 @@ export default function CallDriverLanding({
               <section key={section.heading}>
                 {section.heading ? <h2 className="text-lg font-bold text-slate-900">{section.heading}</h2> : null}
                 {section.body ? (
-                  <div className="mt-2 [&_a]:font-semibold [&_a]:text-[var(--cabzii-brand)] [&_a]:hover:underline [&_ol]:mt-2 [&_ol]:list-decimal [&_ol]:space-y-1 [&_ol]:pl-5 [&_p]:mt-2" dangerouslySetInnerHTML={{ __html: section.body }} />
+                  <div className="mt-2 [&_a]:font-semibold [&_a]:text-[var(--cabzii-cta)] [&_a]:hover:underline [&_ol]:mt-2 [&_ol]:list-decimal [&_ol]:space-y-1 [&_ol]:pl-5 [&_p]:mt-2" dangerouslySetInnerHTML={{ __html: section.body }} />
                 ) : null}
               </section>
             ) : null

@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { resolveSiteSearchHref } from "../../lib/siteSearch";
 
-const PLACEHOLDER = "Search cabs, buses, drivers, holidays...";
+const PLACEHOLDER = "Search cabs, buses, drivers, routes...";
 
 function SearchLineIcon({ className = "h-5 w-5" }) {
   return (

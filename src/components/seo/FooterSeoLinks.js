@@ -11,7 +11,6 @@ import {
 const QUICK_PILLS = [
   { href: "/cabs", label: "Cabs" },
   { href: "/tariff", label: "Tariff" },
-  { href: "/holidays", label: "Holidays" },
   { href: "/call-driver", label: "Call Driver" },
   { href: "/locations", label: "Locations" },
   { href: "/blogs", label: "Blog" }
@@ -26,7 +25,7 @@ function FooterLinkList({ title, items }) {
           <li key={item.href} className="shrink-0 sm:shrink">
             <Link
               href={item.href}
-              className="inline-block whitespace-nowrap rounded-full border border-slate-700 bg-slate-900 px-3 py-1 text-xs hover:border-sky-500 hover:text-sky-400 sm:block sm:rounded-none sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:text-sm"
+              className="inline-block whitespace-nowrap rounded-full border border-slate-700 bg-slate-900 px-3 py-1 text-xs hover:border-[var(--cabzii-cta)] hover:text-[var(--cabzii-cta)] sm:block sm:rounded-none sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:text-sm"
             >
               {item.label}
             </Link>
@@ -51,7 +50,7 @@ export default function FooterSeoLinks() {
           <Link
             key={item.href}
             href={item.href}
-            className="rounded-full border border-slate-700 bg-slate-900 px-3 py-1 text-xs font-semibold text-slate-300 transition hover:border-sky-500 hover:text-sky-400"
+            className="rounded-full border border-slate-700 bg-slate-900 px-3 py-1 text-xs font-semibold text-slate-300 transition hover:border-[var(--cabzii-cta)] hover:text-[var(--cabzii-cta)]"
           >
             {item.label}
           </Link>

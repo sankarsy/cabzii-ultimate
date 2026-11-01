@@ -4,7 +4,7 @@ export const BRAND = {
   domain: "cabzii.in",
   fullName: "Cabzii — cabzii.in",
   copyrightHolder: "UrbanWolf Technologies",
-  tagline: "Premium taxi, airport & temple tour packages across South India",
+  tagline: "Premium taxi, airport, outstation and acting driver booking across South India",
   logoTagline: "Book. Ride. Explore.",
   supportEmail: "support@cabzii.com",
   gstin: "GST registered travel services",
@@ -16,12 +16,12 @@ export const BRAND = {
   accent: "#00c2cb"
 };
 
+/** Live join page — https://www.cabzii.in/earn — same form those partner WhatsApp enquiries used. */
 export const EARN_NAV = { href: "/earn", label: "Earn with Cabzii" };
 
 export const NAV_LINKS = [
   { href: "/cabs", label: "Cabs" },
   { href: "/call-driver", label: "Call Driver" },
   { href: "/buses", label: "Buses" },
-  { href: "/holidays", label: "Holidays" },
   EARN_NAV
 ];

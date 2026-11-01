@@ -10,7 +10,7 @@ export const DEFAULT_CALL_DRIVER_PAGE = {
     },
     {
       heading: "How to book",
-      body: "<ol><li>Choose the Call Driver service you need</li><li>Enter date, time, pickup and vehicle details</li><li>Review the estimated fare (or request a quote for monthly and corporate work)</li><li>Confirm the booking — Cabzii assigns an available driver</li></ol>"
+      body: "<ol><li>Choose the Call Driver service you need</li><li>Enter client details, date, time, pickup and vehicle details</li><li>Review the estimated fare (or request a quote for monthly and corporate work)</li><li>Confirm the booking — Cabzii assigns an available driver</li></ol>"
     },
     {
       heading: "Outstation, airport, monthly and corporate",

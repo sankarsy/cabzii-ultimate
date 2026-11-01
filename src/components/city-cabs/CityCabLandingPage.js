@@ -5,7 +5,7 @@ import DynamicPageHub from "../seo/DynamicPageHub";
 import { CityServiceGrid, LinkChips, PlaceGrid, RouteFareGrid, WhyGrid } from "./CityLandingBlocks";
 import { actingDriverLandingPath, airportTaxiPublicPath } from "../../lib/cityCabPaths";
 import { cityServiceLinks } from "../../lib/cityShowcase";
-import { CalendarCheck, Clock3, IndianRupee, MapPin, ShieldCheck, Smartphone } from "lucide-react";
+import { CalendarCheck, Clock3, IndianRupee, MapPin, ShieldCheck, Smartphone } from "../icons/rscIcons";
 
 export default function CityCabLandingPage({ data, cabs = [], quotes = [] }) {
   const { city } = data;
@@ -15,7 +15,10 @@ export default function CityCabLandingPage({ data, cabs = [], quotes = [] }) {
     <div>
       <div className="bg-[#f4f6fa]">
         <div className="section-shell pt-6 pb-2 sm:pt-8">
-          <h1 className="px-1 text-center text-lg font-extrabold leading-tight tracking-tight text-slate-900 sm:text-2xl md:text-[1.75rem]">
+          <p className="text-center text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--cabzii-cta)]">
+            Cab booking · {city.name}
+          </p>
+          <h1 className="mt-1 px-1 text-center text-lg font-extrabold leading-tight tracking-tight text-slate-900 sm:text-2xl md:text-[1.75rem]">
             {data.h1}
           </h1>
           <p className="mx-auto mt-2 max-w-2xl px-1 text-center text-sm text-slate-500">

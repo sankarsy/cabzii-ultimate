@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Star, ShieldCheck, ChevronDown } from "lucide-react";
+import { Star, ShieldCheck, ChevronDown } from "../icons/rscIcons";
 import { cacheBusTrip } from "../../lib/busCatalog";
 import { SeatAvailabilityStrip } from "../bus/BusSeatMap";
 

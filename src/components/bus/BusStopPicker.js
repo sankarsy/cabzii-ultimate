@@ -1,6 +1,6 @@
 "use client";
 
-import { MapPin } from "lucide-react";
+import { MapPin } from "../icons/rscIcons";
 import { cn } from "../../lib/emt/cn";
 import { RadioOption } from "../ui/RadioOption";
 

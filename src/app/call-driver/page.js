@@ -45,7 +45,12 @@ export default async function CallDriverPage() {
     <>
       <JsonLd data={jsonLd} />
       <SeoPageView pageType="call-driver" city="chennai" service="acting-driver" />
-      <CallDriverLanding showSeoCopy title={page.title} subtitle={page.subtitle} intro={page.intro} sections={page.sections} />
+      <CallDriverLanding
+        showSeoCopy
+        city={{ slug: "chennai", name: "Chennai" }}
+        intro={page.intro}
+        sections={page.sections}
+      />
     </>
   );
 }

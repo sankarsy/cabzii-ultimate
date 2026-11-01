@@ -8,18 +8,17 @@ function SloganTagline({ onDark, compact }) {
 
   return (
     <span className={`mt-1 inline-flex items-center sm:mt-1.5 ${sizeClass}`}>
-      <span className="whitespace-nowrap font-medium not-italic tracking-wide">
-        <span className={bookColor}>Book.</span>{" "}
-        <span className={rideColor}>Ride.</span>{" "}
-        <span className={exploreColor}>Explore.</span>
+      <span className="whitespace-nowrap font-medium not-italic lowercase tracking-wide">
+        <span className={bookColor}>book.</span>{" "}
+        <span className={rideColor}>ride.</span>{" "}
+        <span className={exploreColor}>explore.</span>
       </span>
     </span>
   );
 }
 
 /**
- * Cabzii.in wordmark — EaseMyTrip-style layout (no icon).
- * Blue brand name · plain .in · optional “Book. Ride. Explore.” tagline with tricolor accents.
+ * cabzii.in wordmark — lowercase, Cabzii orange.
  */
 export default function CabziiLogo({
   className = "",
@@ -33,17 +32,18 @@ export default function CabziiLogo({
   void showIcon;
 
   const sizeClass = compact ? "text-lg" : "text-xl sm:text-2xl lg:text-[1.65rem]";
-  /* Navy header: bright blue wordmark; light footer: brand blue */
-  const nameColor = onDark ? "text-[#7ec4ff]" : "text-[var(--cabzii-brand)]";
+  const nameColor = onDark ? "text-orange-300" : "text-[var(--cabzii-cta)]";
 
   return (
     <span
       className={`inline-flex select-none flex-col leading-none ${className}`}
       aria-label={BRAND.fullName}
     >
-      <span className={`inline-flex items-baseline whitespace-nowrap font-bold tracking-tight ${sizeClass}`}>
-        <span className={nameColor}>Cabzii</span>
-        {showDomain ? <span className={nameColor}>.in</span> : null}
+      <span
+        className={`inline-flex items-baseline whitespace-nowrap font-bold lowercase tracking-tight ${sizeClass} ${nameColor}`}
+      >
+        <span>cabzii</span>
+        {showDomain ? <span>.in</span> : null}
       </span>
 
       {showTagline ? <SloganTagline onDark={onDark} compact={compact} /> : null}

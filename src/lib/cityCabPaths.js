@@ -96,3 +96,18 @@ export function seoCityPublicPath(pageType, citySlug) {
   if (pageType === "airport-cab-booking") return airportCabBookingPath(citySlug);
   return cityCabLandingPath(citySlug);
 }
+
+export const CALL_DRIVER_HUB_PATH = "/call-driver";
+export const CALL_DRIVER_RESERVED_SLUGS = ["book"];
+
+/** Booking-facing Call Driver city page. Chennai stays on /call-driver. */
+export function callDriverCityPath(citySlug) {
+  const slug = String(citySlug || "").toLowerCase();
+  if (!slug || slug === "chennai") return CALL_DRIVER_HUB_PATH;
+  return `${CALL_DRIVER_HUB_PATH}/${slug}`;
+}
+
+export function isLiveCallDriverCitySlug(citySlug) {
+  const slug = String(citySlug || "").toLowerCase();
+  return slug === "chennai" || ACTING_DRIVER_HUB_CITIES.includes(slug);
+}

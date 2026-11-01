@@ -1,5 +1,7 @@
+"use client";
+
 import Link from "next/link";
-import { Clock } from "lucide-react";
+import { Clock } from "./icons/rscIcons";
 import { getInitials } from "../lib/avatar";
 import { typo } from "../lib/typography";
 import { estimateReadMinutes } from "../lib/sampleContent";
@@ -12,11 +14,11 @@ export default function BlogCard({ post }) {
 
   return (
     <article className="group relative flex h-full min-h-[200px] flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
-      <div className="h-1 bg-[#0056D2]" />
+      <div className="h-1 bg-[var(--cabzii-cta)]" />
 
       <div className="flex flex-1 flex-col p-4">
         <div className="flex items-center justify-between gap-2">
-          <span className={`inline-flex w-fit rounded-full bg-[#0056D2]/10 px-2 py-0.5 ${typo.eyebrow}`}>
+          <span className={`inline-flex w-fit rounded-full bg-orange-50 px-2 py-0.5 ${typo.eyebrow}`}>
             {post.category || "Travel guide"}
           </span>
           <span className="inline-flex shrink-0 items-center gap-1 text-[11px] text-slate-400">
@@ -25,7 +27,7 @@ export default function BlogCard({ post }) {
         </div>
 
         <h3 className={`mt-2 line-clamp-2 ${typo.h3}`}>
-          <Link href={href} className="transition group-hover:text-[#0056D2]">
+          <Link href={href} className="transition group-hover:text-[var(--cabzii-cta)]">
             {post.title}
           </Link>
         </h3>

@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * Lucide React icon system — consistent stroke, size, and visual weight sitewide.
  * Use getIcon(key) for CMS-driven iconKey fields.
@@ -52,13 +54,13 @@ import {
   Newspaper,
   CircleUser,
   Nfc
-} from "lucide-react";
+} from "./rscIcons";
 
 const STROKE = 1.75;
 
 /** Default soft icon color — use on inline icons beside body text (never dark slate). */
 export const ICON_SOFT_CLASS = "text-slate-400";
-export const ICON_ACCENT_CLASS = "text-sky-400";
+export const ICON_ACCENT_CLASS = "text-[var(--cabzii-cta)]";
 export const ICON_SUCCESS_CLASS = "text-emerald-400";
 
 function wrapLucide(Icon, { fill } = {}) {

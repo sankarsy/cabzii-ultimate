@@ -1,5 +1,5 @@
 const DRIVER_PATH = /(?:^|\/)(call-driver|acting-driver|drivers)(?:\/|$)/;
-const VALID_TABS = new Set(["cabs", "drivers", "buses", "holidays"]);
+const VALID_TABS = new Set(["cabs", "drivers", "buses"]);
 
 export function resolveProductTab(tabParam) {
   const tab = String(tabParam || "").toLowerCase();
@@ -11,15 +11,16 @@ export function productTabFromPath(pathname, heroTab = "cabs") {
   if (path === "/" || path === "") return resolveProductTab(heroTab);
   if (DRIVER_PATH.test(path)) return "drivers";
   if (path.startsWith("/buses")) return "buses";
-  if (path.startsWith("/holidays") || path.startsWith("/tour-packages") || path.startsWith("/packages")) {
-    return "holidays";
-  }
+  if (path.startsWith("/earn")) return "";
   return "cabs";
 }
 
-export function productTabHref(tabId) {
-  if (tabId === "drivers") return "/call-driver";
+export function productTabHref(tabId, citySlug = "") {
+  if (tabId === "drivers") {
+    const slug = String(citySlug || "").toLowerCase();
+    if (slug && slug !== "chennai") return `/call-driver/${slug}`;
+    return "/call-driver";
+  }
   if (tabId === "buses") return "/buses";
-  if (tabId === "holidays") return "/holidays";
   return "/";
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ExternalLink, MapPin } from "lucide-react";
+import { ExternalLink, MapPin } from "../../icons/rscIcons";
 import { useAdminCities } from "../../../lib/admin/useAdminCities";
 import { actingDriverLandingPath, airportCabBookingPath, cityCabLandingPath } from "../../../lib/cityCabPaths";
 

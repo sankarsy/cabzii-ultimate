@@ -25,13 +25,13 @@ export default function ActingDriverHubSeo() {
         directory.
       </p>
       <div className="mt-4 flex flex-wrap gap-2">
-        <Link href="/call-driver" className="cabzii-btn cabzii-btn-primary cabzii-btn-sm">
+        <Link href="/call-driver" className="cabzii-btn cabzii-btn-cta cabzii-btn-sm">
           Book Call Driver
         </Link>
         <Link href="/acting-driver/chennai" className="cabzii-btn cabzii-btn-secondary cabzii-btn-sm">
           Acting driver in Chennai
         </Link>
-        <Link href="/tirupati/acting-driver" className="cabzii-btn cabzii-btn-secondary cabzii-btn-sm">
+        <Link href="/acting-driver/tirupati" className="cabzii-btn cabzii-btn-secondary cabzii-btn-sm">
           Acting driver in Tirupati
         </Link>
       </div>
@@ -56,7 +56,7 @@ export default function ActingDriverHubSeo() {
             <li key={item.href}>
               <Link
                 href={item.href}
-                className="inline-block rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 hover:border-sky-300"
+                className="inline-block rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 hover:border-[var(--cabzii-cta)]/40 hover:text-[var(--cabzii-cta)]"
               >
                 {item.label}
               </Link>

@@ -5,7 +5,7 @@ import { buildPageMetadata } from "../../lib/seo";
 
 export const metadata = buildPageMetadata({
   title: "Login",
-  description: "Sign in to Cabzii as a customer, travel partner, or admin.",
+  description: "Sign in to Cabzii with mobile OTP. Vendor and admin login links on the same page.",
   path: "/login",
   noindex: true
 });

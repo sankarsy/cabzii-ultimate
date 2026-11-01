@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Copy } from "lucide-react";
+import { Copy } from "../icons/rscIcons";
 import { getOfferIcon } from "../icons/heroIcons";
 import { formatOfferValidUntil } from "../../lib/offers";
 import { approxFromLabel } from "../../lib/approxPrice";
@@ -71,11 +71,11 @@ export default function ShowcaseCard({ card: o, section = "offers", layout = "ca
 
       <div className="flex min-h-[7.25rem] flex-col p-4">
         <p className="line-clamp-2 text-[13px] leading-relaxed text-slate-600">{o.desc}</p>
-        <div className="mt-auto flex items-center justify-between border-t border-slate-100 pt-3">
-          <span className="text-[11px] font-medium text-slate-400">
+        <div className="mt-auto flex flex-nowrap items-center justify-between gap-2 border-t border-slate-100 pt-3">
+          <span className="min-w-0 flex-1 truncate text-[11px] font-medium leading-none text-slate-400">
             {validUntilLabel ? `Valid till ${validUntilLabel}` : "Fares shown before you confirm"}
           </span>
-          <span className="inline-flex items-center gap-1 text-xs font-extrabold tracking-wide text-[var(--cabzii-brand)]">
+          <span className="inline-flex shrink-0 items-center gap-0.5 whitespace-nowrap rounded-full bg-blue-50 px-2.5 py-1 text-[11px] font-extrabold tracking-wide text-[var(--cabzii-brand)]">
             BOOK NOW
             <span aria-hidden className="transition-transform group-hover:translate-x-0.5">
               →

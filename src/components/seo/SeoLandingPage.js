@@ -27,7 +27,7 @@ export default function SeoLandingPage({ page, path, faqs = [] }) {
       ) : null}
 
       <div className="mt-4 flex flex-wrap gap-1.5">
-        <Link href={page.ctaHref || "/cabs"} className="cabzii-btn cabzii-btn-primary cabzii-btn-sm">
+        <Link href={page.ctaHref || "/cabs"} className="cabzii-btn cabzii-btn-cta cabzii-btn-sm">
           {page.ctaLabel || "Book now"}
         </Link>
         <Link href="/call-driver" className="cabzii-btn cabzii-btn-secondary cabzii-btn-sm">

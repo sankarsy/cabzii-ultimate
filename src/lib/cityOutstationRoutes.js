@@ -69,7 +69,7 @@ export function pickOutstationRoutes(citySlug, { direction = "from", limit = 10 
 
 /** Footer / hub links: origin → other cities only. Never city booking hubs. */
 export function popularRouteLinks(citySlug, limit = 8) {
-  return pickOutstationRoutes(citySlug, { direction: "from", limit }).map((route) => ({
+  return (pickOutstationRoutes(citySlug, { direction: "from", limit }) || []).map((route) => ({
     href: route.href,
     label: `${route.originName} → ${route.otherName}`
   }));

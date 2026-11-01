@@ -1,4 +1,4 @@
-import { Mail, MapPin, Phone } from "lucide-react";
+import { Mail, MapPin, Phone } from "../icons/rscIcons";
 import { ORG_ADDRESS, ORG_EMAIL, ORG_MAPS_URL, ORG_PHONE } from "../../lib/seo/constants";
 import { telUrl } from "../../lib/conversion";
 

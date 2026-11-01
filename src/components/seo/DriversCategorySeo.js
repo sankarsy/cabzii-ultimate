@@ -26,7 +26,7 @@ export default function DriversCategorySeo() {
       </p>
 
       <div className="mt-4 flex flex-wrap gap-2">
-        <Link href="/call-driver" className="cabzii-btn cabzii-btn-primary cabzii-btn-sm">
+        <Link href="/call-driver" className="cabzii-btn cabzii-btn-cta cabzii-btn-sm">
           Book Call Driver
         </Link>
         <Link href="/acting-driver" className="cabzii-btn cabzii-btn-secondary cabzii-btn-sm">
@@ -59,7 +59,7 @@ export default function DriversCategorySeo() {
             <li key={item.href}>
               <Link
                 href={item.href}
-                className="inline-block rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 hover:border-sky-300"
+                className="inline-block rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 hover:border-[var(--cabzii-cta)]/40"
               >
                 {item.label}
               </Link>
@@ -76,7 +76,7 @@ export default function DriversCategorySeo() {
               <li key={item.href}>
                 <Link
                   href={item.href}
-                  className="inline-block rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-800 hover:border-sky-300"
+                  className="inline-block rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-800 hover:border-[var(--cabzii-cta)]/40"
                 >
                   {item.label}
                 </Link>

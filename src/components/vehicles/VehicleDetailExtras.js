@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, MapPin, Shield } from "lucide-react";
+import { Check, MapPin, Shield } from "../icons/rscIcons";
 import FaqSection from "../seo/FaqSection";
 import { compactVehicleSeoHtml, normalizeSeoCity } from "../../lib/vehicleEnterpriseSeo";
 

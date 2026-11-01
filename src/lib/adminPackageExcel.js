@@ -7,10 +7,7 @@ import {
   driverFormFromItem,
   driverFormToPayload,
   emptyCabForm,
-  emptyDriverForm,
-  emptyTourPackageForm,
-  tourPackageFormFromItem,
-  tourPackageFormToPayload
+  emptyDriverForm
 } from "./adminCatalogConfig";
 
 function num(v) {
@@ -83,37 +80,9 @@ const DRIVER_BASE_COLUMNS = [
   "seoDescription"
 ];
 
-const PACKAGE_BASE_COLUMNS = [
-  "id",
-  "name",
-  "vendor",
-  "category",
-  "duration",
-  "price",
-  "originalPrice",
-  "discountPercentage",
-  "hourlyRate",
-  "dayRate",
-  "extraHourRate",
-  "city",
-  "location",
-  "state",
-  "destination",
-  "days",
-  "nights",
-  "status",
-  "slug",
-  "image",
-  "tags",
-  "description",
-  "seoTitle",
-  "seoDescription"
-];
-
 export const EXCEL_SHEETS = {
   cabs: "Cabs",
-  drivers: "Drivers",
-  packages: "HolidayPackages"
+  drivers: "Drivers"
 };
 
 function writePkgColumns(row, prefix, fields, packages) {
@@ -171,29 +140,12 @@ export function driverItemToRow(item) {
   return row;
 }
 
-export function packageItemToRow(item) {
-  const form = tourPackageFormFromItem(item);
-  const row = { id: str(item._id || item.id) };
-  for (const col of PACKAGE_BASE_COLUMNS.filter((c) => c !== "id")) {
-    if (col === "tags") {
-      row.tags = Array.isArray(item.tags) ? item.tags.join(", ") : str(form.tags);
-    } else {
-      row[col] = form[col] ?? item[col] ?? "";
-    }
-  }
-  return row;
-}
-
 function cabColumns() {
   return [...CAB_BASE_COLUMNS, ...pkgPrefixFields("pkg", CAB_PACKAGE_FIELDS)];
 }
 
 function driverColumns() {
   return [...DRIVER_BASE_COLUMNS, ...pkgPrefixFields("pkg", DRIVER_PACKAGE_FIELDS)];
-}
-
-function packageColumns() {
-  return PACKAGE_BASE_COLUMNS;
 }
 
 function rowsToSheet(rows, columns) {
@@ -229,19 +181,13 @@ export function downloadTabExcel(tabKey, items) {
     ]);
     return;
   }
-  if (tabKey === "packages") {
-    downloadExcelWorkbook(`cabzii-holiday-packages-${stamp}.xlsx`, [
-      { name: EXCEL_SHEETS.packages, rows: items.map(packageItemToRow), columns: packageColumns() }
-    ]);
-  }
 }
 
-export function downloadAllPackagesExcel({ cabs = [], drivers = [], packages = [] }) {
+export function downloadAllPackagesExcel({ cabs = [], drivers = [] }) {
   const stamp = new Date().toISOString().slice(0, 10);
   downloadExcelWorkbook(`cabzii-all-packages-${stamp}.xlsx`, [
     { name: EXCEL_SHEETS.cabs, rows: cabs.map(cabItemToRow), columns: cabColumns() },
-    { name: EXCEL_SHEETS.drivers, rows: drivers.map(driverItemToRow), columns: driverColumns() },
-    { name: EXCEL_SHEETS.packages, rows: packages.map(packageItemToRow), columns: packageColumns() }
+    { name: EXCEL_SHEETS.drivers, rows: drivers.map(driverItemToRow), columns: driverColumns() }
   ]);
 }
 
@@ -260,7 +206,6 @@ export function parseExcelFile(file) {
         resolve({
           cabs: sheetToRows(wb.Sheets[EXCEL_SHEETS.cabs]),
           drivers: sheetToRows(wb.Sheets[EXCEL_SHEETS.drivers]),
-          packages: sheetToRows(wb.Sheets[EXCEL_SHEETS.packages]),
           singleSheet: wb.SheetNames.length === 1 ? sheetToRows(wb.Sheets[wb.SheetNames[0]]) : [],
           sheetNames: wb.SheetNames
         });
@@ -327,34 +272,6 @@ export function rowToDriverPayload(row) {
   return driverFormToPayload(form);
 }
 
-export function rowToPackagePayload(row) {
-  const form = emptyTourPackageForm();
-  form.name = str(row.name);
-  form.vendor = str(row.vendor);
-  form.category = str(row.category) || "pilgrimage";
-  form.duration = str(row.duration);
-  form.price = num(row.price);
-  form.originalPrice = num(row.originalPrice);
-  form.discountPercentage = num(row.discountPercentage);
-  form.hourlyRate = num(row.hourlyRate);
-  form.dayRate = num(row.dayRate);
-  form.extraHourRate = num(row.extraHourRate);
-  form.city = str(row.city);
-  form.location = str(row.location);
-  form.state = str(row.state);
-  form.destination = str(row.destination);
-  form.days = num(row.days);
-  form.nights = num(row.nights);
-  form.status = str(row.status).toLowerCase() === "inactive" ? "inactive" : "active";
-  form.slug = str(row.slug);
-  form.image = str(row.image);
-  form.tags = str(row.tags);
-  form.description = str(row.description);
-  form.seoTitle = str(row.seoTitle);
-  form.seoDescription = str(row.seoDescription);
-  return tourPackageFormToPayload(form);
-}
-
 function isEmptyRow(row) {
   const values = Object.values(row || {}).filter((v) => str(v) !== "");
   return values.length === 0;
@@ -366,8 +283,7 @@ export async function importPackageRows({ tabKey, rows, apiBase, authHeaders, on
   let updated = 0;
   const errors = [];
 
-  const rowToPayload =
-    tabKey === "cabs" ? rowToCabPayload : tabKey === "drivers" ? rowToDriverPayload : rowToPackagePayload;
+  const rowToPayload = tabKey === "cabs" ? rowToCabPayload : rowToDriverPayload;
 
   for (let i = 0; i < list.length; i += 1) {
     const row = list[i];
@@ -380,7 +296,6 @@ export async function importPackageRows({ tabKey, rows, apiBase, authHeaders, on
 
       if (tabKey === "cabs" && !payload.title) throw new Error("title is required");
       if (tabKey === "drivers" && !payload.name) throw new Error("name is required");
-      if (tabKey === "packages" && !payload.name) throw new Error("name is required");
 
       const res = await fetch(url, {
         method,
@@ -405,11 +320,11 @@ export async function importPackageRows({ tabKey, rows, apiBase, authHeaders, on
 export async function importAllPackagesFromWorkbook({ parsed, authHeaders, onProgress }) {
   const jobs = [
     { tabKey: "cabs", rows: parsed.cabs?.length ? parsed.cabs : [], base: "/api/cabs" },
-    { tabKey: "packages", rows: parsed.packages?.length ? parsed.packages : [], base: "/api/packages" }
+    { tabKey: "drivers", rows: parsed.drivers?.length ? parsed.drivers : [], base: "/api/drivers" }
   ];
 
   if (parsed.singleSheet?.length && parsed.sheetNames?.length === 1) {
-    return { imported: 0, updated: 0, errors: [{ row: 0, message: "Use Cabzii export file with Cabs, Drivers and HolidayPackages sheets, or upload from the matching tab." }], total: 0 };
+    return { imported: 0, updated: 0, errors: [{ row: 0, message: "Use a Cabzii export file with Cabs and Drivers sheets, or upload from the matching tab." }], total: 0 };
   }
 
   let imported = 0;

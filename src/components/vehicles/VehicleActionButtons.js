@@ -1,6 +1,6 @@
 "use client";
 
-import { Heart } from "lucide-react";
+import { Heart } from "../icons/rscIcons";
 import { toast } from "react-toastify";
 import { useVehicleWishlist } from "../../lib/useVehicleWishlist";
 

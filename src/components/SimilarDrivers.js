@@ -47,7 +47,7 @@ export default function SimilarDrivers({ currentDriverId, vendor }) {
             Other verified drivers{vendor ? ` from ${vendor} and partners` : " available to book"}.
           </p>
         </div>
-        <Link href="/call-driver" className="text-xs font-semibold text-[#0056D2] hover:underline">
+        <Link href="/call-driver" className="text-xs font-semibold text-[var(--cabzii-cta)] hover:underline">
           View all drivers →
         </Link>
       </div>
@@ -67,7 +67,7 @@ export default function SimilarDrivers({ currentDriverId, vendor }) {
               <Link
                 key={id}
                 href={catalogPublicPath(driver, "/drivers")}
-                className="group overflow-hidden rounded-xl border border-slate-200 bg-white transition hover:border-[#0056D2]/40 hover:shadow-md"
+                className="group overflow-hidden rounded-xl border border-slate-200 bg-white transition hover:border-[var(--cabzii-cta)]/40 hover:shadow-md"
               >
                 <img
                   src={img}
@@ -75,10 +75,10 @@ export default function SimilarDrivers({ currentDriverId, vendor }) {
                   className="h-24 w-full object-cover transition group-hover:scale-[1.02]"
                 />
                 <div className="p-3">
-                  <p className="text-xs font-semibold text-[#0056D2]">Driver</p>
+                  <p className="text-xs font-semibold text-[var(--cabzii-cta)]">Driver</p>
                   <h3 className="mt-0.5 line-clamp-1 text-sm font-bold text-slate-900">{driver.name}</h3>
                   <p className="text-[11px] text-slate-500">by {driver.vendor || "Cabzii"}</p>
-                  <p className="mt-2 text-sm font-bold text-[#0056D2]">
+                  <p className="mt-2 text-sm font-bold text-[var(--cabzii-cta)]">
                     From ₹{youPay.toLocaleString("en-IN")}
                     {discount > 0 ? (
                       <span className="ml-1 text-[10px] font-normal text-slate-600">{discount}% OFF</span>

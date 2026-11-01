@@ -15,19 +15,19 @@ export const DEFAULT_SITE_SETTINGS = {
     { label: "Cabs", href: "/cabs", visible: true, sortOrder: 2 },
     { label: "Buses", href: "/buses", visible: true, sortOrder: 3 },
     { label: "Call Driver", href: "/call-driver", visible: true, sortOrder: 4 },
-    { label: "Holidays", href: "/holidays", visible: true, sortOrder: 5 },
-    { label: "Earn with Cabzii", href: "/earn", visible: true, sortOrder: 6 }
+    { label: "Earn with Cabzii", href: "/earn", visible: true, sortOrder: 5 }
   ],
   footerQuickLinks: [
     { label: "Home", href: "/" },
     { label: "Cabs", href: "/cabs" },
     { label: "Buses", href: "/buses" },
-    { label: "Holidays", href: "/holidays" },
     { label: "Call Driver", href: "/call-driver" },
     { label: "Blog", href: "/blogs" },
     { label: "Reviews", href: "/testimonials" },
     { label: "Locations", href: "/locations" },
-    { label: "Earn with Cabzii", href: "/earn" }
+    { label: "Earn with Cabzii", href: "/earn" },
+    { label: "Vendor login", href: "/login?role=partner" },
+    { label: "Admin login", href: "/login?role=admin" }
   ],
   footerLegalLinks: [
     { label: "Terms and Conditions", href: "/terms-and-conditions" },
@@ -44,13 +44,12 @@ export const DEFAULT_SITE_SETTINGS = {
     promoBadge: "",
     promoTitle: "",
     promoSubtitle: "Transparent fares",
-    searchPlaceholder: "Search cabs or tours...",
+    searchPlaceholder: "Search cabs, drivers or routes...",
     tabs: [
       { id: "outstation", label: "Outstation" },
       { id: "local", label: "Local" },
       { id: "airport", label: "Airport" },
-      { id: "rental", label: "Rental" },
-      { id: "tour", label: "Tours" }
+      { id: "rental", label: "Rental" }
     ],
     cabTypes: ["Sedan", "SUV", "Innova"],
     trustBadges: [
@@ -103,16 +102,6 @@ export const DEFAULT_SITE_SETTINGS = {
       limit: 6,
       sortOrder: 2,
       viewAllHref: "/call-driver"
-    },
-    {
-      key: "holidays",
-      enabled: true,
-      eyebrow: "Holiday Packages",
-      title: "Pilgrimage & Getaways",
-      subtitle: "Pilgrimage, beach and hill packages with cab type selection.",
-      limit: 6,
-      sortOrder: 3,
-      viewAllHref: "/holidays"
     },
     {
       key: "testimonials",

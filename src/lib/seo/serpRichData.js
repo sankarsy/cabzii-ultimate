@@ -1,6 +1,5 @@
 import { formatInrCurrency } from "../formatInr";
 import { formatCabSeatLabel } from "../cabSeats";
-import { packageDisplayPrice } from "../tourPackagePricing";
 
 /** Default fleet shown on service landing pages (matches Google rich-result attribute rows). */
 export const DEFAULT_SERVICE_FLEET = ["Swift Dzire Tour S", "Wagon R", "Bolero", "Ertiga", "Innova Crysta"];
@@ -84,39 +83,6 @@ export function vehicleSerpBadges(cab) {
         schemaValue: formatInrCurrency(cab.price)
       });
     }
-  }
-  return badges;
-}
-
-/** Tour package attribute pills. */
-export function tourPackageSerpBadges(pkg) {
-  if (!pkg) return [];
-  const badges = [];
-  const duration = pkg.duration || pkg.days || pkg.nights;
-  if (duration) {
-    badges.push({ label: String(duration), schemaName: "Duration", schemaValue: String(duration) });
-  } else if (pkg.category) {
-    badges.push({ label: "2 Days / 3 Days", schemaName: "Duration", schemaValue: "Multi-day tour" });
-  }
-  if (Array.isArray(pkg.inclusions) && pkg.inclusions.length) {
-    for (const item of pkg.inclusions.slice(0, 4)) {
-      badges.push({ label: item, schemaName: "Inclusion", schemaValue: item });
-    }
-  } else {
-    badges.push(
-      { label: "Hotel", schemaName: "Inclusion", schemaValue: "Hotel stay options" },
-      { label: "Sightseeing", schemaName: "Inclusion", schemaValue: "Sightseeing included" },
-      { label: "Meals", schemaName: "Inclusion", schemaValue: "Meal plans available" },
-      { label: "Customizable", schemaName: "Customization", schemaValue: "Customizable itinerary" }
-    );
-  }
-  const fromPrice = packageDisplayPrice(pkg);
-  if (fromPrice > 0) {
-    badges.unshift({
-      label: formatSerpPrice(fromPrice, { prefix: "From" }),
-      schemaName: "Starting price",
-      schemaValue: formatInrCurrency(fromPrice)
-    });
   }
   return badges;
 }

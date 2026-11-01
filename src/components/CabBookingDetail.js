@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Star } from "lucide-react";
+import { Star } from "./icons/rscIcons";
 import PackageOptionCard from "./PackageOptionCard";
 import AdditionalChargesGrid from "./AdditionalChargesGrid";
 import ApproxPriceNote from "./ui/ApproxPriceNote";
@@ -156,7 +156,7 @@ function ServiceToggle({ serviceTab, setServiceTab }) {
         type="button"
         onClick={() => setServiceTab("local")}
         className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold transition sm:px-3.5 sm:py-1.5 sm:text-xs ${
-          serviceTab === "local" ? "bg-[#0056D2] text-white shadow-sm" : "text-slate-500 hover:text-slate-700"
+          serviceTab === "local" ? "bg-[var(--cabzii-cta)] text-white shadow-sm" : "text-slate-500 hover:text-slate-700"
         }`}
       >
         <PinIcon className="h-3 w-3 text-current sm:h-3.5 sm:w-3.5" />
@@ -166,7 +166,7 @@ function ServiceToggle({ serviceTab, setServiceTab }) {
         type="button"
         onClick={() => setServiceTab("outstation")}
         className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold transition sm:px-3.5 sm:py-1.5 sm:text-xs ${
-          serviceTab === "outstation" ? "bg-[#0056D2] text-white shadow-sm" : "text-slate-500 hover:text-slate-700"
+          serviceTab === "outstation" ? "bg-[var(--cabzii-cta)] text-white shadow-sm" : "text-slate-500 hover:text-slate-700"
         }`}
       >
         <RoadIcon className="h-3 w-3 text-current sm:h-3.5 sm:w-3.5" />

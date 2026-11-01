@@ -1,6 +1,6 @@
 "use client";
 
-import { ShipWheel } from "lucide-react";
+import { ShipWheel } from "../icons/rscIcons";
 import { cn } from "../../lib/emt/cn";
 import { seatPrice } from "../../lib/busBooking";
 

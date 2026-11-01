@@ -1,8 +1,5 @@
 import MmtHomePage from "../components/mmt/MmtHomePage";
 import JsonLd from "../components/seo/JsonLd";
-import SocialProofTicker from "../components/conversion/SocialProofTicker";
-import TrustStrip from "../components/ui/TrustStrip";
-import HomeBelowFold from "../components/home/HomeBelowFold";
 import { breadcrumbJsonLd, faqJsonLd, HQ_GEO, localBusinessJsonLd } from "../lib/seo";
 import { buildMetadataForPath } from "../lib/seo/resolvePageSeo";
 import { fetchSiteSettings } from "../lib/serverSiteSettings";
@@ -37,17 +34,13 @@ export default async function Page() {
   return (
     <>
       <JsonLd data={[breadcrumbJsonLd([{ name: "Home", path: "/" }]), faqJsonLd(), localBusinessJsonLd("Chennai", "Tamil Nadu", "/", HQ_GEO)]} />
-      <MmtHomePage>
-        <SocialProofTicker />
-        <TrustStrip />
-        <HomeBelowFold
-          cabs={cabs}
-          showcase={{ offers, services, routes }}
-          blogs={blogs}
-          callDriverServices={callDriverServices}
-          siteSettings={siteSettings}
-        />
-      </MmtHomePage>
+      <MmtHomePage
+        cabs={cabs}
+        showcase={{ offers, services, routes }}
+        blogs={blogs}
+        callDriverServices={callDriverServices}
+        siteSettings={siteSettings}
+      />
     </>
   );
 }

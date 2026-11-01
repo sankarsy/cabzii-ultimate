@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { BadgeCheck } from "lucide-react";
+import { BadgeCheck } from "../icons/rscIcons";
 import StarRating from "../reviews/StarRating";
 import { trackEvent } from "../../lib/analytics";
 

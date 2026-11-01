@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
+  buildLoginHref,
   isValidOtp,
   normalizeMobileInput,
   sanitizeMobileInput,
@@ -32,8 +34,9 @@ export default function OtpLogin({
   onBack,
   loginAs,
   title = "Customer Login",
-  subtitle = "Book cabs, tours & drivers with your 6-digit mobile OTP.",
-  showWhatsAppQuote = true
+  subtitle = "Book cabs and drivers with your 6-digit mobile OTP.",
+  showWhatsAppQuote = true,
+  showRoleLinks = false
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -304,18 +307,18 @@ export default function OtpLogin({
 
   return (
     <div className="mx-auto w-full max-w-md px-4">
-      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-lg sm:p-8">
+      <div className="cabzii-card p-6 sm:p-8">
         {onBack ? (
           <button
             type="button"
             onClick={onBack}
-            className="mb-4 text-sm font-medium text-[#0056D2] hover:underline"
+            className="mb-4 text-sm font-medium text-[var(--cabzii-cta)] hover:underline"
           >
-            ← Back to login options
+            ← Back
           </button>
         ) : null}
         <div className="mb-6 text-center">
-          <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-sky-50 text-sky-400">
+          <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-orange-50 text-[var(--cabzii-cta)]">
             <PhoneIcon className="h-6 w-6" />
           </span>
           <h1 className="mt-3 text-xl font-bold text-slate-900">{allowQuote ? "Continue Booking" : title}</h1>
@@ -328,7 +331,7 @@ export default function OtpLogin({
               <label htmlFor="login-mobile" className="mb-1.5 block text-xs font-semibold text-slate-600">
                 Mobile number
               </label>
-              <div className="flex overflow-hidden rounded-xl border border-slate-200 focus-within:border-[#0056D2] focus-within:ring-2 focus-within:ring-blue-100">
+              <div className="flex overflow-hidden rounded-xl border border-slate-200 focus-within:border-[var(--cabzii-cta)] focus-within:ring-2 focus-within:ring-orange-100">
                 <span className="flex items-center bg-slate-50 px-3 text-sm font-medium text-slate-600">+91</span>
                 <input
                   id="login-mobile"
@@ -349,7 +352,7 @@ export default function OtpLogin({
               type="button"
               disabled={loading || sanitizeMobileInput(mobile).length !== 10}
               onClick={sendOtp}
-              className="h-11 w-full rounded-xl bg-[#0056D2] text-sm font-bold text-white transition hover:bg-[#0047b3] disabled:opacity-60"
+              className="cabzii-btn cabzii-btn-cta cabzii-tap h-11 w-full"
             >
               {loading ? "Sending…" : "Send OTP"}
             </button>
@@ -392,7 +395,7 @@ export default function OtpLogin({
                   disabled={loading}
                   onChange={(e) => handleOtpChange(index, e.target.value)}
                   onKeyDown={(e) => handleOtpKeyDown(index, e)}
-                  className="h-12 w-10 rounded-xl border border-slate-200 text-center text-lg font-bold text-slate-900 outline-none focus:border-[#0056D2] focus:ring-2 focus:ring-blue-100 disabled:opacity-60 sm:w-11"
+                  className="h-12 w-10 rounded-xl border border-slate-200 text-center text-lg font-bold text-slate-900 outline-none focus:border-[var(--cabzii-cta)] focus:ring-2 focus:ring-orange-100 disabled:opacity-60 sm:w-11"
                   aria-label={`OTP digit ${index + 1}`}
                 />
               ))}
@@ -401,14 +404,14 @@ export default function OtpLogin({
               type="button"
               disabled={loading || !isValidOtp(otpValue)}
               onClick={verifyOtp}
-              className="h-12 w-full rounded-xl bg-[#0056D2] text-sm font-bold text-white transition hover:bg-[#0047b3] disabled:opacity-60"
+              className="cabzii-btn cabzii-btn-cta cabzii-tap h-12 w-full"
             >
               {loading ? "Verifying…" : "Verify & Login"}
             </button>
             <div className="flex items-center justify-between text-xs">
               <button
                 type="button"
-                className="font-medium text-slate-600 hover:text-[#0056D2]"
+                className="font-medium text-slate-600 hover:text-[var(--cabzii-cta)]"
                 onClick={() => {
                   setStep("mobile");
                   setOtpDigits(["", "", "", "", "", ""]);
@@ -422,7 +425,7 @@ export default function OtpLogin({
                 type="button"
                 disabled={resendIn > 0 || loading}
                 onClick={sendOtp}
-                className="font-semibold text-[#0056D2] disabled:text-slate-400"
+                className="font-semibold text-[var(--cabzii-cta)] disabled:text-slate-400"
               >
                 {resendIn > 0 ? `Resend in ${resendIn}s` : "Resend OTP"}
               </button>
@@ -451,6 +454,16 @@ export default function OtpLogin({
         {error ? <p className="mt-3 rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-800">{error}</p> : null}
         {message && !error ? (
           <p className="mt-3 rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-800">{message}</p>
+        ) : null}
+        {showRoleLinks ? (
+          <p className="mt-4 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs font-semibold">
+            <Link href={buildLoginHref(nextUrl, "partner")} className="text-[var(--cabzii-cta)] hover:underline">
+              Vendor login
+            </Link>
+            <Link href={buildLoginHref(nextUrl, "admin")} className="text-[var(--cabzii-cta)] hover:underline">
+              Admin login
+            </Link>
+          </p>
         ) : null}
       </div>
     </div>

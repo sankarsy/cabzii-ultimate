@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Car, ChevronDown, Clock3, ListFilter, ArrowUpDown, ShieldCheck, Sparkles, X } from "lucide-react";
+import { ArrowUpDown, Car, ChevronDown, Clock3, ListFilter, ShieldCheck, Sparkles, X } from "../icons/rscIcons";
 import { buildFareSlabs, formatRating } from "../../lib/cabFare";
 import { resolveCabTripFare } from "../../lib/distanceFare";
 import { getCabVehicleName } from "../../lib/catalogDisplay";

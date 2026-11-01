@@ -63,21 +63,30 @@ export const PAYMENT_SECTIONS = [
 export const OFFER_COUPONS = [
   {
     code: "CABZII500",
-    title: "CABZII500",
-    desc: "Get ₹500 OFF on your first outstation cab booking!",
-    save: "Save ₹500 on this ride."
+    title: "₹500 OFF",
+    desc: "₹500 off your first outstation cab booking of ₹1,500 or more.",
+    save: "Save ₹500 on this ride.",
+    amountLabel: "₹500 OFF",
+    minOrder: 1500,
+    offHint: "₹500"
   },
   {
     code: "FIRST100",
-    title: "FIRST100",
-    desc: "Flat ₹100 OFF for new users on local packages.",
-    save: "Save ₹100 on this ride."
+    title: "₹100 OFF",
+    desc: "Flat ₹100 off for new users on local / hourly packages.",
+    save: "Save ₹100 on this ride.",
+    amountLabel: "₹100 OFF",
+    minOrder: 0,
+    offHint: "₹100"
   },
   {
     code: "WEEKEND10",
-    title: "WEEKEND10",
-    desc: "10% OFF on weekend airport transfers.",
-    save: "Save 10% on this ride."
+    title: "10% OFF",
+    desc: "10% off weekend airport transfers (max ₹400).",
+    save: "Save 10% on this ride.",
+    amountLabel: "10% OFF",
+    minOrder: 0,
+    offHint: "10%"
   }
 ];
 

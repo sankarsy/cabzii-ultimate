@@ -52,16 +52,6 @@ export const DOMESTIC_OFFERS = [
     code: "CABOUT20"
   },
   {
-    tag: "TEMPLE TOURS",
-    title: "Tirupati package from ₹4,999",
-    desc: "Darshan trips with pickup from home and flexible timings.",
-    iconKey: "holiday",
-    color: "from-rose-500 to-pink-400",
-    image: "/images/offers/offer-tirupati.webp",
-    href: "/tour-packages/tirupati-balaji-darshan-tirupati",
-    code: "TIRUPATI"
-  },
-  {
     tag: "ONE WAY",
     title: "Chennai → Tirupati one-way",
     desc: "Pay only for one side — transparent upfront fares with no hidden charges.",
@@ -91,16 +81,6 @@ export const DOMESTIC_OFFERS = [
     href: "/call-driver",
     code: "DRIVER900"
   },
-  {
-    tag: "PILGRIMAGE",
-    title: "Rameswaram & Madurai tours",
-    desc: "South India temple tour packages with comfortable cabs & planned halts.",
-    iconKey: "holiday",
-    color: "from-amber-500 to-orange-400",
-    image: "/images/offers/offer-rameswaram.webp",
-    href: "/holidays?category=pilgrimage",
-    code: "TEMPLE"
-  }
 ];
 
 const CITY_SERVICE_EXTRAS = {

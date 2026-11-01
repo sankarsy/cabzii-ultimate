@@ -1,6 +1,5 @@
 import { inferCitySlugFromText, isSeoScopeCity } from "../../config/seo-scope";
 import { mergeStaticSeoRoutes, mergeStaticSeoServices } from "../adminCatalogConfig";
-import { previewCatalogSlug } from "../catalogProduct";
 import { programmaticPageSeoDefaults } from "./adminSeoDefaults";
 import { STATIC_PAGE_SEO_LIST } from "./pageSeoCatalog";
 import { listProgrammaticSeoPages } from "./seoPagesCatalog";
@@ -62,29 +61,6 @@ export function buildSeoPageIndex(data = {}) {
 
   const routeRows = mergeStaticSeoRoutes(data.seoRoutes || []);
   const routeBySlug = new Map(routeRows.map((r) => [r.slug, r]));
-
-  for (const pkg of data.packages || []) {
-    const id = String(pkg._id || pkg.id || "");
-    const slug = pkg.slug || previewCatalogSlug(pkg, "name", "city") || id;
-    rows.push({
-      id: `tour:${id}`,
-      type: "tour",
-      typeLabel: "Tour package",
-      productName: pkg.name || "Tour package",
-      seoTitle: pkg.seoTitle || pkg.name || "",
-      seoDescription: pkg.seoDescription || "",
-      seoKeywords: pkg.seo || "",
-      path: `/tour-packages/${slug}`,
-      citySlug: inferCitySlugFromText(pkg.city || pkg.destination || pkg.location || pkg.name || slug),
-      source: pkg.seoTitle || pkg.seo ? "catalog" : "auto",
-      adminTab: "packages",
-      editId: id,
-      createHref: `/admin?tab=packages&mode=create`,
-      canDelete: true,
-      seoStatus: seoStatus(pkg),
-      sourceLabel: sourceLabel(pkg.seoTitle || pkg.seo ? "catalog" : "auto")
-    });
-  }
 
   for (const blog of data.blogs || []) {
     const id = String(blog._id || blog.id || "");

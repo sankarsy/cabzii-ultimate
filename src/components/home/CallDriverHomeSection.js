@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import {
   Building2,
@@ -9,7 +11,7 @@ import {
   Route,
   ShieldCheck,
   UserRound
-} from "lucide-react";
+} from "../icons/rscIcons";
 import { CALL_DRIVER_SERVICES, callDriverBookHref, formatFromPrice } from "../../lib/callDriver";
 import { CALL_DRIVER_TARIFF } from "../../data/call-drivers-chennai";
 import { CLAIMS } from "../../config/claims";
@@ -43,11 +45,11 @@ export default function CallDriverHomeSection({ services: servicesProp }) {
   const localFare = `₹${formatInr(localAmount)} · ${CALL_DRIVER_TARIFF.local.minHours} hours`;
 
   return (
-    <section className="border-t border-slate-200 bg-linear-to-b from-sky-50/70 to-white py-8 sm:py-10">
+    <section className="border-t border-slate-200 bg-linear-to-b from-orange-50/50 to-white py-8 sm:py-10">
       <div className="section-shell">
         <div className="relative mb-5 sm:mb-6">
           <div className="text-center">
-            <p className="text-xs font-bold uppercase tracking-wider text-[var(--cabzii-brand)]">Call Driver</p>
+            <p className="text-xs font-bold uppercase tracking-wider text-[var(--cabzii-cta)]">Call Driver</p>
             <h2 className="mt-1 text-base font-bold tracking-tight text-slate-900 sm:text-xl">
               Need a driver for your own car?
             </h2>
@@ -56,7 +58,7 @@ export default function CallDriverHomeSection({ services: servicesProp }) {
             </p>
           </div>
           <div className="mt-3 flex justify-center sm:absolute sm:right-0 sm:top-1/2 sm:mt-0 sm:-translate-y-1/2">
-            <Link href="/call-driver" className="text-sm font-semibold text-[var(--cabzii-brand)] hover:underline">
+            <Link href="/call-driver" className="text-sm font-semibold text-[var(--cabzii-cta)] hover:underline">
               View all →
             </Link>
           </div>
@@ -99,7 +101,7 @@ export default function CallDriverHomeSection({ services: servicesProp }) {
             <ol className="grid divide-y divide-slate-100 sm:grid-cols-3 sm:divide-x sm:divide-y-0 md:grid-cols-1 md:divide-x-0 md:divide-y">
               {STEPS.map((step) => (
                 <li key={step.n} className="flex gap-3 p-4 sm:p-5">
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-sky-50 text-sm font-extrabold text-[var(--cabzii-brand)]">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-orange-50 text-sm font-extrabold text-[var(--cabzii-cta)]">
                     {step.n}
                   </span>
                   <div className="min-w-0">
@@ -122,7 +124,7 @@ export default function CallDriverHomeSection({ services: servicesProp }) {
                   href={callDriverBookHref(svc.id)}
                   className="cabzii-tap group flex h-full flex-col rounded-xl border border-slate-200 bg-white p-3.5 shadow-sm transition hover:-translate-y-0.5 hover:border-[var(--cabzii-cta)]/35 hover:shadow-md sm:p-4"
                 >
-                  <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-sky-50 text-[var(--cabzii-brand)]">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-orange-50 text-[var(--cabzii-cta)]">
                     <Icon className="h-5 w-5" strokeWidth={2} />
                   </span>
                   <h3 className="mt-2.5 text-[13px] font-bold leading-snug text-slate-900 sm:text-sm">{svc.shortTitle || svc.title}</h3>

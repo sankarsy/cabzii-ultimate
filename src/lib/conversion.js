@@ -33,7 +33,6 @@ export function bookingWhatsappMessage({
   const fromQ = q.get("from") || q.get("pickup") || "";
   const toQ = q.get("to") || q.get("drop") || "";
   const dateQ = q.get("date") || "___";
-  const holidayQ = q.get("q") || q.get("category") || "";
 
   if (intent === "exit") {
     if (path.includes("tirupati")) {
@@ -103,17 +102,6 @@ export function bookingWhatsappMessage({
       return `Hi Cabzii, I want to book a bus from ${from} to ${to}. Date: ${dateQ}. Seats: ___. Please share availability and fare.`;
     }
     return `Hi Cabzii, I want to book a bus from ${from}. Date: ${dateQ}. Please share routes and fares.`;
-  }
-
-  if (path.startsWith("/holidays") || path.startsWith("/tour-packages") || path.startsWith("/packages")) {
-    const topic = holidayQ || (path.includes("tirupati") ? "tirupati" : "");
-    if (String(topic).toLowerCase().includes("tirupati")) {
-      return "Hi Cabzii, I want to book a Tirupati tour package / cab. Pickup city: Chennai. Date: ___. Please share package options and fare.";
-    }
-    if (topic) {
-      return `Hi Cabzii, I want to book a ${titleFromSlug(topic)} holiday package. Pickup: ${cityName}. Date: ${dateQ}. Please share options and fare.`;
-    }
-    return `Hi Cabzii, I want to book a holiday package from ${cityName}. Date: ${dateQ}. Please share options and fare.`;
   }
 
   if (path.startsWith("/drivers") || path === "/call-driver" || path.startsWith("/call-driver/") || path.startsWith("/acting-driver")) {
@@ -219,6 +207,26 @@ export function tripContextFromNextUrl(nextUrl = "") {
       packageLabel: ""
     };
   }
+}
+
+/** Same copy Adithya / Shiva sent from the live Earn with Cabzii page. */
+export function earnJoinWhatsappMessage({
+  city = "",
+  vehicle = "",
+  name = "",
+  mobile = "",
+  attach = ""
+} = {}) {
+  const lines = ["Hi Cabzii, I want to earn with Cabzii."];
+  const attachLabel = String(attach || "").trim();
+  if (attachLabel) lines.push(`Attach: ${attachLabel}`);
+  lines.push(
+    `City: ${String(city || "").trim()}`,
+    `Vehicle / driver: ${String(vehicle || "").trim()}`,
+    `Name: ${String(name || "").trim()}`,
+    `Mobile: ${String(mobile || "").trim()}`
+  );
+  return lines.join("\n");
 }
 
 /** Pre-filled WhatsApp message for booking intent (URL-encoded). */

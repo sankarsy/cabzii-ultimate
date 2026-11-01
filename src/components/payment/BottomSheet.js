@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 
-export default function BottomSheet({ open, onClose, title, children, tall = false }) {
+export default function BottomSheet({ open, onClose, title, children, tall = false, wide = false }) {
   useEffect(() => {
     if (!open) return undefined;
     const root = document.documentElement;
@@ -21,9 +21,9 @@ export default function BottomSheet({ open, onClose, title, children, tall = fal
         onClick={onClose}
       />
       <div
-        className={`relative z-10 flex w-full flex-col rounded-t-[1.25rem] bg-white shadow-[0_-8px_40px_rgba(0,0,0,0.12)] sm:max-h-[90vh] sm:max-w-lg sm:rounded-2xl ${
-          tall ? "max-h-[92vh] sm:max-h-[85vh]" : "max-h-[85vh]"
-        }`}
+        className={`relative z-10 flex w-full flex-col rounded-t-[1.25rem] bg-white shadow-[0_-8px_40px_rgba(0,0,0,0.12)] sm:max-h-[90vh] sm:rounded-2xl ${
+          wide ? "sm:max-w-4xl" : "sm:max-w-lg"
+        } ${tall ? "max-h-[92vh] sm:max-h-[85vh]" : "max-h-[85vh]"}`}
       >
         <div className="flex shrink-0 items-center justify-center pt-2.5 sm:hidden">
           <span className="h-1 w-10 rounded-full bg-slate-300" aria-hidden />

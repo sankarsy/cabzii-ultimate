@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { X } from "lucide-react";
+import { X } from "../icons/rscIcons";
 import BusSeatMap from "./BusSeatMap";
 import BusInfoPanel from "./BusInfoPanel";
 import { calcBusTotal, seatPrice } from "../../lib/busBooking";

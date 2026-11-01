@@ -111,16 +111,8 @@ export function pathsFromCab(record = {}, id = "") {
   return cap(paths);
 }
 
-export function pathsFromPackage(record = {}, id = "") {
-  const paths = ["/holidays"];
-  const pkgSlug = slug(record.slug);
-  const pkgId = slug(id || record._id || record.id);
-  if (pkgSlug) {
-    paths.push(`/tour-packages/${pkgSlug}`);
-    paths.push(`/holidays/${pkgSlug}`);
-  }
-  if (pkgId && pkgId !== pkgSlug) paths.push(`/holidays/${pkgId}`);
-  return cap(paths);
+export function pathsFromPackage() {
+  return cap(["/"]);
 }
 
 export function pathsFromBlog(record = {}, fallbackSlug = "") {

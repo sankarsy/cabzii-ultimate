@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { MapPin } from "lucide-react";
+import { MapPin } from "../icons/rscIcons";
 import MmtCabResults from "../mmt/MmtCabResults";
 import MmtDriverResultCard from "../mmt/MmtDriverResultCard";
 import MmtCabSearchWidget from "../mmt/MmtCabSearchWidget";
@@ -106,6 +106,7 @@ export default function SeoTripBookingSection({
             trip={trip}
             embedded
             catalogMode={catalogMode}
+            listLayout={catalogMode ? "row" : "fasttrack"}
             displayCity={pickup}
           />
         </div>

@@ -13,7 +13,7 @@ export function LinkChips({ items }) {
         <li key={item.href}>
           <Link
             href={item.href}
-            className="inline-block rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-800 hover:border-sky-300"
+            className="inline-block rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-800 hover:border-[var(--cabzii-cta)]/40 hover:text-[var(--cabzii-cta)]"
           >
             {item.label}
           </Link>
@@ -30,7 +30,7 @@ export function TrustStrip({ items }) {
       <ul className="section-shell grid grid-cols-2 gap-px bg-slate-200 py-0 sm:grid-cols-4">
         {items.map((item) => (
           <li key={item.label} className="bg-white px-2 py-2 text-center sm:px-3 sm:py-3">
-            <p className="text-[10px] font-bold uppercase tracking-wide text-[var(--cabzii-brand)] sm:text-[11px]">{item.label}</p>
+            <p className="text-[10px] font-bold uppercase tracking-wide text-[var(--cabzii-cta)] sm:text-[11px]">{item.label}</p>
             <p className="mt-0.5 text-[11px] font-semibold leading-snug text-slate-800 sm:text-xs">{item.value}</p>
           </li>
         ))}
@@ -48,10 +48,10 @@ export function ServiceCards({ title, subtitle, items }) {
       <ul className="mt-3 grid gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
         {items.map((item) => (
           <li key={item.href}>
-            <Link href={item.href} className="block h-full rounded-xl border border-slate-200 bg-white p-3 hover:border-sky-300 sm:p-4">
+            <Link href={item.href} className="block h-full rounded-xl border border-slate-200 bg-white p-3 hover:border-[var(--cabzii-cta)]/40 sm:p-4">
               <h3 className="text-sm font-bold text-slate-900">{item.label}</h3>
               {item.hint ? <p className="mt-1 text-[11px] leading-relaxed text-slate-600 sm:text-xs">{item.hint}</p> : null}
-              <p className="mt-2 text-[11px] font-semibold text-[var(--cabzii-brand)] sm:text-xs">Book →</p>
+              <p className="mt-2 text-[11px] font-semibold text-[var(--cabzii-cta)] sm:text-xs">Book →</p>
             </Link>
           </li>
         ))}
@@ -77,7 +77,7 @@ export function WhyGrid({ title, items, align = "center" }) {
               >
                 {Icon ? (
                   <Icon
-                    className={`${left ? "" : "mx-auto "}h-5 w-5 text-[var(--cabzii-brand)] sm:h-6 sm:w-6`}
+                    className={`${left ? "" : "mx-auto "}h-5 w-5 text-[var(--cabzii-cta)] sm:h-6 sm:w-6`}
                     strokeWidth={1.6}
                     aria-hidden
                   />
@@ -102,7 +102,7 @@ export function HowToSteps({ title, subtitle, steps }) {
       <ol className="mt-3 grid gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
         {steps.map((step, index) => (
           <li key={step.title} className="rounded-xl border border-slate-200 bg-white p-3 sm:p-4">
-            <p className="text-[10px] font-bold uppercase tracking-wide text-[var(--cabzii-brand)] sm:text-xs">Step {index + 1}</p>
+            <p className="text-[10px] font-bold uppercase tracking-wide text-[var(--cabzii-cta)] sm:text-xs">Step {index + 1}</p>
             <h3 className="mt-1 text-sm font-bold text-slate-900">{step.title}</h3>
             <p className="mt-1 text-[11px] leading-relaxed text-slate-600 sm:text-sm">{step.subtitle}</p>
           </li>
@@ -122,7 +122,7 @@ export function RouteFareGrid({ title, subtitle, routes }) {
         <ul className="mt-5 grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
           {routes.map((route) => (
             <li key={route.href} className="min-w-0">
-              <Link href={route.href} className="block rounded-xl border border-slate-200 bg-[#f8fafc] p-3 hover:border-sky-300 sm:p-4">
+              <Link href={route.href} className="block rounded-xl border border-slate-200 bg-[#f8fafc] p-3 hover:border-[var(--cabzii-cta)]/40 sm:p-4">
                 <h3 className="text-sm font-bold text-slate-900">{route.label}</h3>
                 {route.distance || route.duration ? (
                   <p className="mt-1 text-[11px] text-slate-500 sm:text-xs">
@@ -228,7 +228,7 @@ export function PlaceGrid({ title, places }) {
             return (
               <li key={place.name}>
                 {place.href ? (
-                  <Link href={place.href} className="block h-full rounded-xl border border-slate-200 bg-white p-4 hover:border-sky-300">
+                  <Link href={place.href} className="block h-full rounded-xl border border-slate-200 bg-white p-4 hover:border-[var(--cabzii-cta)]/40">
                     {inner}
                   </Link>
                 ) : (
@@ -254,7 +254,7 @@ export function CityServiceGrid({ title, items }) {
             <li key={item.href} className="min-w-0">
               <Link
                 href={item.href}
-                className="flex h-full items-center justify-center rounded-xl border border-slate-200 bg-slate-50 px-2 py-2.5 text-center text-[11px] font-semibold leading-snug text-slate-800 hover:border-sky-300 hover:bg-white sm:px-3 sm:py-3 sm:text-sm"
+                className="flex h-full items-center justify-center rounded-xl border border-slate-200 bg-slate-50 px-2 py-2.5 text-center text-[11px] font-semibold leading-snug text-slate-800 hover:border-[var(--cabzii-cta)]/40 hover:bg-white sm:px-3 sm:py-3 sm:text-sm"
               >
                 {item.label}
               </Link>

@@ -284,13 +284,6 @@ export default function AdminPage() {
                     <p className="mt-1 text-sm text-slate-600">Origin and destination must both be cities you already created. Live URLs stay on the current outstation path.</p>
                   </div>
                 ) : null}
-                {activeTab === "packages" ? (
-                  <div>
-                    <p className="text-[11px] font-bold uppercase tracking-wider text-sky-700">CMS</p>
-                    <h1 className="text-2xl font-bold tracking-tight text-slate-900">Holiday Trips</h1>
-                    <p className="mt-1 text-sm text-slate-600">One module for pilgrimage and holiday destinations. Do not create a new menu per destination.</p>
-                  </div>
-                ) : null}
                 {activeTab === "bookings" ? (
                   <div>
                     <p className="text-[11px] font-bold uppercase tracking-wider text-sky-700">Operations</p>

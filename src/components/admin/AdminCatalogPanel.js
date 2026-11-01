@@ -18,7 +18,6 @@ import {
   emptySeoRouteForm,
   emptySeoServiceForm,
   emptyTestimonialForm,
-  emptyTourPackageForm,
   DRIVER_PACKAGE_FIELDS,
   formatDriverPackageSummary,
   seoCityPageFormFromItem,
@@ -27,8 +26,6 @@ import {
   seoRouteFormToPayload,
   seoServiceFormFromItem,
   seoServiceFormToPayload,
-  tourPackageFormFromItem,
-  tourPackageFormToPayload,
   emptyBusTripForm,
   busTripFormFromItem,
   busTripFormToPayload
@@ -50,8 +47,6 @@ import { AdminGalleryField, AdminProductImageField, parseGallery } from "./Admin
 import ImageUploadField from "./ImageUploadField";
 import FarePackagesEditor from "./FarePackagesEditor";
 import AdminPackageExcelToolbar from "./AdminPackageExcelToolbar";
-import CitySelect from "./cms/CitySelect";
-import TourPackageContentEditor from "./TourPackageContentEditor";
 import {
   builtInSeoRoutePayloads,
   builtInSeoServicePayloads,
@@ -110,7 +105,6 @@ function itemSubtitle(item, tabKey) {
     return parts.filter(Boolean).join(" · ");
   }
   if (tabKey === "drivers") return `${item.vendor || "—"} · ${item.city || "No city"} · ${item.location || "No location"} · ${formatDriverPackageSummary(item)}`;
-  if (tabKey === "packages") return `${item.vendor || "—"} · ${item.city || "No city"} · ₹${item.price ?? "—"}`;
   if (tabKey === "buses") {
     const op = item.operator?.name || item.operator || "—";
     return `${op} · ${item.fromCity || "—"} → ${item.toCity || "—"} · ₹${item.seaterPrice ?? item.fares?.seater ?? "—"}`;
@@ -164,7 +158,6 @@ export default function AdminCatalogPanel({
   const [blogForm, setBlogForm] = useState(emptyBlogForm);
   const [testimonialForm, setTestimonialForm] = useState(emptyTestimonialForm);
   const [driverForm, setDriverForm] = useState(emptyDriverForm());
-  const [tourPackageForm, setTourPackageForm] = useState(emptyTourPackageForm());
   const [busTripForm, setBusTripForm] = useState(emptyBusTripForm());
   const [bookingForm, setBookingForm] = useState(emptyBookingForm());
   const [seoServiceForm, setSeoServiceForm] = useState(emptySeoServiceForm());
@@ -190,7 +183,6 @@ export default function AdminCatalogPanel({
     tab?.form === "blog" ||
     tab?.form === "testimonial" ||
     tab?.form === "driver" ||
-    tab?.form === "tourPackage" ||
     tab?.form === "busTrip" ||
     tab?.form === "seoService" ||
     tab?.form === "seoRoute" ||
@@ -204,7 +196,6 @@ export default function AdminCatalogPanel({
     setBlogForm(emptyBlogForm());
     setTestimonialForm(emptyTestimonialForm());
     setDriverForm(emptyDriverForm());
-    setTourPackageForm(emptyTourPackageForm());
     setBusTripForm(emptyBusTripForm());
     setBookingForm(emptyBookingForm());
     setSeoServiceForm(emptySeoServiceForm());
@@ -307,7 +298,7 @@ export default function AdminCatalogPanel({
   const bookingStats = useMemo(() => buildBookingStatsMap(allBookings), [allBookings]);
 
   const catalogBookingSummary = useMemo(() => {
-    if (!["cabs", "drivers", "packages", "buses"].includes(tabKey)) return null;
+    if (!["cabs", "drivers", "buses"].includes(tabKey)) return null;
     let count = 0;
     let total = 0;
     for (const item of items) {
@@ -396,7 +387,6 @@ export default function AdminCatalogPanel({
     if (tab?.form === "blog") return { ...blogForm };
     if (tab?.form === "testimonial") return { ...testimonialForm };
     if (tab?.form === "driver") return driverFormToPayload(driverForm);
-    if (tab?.form === "tourPackage") return tourPackageFormToPayload(tourPackageForm);
     if (tab?.form === "busTrip") return busTripFormToPayload(busTripForm);
     if (tabKey === "bookings" || tab?.form === "booking") return bookingFormToPayload(bookingForm);
     if (tab?.form === "seoService") return seoServiceFormToPayload(seoServiceForm);
@@ -445,11 +435,6 @@ export default function AdminCatalogPanel({
       return;
     }
 
-    if (tab?.form === "tourPackage") {
-      setTourPackageForm(tourPackageFormFromItem(item));
-      return;
-    }
-
     if (tab?.form === "busTrip") {
       setBusTripForm(busTripFormFromItem(item));
       return;
@@ -487,7 +472,6 @@ export default function AdminCatalogPanel({
   const insertSample = () => {
     if (!tab?.sample) return;
     if (tab?.form === "driver") setDriverForm(driverFormFromItem(tab.sample));
-    else if (tab?.form === "tourPackage") setTourPackageForm(tourPackageFormFromItem(tab.sample));
     else if (tab?.form === "busTrip") setBusTripForm(busTripFormFromItem(tab.sample));
     else if (tab?.form === "booking") setBookingForm({ ...emptyBookingForm(), status: "confirmed" });
     else if (tab?.form === "seoService") setSeoServiceForm(seoServiceFormFromItem(tab.sample));
@@ -530,7 +514,6 @@ export default function AdminCatalogPanel({
       }
 
       if (tab?.form === "driver") clearImageOnForm(setDriverForm, path);
-      else if (tab?.form === "tourPackage") clearImageOnForm(setTourPackageForm, path);
       else if (tab?.form === "busTrip") {
         /* bus trips have no image field */
       }
@@ -559,15 +542,6 @@ export default function AdminCatalogPanel({
       (imagePath?.startsWith("/") ? imagePath : `/uploads/${fileName}`);
     if (tab?.form === "driver") {
       setDriverForm((p) => {
-        const gallery = String(p.gallery || "")
-          .split(",")
-          .map((x) => x.trim())
-          .filter(Boolean);
-        if (!gallery.includes(path)) gallery.push(path);
-        return { ...p, image: path, gallery: gallery.slice(0, 3).join(", ") };
-      });
-    } else if (tab?.form === "tourPackage") {
-      setTourPackageForm((p) => {
         const gallery = String(p.gallery || "")
           .split(",")
           .map((x) => x.trim())
@@ -733,7 +707,6 @@ export default function AdminCatalogPanel({
       }
       const wasEditing = Boolean(editingId);
       if (wasEditing && tab?.form === "driver") setDriverForm(driverFormFromItem(data.data));
-      else if (wasEditing && tab?.form === "tourPackage") setTourPackageForm(tourPackageFormFromItem(data.data));
       else if (wasEditing && tab?.form === "busTrip") setBusTripForm(busTripFormFromItem(data.data));
       else if (wasEditing && (tabKey === "bookings" || tab?.form === "booking")) {
         setBookingForm(bookingFormFromItem(data.data));
@@ -959,7 +932,7 @@ export default function AdminCatalogPanel({
       if (tabKey === "blogs" || tabKey === "testimonials" || tabKey === "seoServices" || tabKey === "seoRoutes" || tabKey === "seoCityPages") {
         return statusFilter === "active" ? item.published !== false : item.published === false;
       }
-      if (tabKey === "cabs" || tabKey === "drivers" || tabKey === "packages" || tabKey === "buses") {
+      if (tabKey === "cabs" || tabKey === "drivers" || tabKey === "buses") {
         const st = (item.status || "active").toLowerCase();
         if (statusFilter === "active") return st === "active";
         if (statusFilter === "draft") return st === "inactive";
@@ -977,7 +950,7 @@ export default function AdminCatalogPanel({
     }
     return sorted;
   }, [items, query, statusFilter, typeFilter, sortKey, tabKey, tab]);
-  const pageSize = tabKey === "seoRoutes" || tabKey === "packages" || tabKey === "blogs" ? 50 : 10;
+  const pageSize = tabKey === "seoRoutes" || tabKey === "blogs" ? 50 : 10;
   const totalPages = Math.max(1, Math.ceil(filteredItems.length / pageSize));
   const pagedItems = filteredItems.slice((listPage - 1) * pageSize, listPage * pageSize);
   const viewingItem = viewingId ? items.find((x) => String(x._id || x.id) === viewingId) : null;
@@ -1279,134 +1252,6 @@ export default function AdminCatalogPanel({
                 className="rounded-md border border-slate-300 px-3 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-100 disabled:opacity-50"
               >
                 Load sample driver
-              </button>
-            ) : null}
-          </div>
-        ) : tab.form === "tourPackage" ? (
-          <div className="mt-3 space-y-4">
-            <div className="grid gap-3 sm:grid-cols-2">
-              <Field label="Product name *">
-                <input className={inputCls()} value={tourPackageForm.name} onChange={(e) => setTourPackageForm((p) => ({ ...p, name: e.target.value }))} placeholder="Madurai Rameswaram 2D Tour" />
-              </Field>
-              <Field label="Vendor *">
-                <input className={inputCls()} value={tourPackageForm.vendor} onChange={(e) => setTourPackageForm((p) => ({ ...p, vendor: e.target.value }))} />
-              </Field>
-              <Field label="Category">
-                <select
-                  className={inputCls()}
-                  value={tourPackageForm.category || ""}
-                  onChange={(e) => setTourPackageForm((p) => ({ ...p, category: e.target.value }))}
-                >
-                  <option value="">—</option>
-                  <option value="pilgrimage">Pilgrimage</option>
-                  <option value="beach">Beach</option>
-                  <option value="hill">Hill station</option>
-                  <option value="heritage">Heritage</option>
-                  <option value="honeymoon">Honeymoon</option>
-                  <option value="adventure">Adventure</option>
-                  <option value="family">Family</option>
-                </select>
-              </Field>
-              <Field label="Duration">
-                <input className={inputCls()} value={tourPackageForm.duration} onChange={(e) => setTourPackageForm((p) => ({ ...p, duration: e.target.value }))} placeholder="2 Days" />
-              </Field>
-            </div>
-
-            <div className="rounded-xl border border-blue-200 bg-blue-50/40 p-4">
-              <p className="text-xs font-bold uppercase tracking-wide text-slate-700">Pricing & vehicles</p>
-              <p className="mt-1 text-[11px] leading-relaxed text-slate-600">
-                <strong>Package price</strong> is the public fare shown on cards, booking, and SEO. Discounts are disabled for all packages.
-              </p>
-              <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                <Field label="Package price ₹ *" hint="Selling price shown on site & in Google (no auto discount)">
-                  <input type="number" min={0} className={inputCls()} value={tourPackageForm.price} onChange={(e) => setTourPackageForm((p) => ({ ...p, price: Number(e.target.value) }))} />
-                </Field>
-                <Field label="Included pickup hub" hint="Round-trip transport from this city is bundled in price">
-                  <CitySelect token={token} value={tourPackageForm.pricingOriginCity || ""} onChange={(pricingOriginCity) => setTourPackageForm((p) => ({ ...p, pricingOriginCity }))} valueMode="name" service="holidayTrips" />
-                </Field>
-              </div>
-              <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                <Field label="Destination city" hint="Transport route ends here">
-                  <CitySelect token={token} value={tourPackageForm.city} onChange={(city) => setTourPackageForm((p) => ({ ...p, city }))} valueMode="name" />
-                </Field>
-                <Field label="Meeting point / location" hint="Optional landmark shown on package card">
-                  <input className={inputCls()} value={tourPackageForm.location} onChange={(e) => setTourPackageForm((p) => ({ ...p, location: e.target.value }))} placeholder="Tirumala foothills" />
-                </Field>
-                <div className="sm:col-span-2">
-                  <Field
-                    label="Cab types (JSON)"
-                    hint='Vehicle options & fare multipliers — e.g. [{"id":"sedan","label":"Sedan","seats":4,"multiplier":1}]'
-                  >
-                    <textarea
-                      rows={6}
-                      className={`${inputCls()} font-mono text-xs`}
-                      value={tourPackageForm.cabTypes || ""}
-                      onChange={(e) => setTourPackageForm((p) => ({ ...p, cabTypes: e.target.value }))}
-                    />
-                  </Field>
-                </div>
-              </div>
-            </div>
-
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="sm:col-span-2">
-                <AdminProductImageField
-                  label="Product image"
-                  hint="Choose a tour photo here — then click Save"
-                  value={tourPackageForm.image}
-                  onChange={(v) => setTourPackageForm((p) => ({ ...p, image: normalizeStoredImagePath(v) }))}
-                  onDelete={() => deleteProductImage(tourPackageForm.image)}
-                  deleting={deletingImagePath === tourPackageForm.image}
-                  disabled={!canEdit}
-                  authToken={token}
-                  alt={tourPackageForm.name || tourPackageForm.title || "Package preview"}
-                />
-              </div>
-              <Field label="Status" hint="Active packages appear on the website">
-                <select
-                  className={inputCls()}
-                  value={tourPackageForm.status}
-                  onChange={(e) => setTourPackageForm((p) => ({ ...p, status: e.target.value }))}
-                >
-                  <option value="active">Active — show on website</option>
-                  <option value="inactive">Inactive — admin only</option>
-                </select>
-              </Field>
-              <div className="sm:col-span-2">
-                <AdminGalleryField
-                  label="Gallery images (max 3)"
-                  hint="Upload extra tour photos (max 3). Click Save after upload."
-                  value={tourPackageForm.gallery}
-                  onChange={(v) => setTourPackageForm((p) => ({ ...p, gallery: v }))}
-                  onRemoveImage={(path) => deleteProductImage(path)}
-                  removingPath={deletingImagePath}
-                  disabled={!canEdit}
-                  authToken={token}
-                />
-              </div>
-              <div className="sm:col-span-2">
-                <Field label="Tags" hint="Comma-separated, e.g. Family, Outstation">
-                  <input className={inputCls()} value={tourPackageForm.tags} onChange={(e) => setTourPackageForm((p) => ({ ...p, tags: e.target.value }))} />
-                </Field>
-              </div>
-            </div>
-
-            <TourPackageContentEditor
-              form={tourPackageForm}
-              onChange={setTourPackageForm}
-              disabled={!canEdit}
-            />
-
-            <AdminProductSeoSection form={tourPackageForm} onChange={setTourPackageForm} pathPrefix="/tour-packages" titleField="name" cityField="city" authToken={token} />
-
-            {tab.sample ? (
-              <button
-                type="button"
-                onClick={insertSample}
-                disabled={!canEdit}
-                className="rounded-md border border-slate-300 px-3 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-100 disabled:opacity-50"
-              >
-                Load sample tour package
               </button>
             ) : null}
           </div>
@@ -1786,7 +1631,7 @@ export default function AdminCatalogPanel({
                 </td>
                 <td className="px-3 py-2">
                   <p className="font-semibold text-slate-900">{itemTitle(item, tabKey)}</p>
-                  {["cabs", "drivers", "packages", "buses"].includes(tabKey) ? (
+                  {["cabs", "drivers", "buses"].includes(tabKey) ? (
                     <p className="mt-0.5 text-[11px] font-medium text-[#0056D2]">
                       {formatBookingStatsLine(bookingStats.byItem[catalogItemBookingKey(tabKey, item)])}
                     </p>
@@ -1803,7 +1648,7 @@ export default function AdminCatalogPanel({
                           : item.status === "cancelled"
                             ? "bg-rose-100 text-rose-700"
                             : "bg-amber-100 text-amber-700"
-                      : tabKey === "cabs" || tabKey === "drivers" || tabKey === "packages" || tabKey === "buses"
+                      : tabKey === "cabs" || tabKey === "drivers" || tabKey === "buses"
                         ? item.status === "inactive" ? "bg-slate-200 text-slate-700" : "bg-emerald-100 text-emerald-700"
                         : isStatic
                           ? "bg-sky-100 text-sky-800"
@@ -1811,7 +1656,7 @@ export default function AdminCatalogPanel({
                   }`}>
                     {tabKey === "bookings"
                       ? item.status || "pending"
-                      : tabKey === "cabs" || tabKey === "drivers" || tabKey === "packages" || tabKey === "buses"
+                      : tabKey === "cabs" || tabKey === "drivers" || tabKey === "buses"
                         ? item.status === "inactive" ? "inactive" : "active"
                         : isStatic
                           ? "built-in"
@@ -1858,7 +1703,7 @@ export default function AdminCatalogPanel({
                       Live
                     </a>
                   ) : null}
-                  {(tabKey === "packages" || tabKey === "buses") && !isStatic ? (
+                  {tabKey === "buses" && !isStatic ? (
                     <button
                       type="button"
                       onClick={() => duplicateItem(id)}

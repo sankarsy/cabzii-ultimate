@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { MapPin, Plus, Power, PowerOff, Trash2, X } from "lucide-react";
+import { MapPin, Plus, Power, PowerOff, Trash2, X } from "../../icons/rscIcons";
 import { useAdminCities } from "../../../lib/admin/useAdminCities";
 
 const emptyCity = {
@@ -13,7 +13,7 @@ const emptyCity = {
   sortOrder: 0,
   description: "",
   airportDetails: "",
-  services: { cabBooking: true, airportTaxi: true, actingDriver: true, holidayTrips: true }
+  services: { cabBooking: true, airportTaxi: true, actingDriver: true }
 };
 
 function slugify(value) {
@@ -56,8 +56,7 @@ function formFromCity(city) {
     services: {
       cabBooking: city.services?.cabBooking !== false,
       airportTaxi: city.services?.airportTaxi !== false,
-      actingDriver: city.services?.actingDriver !== false,
-      holidayTrips: city.services?.holidayTrips !== false
+      actingDriver: city.services?.actingDriver !== false
     }
   };
 }
@@ -65,8 +64,7 @@ function formFromCity(city) {
 const SERVICE_FLAGS = [
   { key: "cabBooking", label: "Cab booking" },
   { key: "airportTaxi", label: "Airport taxi" },
-  { key: "actingDriver", label: "Acting driver" },
-  { key: "holidayTrips", label: "Holiday trips" }
+  { key: "actingDriver", label: "Acting driver" }
 ];
 
 export default function AdminCities({ token }) {
@@ -127,8 +125,7 @@ export default function AdminCities({ token }) {
     services: {
       cabBooking: form.services?.cabBooking !== false,
       airportTaxi: form.services?.airportTaxi !== false,
-      actingDriver: form.services?.actingDriver !== false,
-      holidayTrips: form.services?.holidayTrips !== false
+      actingDriver: form.services?.actingDriver !== false
     }
   });
 
@@ -210,7 +207,7 @@ export default function AdminCities({ token }) {
           <p className="text-[11px] font-bold uppercase tracking-wider text-sky-700">CMS</p>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900">Cities</h1>
           <p className="mt-1 max-w-2xl text-sm text-slate-600">
-            Create a city once. Cab services, airport taxi, acting driver, routes and holidays all reuse this list.
+            Create a city once. Cab services, airport taxi, acting driver and routes all reuse this list.
           </p>
         </div>
         <button

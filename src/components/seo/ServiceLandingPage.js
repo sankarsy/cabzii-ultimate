@@ -3,7 +3,6 @@ import Breadcrumbs from "./Breadcrumbs";
 import BookingCtaBar from "./BookingCtaBar";
 import FaqSection from "./FaqSection";
 import SerpRichBar from "./SerpRichBar";
-import SeoPackageBookingSection from "./SeoPackageBookingSection";
 import SeoTripBookingSection from "./SeoTripBookingSection";
 import { cityAreas } from "../../lib/seo/content";
 import { airportDropHint } from "../../lib/seo/airports";
@@ -36,13 +35,11 @@ export default function ServiceLandingPage({
   extraBody = "",
   reviewStats,
   cabs = [],
-  drivers = [],
-  packages = []
+  drivers = []
 }) {
   const path = servicePath(service, city);
   const areas = cityAreas(city.slug);
-  const isTourPackages = service.slug === "tour-packages" || service.slug === "holiday-packages";
-  const cityRoutes = isTourPackages ? [] : pickOutstationRoutes(city.slug, { direction: "from", limit: 8 });
+  const cityRoutes = pickOutstationRoutes(city.slug, { direction: "from", limit: 8 });
   const searchHref = serviceSearchHref(service, city);
   const h1 = tunedServiceH1(service, city);
   const lead = tunedServiceDescription(service, city);
@@ -88,11 +85,11 @@ export default function ServiceLandingPage({
       {city.slug === "chennai" && DRIVER_FOCUS_SLUGS.has(service.slug) ? (
         <p className="mt-3 text-sm text-slate-700">
           The main Chennai page for chauffeur / driver-on-hire is{" "}
-          <Link href="/acting-driver/chennai" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
+          <Link href="/acting-driver/chennai" className="font-semibold text-[var(--cabzii-cta)] hover:underline">
             acting driver in Chennai
           </Link>
           . Book from{" "}
-          <Link href="/call-driver" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
+          <Link href="/call-driver" className="font-semibold text-[var(--cabzii-cta)] hover:underline">
             Call Driver
           </Link>
           .
@@ -110,34 +107,24 @@ export default function ServiceLandingPage({
         badges={serpBadges}
       />
 
-      {isTourPackages ? (
-        <SeoPackageBookingSection
-          title={`Book tour packages in ${city.name}`}
-          cityName={city.name}
-          priceFrom={service.priceFrom}
-          browseHref={searchHref}
-          packages={packages}
-        />
-      ) : (
-        <SeoTripBookingSection
-          title={`Book ${service.name} in ${city.name}`}
-          pickup={city.name}
-          drop={dropHint}
-          priceFrom={service.priceFrom}
-          priceLabel={formatSerpPrice(service.priceFrom)}
-          cabSearchHref={searchHref}
-          driverSearchHref={driverSearchHref}
-          cabs={cabs}
-          drivers={[]}
-          trip={widgetTrip}
-          showCabWidget
-          showDriverWidget={false}
-          showDriverCta={driverFocus}
-          widgetDefaultCity={city.name}
-          widgetInitialTrip={widgetTrip}
-          allowedTripTypes={[tripType]}
-        />
-      )}
+      <SeoTripBookingSection
+        title={`Book ${service.name} in ${city.name}`}
+        pickup={city.name}
+        drop={dropHint}
+        priceFrom={service.priceFrom}
+        priceLabel={formatSerpPrice(service.priceFrom)}
+        cabSearchHref={searchHref}
+        driverSearchHref={driverSearchHref}
+        cabs={cabs}
+        drivers={[]}
+        trip={widgetTrip}
+        showCabWidget
+        showDriverWidget={false}
+        showDriverCta={driverFocus}
+        widgetDefaultCity={city.name}
+        widgetInitialTrip={widgetTrip}
+        allowedTripTypes={[tripType]}
+      />
 
       {cityRoutes.length ? (
         <section className="cabzii-seo-block">
@@ -172,9 +159,7 @@ export default function ServiceLandingPage({
         bookLabel={
           service.slug === "airport-taxi"
             ? `Book ${city.name} airport pickup or drop`
-            : isTourPackages
-              ? `Browse packages in ${city.name}`
-              : `Book ${service.name} in ${city.name}`
+            : `Book ${service.name} in ${city.name}`
         }
         quoteLabel="WhatsApp instant quote"
         airportDirection={service.slug === "airport-taxi" ? "pickup" : undefined}
@@ -182,10 +167,10 @@ export default function ServiceLandingPage({
       />
       <div className="mt-2">
         <Link
-          href={isTourPackages ? "/holidays" : cityCabLandingPath(city.slug)}
-          className="text-[11px] font-semibold text-[var(--cabzii-brand)] hover:underline sm:text-xs"
+          href={cityCabLandingPath(city.slug)}
+          className="text-[11px] font-semibold text-[var(--cabzii-cta)] hover:underline sm:text-xs"
         >
-          {isTourPackages ? "All holiday packages →" : `All cabs in ${city.name} →`}
+          {`All cabs in ${city.name} →`}
         </Link>
       </div>
 
@@ -238,16 +223,16 @@ export default function ServiceLandingPage({
         title={`More ${city.name} pages`}
       />
 
-      <section className="cabzii-seo-block rounded-xl bg-[var(--cabzii-brand)] p-3.5 text-white sm:p-4">
+      <section className="cabzii-seo-block rounded-xl bg-[var(--cabzii-cta)] p-3.5 text-white sm:p-4">
         <h2 className="!text-white text-sm font-bold sm:text-base">Ready to book {service.name.toLowerCase()}?</h2>
-        <p className="mt-1 text-[11px] text-blue-100 sm:text-xs">
+        <p className="mt-1 text-[11px] text-orange-50 sm:text-xs">
           Compare vendors, see fare upfront and confirm in minutes — no app download required.
         </p>
         <Link
           href={searchHref}
-          className="cabzii-btn cabzii-btn-sm cabzii-tap mt-2.5 inline-flex rounded-full bg-white font-bold text-[var(--cabzii-brand)] hover:bg-slate-100"
+          className="cabzii-btn cabzii-btn-sm cabzii-tap mt-2.5 inline-flex rounded-full bg-white font-bold text-[var(--cabzii-cta)] hover:bg-orange-50"
         >
-          {isTourPackages ? "Browse packages" : "Search & book now"}
+          Search & book now
         </Link>
       </section>
     </article>

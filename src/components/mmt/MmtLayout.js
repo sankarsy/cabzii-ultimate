@@ -9,20 +9,21 @@ import RouteScrollReset from "../layout/RouteScrollReset";
 /** Cabzii.in travel booking shell — single white header, content, footer */
 export default function MmtLayout({ children, className = "" }) {
   const pathname = usePathname();
-  const reviewBooking = pathname === "/cabs/passenger";
-  const hideSpacer = reviewBooking ? "hidden" : "";
+  const hideHeader = pathname === "/cabs/passenger" || pathname === "/cabs/results";
+  const hideFooter = hideHeader || pathname.startsWith("/call-driver/book");
+  const hideSpacer = hideHeader ? "hidden" : "";
 
   return (
     <div className={`cabzii-page-shell flex min-h-screen flex-col overflow-x-hidden bg-cabzii-page ${className}`}>
       <RouteScrollReset />
-      <Suspense fallback={<div className={`cabzii-home-header-spacer shrink-0 ${hideSpacer}`} aria-hidden />}>
-        <MmtHeader hidden={reviewBooking} />
-      </Suspense>
+      {hideHeader ? null : (
+        <Suspense fallback={<div className="cabzii-home-header-spacer shrink-0" aria-hidden />}>
+          <MmtHeader />
+        </Suspense>
+      )}
       <div className={`cabzii-home-header-spacer shrink-0 ${hideSpacer}`} aria-hidden />
       <div className="min-h-min grow">{children}</div>
-      <div className={reviewBooking ? "hidden" : ""}>
-        <MmtFooter />
-      </div>
+      {hideFooter ? null : <MmtFooter />}
     </div>
   );
 }

@@ -8,13 +8,12 @@ import {
   Bus,
   CalendarCheck,
   MapPin,
-  Palmtree,
   Route,
   Star,
   Tag,
   UserCircle,
   Users
-} from "lucide-react";
+} from "../../icons/rscIcons";
 import AdminOpsDashboard from "../AdminOpsDashboard";
 
 function asRows(json) {
@@ -137,11 +136,6 @@ export default function AdminCmsDashboard({ token, isSuperAdmin }) {
         vehiclesTotal: Number(meta.total || data.length),
         cabVerify: n(data, (row) => row.status === "under_verification" || row.verificationStatus === "pending")
       })),
-      run("/api/packages?admin=1&limit=200&page=1", ({ ok, data, meta }) => ({
-        holidaysOk: ok,
-        holidaysActive: n(data, (row) => row.status !== "inactive"),
-        holidaysTotal: Number(meta.total || data.length)
-      })),
       run("/api/blogs?admin=1&limit=100&page=1", ({ ok, data, meta }) => ({
         blogsOk: ok,
         blogsPublished: n(data, (row) => row.published !== false),
@@ -200,7 +194,6 @@ export default function AdminCmsDashboard({ token, isSuperAdmin }) {
         <Stat label="Cities" value={display(dash.citiesOk, dash.citiesActive)} hint={dash.citiesOk ? `${dash.citiesTotal} total` : undefined} href="/admin?tab=cities" icon={MapPin} />
         <Stat label="Service pages" value={display(dash.servicesOk, dash.servicesPublished)} hint={dash.servicesOk ? (dash.servicesDraft ? `${dash.servicesDraft} draft` : "published") : undefined} href="/admin?tab=cmsServices" icon={Route} />
         <Stat label="Routes" value={display(dash.routesOk, dash.routesPublished)} hint={dash.routesOk ? (dash.routesDraft ? `${dash.routesDraft} draft` : "published") : undefined} href="/admin?tab=seoRoutes" icon={Route} />
-        <Stat label="Holiday trips" value={display(dash.holidaysOk, dash.holidaysActive)} hint={dash.holidaysOk ? `${dash.holidaysTotal} total` : undefined} href="/admin?tab=packages" icon={Palmtree} />
         <Stat label="Vehicles" value={display(dash.vehiclesOk, dash.vehiclesActive)} hint={dash.vehiclesOk ? (dash.cabVerify ? `${dash.cabVerify} to verify` : `${dash.vehiclesTotal} total`) : undefined} href="/admin?tab=cabs" icon={Bus} />
         <Stat label="Vendors" value={display(dash.vendorsOk, dash.vendorsActive)} hint={dash.vendorsOk ? `${dash.vendorsTotal} total` : undefined} href="/admin?tab=master&section=vendors" icon={Building2} />
         <Stat label="Acting drivers" value={display(dash.driversOk, dash.driversActive)} hint={dash.driversOk ? `${dash.driversTotal} total` : undefined} href="/admin?tab=actingDriversOps" icon={UserCircle} />
@@ -249,7 +242,6 @@ export default function AdminCmsDashboard({ token, isSuperAdmin }) {
                           <Flag on={flags.cabBooking !== false} label="Cab" />
                           <Flag on={flags.airportTaxi !== false} label="Airport" />
                           <Flag on={flags.actingDriver !== false} label="Driver" />
-                          <Flag on={flags.holidayTrips !== false} label="Holiday" />
                         </span>
                       </td>
                       <td className="px-4 py-2">

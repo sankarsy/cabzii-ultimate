@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { resolvePublicRouteRedirect } from "./lib/routes/publicRoutes";
 import { resolveSeoAliasPath } from "./lib/seo/urlAliases";
 import { cityCabLandingPath } from "./lib/cityCabPaths";
-import { resolveHolidayQueryHref } from "./lib/holidayQuery";
 import { resolveSiteSearchHref } from "./lib/siteSearch";
 import { prettyPublicCabRedirect } from "./lib/mmtTrip";
 
@@ -13,24 +12,45 @@ const SEO_PREFIX_REDIRECTS = {
   "/taxi-booking": "/cab-booking"
 };
 
-/** Legacy duplicate service slug → canonical tour-packages */
-const SERVICE_SLUG_REDIRECTS = {
-  "holiday-packages": "tour-packages"
-};
+const TIRUPATI_PACKAGE_SLUG = "tirupati-balaji-darshan-tirupati";
+const TIRUPATI_ROUTE_PATH = "/chennai/outstation/chennai-to-tirupati";
+const RETIRED_HOLIDAY_PREFIXES = ["/holidays", "/tour-packages", "/packages"];
+
+function retiredHolidayRedirect(pathname) {
+  if (pathname === "/tour-booking") return "/";
+  for (const prefix of RETIRED_HOLIDAY_PREFIXES) {
+    if (pathname === prefix) return "/";
+    if (pathname.startsWith(`${prefix}/`)) {
+      const slug = pathname.slice(prefix.length + 1).split("/")[0];
+      if (slug === TIRUPATI_PACKAGE_SLUG) return TIRUPATI_ROUTE_PATH;
+      return "/";
+    }
+  }
+  const serviceParts = pathname.split("/").filter(Boolean);
+  if (serviceParts[0] === "services" && (serviceParts[1] === "tour-packages" || serviceParts[1] === "holiday-packages")) {
+    return cityCabLandingPath(serviceParts[2] || "chennai");
+  }
+  return null;
+}
 
 export function middleware(request) {
   const { pathname } = request.nextUrl;
+
+  // Chrome DevTools probes these URLs. Compiling not-found first in Next 14.2
+  // pins next/link to the 404 chunk and blank-screens every page with
+  // "Cannot read properties of undefined (reading 'call')".
+  if (pathname === "/json" || pathname.startsWith("/json/")) {
+    return new NextResponse(null, { status: 404 });
+  }
 
   if (pathname === "/cabs/results") {
     const pretty = prettyPublicCabRedirect(request.nextUrl.searchParams);
     if (pretty) return NextResponse.redirect(new URL(pretty, request.url), 307);
   }
 
-  if (pathname === "/holidays") {
-    const canonical = resolveHolidayQueryHref(request.nextUrl.searchParams.get("q"));
-    if (canonical) {
-      return NextResponse.redirect(new URL(canonical, request.url), 301);
-    }
+  const retired = retiredHolidayRedirect(pathname);
+  if (retired) {
+    return NextResponse.redirect(new URL(retired, request.url), 301);
   }
 
   if (pathname === "/search") {
@@ -60,14 +80,6 @@ export function middleware(request) {
     }
   }
 
-  const serviceParts = pathname.split("/").filter(Boolean);
-  if (serviceParts[0] === "services" && serviceParts[1] && SERVICE_SLUG_REDIRECTS[serviceParts[1]]) {
-    const canonical = SERVICE_SLUG_REDIRECTS[serviceParts[1]];
-    const rest = serviceParts.slice(2).join("/");
-    const target = rest ? `/services/${canonical}/${rest}` : `/services/${canonical}`;
-    return NextResponse.redirect(new URL(target, request.url), 301);
-  }
-
   const publicRedirect = resolvePublicRouteRedirect(pathname);
   if (publicRedirect) {
     const url = new URL(publicRedirect, request.url);
@@ -84,24 +96,6 @@ export function middleware(request) {
 
   if (pathname === "/signin" || pathname.startsWith("/signin/")) {
     const url = new URL("/login", request.url);
-    url.search = request.nextUrl.search;
-    return NextResponse.redirect(url, 301);
-  }
-
-  /* /holidays/{slug|id} is the booking page (slug preferred). SEO landing stays at /tour-packages/{slug}. */
-
-  if (pathname === "/tour-booking") {
-    const id = request.nextUrl.searchParams.get("id");
-    const slug = request.nextUrl.searchParams.get("slug");
-    if (slug || id) {
-      return NextResponse.redirect(new URL(`/holidays/${slug || id}`, request.url), 301);
-    }
-    return NextResponse.redirect(new URL("/holidays", request.url), 301);
-  }
-
-  if (pathname === "/packages" || pathname.startsWith("/packages/")) {
-    const rest = pathname.slice("/packages".length) || "";
-    const url = new URL(`/holidays${rest}`, request.url);
     url.search = request.nextUrl.search;
     return NextResponse.redirect(url, 301);
   }

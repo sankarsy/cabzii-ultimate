@@ -2,15 +2,18 @@
 
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import CabziiLogo from "../brand/CabziiLogo";
-import { BRAND } from "../../lib/brand";
+import { BRAND, EARN_NAV } from "../../lib/brand";
 import { clearSession, isLoggedIn } from "../../lib/auth";
 import HeaderSearchBar from "./HeaderSearchBar";
 import MobileSideNav from "../layout/MobileSideNav";
 import EmtCategoryTabs from "../emt/EmtCategoryTabs";
 import { useHeroSearch } from "../emt/HeroSearchContext";
 import { productTabFromPath, productTabHref, resolveProductTab } from "../../lib/emt/productNav";
+import { useSelectedCity } from "../../lib/useSelectedCity";
+import { resolveScopedCity } from "../../lib/cityShowcase";
+import { isLiveCallDriverCitySlug } from "../../lib/cityCabPaths";
 
 function AccountGlyph({ className = "h-5 w-5" }) {
   return (
@@ -40,10 +43,10 @@ function ProfileMenu({ logout }) {
         <AccountGlyph />
       </summary>
       <div className="absolute right-0 z-50 mt-1 min-w-[11rem] overflow-hidden rounded-xl border border-slate-200 bg-white py-1 shadow-lg">
-        <Link href="/account" className="block px-3 py-2 text-[13px] font-medium text-slate-700 hover:bg-sky-50 hover:text-[var(--cabzii-brand)]">
+        <Link href="/account" className="block px-3 py-2 text-[13px] font-medium text-slate-700 hover:bg-orange-50 hover:text-[var(--cabzii-cta)]">
           My account
         </Link>
-        <Link href="/my-bookings" className="block px-3 py-2 text-[13px] font-medium text-slate-700 hover:bg-sky-50 hover:text-[var(--cabzii-brand)]">
+        <Link href="/my-bookings" className="block px-3 py-2 text-[13px] font-medium text-slate-700 hover:bg-orange-50 hover:text-[var(--cabzii-cta)]">
           My trips
         </Link>
         <button
@@ -55,6 +58,21 @@ function ProfileMenu({ logout }) {
         </button>
       </div>
     </details>
+  );
+}
+
+function EarnNavButton({ pathname }) {
+  const active = pathname === EARN_NAV.href || pathname.startsWith(`${EARN_NAV.href}/`);
+  return (
+    <Link
+      href={EARN_NAV.href}
+      aria-current={active ? "page" : undefined}
+      className={`cabzii-tap inline-flex h-9 shrink-0 items-center justify-center px-2 text-[12px] font-extrabold tracking-tight sm:h-10 sm:px-2.5 sm:text-[13px] ${
+        active ? "text-[var(--cabzii-cta)]" : "text-orange-700 hover:text-[var(--cabzii-cta)]"
+      }`}
+    >
+      {EARN_NAV.label}
+    </Link>
   );
 }
 
@@ -83,8 +101,9 @@ function SiteHeader({ loggedIn, logout, menuOpen, setMenuOpen, pathname, activeT
         </div>
 
         <div className="flex min-w-0 shrink-0 items-center justify-end gap-0.5 sm:gap-1 lg:gap-2">
-          <nav className="hidden min-w-0 items-center lg:flex" aria-label="Book Cabs, Hire a Driver, Buses or Holidays">
+          <nav className="hidden min-w-0 items-center gap-2 lg:flex" aria-label="Book Cabs, Hire a Driver or Buses">
             <EmtCategoryTabs activeTab={activeTab} setActiveTab={onSelectTab} variant="nav" />
+            <EarnNavButton pathname={pathname} />
           </nav>
           <div className="hidden shrink-0 items-center lg:flex">
             {loggedIn ? (
@@ -99,13 +118,17 @@ function SiteHeader({ loggedIn, logout, menuOpen, setMenuOpen, pathname, activeT
               </Link>
             )}
           </div>
-          <div className="flex shrink-0 items-center lg:hidden">
+          <div className="relative z-[120] flex shrink-0 items-center lg:hidden">
             <button
               type="button"
-              className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 text-[var(--cabzii-brand)] hover:bg-blue-50/70"
+              className="cabzii-tap pointer-events-auto relative z-[120] inline-flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 text-[var(--cabzii-brand)] hover:bg-blue-50/70"
               aria-expanded={menuOpen}
               aria-controls="mmt-mobile-nav"
-              onClick={() => setMenuOpen((open) => !open)}
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                setMenuOpen((open) => !open);
+              }}
             >
               <span className="sr-only">{menuOpen ? "Close menu" : "Open menu"}</span>
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden>
@@ -126,9 +149,10 @@ export default function MmtHeader({ hideOnMobile = false, hidden = false }) {
   const searchParams = useSearchParams();
   const [loggedIn, setLoggedIn] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [headerHidden, setHeaderHidden] = useState(false);
-  const lastScrollY = useRef(0);
   const hero = useHeroSearch();
+  const { city: selectedCity } = useSelectedCity();
+  const clientCity = resolveScopedCity(selectedCity);
+  const driverCitySlug = isLiveCallDriverCitySlug(clientCity.slug) ? clientCity.slug : "chennai";
   const queryTab = resolveProductTab(searchParams.get("tab"));
   const activeHeroTab = hero?.activeTab || queryTab;
   const activeTab = productTabFromPath(pathname, activeHeroTab);
@@ -143,32 +167,7 @@ export default function MmtHeader({ hideOnMobile = false, hidden = false }) {
 
   useEffect(() => {
     setMenuOpen(false);
-    setHeaderHidden(false);
   }, [pathname]);
-
-  useEffect(() => {
-    lastScrollY.current = typeof window !== "undefined" ? window.scrollY : 0;
-    const onScroll = () => {
-      if (window.matchMedia("(min-width: 1024px)").matches) {
-        setHeaderHidden(false);
-        lastScrollY.current = window.scrollY;
-        return;
-      }
-      if (menuOpen) {
-        setHeaderHidden(false);
-        lastScrollY.current = window.scrollY;
-        return;
-      }
-      const y = window.scrollY;
-      const delta = y - lastScrollY.current;
-      if (y < 16) setHeaderHidden(false);
-      else if (delta > 8) setHeaderHidden(true);
-      else if (delta < -8) setHeaderHidden(false);
-      lastScrollY.current = y;
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, [menuOpen]);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -187,11 +186,14 @@ export default function MmtHeader({ hideOnMobile = false, hidden = false }) {
   };
 
   const onSelectTab = (id) => {
-    if (pathname === "/") {
-      hero?.setActiveTab?.(id);
+    if (id === "cabs" && (pathname === "/" || pathname === "")) {
+      hero?.setActiveTab?.("cabs");
       return;
     }
-    router.push(productTabHref(id));
+    const href = productTabHref(id, driverCitySlug);
+    if (pathname === href) return;
+    if (id === "buses" && pathname.startsWith("/buses")) return;
+    router.push(href);
   };
 
   if (hidden) return null;
@@ -199,9 +201,9 @@ export default function MmtHeader({ hideOnMobile = false, hidden = false }) {
   return (
     <>
       <header
-        className={`fixed left-0 right-0 top-0 z-[100] bg-white/92 text-slate-900 shadow-[0_1px_0_rgba(15,23,42,0.06)] backdrop-blur-md transition-transform duration-300 ease-out max-lg:will-change-transform ${
+        className={`fixed left-0 right-0 top-0 z-[100] bg-white/92 text-slate-900 shadow-[0_1px_0_rgba(15,23,42,0.06)] backdrop-blur-md ${
           hideOnMobile ? "max-lg:hidden" : ""
-        } ${headerHidden ? "max-lg:-translate-y-full" : "translate-y-0"}`}
+        }`}
       >
         <SiteHeader
           loggedIn={loggedIn}

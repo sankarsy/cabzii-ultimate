@@ -4,8 +4,7 @@ import { BRAND } from "../brand";
 export const HERO_TABS = [
   { id: "cabs", label: "Cabs", shortLabel: "Cabs", iconKey: "car" },
   { id: "drivers", label: "Hire a Driver", shortLabel: "Driver", iconKey: "driver" },
-  { id: "buses", label: "Buses", shortLabel: "Buses", iconKey: "bus" },
-  { id: "holidays", label: "Holidays", shortLabel: "Holidays", iconKey: "holiday" }
+  { id: "buses", label: "Buses", shortLabel: "Buses", iconKey: "bus" }
 ];
 
 export const TRENDING_SEARCHES = [
@@ -13,8 +12,7 @@ export const TRENDING_SEARCHES = [
   { label: "Airport Taxi Chennai", href: "/chennai/airport-cab-booking" },
   { label: "Outstation Cab Chennai", href: "/services/outstation-cab/chennai" },
   { label: "One Way Taxi Chennai", href: "/services/one-way-cab/chennai" },
-  { label: "Chennai → Tirupati", slug: "chennai-to-tirupati-cab" },
-  { label: "Pilgrimage Tours", href: "/holidays?category=pilgrimage" }
+  { label: "Chennai → Tirupati", slug: "chennai-to-tirupati-cab" }
 ];
 
 export { BRAND } from "../brand";

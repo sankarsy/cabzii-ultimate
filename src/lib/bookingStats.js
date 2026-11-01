@@ -27,7 +27,6 @@ export function catalogItemBookingKey(tabKey, item) {
   if (!id) return "";
   if (tabKey === "cabs") return `cab:${id}`;
   if (tabKey === "drivers") return `driver:${id}`;
-  if (tabKey === "packages") return `tour:${id}`;
   return "";
 }
 

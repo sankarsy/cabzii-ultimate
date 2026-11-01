@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import PlaceAutocomplete from "../../components/PlaceAutocomplete";
 import TripRoutePanel from "../../components/maps/TripRoutePanel";
 import PaymentBreakdown from "../../components/PaymentBreakdown";
-import TourPriceBreakdown from "../../components/TourPriceBreakdown";
 import PaymentCheckoutFooter from "../../components/payment/PaymentCheckoutFooter";
 import PaymentMethodSheet from "../../components/payment/PaymentMethodSheet";
 import OffersSheet from "../../components/payment/OffersSheet";
@@ -44,8 +43,8 @@ export default function PaymentPage({ searchParams }) {
     return code === "CABZII500" || code === "FIRST100" || code === "WEEKEND10" ? code : "";
   });
   const [customerName, setCustomerName] = useState(firstParam(searchParams?.passengerName));
-  const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState(firstParam(searchParams?.phone));
+  const [email, setEmail] = useState(firstParam(searchParams?.email));
   const [pickup, setPickup] = useState(firstParam(searchParams?.pickup));
   const [drop, setDrop] = useState(firstParam(searchParams?.drop));
   const [pickupPlace, setPickupPlace] = useState(null);
@@ -59,6 +58,9 @@ export default function PaymentPage({ searchParams }) {
   const [bookingId, setBookingId] = useState("");
   const [confirmedFare, setConfirmedFare] = useState(null);
   const type = searchParams?.type ?? "cab";
+  useEffect(() => {
+    if (type === "tour") router.replace("/chennai/outstation/chennai-to-tirupati");
+  }, [type, router]);
   const callDriverFlag = firstParam(searchParams?.callDriver) === "1";
   const itemId = String(searchParams?.id ?? searchParams?.cabId ?? "");
   const taxes = Number(searchParams?.taxes ?? 0);
@@ -157,13 +159,11 @@ export default function PaymentPage({ searchParams }) {
   }, [appliedCoupon, baseFare, couponTrip.tripType, couponTrip.date]);
 
   useEffect(() => {
-    if (!itemId || callDriverFlag) return;
+    if (!itemId || callDriverFlag || type === "tour") return;
     const base =
-      type === "tour"
-        ? `/api/packages/${encodeURIComponent(itemId)}`
-        : type === "driver"
-          ? `/api/drivers/${encodeURIComponent(itemId)}`
-          : `/api/cabs/${encodeURIComponent(itemId)}`;
+      type === "driver"
+        ? `/api/drivers/${encodeURIComponent(itemId)}`
+        : `/api/cabs/${encodeURIComponent(itemId)}`;
     (async () => {
       try {
         const data = await fetchJson(base);
@@ -363,7 +363,7 @@ export default function PaymentPage({ searchParams }) {
   return (
     <div className="section-shell py-6 pb-8">
       <nav className="mb-4 text-xs text-slate-500">
-        <Link href={backHref} className="font-medium text-[#0056D2] hover:underline">
+        <Link href={backHref} className="font-medium text-[var(--cabzii-cta)] hover:underline">
           ← Back to {type === "bus" ? "passenger" : type === "driver" ? "Call Driver" : type === "tour" ? "package" : "cab"} details
         </Link>
       </nav>
@@ -376,19 +376,19 @@ export default function PaymentPage({ searchParams }) {
           <h2 className="text-base font-bold text-slate-900 sm:text-lg">Your details</h2>
           <div className="mt-4 grid min-w-0 gap-3 sm:grid-cols-2">
             <input
-              className="w-full min-w-0 rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-[#0056D2]"
+              className="w-full min-w-0 rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-[var(--cabzii-cta)]"
               placeholder="Full name *"
               value={customerName}
               onChange={(e) => setCustomerName(e.target.value)}
             />
             <input
-              className="w-full min-w-0 rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-[#0056D2]"
+              className="w-full min-w-0 rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-[var(--cabzii-cta)]"
               placeholder="Mobile number *"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
             />
             <input
-              className="w-full min-w-0 rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-[#0056D2] sm:col-span-2"
+              className="w-full min-w-0 rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-[var(--cabzii-cta)] sm:col-span-2"
               placeholder="Email (optional)"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -549,34 +549,6 @@ export default function PaymentPage({ searchParams }) {
             selection={bookingSelection}
             showExtrasNote
           />
-        ) : type === "tour" && selectedItem ? (
-          <TourPriceBreakdown
-            item={{
-              title: selectedItem.name,
-              type: "Holiday package",
-              vendor: selectedItem.vendor
-            }}
-            selection={{
-              breakdownType: "tour",
-              packageLabel: selectedItem.name,
-              serviceTab: "tour",
-              packageListPrice: Number(searchParams?.packageListPrice) || listPrice,
-              transportListPrice: Number(searchParams?.transportListPrice) || 0,
-              listSubtotal: listPrice,
-              listPrice,
-              discountPct,
-              discountAmount,
-              baseFare,
-              total,
-              persons: tourPersons,
-              pickup: firstParam(searchParams?.pickup),
-              date: firstParam(searchParams?.date),
-              cabLabel: firstParam(searchParams?.cabLabel),
-              transportFrom: firstParam(searchParams?.transportFrom),
-              transportTo: firstParam(searchParams?.transportTo),
-              transportDistanceKm: Number(searchParams?.transportKm) || 0
-            }}
-          />
         ) : (
           <aside className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
             <h2 className="text-lg font-bold text-slate-900">Order summary</h2>
@@ -593,8 +565,8 @@ export default function PaymentPage({ searchParams }) {
                 </div>
               ) : null}
             </div>
-            <div className="mt-4 rounded-xl bg-blue-50 p-4">
-              <div className="flex justify-between font-bold text-[#0056D2]">
+            <div className="mt-4 rounded-xl bg-orange-50 p-4">
+              <div className="flex justify-between font-bold text-[var(--cabzii-cta)]">
                 <span>Total</span>
                 <span>₹{total.toLocaleString("en-IN")}</span>
               </div>

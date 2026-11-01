@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { BadgeCheck, Star } from "lucide-react";
+import { BadgeCheck, Star } from "../icons/rscIcons";
 import StarRating from "./StarRating";
 
 /**

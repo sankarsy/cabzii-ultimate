@@ -9,7 +9,7 @@ export const OG_CONTENT_TYPE = "image/png";
  */
 export function cabziiOgImage({
   headline,
-  subline = "Airport taxi · Outstation · Acting driver · Holidays",
+  subline = "Airport taxi · Outstation · Acting driver",
   footer = "Transparent fares · Professional drivers · Book online"
 }) {
   const long = String(headline || "").length > 32;

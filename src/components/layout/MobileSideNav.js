@@ -3,26 +3,27 @@
 import Link from "next/link";
 import { createPortal } from "react-dom";
 import { useEffect, useState } from "react";
+import WhatsAppIcon from "../WhatsAppIcon";
+import HeaderSearchBar from "../mmt/HeaderSearchBar";
+import { whatsappBookingUrl } from "../../lib/conversion";
+import { useSiteSettings } from "../SiteSettingsProvider";
+import { HERO_TABS } from "../../lib/emt/constants";
 import {
   BookOpen,
-  Car,
+  Bus,
+  CarFront,
   ChevronRight,
   FileText,
   HelpCircle,
   LogIn,
   MapPin,
   MessageCircle,
+  Palmtree,
   Star,
   UserRound,
   Wallet,
   X
-} from "lucide-react";
-import WhatsAppIcon from "../WhatsAppIcon";
-import HeaderSearchBar from "../mmt/HeaderSearchBar";
-import { whatsappBookingUrl } from "../../lib/conversion";
-import { useSiteSettings } from "../SiteSettingsProvider";
-import { HERO_TABS } from "../../lib/emt/constants";
-import { HERO_TAB_ICONS } from "../icons/heroIcons";
+} from "../icons/rscIcons";
 import { cn } from "../../lib/emt/cn";
 import { EARN_NAV } from "../../lib/brand";
 
@@ -31,6 +32,13 @@ const PRODUCT_ICON_TONES = {
   drivers: "text-violet-500",
   buses: "text-orange-500",
   holidays: "text-emerald-500"
+};
+
+const PRODUCT_ICONS = {
+  cabs: CarFront,
+  drivers: UserRound,
+  buses: Bus,
+  holidays: Palmtree
 };
 
 const EXPLORE_LINKS = [
@@ -47,7 +55,7 @@ function ProductMenuGrid({ activeTab, onSelect, onNavigate }) {
   return (
     <div className="cabzii-menu-products mx-3 mb-1 mt-1 grid grid-cols-4 gap-1.5" role="navigation" aria-label="Book Cabs, Driver, Buses or Holidays">
       {HERO_TABS.map((tab) => {
-        const Icon = HERO_TAB_ICONS[tab.id];
+        const Icon = PRODUCT_ICONS[tab.id];
         const active = activeTab === tab.id;
         return (
           <button
@@ -206,13 +214,13 @@ export default function MobileSideNav({
     <>
       <button
         type="button"
-        className="mmt-mobile-nav-backdrop fixed inset-0 z-[200] bg-slate-900/50 xl:hidden"
+        className="mmt-mobile-nav-backdrop fixed inset-0 z-[200] bg-slate-900/50 lg:hidden"
         aria-label="Close menu"
         onClick={onClose}
       />
       <nav
         id="mmt-mobile-nav"
-        className="mmt-mobile-nav-drawer fixed inset-y-0 left-0 z-[210] flex w-[min(100vw,360px)] flex-col overflow-hidden bg-white shadow-2xl xl:hidden"
+        className="mmt-mobile-nav-drawer fixed inset-y-0 left-0 z-[210] flex w-[min(100vw,360px)] flex-col overflow-hidden bg-white shadow-2xl lg:hidden"
         aria-label="Main menu"
         role="dialog"
         aria-modal="true"
@@ -248,7 +256,7 @@ export default function MobileSideNav({
             accent="green"
             onNavigate={onClose}
           />
-          <DrawerActionRow icon={Car} label="Book now" sublabel="Search & book cabs" href="/cabs" accent="cta" onNavigate={onClose} />
+          <DrawerActionRow icon={CarFront} label="Book now" sublabel="Search & book cabs" href="/cabs" accent="cta" onNavigate={onClose} />
           <DrawerActionRow
             icon={Wallet}
             label={EARN_NAV.label}

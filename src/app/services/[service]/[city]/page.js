@@ -94,11 +94,7 @@ export default async function ServiceCityPage({ params }) {
   const path = servicePath(service, city);
   const faqs = getServiceFaqs(service, city);
   const reviewStats = await fetchSiteReviewStats();
-  const isTourPackages = service.slug === "tour-packages" || service.slug === "holiday-packages";
-  const [cabs, packages] = await Promise.all([
-    isTourPackages ? Promise.resolve([]) : fetchCatalogForCity("cabs", city.name, 12),
-    isTourPackages ? fetchCatalogForCity("packages", city.name, 8) : Promise.resolve([])
-  ]);
+  const cabs = await fetchCatalogForCity("cabs", city.name, 12);
   const serpBadges = serviceSerpBadges(service, city);
   const jsonLd = [
     breadcrumbJsonLd([
@@ -130,7 +126,6 @@ export default async function ServiceCityPage({ params }) {
         extraBody={service.body}
         reviewStats={reviewStats}
         cabs={JSON.parse(JSON.stringify(cabs))}
-        packages={JSON.parse(JSON.stringify(packages))}
       />
     </>
   );

@@ -1,3 +1,5 @@
+"use client";
+
 import {
   LayoutDashboard,
   MapPin,
@@ -5,7 +7,6 @@ import {
   Plane,
   UserCircle,
   Route,
-  Palmtree,
   Search,
   Newspaper,
   HelpCircle,
@@ -20,7 +21,7 @@ import {
   Shield,
   Bus,
   Layers
-} from "lucide-react";
+} from "../components/icons/rscIcons";
 
 /**
  * City-based CMS sidebar. Every item maps to a live Mongo-backed screen.
@@ -37,7 +38,6 @@ export const ADMIN_NAV_GROUPS = [
       { key: "actingDriverCms", label: "Acting Driver Services", tab: "actingDriverCms", icon: UserCircle },
       { key: "seoRoutes", label: "Routes", tab: "seoRoutes", icon: Route },
       { key: "routeFares", label: "Route fares", tab: "routeFares", icon: Tag },
-      { key: "packages", label: "Holiday Trips", tab: "packages", icon: Palmtree, vendorAllowed: true },
       { key: "seoPagesHub", label: "SEO Pages", tab: "seoPagesHub", icon: Search },
       { key: "blogs", label: "Blog", tab: "blogs", icon: Newspaper },
       { key: "faqs", label: "FAQs", tab: "enterprise", section: "faqs", icon: HelpCircle },
@@ -85,7 +85,6 @@ export const VENDOR_ALLOWED_TABS = new Set([
   "bookings",
   "cabs",
   "assignments",
-  "packages",
   "reports",
   "actingDriversOps",
   "master"

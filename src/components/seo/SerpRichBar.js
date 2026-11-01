@@ -1,4 +1,6 @@
-import { Star } from "lucide-react";
+"use client";
+
+import { Star } from "../icons/rscIcons";
 import { formatInr } from "../../lib/formatInr";
 
 /**

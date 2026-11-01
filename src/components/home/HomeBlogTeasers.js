@@ -1,5 +1,7 @@
+"use client";
+
 import Link from "next/link";
-import { Clock, CalendarDays, ArrowRight } from "lucide-react";
+import { Clock, CalendarDays, ArrowRight } from "../icons/rscIcons";
 import SectionIntro from "../ui/SectionIntro";
 import { SAMPLE_BLOGS, estimateReadMinutes } from "../../lib/sampleContent";
 
@@ -28,7 +30,7 @@ function BlogTile({ post }) {
             <Clock className="h-3 w-3 text-slate-400" strokeWidth={2} aria-hidden /> {estimateReadMinutes(post)} min read
           </span>
         </span>
-        <span className="inline-flex items-center gap-0.5 font-bold text-sky-400">
+        <span className="inline-flex items-center gap-0.5 font-bold text-[var(--cabzii-cta)]">
           Read
           <ArrowRight className="h-3 w-3 transition group-hover:translate-x-0.5" strokeWidth={2.5} aria-hidden />
         </span>

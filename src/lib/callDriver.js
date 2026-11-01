@@ -31,7 +31,7 @@ export const CALL_DRIVER_SERVICES = [
     title: "Monthly Driver",
     shortTitle: "Monthly",
     blurb: "School, personal or regular monthly driver requirement.",
-    cta: "Request Quote",
+    cta: "Book Now",
     quoteOnly: true
   },
   {
@@ -39,7 +39,7 @@ export const CALL_DRIVER_SERVICES = [
     title: "Corporate Driver",
     shortTitle: "Corporate",
     blurb: "Dedicated drivers for corporate requirements.",
-    cta: "Get Quote",
+    cta: "Book Now",
     quoteOnly: true
   },
   {

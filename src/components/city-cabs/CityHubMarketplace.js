@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import CityCabBookingWidget from "./CityCabBookingWidget";
 import TaxiContactCard from "./TaxiContactCard";
 import MmtCabResults from "../mmt/MmtCabResults";
+import CabResultsModifyBar from "../mmt/CabResultsModifyBar";
 import { extractCabList } from "../../lib/apiClient";
 import { mergeTripDistance } from "../../lib/mergeTripDistance";
 import { useTripRoute } from "../../lib/useTripRoute";
@@ -16,7 +17,7 @@ import { fareForCabCategory } from "../../lib/categoryRouteFare";
 import { coordsForPlaceLabel } from "../../lib/indiaCityCoords";
 import { lookupKnownRouteTripData } from "../../lib/seo/routeCatalog";
 import { buildFareSlabs } from "../../lib/cabFare";
-import { cabResultsHref, cabSlabForTrip } from "../../lib/mmtTrip";
+import { cabResultsHref, cabSlabForTrip, isValidTripSearch } from "../../lib/mmtTrip";
 import { resolveCabTripFare } from "../../lib/distanceFare";
 
 function citySlug(name) {
@@ -217,10 +218,17 @@ export default function CityHubMarketplace({
     });
   }
 
+  const compactMobileSearch = isValidTripSearch(searchTrip);
+
   return (
     <div id="cabs" className="bg-[#f4f6fa] pb-6 lg:pb-8">
+      {compactMobileSearch ? (
+        <div className="lg:hidden">
+          <CabResultsModifyBar initialTrip={searchTrip} mobileOnly />
+        </div>
+      ) : null}
       {showHero ? (
-        <div className="section-shell pt-6 pb-2 sm:pt-8">
+        <div className={`section-shell pt-6 pb-2 sm:pt-8 ${compactMobileSearch ? "hidden lg:block" : ""}`}>
           <h1 className="px-1 text-center text-lg font-extrabold leading-tight tracking-tight text-slate-900 sm:text-2xl md:text-[1.75rem]">
             {heroTitle ||
               (isPair ? `Cabzii ${fromName} To ${toName} Taxi Service` : `Cab booking in ${fromName}`)}
@@ -238,7 +246,7 @@ export default function CityHubMarketplace({
         </div>
       ) : null}
       <div className="section-shell grid gap-3 py-3 sm:gap-4 sm:py-4 lg:grid-cols-[minmax(17rem,20.5rem)_minmax(0,1fr)] lg:grid-rows-1 lg:py-5">
-        <aside className="min-w-0 space-y-3 lg:row-start-1">
+        <aside className={`min-w-0 space-y-3 lg:row-start-1 ${compactMobileSearch ? "hidden lg:block" : ""}`}>
           <CityCabBookingWidget
             cityName={city.name}
             defaultFrom={searchTrip.from || city.name}
@@ -289,7 +297,7 @@ export default function CityHubMarketplace({
               <div className="rounded-2xl border border-dashed border-slate-200 bg-white px-4 py-8 text-center text-slate-500 lg:border-0">
                 No cabs found for this route.
                 <div className="mt-3">
-                  <Link href="/cabs" className="text-sm font-bold text-[#1a73e8] hover:underline">
+                  <Link href="/cabs" className="text-sm font-bold text-[var(--cabzii-brand)] hover:underline">
                     Browse all cabs
                   </Link>
                 </div>

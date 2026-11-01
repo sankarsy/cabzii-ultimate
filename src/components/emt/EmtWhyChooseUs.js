@@ -1,3 +1,5 @@
+"use client";
+
 import { resolveWhyFeatures, resolveWhySection, resolveWhyStats } from "../../lib/marketingFromSettings";
 import { getTrustIcon, TRUST_ICON_STYLES } from "../icons/heroIcons";
 import { DEFAULT_SITE_SETTINGS } from "../../lib/siteSettingsDefaults";

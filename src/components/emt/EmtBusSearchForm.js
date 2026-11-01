@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeftRight, Calendar } from "lucide-react";
+import { ArrowLeftRight, Calendar } from "../icons/rscIcons";
 import { addDays } from "../../lib/emt/heroDates";
 import { useTodayStr, HydrateSafeDate } from "../../lib/useTodayStr";
 import { POPULAR_BUS_ROUTES, busResultsHref } from "../../lib/popularBusRoutes";

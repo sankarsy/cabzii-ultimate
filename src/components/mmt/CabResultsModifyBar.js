@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronDown, ChevronLeft, Pencil } from "lucide-react";
+import { ChevronDown, ChevronLeft, Pencil } from "../icons/rscIcons";
 import PlaceAutocomplete from "../PlaceAutocomplete";
 import { formatMmtBarDate, formatMmtListingStamp, formatTime12, openNativePicker } from "../../lib/emt/heroDates";
 import { HOURLY_PACKAGES } from "../../lib/mmtTrip";
@@ -24,7 +24,7 @@ function Cell({ label, children, className = "" }) {
   );
 }
 
-export default function CabResultsModifyBar({ initialTrip }) {
+export default function CabResultsModifyBar({ initialTrip, mobileOnly = false }) {
   const router = useRouter();
   const mounted = useHasMounted();
   const search = useCabModifySearch(initialTrip);
@@ -60,7 +60,7 @@ export default function CabResultsModifyBar({ initialTrip }) {
           <button
             type="button"
             onClick={() => setSheetOpen(true)}
-            className="flex shrink-0 flex-col items-center px-1.5 py-1 text-[#1a73e8]"
+            className="flex shrink-0 flex-col items-center px-1.5 py-1 text-[var(--cabzii-cta)]"
           >
             <Pencil className="h-4 w-4" strokeWidth={2} />
             <span className="text-[10px] font-semibold">Edit</span>
@@ -70,6 +70,7 @@ export default function CabResultsModifyBar({ initialTrip }) {
 
       <CabResultsSearchSheet open={sheetOpen} onClose={() => setSheetOpen(false)} search={search} />
 
+      {mobileOnly ? null : (
       <div className="hidden bg-[#0b1b3a] lg:block">
         <div className="section-shell py-2">
           <div className="flex flex-row items-end gap-1.5">
@@ -180,7 +181,7 @@ export default function CabResultsModifyBar({ initialTrip }) {
               type="button"
               onClick={search.handleSearch}
               disabled={search.searching}
-              className="h-11 min-w-28 shrink-0 rounded-xl bg-[#1e88e5] px-6 text-xs font-extrabold uppercase tracking-wide text-white shadow-md hover:bg-[#1877cc] disabled:opacity-70"
+              className="h-11 min-w-28 shrink-0 rounded-xl bg-[var(--cabzii-cta)] px-6 text-xs font-extrabold uppercase tracking-wide text-white shadow-md hover:bg-[var(--cabzii-cta-hover)] disabled:opacity-70"
             >
               {search.searching ? "…" : "Search"}
             </button>
@@ -188,6 +189,7 @@ export default function CabResultsModifyBar({ initialTrip }) {
           {search.error ? <p className="mt-2 text-sm font-semibold text-rose-300">{search.error}</p> : null}
         </div>
       </div>
+      )}
     </>
   );
 }

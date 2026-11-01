@@ -1,6 +1,6 @@
 "use client";
 
-import { Link2, MessageCircle, Share2 } from "lucide-react";
+import { Link2, MessageCircle, Share2 } from "../icons/rscIcons";
 import { toast } from "react-toastify";
 import { catalogPublicPath } from "../../lib/catalogProduct";
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { Snowflake, BedDouble, Armchair, Wind, Radio, Sun, Sunset, Moon, Sunrise } from "lucide-react";
+import { Snowflake, BedDouble, Armchair, Wind, Radio, Sun, Sunset, Moon, Sunrise } from "../icons/rscIcons";
 
 const TYPE_TILES = [
   { id: "ac", label: "AC", Icon: Snowflake },

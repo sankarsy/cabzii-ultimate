@@ -16,7 +16,7 @@ export default function CabziiBrowseHeader({ title, subtitle, breadcrumbs = [], 
               <span key={crumb.path} className="inline-flex min-w-0 items-center gap-1">
                 {i > 0 ? <span className="text-slate-300">/</span> : null}
                 {i < breadcrumbs.length - 1 ? (
-                  <Link href={crumb.path} className="hover:text-[var(--cabzii-brand)]">
+                  <Link href={crumb.path} className="hover:text-[var(--cabzii-cta)]">
                     {crumb.name}
                   </Link>
                 ) : (
@@ -28,7 +28,7 @@ export default function CabziiBrowseHeader({ title, subtitle, breadcrumbs = [], 
         ) : null}
         <div className="flex items-start gap-2 sm:gap-2.5">
           {Icon ? (
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-sky-50 text-sky-600 ring-1 ring-sky-100 sm:h-9 sm:w-9 sm:rounded-lg">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-orange-50 text-[var(--cabzii-cta)] ring-1 ring-orange-100 sm:h-9 sm:w-9 sm:rounded-lg">
               <Icon className="h-5 w-5 sm:h-4 sm:w-4" strokeWidth={2} aria-hidden />
             </span>
           ) : null}

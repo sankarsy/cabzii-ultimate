@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Check } from "lucide-react";
+import { Check } from "./icons/rscIcons";
 import DriverBookingDetail from "./DriverBookingDetail";
 import DriverProductSpecs from "./DriverProductSpecs";
 import PaymentBreakdown from "./PaymentBreakdown";

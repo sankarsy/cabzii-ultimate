@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { getTrustIcon, TRUST_ICON_STYLES } from "../icons/heroIcons";
 import { TRUST_SIGNALS } from "../../lib/trustSignals";

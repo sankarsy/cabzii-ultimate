@@ -1,4 +1,6 @@
-import { Star } from "lucide-react";
+"use client";
+
+import { Star } from "../icons/rscIcons";
 
 export default function RatingBadge({ rating, reviewCount, className = "" }) {
   if (rating == null || rating === "") return null;

@@ -1,6 +1,6 @@
 "use client";
 
-import { Phone } from "lucide-react";
+import { Phone } from "../icons/rscIcons";
 import WhatsAppIcon from "../WhatsAppIcon";
 import { trackLead } from "../../lib/analytics";
 
@@ -24,7 +24,7 @@ export default function CallDriversCtaBar({
         <a
           href={telHref}
           onClick={onCall}
-          className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-[var(--cabzii-brand)] px-4 text-sm font-semibold text-white sm:flex-none"
+          className="cabzii-btn cabzii-btn-cta cabzii-tap inline-flex min-h-11 flex-1 items-center justify-center gap-2 px-4 sm:flex-none"
         >
           <Phone className="h-4 w-4" aria-hidden />
           Call {phoneDisplay}
@@ -48,7 +48,7 @@ export default function CallDriversCtaBar({
         <a
           href={telHref}
           onClick={onCall}
-          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[var(--cabzii-brand)] text-sm font-semibold text-white"
+          className="cabzii-btn cabzii-btn-cta cabzii-tap inline-flex min-h-11 items-center justify-center"
         >
           Call now
         </a>

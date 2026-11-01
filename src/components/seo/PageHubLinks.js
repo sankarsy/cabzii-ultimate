@@ -27,7 +27,7 @@ function CityRouteCard({ link }) {
             <li key={`${item.href}-${item.label}`}>
               <Link
                 href={item.href}
-                className="inline-block rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:border-sky-300 hover:text-[var(--cabzii-brand)]"
+                className="inline-block rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:border-[var(--cabzii-cta)]/40 hover:text-[var(--cabzii-brand)]"
               >
                 {item.label}
               </Link>
@@ -57,7 +57,7 @@ export default function PageHubLinks({ groups = [] }) {
                   <li key={`${item.href}-${item.label}`}>
                     <Link
                       href={item.href}
-                      className="inline-block rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 hover:border-sky-300"
+                      className="inline-block rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 hover:border-[var(--cabzii-cta)]/40"
                     >
                       {item.label}
                     </Link>

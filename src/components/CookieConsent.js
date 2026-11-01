@@ -44,7 +44,7 @@ export default function CookieConsent() {
       <div className="section-shell flex max-w-full flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_10px_40px_rgba(0,0,0,0.12)] sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm leading-relaxed text-slate-600">
           We use cookies to keep you signed in, remember your bookings and improve cabzii.in. See our{" "}
-          <a href="/terms-and-conditions" className="font-semibold text-[#0056D2] underline">
+          <a href="/terms-and-conditions" className="font-semibold text-[var(--cabzii-cta)] underline">
             terms
           </a>{" "}
           for details.
@@ -60,7 +60,7 @@ export default function CookieConsent() {
           <button
             type="button"
             onClick={() => decide("accepted")}
-            className="rounded-xl bg-[#0056D2] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#0047b3]"
+            className="rounded-xl bg-[var(--cabzii-cta)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[var(--cabzii-cta-hover)]"
           >
             Accept
           </button>

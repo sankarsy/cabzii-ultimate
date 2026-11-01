@@ -23,7 +23,7 @@ export default function MarketingPageShell({
   return (
     <TravelLayoutClient>
       <JsonLd data={jsonLd} />
-      <div className="border-b border-slate-200 bg-gradient-to-br from-sky-50 via-white to-emerald-50/30">
+      <div className="border-b border-slate-200 bg-gradient-to-br from-orange-50 via-white to-slate-50">
         <div className="section-shell py-10 sm:py-14">
           <nav className="text-xs font-medium text-slate-500" aria-label="Breadcrumb">
             {crumbs.map((c, i) => (
@@ -32,7 +32,7 @@ export default function MarketingPageShell({
                 {i === crumbs.length - 1 ? (
                   <span className="text-slate-700">{c.name}</span>
                 ) : (
-                  <Link href={c.path} className="text-sky-700 hover:underline">
+                  <Link href={c.path} className="text-[var(--cabzii-cta)] hover:underline">
                     {c.name}
                   </Link>
                 )}
@@ -44,7 +44,7 @@ export default function MarketingPageShell({
         </div>
       </div>
       <div className="section-shell py-10 sm:py-12">
-        <div className="prose prose-slate max-w-none prose-headings:font-bold prose-a:text-sky-700">{children}</div>
+        <div className="prose prose-slate max-w-none prose-headings:font-bold prose-a:text-[var(--cabzii-cta)]">{children}</div>
       </div>
       {faqs.length ? (
         <section className="border-t border-slate-200 bg-white py-10">

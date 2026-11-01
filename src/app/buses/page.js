@@ -3,7 +3,7 @@
 import { Suspense, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Bus, ShieldCheck, Armchair, Ticket } from "lucide-react";
+import { Bus, ShieldCheck, Armchair, Ticket } from "../../components/icons/rscIcons";
 import MmtLayout from "../../components/mmt/MmtLayout";
 import EmtBusSearchForm from "../../components/emt/EmtBusSearchForm";
 import { POPULAR_BUS_ROUTES, busResultsHref } from "../../lib/popularBusRoutes";

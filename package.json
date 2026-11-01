@@ -6,6 +6,7 @@
     "dev": "next dev -p 3000",
     "dev:local": "next dev -p 3000",
     "qa:seo": "node --import ./scripts/register-js-ext.mjs scripts/qa-seo-foundation.mjs",
+    "index:google": "node scripts/google-index-on-push.mjs",
     "prebuild": "node scripts/guardLiveApiHost.js",
     "build": "next build",
     "start": "next start"

@@ -18,9 +18,9 @@ export default function MmtTripSummaryBar({ trip }) {
     <div className="border-b border-slate-200 bg-slate-50">
       <div className="section-shell flex w-full flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="text-[11px] font-bold uppercase tracking-wide text-sky-700">{label}</p>
+          <p className="text-[11px] font-bold uppercase tracking-wide text-[var(--cabzii-cta)]">{label}</p>
           <h1 className="flex items-start gap-2 text-base font-bold text-slate-900 sm:text-lg">
-            <MapPinIcon className="mt-0.5 h-5 w-5 shrink-0 text-sky-400" aria-hidden="true" />
+            <MapPinIcon className="mt-0.5 h-5 w-5 shrink-0 text-[var(--cabzii-cta)]" aria-hidden="true" />
             {tripSummaryLabel(trip)}
           </h1>
           {showDistance ? (

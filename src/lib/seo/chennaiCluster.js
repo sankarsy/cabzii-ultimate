@@ -16,8 +16,6 @@ export const CHENNAI_MONEY_LINKS = [
   { href: "/call-driver", label: "Book Call Driver", intent: "book-driver" },
   { href: "/services/tempo-traveller/chennai", label: "Tempo Traveller Chennai", intent: "tempo" },
   { href: "/tariff", label: "Chennai cab tariff", intent: "tariff" },
-  { href: "/holidays?category=pilgrimage", label: "Pilgrimage packages", intent: "pilgrimage" },
-  { href: "/holidays", label: "Holiday packages", intent: "tours" },
   { href: "/chennai/outstation/chennai-to-tirupati", label: "Chennai to Tirupati cab", intent: "route" }
 ];
 
@@ -50,7 +48,7 @@ export const CHENNAI_KEYWORD_URL_MAP = [
   { keyword: "tempo traveller Chennai", url: "/services/tempo-traveller/chennai" },
   { keyword: "cab fare Chennai", url: "/tariff" },
   { keyword: "Chennai to Tirupati cab", url: "/chennai/outstation/chennai-to-tirupati" },
-  { keyword: "Tirupati package", url: "/tour-packages/tirupati-balaji-darshan-tirupati" }
+  { keyword: "Tirupati cab", url: "/chennai/outstation/chennai-to-tirupati" }
 ];
 
 export function chennaiCabUniqueHtml() {

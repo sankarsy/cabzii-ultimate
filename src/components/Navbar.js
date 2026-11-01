@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
 import { clearSession, formatMobileDisplay, getUser, isLoggedIn } from "../lib/auth";
 import { isTravelShellPath } from "../lib/travelShellPaths";
 import { resolveSiteSearchHref } from "../lib/siteSearch";
@@ -19,7 +18,6 @@ const fallbackNavLinks = [
   { href: "/cabs", label: "Cabs" },
   { href: "/buses", label: "Buses" },
   { href: "/call-driver", label: "Call Driver" },
-  { href: "/holidays", label: "Holidays" },
   { href: "/earn", label: "Earn with Cabzii" }
 ];
 
@@ -88,7 +86,7 @@ export default function Navbar({ variant = "default" }) {
           isActive(href) ? "bg-white/15 text-white" : "text-white/90 hover:bg-white/10 hover:text-white"
         }`
       : `whitespace-nowrap rounded-md px-2.5 py-1.5 text-sm font-medium transition ${
-          isActive(href) ? "bg-slate-100 text-[#0056D2]" : "text-slate-700 hover:text-[#0056D2]"
+          isActive(href) ? "bg-orange-50 text-[var(--cabzii-cta)]" : "text-slate-700 hover:text-[var(--cabzii-cta)]"
         }`;
 
   const cmsMenuLinks = (settings.seoMenuLinks || []).map((link, index) => ({
@@ -108,7 +106,7 @@ export default function Navbar({ variant = "default" }) {
 
   const brandName = settings.siteName || "cabzii.in";
   const brandColor = settings.brandColor || "#0056D2";
-  const searchPlaceholder = settings.hero?.searchPlaceholder || "Search cabs, buses, drivers, holidays…";
+  const searchPlaceholder = settings.hero?.searchPlaceholder || "Search cabs, buses, drivers, routes…";
 
   if (hideOnTravelShell) return null;
 
@@ -148,7 +146,7 @@ export default function Navbar({ variant = "default" }) {
                 onChange={(e) => setSearchTerm(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                 placeholder={searchPlaceholder}
-                className="w-40 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-[#0056D2] focus:bg-white lg:w-48"
+                className="w-40 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-[var(--cabzii-cta)] focus:bg-white lg:w-48"
                 aria-label="Search"
               />
               <button
@@ -165,22 +163,16 @@ export default function Navbar({ variant = "default" }) {
                 <button
                   type="button"
                   onClick={() => setUserMenuOpen((p) => !p)}
-                  className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:border-[#0056D2]/40"
+                  className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:border-[var(--cabzii-cta)]/40"
                 >
-                  <UserIcon className="h-4 w-4 text-sky-400" />
+                  <UserIcon className="h-4 w-4 text-[var(--cabzii-cta)]" />
                   <span className="hidden max-w-[100px] truncate sm:inline">
                     {formatMobileDisplay(user.mobileNumber)}
                   </span>
                   <ChevronDownIcon className="h-3.5 w-3.5 text-slate-400" />
                 </button>
-                <AnimatePresence>
-                  {userMenuOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 6 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 6 }}
-                      className="absolute right-0 mt-2 w-48 overflow-hidden rounded-xl border border-slate-200 bg-white py-1 shadow-lg"
-                    >
+                {userMenuOpen ? (
+                    <div className="absolute right-0 mt-2 w-48 overflow-hidden rounded-xl border border-slate-200 bg-white py-1 shadow-lg">
                       <Link
                         href="/my-bookings"
                         className="block px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50"
@@ -204,9 +196,8 @@ export default function Navbar({ variant = "default" }) {
                       >
                         Logout
                       </button>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                    </div>
+                ) : null}
               </div>
             ) : (
               <Link
@@ -231,21 +222,15 @@ export default function Navbar({ variant = "default" }) {
           </button>
         </div>
 
-        <AnimatePresence>
-          {menuOpen && (
-            <motion.nav
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="border-t border-slate-100 py-3 lg:hidden"
-            >
+        {menuOpen ? (
+            <nav className="border-t border-slate-100 py-3 lg:hidden">
               <div className="mb-3 flex flex-col gap-2 px-2 sm:flex-row">
                 <input
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   placeholder={searchPlaceholder}
-                  className="min-w-0 flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 outline-none focus:border-[#0056D2] focus:bg-white"
+                  className="min-w-0 flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 outline-none focus:border-[var(--cabzii-cta)] focus:bg-white"
                   aria-label="Search"
                 />
                 <button
@@ -280,9 +265,8 @@ export default function Navbar({ variant = "default" }) {
                   Login
                 </Link>
               )}
-            </motion.nav>
-          )}
-        </AnimatePresence>
+            </nav>
+        ) : null}
       </div>
     </header>
   );

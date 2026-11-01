@@ -107,7 +107,7 @@ export default function MyBookingsPage() {
             {user?.mobileNumber ? formatMobileDisplay(user.mobileNumber) : "Your account"} · upcoming and past trips
           </p>
           {!loading && !error && bookings.length > 0 ? (
-            <p className="mt-2 inline-flex rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-[#0056D2]">
+            <p className="mt-2 inline-flex rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-[var(--cabzii-cta)]">
               {summary.count} booking{summary.count === 1 ? "" : "s"} · ₹{summary.total.toLocaleString("en-IN")} total
             </p>
           ) : null}
@@ -141,7 +141,7 @@ export default function MyBookingsPage() {
 
           <Link
             href="/cabs"
-            className="mt-8 inline-flex rounded-xl bg-[#0056D2] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#0047b3]"
+            className="mt-8 inline-flex rounded-xl bg-[var(--cabzii-cta)] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[var(--cabzii-cta-hover)]"
           >
             Book a new cab
           </Link>
@@ -190,7 +190,7 @@ function BookingCard({ booking, onFinish, finishing }) {
     <li className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
-          <p className="text-xs font-semibold uppercase text-[#0056D2]">
+          <p className="text-xs font-semibold uppercase text-[var(--cabzii-cta)]">
             {booking.callDriver?.serviceType ? "Call Driver Service" : booking.type}
           </p>
           <p className="text-sm font-bold text-slate-900">
@@ -264,7 +264,7 @@ function BookingCard({ booking, onFinish, finishing }) {
             type="button"
             onClick={() => onFinish(String(booking._id))}
             disabled={finishing}
-            className="rounded-lg bg-[#0056D2] px-4 py-2 text-xs font-semibold text-white hover:bg-[#0047b3] disabled:opacity-60"
+            className="rounded-lg bg-[var(--cabzii-cta)] px-4 py-2 text-xs font-semibold text-white hover:bg-[var(--cabzii-cta-hover)] disabled:opacity-60"
           >
             {finishing ? "Saving…" : "Mark trip as finished"}
           </button>

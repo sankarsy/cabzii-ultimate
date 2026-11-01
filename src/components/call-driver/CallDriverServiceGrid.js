@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Building2, CarFront, ChevronRight, GraduationCap, MapPin, Plane, Route } from "lucide-react";
+import { Building2, CarFront, ChevronRight, GraduationCap, MapPin, Plane, Route } from "../icons/rscIcons";
 import { callDriverBookHref, formatFromPrice } from "../../lib/callDriver";
 import ApproxPriceNote from "../ui/ApproxPriceNote";
 
@@ -24,9 +24,12 @@ export default function CallDriverServiceGrid({ services = [], pickup = "" }) {
         const Icon = SERVICE_ICONS[svc.id] || MapPin;
         return (
           <li key={svc.id}>
-            <article className="flex h-full flex-col rounded-xl border border-slate-200 bg-white p-3 shadow-sm sm:rounded-2xl sm:p-5">
+            <Link
+              href={callDriverBookHref(svc.id, pickup ? { pickup } : {})}
+              className="cabzii-tap flex h-full flex-col rounded-xl border border-slate-200 bg-white p-3 shadow-sm transition hover:-translate-y-0.5 hover:border-[var(--cabzii-cta)]/35 hover:shadow-md sm:rounded-2xl sm:p-5"
+            >
               <div className="flex items-start gap-3">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-sky-50 text-[var(--cabzii-brand)] sm:h-10 sm:w-10">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-orange-50 text-[var(--cabzii-cta)] sm:h-10 sm:w-10">
                   <Icon className="h-4 w-4 sm:h-5 sm:w-5" strokeWidth={2} />
                 </span>
                 <div className="min-w-0 flex-1">
@@ -40,19 +43,16 @@ export default function CallDriverServiceGrid({ services = [], pickup = "" }) {
                     {svc.id === "corporate" ? "Corporate quote" : "Request a quote"}
                   </p>
                 ) : fromLabel ? (
-                  <p className="text-xs font-bold text-[var(--cabzii-brand)] sm:text-sm">{fromLabel}</p>
+                  <p className="text-xs font-bold text-[var(--cabzii-cta)] sm:text-sm">{fromLabel}</p>
                 ) : (
                   <span />
                 )}
-                <Link
-                  href={callDriverBookHref(svc.id, pickup ? { pickup } : {})}
-                  className="cabzii-btn cabzii-btn-cta cabzii-btn-sm cabzii-tap shrink-0 px-3 sm:px-4"
-                >
+                <span className="cabzii-btn cabzii-btn-cta cabzii-btn-sm shrink-0 px-3 sm:px-4">
                   {svc.cta}
                   <ChevronRight className="h-3.5 w-3.5" />
-                </Link>
+                </span>
               </div>
-            </article>
+            </Link>
           </li>
         );
       })}

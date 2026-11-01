@@ -522,8 +522,5 @@ export function cityAreas(citySlug) {
 }
 
 export function relatedServicesForCity(citySlug) {
-  return SEO_SERVICES.filter((s) => {
-    if (s.slug === "tour-packages") return true;
-    return true;
-  }).slice(0, 8);
+  return SEO_SERVICES.filter((s) => s.slug !== "tour-packages").slice(0, 8);
 }

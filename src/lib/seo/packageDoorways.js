@@ -32,6 +32,6 @@ export function packageDoorwayCanonicalPath(serviceSlug, citySlug = "chennai") {
   if (service === "driver-on-hire" || service === "chauffeur-service") {
     return isActingDriverHubCity(city) ? actingDriverLandingPath(city) : "/call-driver";
   }
-  if (service === "tour-packages") return "/holidays";
+  if (service === "tour-packages") return cityCabLandingPath(city);
   return cityCabLandingPath(city);
 }

@@ -18,7 +18,6 @@ const SCOPE_TABS = [
 const TYPE_FILTERS = [
   { id: "all", label: "All" },
   { id: "site", label: "Home & listings" },
-  { id: "tour", label: "Holiday packages" },
   { id: "route", label: "Routes" },
   { id: "service", label: "Services" },
   { id: "city", label: "City hubs" },
@@ -90,8 +89,7 @@ export default function AdminSeoPagesIndex({ token = "" }) {
     setLoading(true);
     setError("");
     try {
-      const [packages, blogs, seoServices, seoRoutes, seoCityPages, seoLandings, settingsRes] = await Promise.all([
-        fetchAdminList(`${buildCatalogListUrl("packages")}&limit=500`, token),
+      const [blogs, seoServices, seoRoutes, seoCityPages, seoLandings, settingsRes] = await Promise.all([
         fetchAdminList(`${buildCatalogListUrl("blogs")}&limit=200`, token),
         fetchAdminList(buildCatalogListUrl("seoServices"), token),
         fetchAdminList(buildCatalogListUrl("seoRoutes"), token),
@@ -107,7 +105,6 @@ export default function AdminSeoPagesIndex({ token = "" }) {
       setPageSeo(storedPageSeo);
       setRows(
         buildSeoPageIndex({
-          packages,
           blogs,
           seoServices,
           seoRoutes,

@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Bus } from "lucide-react";
+import { Bus } from "../../../components/icons/rscIcons";
 import BusCheckoutFlow from "../../../components/bus/BusCheckoutFlow";
 import { resolveBusTrip } from "../../../lib/busCatalog";
 

@@ -3,11 +3,11 @@ import Link from "next/link";
 const STEPS = [
   {
     title: "1. Decide the page type",
-    body: "Live ranking cities now: Chennai, Madurai, Tirupati, Trichy, Coimbatore, Vellore, Kanchipuram, Kodaikanal, Ooty, Pondicherry, Sabarimala, Ayyappan Kovil. Rank those hubs, airport taxi (not Kanchipuram / Kodaikanal / Ooty / Sabarimala / Ayyappan Kovil), acting-driver, outstation/one-way/tempo, the Tirupati route, and holiday packages. Create extra city pages yourself later. Do not create SEO pages for cab fare slabs or Call Driver packages."
+    body: "Live ranking cities now: Chennai, Madurai, Tirupati, Trichy, Coimbatore, Vellore, Kanchipuram, Kodaikanal, Ooty, Pondicherry, Sabarimala, Ayyappan Kovil. Rank those hubs, airport taxi (not Kanchipuram / Kodaikanal / Ooty / Sabarimala / Ayyappan Kovil), acting-driver, outstation/one-way/tempo, and the Tirupati route. Create extra city pages yourself later. Do not create SEO pages for cab fare slabs or Call Driver packages."
   },
   {
     title: "2. Create or open the record",
-    body: "City / airport / acting driver → Google SEO pages → Create. Route → Create route. Holiday → Catalog → Holidays. Do not open Cabs or Call Driver tariff to write ranking copy."
+    body: "City / airport / acting driver → Google SEO pages → Create. Route → Create route. Do not open Cabs or Call Driver tariff to write ranking copy."
   },
   {
     title: "3. Fill SEO the same way every time",
@@ -94,16 +94,6 @@ export default function AdminSeoSop() {
                   </Link>
                 </td>
                 <td className="py-2 font-mono">/chennai/outstation/chennai-to-tirupati</td>
-              </tr>
-              <tr className="border-b border-slate-100">
-                <td className="py-2 pr-3">Tirupati package, Rameswaram tour</td>
-                <td className="py-2 pr-3 font-semibold">Holiday package</td>
-                <td className="py-2 pr-3">
-                  <Link href="/admin?tab=packages" className="font-semibold text-[var(--cabzii-brand)] hover:underline">
-                    Catalog → Holidays
-                  </Link>
-                </td>
-                <td className="py-2 font-mono">/tour-packages/…</td>
               </tr>
               <tr>
                 <td className="py-2 pr-3">4 hr / 8 hr cab, local Call Driver package</td>

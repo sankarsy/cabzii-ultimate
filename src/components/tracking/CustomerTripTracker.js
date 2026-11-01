@@ -42,7 +42,7 @@ export default function CustomerTripTracker({ bookingId }) {
 
   return (
     <div className="section-shell py-6">
-      <Link href="/my-bookings" className="text-sm font-semibold text-[#0056D2]">
+      <Link href="/my-bookings" className="text-sm font-semibold text-[var(--cabzii-cta)]">
         ← My Bookings
       </Link>
 
@@ -73,7 +73,7 @@ export default function CustomerTripTracker({ bookingId }) {
           <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
             <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-2 text-sm font-semibold text-slate-800">
-                <span className="inline-block h-2.5 w-2.5 rounded-full bg-[#0056D2]" />
+                <span className="inline-block h-2.5 w-2.5 rounded-full bg-[var(--cabzii-cta)]" />
                 Vehicle location
               </span>
               {state ? (

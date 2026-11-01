@@ -1,31 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import OtpLogin from "./OtpLogin";
-import { normalizeMobileInput, sanitizeMobileInput, setSession } from "../lib/auth";
-import { BriefcaseIcon, ChevronRightIcon, ShieldIcon, UserIcon } from "./icons";
-
-const ROLES = [
-  {
-    id: "customer",
-    title: "Customer",
-    description: "Book cabs, tours & drivers. Login with mobile OTP.",
-    icon: UserIcon
-  },
-  {
-    id: "partner",
-    title: "Travel Partner",
-    description: "Manage cabs, drivers & packages. Login with mobile & password.",
-    icon: BriefcaseIcon
-  },
-  {
-    id: "admin",
-    title: "Admin",
-    description: "Cabzii super admin. Login with mobile number & password.",
-    icon: ShieldIcon
-  }
-];
+import { buildLoginHref, normalizeMobileInput, sanitizeMobileInput, setSession } from "../lib/auth";
+import { BriefcaseIcon, ShieldIcon } from "./icons";
+import { inputBaseClass, typo } from "../lib/typography";
 
 function parseJsonResponse(res) {
   return res.text().then((text) => {
@@ -42,66 +23,52 @@ export default function LoginHub() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const nextUrl = searchParams.get("next") || "/";
-  const initialRole = searchParams.get("role");
-  const validInitial = ROLES.some((r) => r.id === initialRole) ? initialRole : null;
-
-  const [selectedRole, setSelectedRole] = useState(validInitial);
+  const role = searchParams.get("role");
 
   useEffect(() => {
-    if (initialRole === "driver") router.replace("/driver/login");
-  }, [initialRole, router]);
+    if (role === "driver") router.replace("/driver/login");
+  }, [role, router]);
 
-  if (initialRole === "driver") {
+  if (role === "driver") {
     return <div className="mx-auto max-w-md text-center text-sm text-slate-600">Opening driver login…</div>;
   }
 
-  if (selectedRole === "customer") {
-    return <OtpLogin nextUrl={nextUrl} onBack={() => setSelectedRole(null)} />;
+  if (role === "partner") {
+    return <PasswordLoginForm mode="partner" nextUrl={nextUrl} />;
   }
 
-  if (selectedRole === "partner") {
-    return <PasswordLoginForm mode="partner" onBack={() => setSelectedRole(null)} />;
-  }
-
-  if (selectedRole === "admin") {
-    return <PasswordLoginForm mode="admin" onBack={() => setSelectedRole(null)} />;
+  if (role === "admin") {
+    return <PasswordLoginForm mode="admin" nextUrl={nextUrl} />;
   }
 
   return (
-    <div className="mx-auto w-full max-w-sm">
-      <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-md">
-        <div className="mb-3 text-center">
-          <h1 className="text-base font-bold text-slate-900">Welcome to Cabzii</h1>
-          <p className="mt-0.5 text-xs text-slate-600">Choose how you want to sign in</p>
-        </div>
-        <div className="grid gap-2">
-          {ROLES.map((role) => {
-            const Icon = role.icon;
-            return (
-              <button
-                key={role.id}
-                type="button"
-                onClick={() => setSelectedRole(role.id)}
-                className="flex w-full items-center gap-2.5 rounded-lg border border-slate-200 px-2.5 py-2 text-left transition hover:border-[#0056D2]/50 hover:bg-blue-50/40 focus:outline-none focus:ring-2 focus:ring-blue-100"
-              >
-                <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-sky-50 text-sky-400">
-                  <Icon className="h-4 w-4" />
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="block text-sm font-bold leading-tight text-slate-900">{role.title}</span>
-                  <span className="mt-0.5 block text-[11px] leading-snug text-slate-600">{role.description}</span>
-                </span>
-                <ChevronRightIcon className="h-4 w-4 shrink-0 text-slate-400" />
-              </button>
-            );
-          })}
-        </div>
-      </div>
-    </div>
+    <OtpLogin
+      nextUrl={nextUrl}
+      showRoleLinks
+      subtitle="Book cabs and drivers with your 6-digit mobile OTP."
+    />
   );
 }
 
-function PasswordLoginForm({ mode, onBack }) {
+function RoleLinks({ nextUrl, current }) {
+  const items = [
+    current !== "customer" ? { href: buildLoginHref(nextUrl), label: "Customer login" } : null,
+    current !== "partner" ? { href: buildLoginHref(nextUrl, "partner"), label: "Vendor login" } : null,
+    current !== "admin" ? { href: buildLoginHref(nextUrl, "admin"), label: "Admin login" } : null
+  ].filter(Boolean);
+
+  return (
+    <p className="mt-4 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs font-semibold">
+      {items.map((item) => (
+        <Link key={item.href} href={item.href} className="text-[var(--cabzii-cta)] hover:underline">
+          {item.label}
+        </Link>
+      ))}
+    </p>
+  );
+}
+
+function PasswordLoginForm({ mode, nextUrl }) {
   const isAdmin = mode === "admin";
   const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
@@ -132,7 +99,7 @@ function PasswordLoginForm({ mode, onBack }) {
         throw new Error(data?.message || "Login failed");
       }
       if (isAdmin && data.data.user?.role !== "super_admin") {
-        throw new Error("This account is not a super admin. Use Travel Partner login.");
+        throw new Error("This account is not a super admin. Use Vendor login.");
       }
       setSession(data.data.token, data.data.user);
       await fetch("/api/auth/session", {
@@ -148,24 +115,14 @@ function PasswordLoginForm({ mode, onBack }) {
     }
   };
 
-  const title = isAdmin ? "Admin Login" : "Travel Partner Login";
-  const subtitle = isAdmin
-    ? "Cabzii super admin access"
-    : "Vendor / partner dashboard access";
-  const btnClass = isAdmin ? "bg-slate-800 hover:bg-slate-700" : "bg-[#0056D2] hover:bg-[#0047b3]";
+  const title = isAdmin ? "Admin login" : "Vendor login";
+  const subtitle = isAdmin ? "Cabzii super admin access" : "Travel partner dashboard access";
 
   return (
     <div className="mx-auto w-full max-w-sm">
-      <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-md">
-        <button type="button" onClick={onBack} className="mb-3 text-xs font-medium text-[#0056D2] hover:underline">
-          ← Back to login options
-        </button>
+      <div className="cabzii-card p-4 sm:p-5">
         <div className="mb-4 text-center">
-          <span
-            className={`inline-flex h-9 w-9 items-center justify-center rounded-full ${
-              isAdmin ? "bg-violet-50 text-violet-400" : "bg-sky-50 text-sky-400"
-            }`}
-          >
+          <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-orange-50 text-[var(--cabzii-cta)]">
             {isAdmin ? <ShieldIcon className="h-4 w-4" /> : <BriefcaseIcon className="h-4 w-4" />}
           </span>
           <h1 className="mt-2 text-base font-bold text-slate-900">{title}</h1>
@@ -173,8 +130,8 @@ function PasswordLoginForm({ mode, onBack }) {
         </div>
         <div className="space-y-3">
           <div>
-            <label className="mb-1 block text-[11px] font-semibold text-slate-600">Mobile number</label>
-            <div className="flex overflow-hidden rounded-lg border border-slate-200 focus-within:border-[#0056D2] focus-within:ring-2 focus-within:ring-blue-100">
+            <label className={`mb-1 block ${typo.label}`}>Mobile number</label>
+            <div className="flex overflow-hidden rounded-xl border border-slate-200/90 focus-within:border-[var(--cabzii-cta)] focus-within:ring-2 focus-within:ring-orange-100">
               <span className="flex items-center bg-slate-50 px-2.5 text-xs font-medium text-slate-600">+91</span>
               <input
                 type="tel"
@@ -184,12 +141,12 @@ function PasswordLoginForm({ mode, onBack }) {
                 onChange={(e) => setMobile(sanitizeMobileInput(e.target.value))}
                 placeholder="10-digit number"
                 disabled={loading}
-                className="h-10 flex-1 px-3 text-sm text-slate-900 outline-none disabled:opacity-60"
+                className="h-10 flex-1 bg-transparent px-3 text-sm font-semibold text-slate-900 outline-none disabled:opacity-60"
               />
             </div>
           </div>
           <div>
-            <label className="mb-1 block text-[11px] font-semibold text-slate-600">Password</label>
+            <label className={`mb-1 block ${typo.label}`}>Password</label>
             <input
               type="password"
               value={password}
@@ -197,19 +154,15 @@ function PasswordLoginForm({ mode, onBack }) {
               onKeyDown={(e) => e.key === "Enter" && submit()}
               placeholder="Your password"
               disabled={loading}
-              className="h-10 w-full rounded-lg border border-slate-200 px-3 text-sm text-slate-900 outline-none focus:border-[#0056D2] focus:ring-2 focus:ring-blue-100 disabled:opacity-60"
+              className={`${inputBaseClass} focus:border-[var(--cabzii-cta)] focus:ring-orange-100`}
             />
           </div>
-          <button
-            type="button"
-            disabled={loading}
-            onClick={submit}
-            className={`h-10 w-full rounded-lg text-sm font-bold text-white transition disabled:opacity-60 ${btnClass}`}
-          >
-            {loading ? "Signing in…" : isAdmin ? "Sign in to Admin" : "Sign in as Partner"}
+          <button type="button" disabled={loading} onClick={submit} className="cabzii-btn cabzii-btn-cta cabzii-tap h-11 w-full">
+            {loading ? "Signing in…" : isAdmin ? "Sign in to Admin" : "Sign in as Vendor"}
           </button>
         </div>
         {error ? <p className="mt-3 rounded-lg bg-rose-50 px-3 py-2 text-xs text-rose-800">{error}</p> : null}
+        <RoleLinks nextUrl={nextUrl} current={isAdmin ? "admin" : "partner"} />
       </div>
     </div>
   );

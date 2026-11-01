@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { UserRound } from "lucide-react";
+import { UserRound } from "../icons/rscIcons";
 import MmtDriverResults from "./MmtDriverResults";
 import MmtDriverSearchWidget from "./MmtDriverSearchWidget";
 import CabziiBrowseHeader from "./CabziiBrowseHeader";

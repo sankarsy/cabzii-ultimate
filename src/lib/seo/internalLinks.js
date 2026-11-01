@@ -11,8 +11,7 @@ import { routePublicPath } from "./outstationPaths";
 /** Primary catalog pages — always link from hub sections. */
 export const CORE_INTERNAL_LINKS = [
   { href: "/cabs", label: "Book a cab", desc: "Sedan, SUV, Innova & more" },
-  { href: "/holidays", label: "Holiday packages", desc: "Pilgrimage, beach & hill trips" },
-  { href: "/holidays?category=pilgrimage", label: "Pilgrimage tours", desc: "Tirupati, Rameswaram, Shirdi & more" },
+  { href: "/chennai/outstation/chennai-to-tirupati", label: "Chennai to Tirupati", desc: "One-way and round-trip cab" },
   { href: "/call-driver", label: "Call Driver", desc: "Acting driver for your own car" },
   { href: "/acting-driver", label: "Acting driver cities", desc: "City chauffeur-on-hire pages" },
   { href: "/locations", label: "Service locations", desc: "Pickup points by city" },
@@ -26,7 +25,9 @@ export const INTERNAL_LINK_CITIES = MAIN_PAGE_CITY_SLUGS;
 export const SERVICE_LINK_CITIES = MAIN_PAGE_CITY_SLUGS;
 
 function citiesBySlugs(slugs) {
-  return slugs.map((slug) => SEO_CITIES.find((c) => c.slug === slug)).filter(Boolean);
+  const list = Array.isArray(slugs) ? slugs : [];
+  const cities = Array.isArray(SEO_CITIES) ? SEO_CITIES : [];
+  return list.map((slug) => cities.find((c) => c.slug === slug)).filter(Boolean);
 }
 
 export function formatRouteLabel(route) {
@@ -138,7 +139,6 @@ export function relatedLinksForPage(page, citySlug = "") {
   const base = [
     { href: "/", label: "Home" },
     { href: "/cabs", label: "All cabs" },
-    { href: "/holidays", label: "Holiday packages" },
     { href: "/call-driver", label: "Call Driver" },
     { href: "/acting-driver", label: "Acting driver" }
   ];
@@ -159,15 +159,6 @@ export function relatedLinksForPage(page, citySlug = "") {
       { href: actingDriverLandingPath(city.slug), label: `Acting driver ${city.name}` },
       ...(sameCity ? routeLinksForCity(city.slug, 6) : routeLinks(6))
     ].filter(Boolean);
-  }
-  if (page === "packages") {
-    return [
-      ...base,
-      { href: `/services/tour-packages/${city.slug}`, label: `Holiday packages ${city.name}` },
-      { href: cityCabLandingPath(city.slug), label: `Cab to tour pickup — ${city.name}` },
-      ...cabBookingLinks(6),
-      ...routeLinks(4)
-    ];
   }
   if (page === "drivers") {
     return [

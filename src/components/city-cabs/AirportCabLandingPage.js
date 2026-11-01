@@ -21,7 +21,10 @@ export default function AirportCabLandingPage({ data, cabs = [], quotes = [] }) 
               { name: "Airport cab booking", path: data.path }
             ]}
           />
-          <h1 className="px-1 text-center text-lg font-bold leading-tight tracking-tight text-slate-900 sm:text-xl md:text-2xl">
+          <p className="text-center text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--cabzii-cta)]">
+            Airport cab · {city.name}
+          </p>
+          <h1 className="mt-1 px-1 text-center text-lg font-extrabold leading-tight tracking-tight text-slate-900 sm:text-xl md:text-2xl">
             {data.h1}
           </h1>
           <p className="mx-auto mt-2 max-w-2xl px-1 text-center text-xs text-slate-600 sm:text-sm">{data.lead}</p>

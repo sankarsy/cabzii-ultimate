@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Phone } from "lucide-react";
+import { Phone } from "../icons/rscIcons";
 import WhatsAppIcon from "../WhatsAppIcon";
 import { telUrl, whatsappBookingUrl, contactPhoneFromSettings, whatsappDigitsFromSettings } from "../../lib/conversion";
 import { useSiteSettings } from "../SiteSettingsProvider";
@@ -38,7 +38,7 @@ export default function HeroHeadline({
         </a>
         <a
           href={telUrl(phone)}
-          className="cabzii-tap inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-[var(--cabzii-brand)] shadow-sm hover:bg-sky-50"
+          className="cabzii-tap inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-[var(--cabzii-cta)] shadow-sm hover:bg-orange-50"
           onClick={() => trackLead("phone", { cta_location: "hero_headline" })}
         >
           <Phone className="h-4 w-4" strokeWidth={2} />

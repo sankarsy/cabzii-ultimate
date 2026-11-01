@@ -699,8 +699,7 @@ export function getCabBookingH1(city) {
 /** Search results deep-link for service landing CTAs */
 export function serviceSearchHref(service, city) {
   if (service.slug === "tour-packages" || service.slug === "holiday-packages") {
-    const q = new URLSearchParams({ city: city.name });
-    return `/holidays?${q.toString()}`;
+    return cityCabLandingPath(city.slug);
   }
   if (service.slug === "airport-taxi") return airportTaxiPublicPath(city.slug);
   if (

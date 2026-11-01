@@ -1,5 +1,7 @@
+"use client";
+
 import Link from "next/link";
-import { ArrowRightLeft, Bus, Car, ChevronRight, MapPinned, Plane, UserRound } from "lucide-react";
+import { ArrowRightLeft, Bus, Car, ChevronRight, MapPinned, Plane, UserRound } from "../icons/rscIcons";
 
 const HIT_ICONS = {
   cab: Car,

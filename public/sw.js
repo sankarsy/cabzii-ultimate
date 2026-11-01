@@ -4,7 +4,7 @@
  *  - Static assets (_next/static, images, fonts): stale-while-revalidate.
  *  - Never caches API, admin, auth or payment responses.
  */
-const VERSION = "v3";
+const VERSION = "v4";
 const STATIC_CACHE = `cabzii-static-${VERSION}`;
 const PAGE_CACHE = `cabzii-pages-${VERSION}`;
 const OFFLINE_URL = "/";
@@ -53,6 +53,13 @@ self.addEventListener("fetch", (event) => {
         })
         .catch(() => caches.match(request).then((cached) => cached || caches.match(OFFLINE_URL)))
     );
+    return;
+  }
+
+  if (
+    url.pathname.includes("hot-update") ||
+    url.pathname.includes("/_next/static/chunks/webpack")
+  ) {
     return;
   }
 

@@ -57,7 +57,7 @@ export default function SimilarCabs({ currentCabId, cabSlug, cabType, vendor }) 
             More {cabType || "cab"} options{vendor ? ` from ${vendor} and partners` : " you can book next"}.
           </p>
         </div>
-        <Link href="/cabs" className="text-[11px] font-semibold text-[#0056D2] hover:underline sm:text-xs">
+        <Link href="/cabs" className="text-[11px] font-semibold text-[var(--cabzii-cta)] hover:underline sm:text-xs">
           View all cabs →
         </Link>
       </div>
@@ -75,7 +75,7 @@ export default function SimilarCabs({ currentCabId, cabSlug, cabType, vendor }) 
               <Link
                 key={id}
                 href={catalogPublicPath(cab, "/cabs")}
-                className="group overflow-hidden rounded-lg border border-slate-200 bg-white transition hover:border-[#0056D2]/40 hover:shadow-sm"
+                className="group overflow-hidden rounded-lg border border-slate-200 bg-white transition hover:border-[var(--cabzii-cta)]/40 hover:shadow-sm"
               >
                 <div className="relative h-20 overflow-hidden bg-slate-50 sm:h-24">
                   <CatalogCardImage
@@ -91,7 +91,7 @@ export default function SimilarCabs({ currentCabId, cabSlug, cabType, vendor }) 
                   <p className="mt-0.5 line-clamp-1 text-[10px] text-slate-500">
                     {getCabCatalogSubtitle(cab, cab.city)}
                   </p>
-                  <p className="mt-1 text-[11px] font-bold text-[#0056D2] sm:text-xs">
+                  <p className="mt-1 text-[11px] font-bold text-[var(--cabzii-cta)] sm:text-xs">
                     From {formatInrCurrency(fromPrice)}
                   </p>
                 </div>

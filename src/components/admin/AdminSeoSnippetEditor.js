@@ -83,7 +83,6 @@ function editorPageKind(row) {
   if (!row) return "cabs";
   if (row.path === "/") return "home";
   if (row.type === "driver" || row.type === "acting-driver") return "drivers";
-  if (row.type === "tour") return "packages";
   if (row.type === "landing") return "cabs";
   return "cabs";
 }

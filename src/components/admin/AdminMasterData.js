@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff } from "../icons/rscIcons";
 import AdminHomeCards from "./AdminHomeCards";
 import AdminDriverAccounts from "./AdminDriverAccounts";
 import { MASTER_HOME_CARD_SECTIONS, MASTER_SECTION_KEYS, MASTER_SECTION_LABELS } from "../../lib/adminMasterConfig";

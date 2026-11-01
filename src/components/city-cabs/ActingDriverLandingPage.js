@@ -1,6 +1,5 @@
 import CityCabFaqAccordion from "./CityCabFaqAccordion";
 import ActingDriverPackageSection from "./ActingDriverPackageSection";
-import Breadcrumbs from "../seo/Breadcrumbs";
 import DynamicPageHub from "../seo/DynamicPageHub";
 import {
   AreaChips,
@@ -8,108 +7,113 @@ import {
   HowToSteps,
   LinkChips,
   PlaceGrid,
-  TrustStrip,
   WhyGrid
 } from "./CityLandingBlocks";
-import { actingDriverLandingPath, airportCabBookingPath, cityCabLandingPath } from "../../lib/cityCabPaths";
+import { airportCabBookingPath, cityCabLandingPath } from "../../lib/cityCabPaths";
 import { CALL_DRIVER_TARIFF } from "../../data/call-drivers-chennai";
 import { CALL_DRIVER_SERVICES } from "../../lib/callDriver";
-import CallDriversCtaBar from "../call-drivers/CallDriversCtaBar";
 import { ORG_PHONE } from "../../lib/seo/constants";
 import { CABZII_PHONE_DIGITS, telUrl, whatsappBookingUrl } from "../../lib/conversion";
-import { CarFront, Clock3, ShieldCheck, UserRound } from "lucide-react";
-
-const DRIVER_TRUST = [
-  { label: "Your car", value: "Driver only — no Cabzii taxi" },
-  { label: "Packages", value: "Same as /call-driver" },
-  { label: "Hours", value: "Published local and outstation" },
-  { label: "Assign", value: "After you confirm" }
-];
+import { CarFront, Clock3, ShieldCheck, UserRound } from "../icons/rscIcons";
 
 export default function ActingDriverLandingPage({ data, services = CALL_DRIVER_SERVICES }) {
   const { city } = data;
   const local = CALL_DRIVER_TARIFF.local;
   const outstation = CALL_DRIVER_TARIFF.outstation;
+  const waHref = whatsappBookingUrl({
+    phone: CABZII_PHONE_DIGITS,
+    message: `Hi Cabzii, I need a Call Driver / acting driver in ${city.name}.\nPickup:\nDate:\nHours:\nVehicle:`
+  });
 
   return (
     <div>
-      <div className="border-b border-slate-200 bg-white">
-        <div className="section-shell py-5 sm:py-7">
-          <Breadcrumbs
-            items={[
-              { name: "Home", path: "/" },
-              { name: `${city.name} cabs`, path: data.cityHubPath || cityCabLandingPath(city.slug) },
-              { name: "Acting driver", path: data.path }
-            ]}
-          />
-          <h1 className="px-1 text-center text-lg font-bold leading-tight tracking-tight text-slate-900 sm:text-xl md:text-2xl">
-            {data.h1}
-          </h1>
-          <p className="mx-auto mt-2 max-w-2xl px-1 text-center text-xs text-slate-600 sm:text-sm">{data.lead}</p>
-          <p className="mx-auto mt-1 max-w-2xl text-center text-xs font-semibold text-slate-800 sm:text-sm">
-            Local from ₹{local.standard} for {local.minHours} hours · extra hour ₹{local.extraHourStandard}
+      <header className="border-b border-slate-200 bg-white">
+        <div className="section-shell py-4 sm:py-5">
+          <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--cabzii-cta)]">
+            Acting driver · {city.name}
           </p>
-          <div className="mt-4 flex justify-center">
-            <CallDriversCtaBar
-              telHref={telUrl(ORG_PHONE)}
-              whatsappHref={whatsappBookingUrl({
-                phone: CABZII_PHONE_DIGITS,
-                message: `Hi Cabzii, I need a Call Driver / acting driver in ${city.name}.\nPickup:\nDate:\nHours:\nVehicle:`
-              })}
-              phoneDisplay="+91 99441 97416"
-              sourcePage={data.path || actingDriverLandingPath(city.slug)}
-            />
+          <h1 className="mt-1 text-xl font-extrabold tracking-tight text-slate-900 sm:text-2xl">{data.h1}</h1>
+          <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-slate-600">{data.lead}</p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <a href={telUrl(ORG_PHONE)} className="cabzii-btn cabzii-btn-cta cabzii-tap min-h-10 px-4">
+              Call {ORG_PHONE}
+            </a>
+            <a
+              href={waHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="cabzii-btn cabzii-btn-whatsapp cabzii-tap min-h-10 px-4"
+            >
+              WhatsApp
+            </a>
           </div>
         </div>
-      </div>
+      </header>
 
-      <section className="section-shell py-6 sm:py-8">
-        <h2 className="text-base font-bold text-slate-900 sm:text-lg">Call Driver packages in {city.name}</h2>
-        <p className="mt-1 text-xs text-slate-600 sm:text-sm">
-          These are the existing Call Driver packages — nothing extra is added for this city. Book on Call Driver;
-          Cabzii assigns a driver after you confirm.
+      <section className="section-shell py-5 sm:py-7">
+        <h2 className="text-base font-extrabold text-slate-900 sm:text-lg">Book Call Driver in {city.name}</h2>
+        <p className="mt-1 text-xs text-slate-500 sm:text-sm">
+          Local, outstation, airport, monthly, corporate and valet — Cabzii assigns a driver after you confirm.
         </p>
         <div className="mt-4">
           <ActingDriverPackageSection pickup={city.name} initialServices={services} />
         </div>
       </section>
 
-      <TrustStrip items={DRIVER_TRUST} />
-
       <WhyGrid
-        title={`Why Cabzii acting driver in ${city.name}`}
+        title={`Why book an acting driver in ${city.name}`}
+        align="left"
         items={[
           {
             icon: CarFront,
-            title: "Your car, our driver",
-            body: `Acting driver in ${city.name} is a chauffeur for your vehicle. A Cabzii taxi is city cab booking, not this page.`
+            title: "Your car in " + city.name,
+            body: "A chauffeur for your vehicle — not a Cabzii taxi. Use city cab booking if you need a cab."
           },
           {
             icon: UserRound,
-            title: "Existing packages only",
-            body: "Local, outstation, airport, monthly quote, corporate and valet — the same Call Driver cards as /call-driver."
+            title: "Same packages as Call Driver",
+            body: "Local, outstation, airport, monthly quote, corporate and valet."
           },
           {
             icon: Clock3,
-            title: "Published hours",
-            body: `Local from ₹${local.standard} for ${local.minHours} hours (approx.). Extra hour ₹${local.extraHourStandard}. Outstation return from ₹${outstation.perDayStandard}/day plus accommodation.`
+            title: "Published local hours",
+            body: `From ₹${local.standard} for ${local.minHours} hours (approx.). Extra hour ₹${local.extraHourStandard}. Outstation return from ₹${outstation.perDayStandard}/day plus stay.`
           },
           {
             icon: ShieldCheck,
-            title: "Assigned after you book",
-            body: "You book the service. Cabzii assigns an available professional and can replace a driver if needed."
+            title: "Assigned after you confirm",
+            body: "You pick the package. Cabzii assigns an available driver for that trip."
           }
         ]}
       />
 
       <HowToSteps
-        title={`How to book an acting driver in ${city.name}`}
-        subtitle="Choose a package, confirm the live fare or request a quote, then Cabzii assigns the driver."
+        title={`How to book in ${city.name}`}
+        subtitle="Choose a package, confirm the fare or request a quote, then Cabzii assigns the driver."
         steps={data.howToBook}
       />
 
-      <section className="bg-[#f4f6fa] py-8">
-        <div className="section-shell grid gap-4 lg:grid-cols-[minmax(17rem,22rem)_minmax(0,1fr)]">
+      <article className="section-shell cabzii-seo-landing py-5 sm:py-8">
+        <section className="cabzii-seo-block">
+          <h2>Acting driver in {city.name} — Call Driver for your own car</h2>
+          <p>
+            Hire a Cabzii Call Driver in {city.name} when you want a professional to drive your car. This page is the
+            city landing for acting driver / chauffeur-on-hire. Book the package on this page; Cabzii assigns a driver
+            after you confirm. It is not a taxi and not a public driver directory.
+          </p>
+          {data.aboutCity ? <p className="mt-2">{data.aboutCity}</p> : null}
+        </section>
+        {data.extraBody ? (
+          <div
+            className="prose prose-slate cabzii-seo-block max-w-none overflow-x-auto break-words text-sm text-slate-700 [&_a]:font-semibold [&_a]:text-[var(--cabzii-cta)] [&_a]:no-underline hover:[&_a]:underline [&_img]:max-w-full"
+            dangerouslySetInnerHTML={{ __html: data.extraBody }}
+          />
+        ) : null}
+        <PlaceGrid title={`Where people book Call Driver in ${city.name}`} places={data.places} />
+      </article>
+
+      <section className="bg-slate-50 py-6 sm:py-8">
+        <div className="section-shell grid gap-3 lg:grid-cols-[minmax(17rem,22rem)_minmax(0,1fr)]">
           <ContactNap
             title={`Cabzii ${city.name} contact`}
             source="acting_driver_city"
@@ -119,30 +123,10 @@ export default function ActingDriverLandingPage({ data, services = CALL_DRIVER_S
         </div>
       </section>
 
-      <article className="section-shell cabzii-seo-landing py-5 sm:py-8">
-        <section className="cabzii-seo-block">
-          <h2>Acting driver in {city.name}</h2>
-          <p>
-            Call Driver for your own car in {city.name}. This is not a Cabzii taxi. Book a package on this page or on
-            /call-driver.
-          </p>
-          {data.aboutCity ? <p className="mt-2">{data.aboutCity}</p> : null}
-        </section>
-
-        {data.extraBody ? (
-          <div
-            className="prose prose-slate cabzii-seo-block max-w-none overflow-x-auto break-words text-sm text-slate-700 [&_img]:max-w-full"
-            dangerouslySetInnerHTML={{ __html: data.extraBody }}
-          />
-        ) : null}
-
-        <PlaceGrid title={`Where people book Call Driver in ${city.name}`} places={data.places} />
-      </article>
-
-      <section className="section-shell pb-8">
-        <h2 className="text-base font-bold text-slate-900 sm:text-lg">Acting driver in other cities</h2>
+      <section className="section-shell py-6 sm:py-8">
+        <h2 className="text-base font-extrabold text-slate-900 sm:text-lg">Acting driver in other cities</h2>
         <LinkChips items={data.peerDriverLinks} />
-        <h3 className="mt-6 text-sm font-bold text-slate-900 sm:text-base">Related {city.name} bookings</h3>
+        <h3 className="mt-5 text-sm font-extrabold text-slate-900">Related {city.name} bookings</h3>
         <LinkChips
           items={[
             { href: data.cityHubPath || cityCabLandingPath(city.slug), label: `${city.name} city cabs` },
@@ -155,20 +139,10 @@ export default function ActingDriverLandingPage({ data, services = CALL_DRIVER_S
       </section>
 
       <section className="section-shell pb-10">
-        <h2 className="text-base font-bold text-slate-900 sm:text-lg">Frequently asked questions</h2>
-        <p className="mt-1 text-sm text-slate-600">Acting driver and Call Driver packages in {city.name}.</p>
+        <h2 className="text-base font-extrabold text-slate-900 sm:text-lg">Frequently asked questions</h2>
+        <p className="mt-1 text-sm text-slate-600">Acting driver and Call Driver in {city.name}.</p>
         <div className="mt-4">
           <CityCabFaqAccordion faqs={data.faqs} />
-        </div>
-        <div className="mt-6">
-          <LinkChips
-            items={[
-              { href: data.cityHubPath || cityCabLandingPath(city.slug), label: `${city.name} city cabs` },
-              { href: actingDriverLandingPath(city.slug), label: "Acting driver" },
-              { href: "/call-driver", label: "Book Call Driver" },
-              { href: airportCabBookingPath(city.slug), label: "Airport taxi" }
-            ]}
-          />
         </div>
         <DynamicPageHub bare onlyIfStored className="mt-8" fallbackPage="drivers" citySlug={city.slug} path={data.path} />
       </section>

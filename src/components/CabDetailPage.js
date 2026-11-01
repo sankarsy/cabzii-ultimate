@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Star } from "lucide-react";
+import { Star } from "./icons/rscIcons";
 import CabBookingDetail from "./CabBookingDetail";
 import CabProductSpecs from "./CabProductSpecs";
 import TariffTerms from "./TariffTerms";
@@ -216,7 +216,7 @@ export default function CabDetailPage({ cabId, initialCab = null }) {
             <header className="mb-2.5 sm:mb-3">
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0 flex-1">
-                  <p className="text-[9px] font-bold uppercase tracking-wider text-sky-700 sm:text-[10px]">
+                  <p className="text-[9px] font-bold uppercase tracking-wider text-[var(--cabzii-cta)] sm:text-[10px]">
                     {cab.category || cab.type}
                   </p>
                   <h1 className="mt-0.5 text-base font-bold leading-snug text-slate-900 sm:text-xl">

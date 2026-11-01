@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Download } from "lucide-react";
+import { Download } from "../icons/rscIcons";
 import { BarChart, DonutChart, LineChart, formatINR, formatNumber } from "./charts";
 import AdminQuoteLeads from "./AdminQuoteLeads";
 

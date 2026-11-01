@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { resolveSiteSearchHref } from "../../lib/siteSearch";
 
-const PLACEHOLDER = "Search cabs, buses, drivers, holidays...";
+const PLACEHOLDER = "Search cabs, buses, drivers, routes...";
 
 function SearchLineIcon({ className }) {
   return (
@@ -75,7 +75,7 @@ export default function HeaderSearchBar({
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder={compact ? "Search cabs, drivers…" : PLACEHOLDER}
-          aria-label="Search cabs, drivers, holidays and more"
+          aria-label="Search cabs, drivers, routes and more"
           className={`min-w-0 flex-1 border-0 bg-transparent text-slate-900 outline-none ring-0 placeholder:text-slate-400 focus:border-0 focus:ring-0 ${
             compact ? "text-sm" : "text-[15px] sm:text-base"
           } ${inputClassName}`}

@@ -360,7 +360,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #0284c7;
+  color: var(--cabzii-cta);
 }
 .cabzii-seo-landing > h1 {
   margin-top: 0.35rem;
@@ -2789,15 +2789,17 @@ main h3,
   }
 
   .emt-hero-kicker {
-    padding: 0.85rem 0 0.8rem;
+    padding: 0.45rem 0 0.4rem;
+    min-height: 0;
   }
   .emt-hero-kicker-title {
-    font-size: 1.4rem;
+    font-size: 1rem;
+    line-height: 1.25;
   }
   .emt-hero-kicker-lede {
-    margin-top: 0.3rem;
-    font-size: 0.9rem;
-    line-height: 1.45;
+    margin-top: 0.12rem;
+    font-size: 0.75rem;
+    line-height: 1.35;
   }
 
   .cabzii-seo-landing > h1 {

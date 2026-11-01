@@ -6,9 +6,7 @@ import { searchPublicCatalog } from "../../lib/siteSearchCatalog";
 import CabCard from "../../components/CabCard";
 import SearchHitList from "../../components/search/SearchHitList";
 import SearchPageSearchBar from "../../components/search/SearchPageSearchBar";
-import PackageCard from "../../components/PackageCard";
 import { catalogPublicPath } from "../../lib/catalogProduct";
-import { packageBookingHref } from "../../lib/holidayHome";
 import { getBackendUrl } from "../../lib/seo";
 
 const BACKEND_URL = getBackendUrl();
@@ -23,26 +21,10 @@ const SERVICE_SHORTCUTS = [
   { id: "airport", label: "Airport Taxi", href: "/chennai/airport-cab-booking", keywords: ["airport", "transfer", "pickup", "drop"] },
   { id: "drivers", label: "Call Driver", href: "/call-driver", keywords: ["driver", "drivers", "chauffeur", "acting driver", "call driver"] },
   {
-    id: "holidays",
-    label: "Temple Tours",
-    href: "/holidays?category=pilgrimage",
-    keywords: [
-      "holiday",
-      "holidays",
-      "package",
-      "packages",
-      "tour",
-      "tours",
-      "pilgrimage",
-      "tirupati",
-      "rameswaram",
-      "madurai",
-      "temple",
-      "sabarimala",
-      "sabarimalai",
-      "ayyappa",
-      "ayyapa"
-    ]
+    id: "tirupati",
+    label: "Chennai to Tirupati",
+    href: "/chennai/outstation/chennai-to-tirupati",
+    keywords: ["tirupati", "tirumala", "balaji", "darshan"]
   },
   { id: "routes", label: "Popular Routes", href: "/routes", keywords: ["route", "routes", "chennai", "bangalore", "madurai"] },
   { id: "blogs", label: "Blogs", href: "/blogs", keywords: ["blog", "blogs", "guide", "tips", "article"] }
@@ -85,17 +67,12 @@ export default async function SearchPage({ searchParams }) {
   if (city) cabQs.set("priorityCity", city);
   if (rawQuery.trim()) cabQs.set("q", rawQuery.trim());
 
-  const packageQs = new URLSearchParams({ limit: "50" });
-  if (city) packageQs.set("priorityCity", city);
-  if (rawQuery.trim()) packageQs.set("q", rawQuery.trim());
-
   const testimonialQs = new URLSearchParams({ limit: "50", page: "1" });
 
   const shouldFetch = Boolean(query || city || hasInstantBookingFilters);
 
-  const [matchingCabs, matchingPackages, allBlogs, allTestimonials] = await Promise.all([
+  const [matchingCabs, allBlogs, allTestimonials] = await Promise.all([
     shouldFetch ? fetchList(`/api/v1/cabs?${cabQs.toString()}`) : Promise.resolve([]),
-    shouldFetch && rawQuery.trim() ? fetchList(`/api/v1/packages?${packageQs.toString()}`) : Promise.resolve([]),
     query ? fetchList("/api/v1/blogs?limit=50&page=1") : Promise.resolve([]),
     query ? fetchList(`/api/v1/testimonials?${testimonialQs.toString()}`) : Promise.resolve([])
   ]);
@@ -113,13 +90,11 @@ export default async function SearchPage({ searchParams }) {
 
   const showOnlyInstantBookingResults = hasInstantBookingFilters;
   const visibleDrivers = [];
-  const visiblePackages = showOnlyInstantBookingResults ? [] : matchingPackages;
   const visibleBlogs = showOnlyInstantBookingResults ? [] : matchingBlogs;
   const visibleTestimonials = showOnlyInstantBookingResults ? [] : matchingTestimonials;
   const totalMatches =
     matchingCabs.length +
     visibleDrivers.length +
-    visiblePackages.length +
     visibleBlogs.length +
     visibleTestimonials.length +
     shortcuts.length +
@@ -229,37 +204,16 @@ export default async function SearchPage({ searchParams }) {
             )}
 
             {query && /driver|chauffeur|call driver|acting/i.test(query) ? (
-              <section className="rounded-2xl border border-sky-200 bg-sky-50 p-4">
+              <section className="rounded-2xl border border-orange-200 bg-orange-50 p-4">
                 <h2 className="text-lg font-bold text-slate-900">Call Driver Service</h2>
                 <p className="mt-1 text-sm text-slate-600">
                   Book a professional driver for your own car. Cabzii assigns an available driver after booking.
                 </p>
-                <Link href="/call-driver" className="mt-3 inline-flex min-h-11 items-center rounded-xl bg-[var(--cabzii-brand)] px-4 text-sm font-semibold text-white">
+                <Link href="/call-driver" className="mt-3 inline-flex min-h-11 items-center rounded-xl bg-[var(--cabzii-cta)] px-4 text-sm font-semibold text-white">
                   Book a Driver
                 </Link>
               </section>
             ) : null}
-
-            {visiblePackages.length > 0 && (
-              <section>
-                <div className="flex items-center justify-between gap-2">
-                  <h2 className="text-2xl font-bold text-slate-900">Holidays</h2>
-                  <Link href="/holidays" className="text-sm font-semibold text-[var(--cabzii-brand)] hover:underline">
-                    View all
-                  </Link>
-                </div>
-                <div className="mt-4 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                  {visiblePackages.map((pkg) => (
-                    <PackageCard
-                      key={String(pkg._id ?? pkg.id)}
-                      pkg={pkg}
-                      actionText="Book Now"
-                      actionHref={packageBookingHref(pkg)}
-                    />
-                  ))}
-                </div>
-              </section>
-            )}
 
             {visibleBlogs.length > 0 && (
               <section>

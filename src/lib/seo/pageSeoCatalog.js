@@ -71,17 +71,6 @@ export const STATIC_PAGE_SEO_LIST = [
       "book call driver, hire driver for own car, acting driver booking, airport chauffeur booking, monthly driver quote, cabzii call driver"
   },
   {
-    id: "site:holidays",
-    path: "/holidays",
-    type: "site",
-    typeLabel: "Holiday packages",
-    productName: "Holiday Packages",
-    seoTitle: "Holiday Packages — Pilgrimage, Beach & Hill Trips",
-    seoDescription:
-      "Book pilgrimage, beach, heritage and family holiday packages on cabzii.in. Choose cab type — sedan, SUV, Innova or tempo.",
-    seoKeywords: "holiday packages India, pilgrimage tour, Tirupati package, cabzii holidays"
-  },
-  {
     id: "site:blogs",
     path: "/blogs",
     type: "site",
@@ -147,8 +136,21 @@ export const STATIC_PAGE_SEO_LIST = [
     seoKeywords: "cabzii reviews, cab booking reviews, taxi service ratings"
   },
   {
+    id: "site:earn",
+    path: "/earn",
+    type: "site",
+    typeLabel: "Earn with Cabzii",
+    productName: "Earn with Cabzii",
+    seoTitle: "Earn with Cabzii | Driver Attach, Vehicle Attach & Partner",
+    seoDescription:
+      "Attach your cab or join as a Cabzii driver in Chennai, Madurai, Trichy, Coimbatore, Vellore and more. Share city, vehicle, name and mobile on WhatsApp.",
+    seoKeywords:
+      "earn with cabzii, attach cab, driver attach, vehicle attach, lease vehicle, acting driver partner, cab partner login"
+  },
+  {
     id: "site:tariff",
     path: "/tariff",
+
     type: "site",
     typeLabel: "Tariff page",
     productName: "Cab Rental Tariff",

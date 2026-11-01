@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useTodayStr, HydrateSafeDate } from "../../lib/useTodayStr";
 import { useRouter } from "next/navigation";
-import { X } from "lucide-react";
+import { X } from "../icons/rscIcons";
 import PlaceAutocomplete from "../PlaceAutocomplete";
 import { SearchIcon, TwoWayIcon } from "../icons";
 import { NativeDateField, NativeTimeField } from "../ui/NativeDateTimeField";

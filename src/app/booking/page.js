@@ -68,12 +68,12 @@ function BookingRouter({ searchParams }) {
   const itemType = searchParams?.type ?? "cab";
 
   useEffect(() => {
-    if (itemType === "flight" || itemType === "hotel" || itemType === "train") {
-      router.replace("/cabs");
+    if (itemType === "flight" || itemType === "hotel" || itemType === "train" || itemType === "tour") {
+      router.replace(itemType === "tour" ? "/chennai/outstation/chennai-to-tirupati" : "/cabs");
     }
   }, [itemType, router]);
 
-  if (itemType === "flight" || itemType === "hotel" || itemType === "train") {
+  if (itemType === "flight" || itemType === "hotel" || itemType === "train" || itemType === "tour") {
     return <div className="section-shell py-16 text-center text-sm text-slate-600">Redirecting…</div>;
   }
 

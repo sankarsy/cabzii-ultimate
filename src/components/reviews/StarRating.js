@@ -1,4 +1,6 @@
-import { Star } from "lucide-react";
+"use client";
+
+import { Star } from "../icons/rscIcons";
 
 /** Filled-star rating display. Never renders empty/zero states — callers must hide when no reviews. */
 export default function StarRating({ value = 0, size = "h-4 w-4", className = "" }) {

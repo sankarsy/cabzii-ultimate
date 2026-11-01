@@ -3,15 +3,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Phone } from "lucide-react";
 import WhatsAppIcon from "./WhatsAppIcon";
 import { useSiteSettings } from "./SiteSettingsProvider";
-import { HERO_TAB_ICONS } from "./icons/heroIcons";
+import { CarFront, Phone } from "./icons/rscIcons";
 import { telUrl, whatsappBookingUrl, contactPhoneFromSettings, whatsappDigitsFromSettings } from "../lib/conversion";
 import { shouldHideStickyBookingBar } from "../lib/floatingUi";
 import { trackEvent, trackLead } from "../lib/analytics";
 
-const CabIcon = HERO_TAB_ICONS.cabs;
+const CabIcon = CarFront;
 
 /** Mobile-only sticky bottom bar — Call · WhatsApp · Get Quote. */
 export default function StickyBookingBar() {

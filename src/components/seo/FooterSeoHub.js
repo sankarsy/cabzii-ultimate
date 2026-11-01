@@ -1,9 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { Component, useMemo, useState } from "react";
 import Link from "next/link";
-import { PILGRIMAGE_PACKAGES } from "../../lib/domesticFocus";
-import { HOLIDAY_CATEGORIES } from "../../lib/holidays";
 import { popularRouteLinks } from "../../lib/cityOutstationRoutes";
 import { resolveScopedCity } from "../../lib/cityShowcase";
 import { useSelectedCity } from "../../lib/useSelectedCity";
@@ -14,44 +12,63 @@ import {
   serviceLinksForCities
 } from "../../lib/seo/internalLinks";
 
+class FooterSeoBoundary extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  render() {
+    if (this.state.hasError) return null;
+    return this.props.children;
+  }
+}
+
 function chunkColumns(items, cols = 4) {
+  const list = Array.isArray(items) ? items : [];
   const columns = Array.from({ length: cols }, () => []);
-  items.forEach((item, index) => {
+  list.forEach((item, index) => {
     columns[index % cols].push(item);
   });
   return columns;
 }
 
-function buildSections(citySlug, cityName) {
-  const packages = PILGRIMAGE_PACKAGES.map((p) => ({ href: p.href, label: p.name }));
-  const categories = HOLIDAY_CATEGORIES.filter((c) => c.id !== "all").map((c) => ({
-    href: `/holidays?category=${c.id}`,
-    label: c.label
-  }));
+function linkItems(fn, ...args) {
+  try {
+    const out = fn(...args);
+    return Array.isArray(out) ? out : [];
+  } catch {
+    return [];
+  }
+}
 
+function buildSections(citySlug, cityName) {
   return [
-    { id: "packages", label: "Popular tour packages", intro: "Pilgrimage and temple tour packages with cab pickup.", items: packages },
-    { id: "categories", label: "Explore by category", intro: "Find holidays by trip style — pilgrimage, beach, hills and more.", items: categories },
-    { id: "cab-booking", label: "Cab booking by city", intro: "City taxi booking pages for South India hubs.", items: cabBookingLinks() },
-    { id: "drivers", label: "Acting drivers by city", intro: "Hire an acting driver for your own car, city by city.", items: actingDriverLinks() },
+    { id: "cab-booking", label: "Cab booking by city", intro: "City taxi booking pages for South India hubs.", items: linkItems(cabBookingLinks) },
+    { id: "drivers", label: "Acting drivers by city", intro: "Hire an acting driver for your own car, city by city.", items: linkItems(actingDriverLinks) },
     {
       id: "one-way",
       label: `Popular routes from ${cityName}`,
       intro: `One-way and round-trip cabs from ${cityName} to other cities.`,
-      items: popularRouteLinks(citySlug, 16)
+      items: linkItems(popularRouteLinks, citySlug, 16)
     },
-    { id: "chennai", label: "Services in Chennai", intro: "Airport taxi, outstation, hourly rental and more in Chennai.", items: serviceLinks("chennai") },
+    { id: "chennai", label: "Services in Chennai", intro: "Airport taxi, outstation, hourly rental and more in Chennai.", items: linkItems(serviceLinks, "chennai") },
     {
       id: "other-cities",
       label: "Services — Madurai, Tirupati & more",
       intro: "Cab and driver services in Madurai, Tirupati, Coimbatore, Trichy and Vellore.",
-      items: serviceLinksForCities(["madurai", "tirupati", "coimbatore", "trichy", "vellore"], { servicesPerCity: 2 })
+      items: linkItems(serviceLinksForCities, ["madurai", "tirupati", "coimbatore", "trichy", "vellore"], { servicesPerCity: 2 })
     }
   ];
 }
 
 function LinkColumns({ items }) {
-  const columns = chunkColumns(items, items.length > 12 ? 4 : 3);
+  const list = Array.isArray(items) ? items : [];
+  const columns = chunkColumns(list, list.length > 12 ? 4 : 3);
   return (
     <div className="grid max-h-56 grid-cols-2 gap-x-4 gap-y-1 overflow-y-auto overscroll-contain sm:grid-cols-3 lg:grid-cols-4">
       {columns.map((col, idx) => (
@@ -72,12 +89,21 @@ function LinkColumns({ items }) {
   );
 }
 
-export default function FooterSeoHub() {
+function FooterSeoHubInner() {
   const { city } = useSelectedCity();
-  const scoped = useMemo(() => resolveScopedCity(city), [city]);
-  const sections = useMemo(() => buildSections(scoped.slug, scoped.name), [scoped.slug, scoped.name]);
-  const [activeId, setActiveId] = useState(sections[0].id);
+  const scoped = useMemo(() => resolveScopedCity(city) || { slug: "chennai", name: "Chennai" }, [city]);
+  const sections = useMemo(() => {
+    try {
+      const next = buildSections(scoped.slug, scoped.name);
+      return Array.isArray(next) && next.length ? next : [];
+    } catch {
+      return [];
+    }
+  }, [scoped.slug, scoped.name]);
+  const [activeId, setActiveId] = useState(sections[0]?.id || "");
   const active = sections.find((t) => t.id === activeId) || sections[0];
+
+  if (!sections.length || !active) return null;
 
   return (
     <div className="border-t border-slate-200/80 pt-5 sm:pt-6" aria-label="Explore cab booking across South India">
@@ -139,5 +165,13 @@ export default function FooterSeoHub() {
         })}
       </div>
     </div>
+  );
+}
+
+export default function FooterSeoHub() {
+  return (
+    <FooterSeoBoundary>
+      <FooterSeoHubInner />
+    </FooterSeoBoundary>
   );
 }

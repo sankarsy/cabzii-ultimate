@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { GripVertical } from "lucide-react";
+import { GripVertical } from "../../icons/rscIcons";
 import ImageUploadField, { ImageUploadRequirements } from "../ImageUploadField";
 import { IMAGE_UPLOAD_RULES } from "../../../lib/imageUploadRules";
 

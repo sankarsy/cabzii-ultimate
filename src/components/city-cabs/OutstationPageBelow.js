@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CalendarCheck, Clock3, IndianRupee, MapPin, ShieldCheck, Smartphone } from "lucide-react";
+import { CalendarCheck, Clock3, IndianRupee, MapPin, ShieldCheck, Smartphone } from "../icons/rscIcons";
 import { WhyGrid } from "./CityLandingBlocks";
 import { pickOutstationRoutes } from "../../lib/cityOutstationRoutes";
 import { cityCabLandingPath } from "../../lib/cityCabPaths";

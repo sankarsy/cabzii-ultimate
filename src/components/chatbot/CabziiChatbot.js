@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-import { Phone, Send, X } from "lucide-react";
+import { Phone, Send, X } from "../icons/rscIcons";
 import ChatMessageContent from "./ChatMessageContent";
 import ZiiAvatar from "./ZiiAvatar";
 import WhatsAppIcon from "../WhatsAppIcon";
@@ -404,7 +404,7 @@ export default function CabziiChatbot() {
           className="cabzii-tap inline-flex shrink-0 items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-[var(--cabzii-brand)]/30 hover:text-[var(--cabzii-brand)]"
         >
           {action.icon === "whatsapp" ? <WhatsAppIcon className="h-3.5 w-3.5 text-[#25D366]" /> : null}
-          {action.icon === "phone" ? <Phone className="h-3.5 w-3.5 text-sky-400" strokeWidth={2} /> : null}
+          {action.icon === "phone" ? <Phone className="h-3.5 w-3.5 text-[var(--cabzii-cta)]" strokeWidth={2} /> : null}
           {action.label}
         </button>
       ))}

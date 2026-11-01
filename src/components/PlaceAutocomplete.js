@@ -2,7 +2,7 @@
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { LocateFixed, X } from "lucide-react";
+import { LocateFixed, X } from "./icons/rscIcons";
 import { writeServiceArea } from "../lib/locationPriority";
 import { inputBaseClass, typo } from "../lib/typography";
 import { useHasMounted } from "../lib/useTodayStr";

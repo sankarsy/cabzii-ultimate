@@ -8,10 +8,10 @@ export default function TestimonialCard({ item }) {
 
   return (
     <article className="group relative flex h-full min-h-0 flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
-      <div className="h-1 bg-[#0056D2]" />
+      <div className="h-1 bg-[var(--cabzii-cta)]" />
 
       <div className="flex flex-1 flex-col p-4">
-        <span className={`inline-flex w-fit rounded-full bg-[#0056D2]/10 px-2 py-0.5 ${typo.eyebrow}`}>
+        <span className={`inline-flex w-fit rounded-full bg-[var(--cabzii-cta)]/10 px-2 py-0.5 ${typo.eyebrow}`}>
           Customer review
         </span>
 

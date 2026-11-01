@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Pencil, Plus, Trash2, X } from "lucide-react";
+import { Pencil, Plus, Trash2, X } from "../icons/rscIcons";
 import CitySelect from "./cms/CitySelect";
 import { CATEGORY_FARE_LABELS } from "../../lib/categoryRouteFare";
 
