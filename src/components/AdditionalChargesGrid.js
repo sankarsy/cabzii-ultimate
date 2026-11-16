@@ -34,7 +34,7 @@ export default function AdditionalChargesGrid({ items, compact = false, classNam
       <h2 className={`font-bold text-slate-900 ${compact ? "mb-1 text-[10px]" : "mb-2 text-xs"}`}>
         Additional charges
       </h2>
-      <div className={`grid grid-cols-1 ${compact ? "gap-1" : "gap-2 sm:grid-cols-2"}`}>
+      <div className={`grid grid-cols-1 ${compact ? "gap-1" : "gap-2.5 sm:grid-cols-2"}`}>
         {items.map((item) => {
           const Icon = showIcons ? CHARGE_ICONS[item.label] || TagIcon : null;
           return (

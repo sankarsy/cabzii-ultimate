@@ -18,9 +18,9 @@ const NAP = {
 };
 
 const FOOTER_TRUST = [
-  { label: "Partner vehicles", Icon: ShieldCheck, iconBg: "bg-emerald-50", iconColor: "text-emerald-400" },
-  { label: "Upfront fares", Icon: Sparkles, iconBg: "bg-orange-50", iconColor: "text-orange-400" },
-  { label: "WhatsApp updates", Icon: UserRound, iconBg: "bg-violet-50", iconColor: "text-violet-400" }
+  { label: "Partner vehicles", Icon: ShieldCheck },
+  { label: "Upfront fares", Icon: Sparkles },
+  { label: "WhatsApp updates", Icon: UserRound }
 ];
 
 const COLUMNS = [
@@ -78,28 +78,28 @@ export default function MmtFooter() {
   }, [scoped.slug]);
 
   return (
-    <footer className="border-t border-slate-200 bg-[var(--cabzii-bg-subtle)] pb-[5.5rem] sm:pb-0">
+    <footer className="bg-[var(--cabzii-ink)] pb-[5.5rem] text-[#b9c6ee] sm:pb-0">
       <div className="section-shell py-6 sm:py-10">
         <div className="mb-5 flex flex-col gap-3 sm:mb-6 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
           <div>
-            <CabziiLogo className="text-lg sm:text-2xl" showTagline />
-            <p className="mt-1.5 max-w-sm text-sm leading-relaxed text-slate-600 sm:mt-2">
-              Premium cab booking for airport transfers, outstation trips, and local hire across South India.
+            <CabziiLogo className="text-lg sm:text-2xl" showTagline onDark />
+            <p className="mt-1.5 max-w-sm text-sm leading-relaxed text-[#b9c6ee] sm:mt-2">
+              Cabs, taxis and drivers across South India. Fares shown before you confirm.
             </p>
-            <address className="mt-3 not-italic text-sm leading-relaxed text-slate-600">
+            <address className="mt-3 not-italic text-sm leading-relaxed text-[#b9c6ee]">
               <a
                 href={NAP.maps}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-semibold text-slate-800 hover:text-[var(--cabzii-brand)]"
+                className="font-semibold text-white hover:text-[var(--cabzii-cta)]"
               >
                 {NAP.line}
               </a>
               <span className="mt-1 flex flex-wrap gap-x-3 gap-y-1">
-                <a href={`tel:${NAP.phone}`} className="hover:text-[var(--cabzii-brand)]">
+                <a href={`tel:${NAP.phone}`} className="hover:text-white">
                   {NAP.phone}
                 </a>
-                <a href={`mailto:${NAP.email}`} className="hover:text-[var(--cabzii-brand)]">
+                <a href={`mailto:${NAP.email}`} className="hover:text-white">
                   {NAP.email}
                 </a>
               </span>
@@ -107,10 +107,10 @@ export default function MmtFooter() {
             <SocialLinks className="mt-3 sm:mt-4" />
           </div>
           <div className="flex flex-wrap gap-1.5 sm:gap-2">
-            {FOOTER_TRUST.map(({ label, Icon, iconBg, iconColor }) => (
-                <span key={label} className="cabzii-trust-pill gap-1 text-[10px] sm:gap-1.5 sm:text-xs">
+            {FOOTER_TRUST.map(({ label, Icon }) => (
+                <span key={label} className="inline-flex items-center gap-1 rounded-xl bg-white/8 px-2 py-1 text-[10px] text-white sm:gap-1.5 sm:text-xs">
                   <span
-                    className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full sm:h-6 sm:w-6 ${iconBg} ${iconColor}`}
+                    className="flex h-5 w-5 shrink-0 items-center justify-center rounded-lg bg-white/12 text-[var(--cabzii-cta)] sm:h-6 sm:w-6"
                     aria-hidden
                   >
                     <Icon className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
@@ -123,10 +123,10 @@ export default function MmtFooter() {
 
         {null}
 
-        <div className="mt-6 grid grid-cols-2 gap-x-4 gap-y-5 border-t border-slate-200/80 pt-5 sm:mt-8 sm:gap-8 sm:pt-8 md:grid-cols-4">
+        <div className="mt-6 grid grid-cols-2 gap-x-4 gap-y-5 border-t border-white/10 pt-5 sm:mt-8 sm:gap-8 sm:pt-8 md:grid-cols-4">
           {columns.map((col) => (
             <div key={col.title}>
-              <h3 className="mb-1.5 text-[10px] font-bold uppercase tracking-wide text-slate-800 sm:mb-3 sm:text-xs sm:tracking-wider sm:text-slate-900">
+              <h3 className="mb-1.5 text-[10px] font-bold uppercase tracking-wide text-white sm:mb-3 sm:text-xs sm:tracking-wider">
                 {col.title}
               </h3>
               <ul className="flex flex-col gap-1.5 sm:gap-2.5">
@@ -134,7 +134,7 @@ export default function MmtFooter() {
                   <li key={link.label}>
                     <Link
                       href={link.href}
-                      className="inline-block text-[11px] leading-snug text-slate-600 transition-colors hover:text-[var(--cabzii-cta)] sm:text-sm"
+                      className="inline-block py-0.5 text-[11px] leading-snug text-[#b9c6ee] transition-colors hover:text-white sm:text-sm"
                     >
                       {link.label}
                     </Link>
@@ -145,11 +145,11 @@ export default function MmtFooter() {
           ))}
         </div>
 
-        <div className="mt-6 flex flex-col items-center justify-between gap-2 border-t border-slate-200/80 pt-4 text-center sm:mt-8 sm:flex-row sm:gap-3 sm:pt-6 sm:text-left">
-          <p className="text-[10px] text-slate-500 sm:text-xs" suppressHydrationWarning>
+        <div className="mt-6 flex flex-col items-center justify-between gap-2 border-t border-white/10 pt-4 text-center sm:mt-8 sm:flex-row sm:gap-3 sm:pt-6 sm:text-left">
+          <p className="text-[10px] text-[#b9c6ee] sm:text-xs" suppressHydrationWarning>
             © {new Date().getFullYear()} {BRAND.copyrightHolder}. All rights reserved.
           </p>
-          <p className="text-[10px] text-slate-400 sm:text-xs">Cabs, taxis &amp; travel across India</p>
+          <p className="text-[10px] text-[#8fa0d0] sm:text-xs">Cabs, taxis &amp; drivers across South India</p>
         </div>
       </div>
     </footer>

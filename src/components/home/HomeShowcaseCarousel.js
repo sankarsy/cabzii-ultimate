@@ -17,7 +17,7 @@ export default function HomeShowcaseCarousel({ section = "offers", cards: cardsP
     section === "offers" ? cityScopedCardHref(copy.viewAllHref, selectedCity) : copy.viewAllHref;
 
   return (
-    <section className="section-shell py-8 sm:py-10">
+    <section className="section-shell">
       <HomeShowcaseInteractive
         title={copy.title}
         viewAllHref={viewAllHref}

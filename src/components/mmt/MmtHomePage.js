@@ -3,8 +3,6 @@
 import { Suspense, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import EmtHeroSearch from "../emt/EmtHeroSearch";
-import SocialProofTicker from "../conversion/SocialProofTicker";
-import TrustStrip from "../ui/TrustStrip";
 import HomeBelowFold from "../home/HomeBelowFold";
 import MmtLayout from "./MmtLayout";
 import { HeroSearchProvider, useHeroSearch } from "../emt/HeroSearchContext";
@@ -13,6 +11,7 @@ import { useSelectedCity } from "../../lib/useSelectedCity";
 import { isValidDriverTripSearch, parseDriverTripSearchParams } from "../../lib/driverTrip";
 import { isValidTripSearch, parseTripSearchParams } from "../../lib/mmtTrip";
 import { resolveProductTab } from "../../lib/emt/productNav";
+import ClientErrorBoundary from "../ClientErrorBoundary";
 
 function HomeProviders({ displayCity, belowFold }) {
   const searchParams = useSearchParams();
@@ -23,12 +22,14 @@ function HomeProviders({ displayCity, belowFold }) {
     <HeroSearchProvider defaultTab={defaultTab}>
       <HeroTabUrlSync />
       <MmtLayout>
-        <Suspense fallback={<EmtHeroSearch defaultCity={displayCity} initialCabTrip={null} initialDriverTrip={null} />}>
-          <HeroFromUrl displayCity={displayCity} />
-        </Suspense>
-        <SocialProofTicker />
-        <TrustStrip />
-        {belowFold}
+        <ClientErrorBoundary fallback={<p className="px-4 py-6 text-white">Search unavailable. Call 9944197416.</p>}>
+          <Suspense fallback={<EmtHeroSearch defaultCity={displayCity} initialCabTrip={null} initialDriverTrip={null} />}>
+            <HeroFromUrl displayCity={displayCity} />
+          </Suspense>
+        </ClientErrorBoundary>
+        <ClientErrorBoundary fallback={null}>
+          {belowFold}
+        </ClientErrorBoundary>
       </MmtLayout>
     </HeroSearchProvider>
   );
@@ -36,7 +37,6 @@ function HomeProviders({ displayCity, belowFold }) {
 
 export default function MmtHomePage({
   cabs,
-  showcase,
   blogs,
   callDriverServices,
   siteSettings
@@ -46,7 +46,6 @@ export default function MmtHomePage({
   const belowFold = (
     <HomeBelowFold
       cabs={cabs}
-      showcase={showcase}
       blogs={blogs}
       callDriverServices={callDriverServices}
       siteSettings={siteSettings}
@@ -59,9 +58,9 @@ export default function MmtHomePage({
         <HeroSearchProvider defaultTab="cabs">
           <MmtLayout>
             <EmtHeroSearch defaultCity={displayCity} initialCabTrip={null} initialDriverTrip={null} />
-            <SocialProofTicker />
-            <TrustStrip />
-            {belowFold}
+            <ClientErrorBoundary fallback={null}>
+              {belowFold}
+            </ClientErrorBoundary>
           </MmtLayout>
         </HeroSearchProvider>
       }

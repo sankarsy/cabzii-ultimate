@@ -63,12 +63,12 @@ export const PAYMENT_SECTIONS = [
 export const OFFER_COUPONS = [
   {
     code: "CABZII500",
-    title: "₹500 OFF",
-    desc: "₹500 off your first outstation cab booking of ₹1,500 or more.",
-    save: "Save ₹500 on this ride.",
-    amountLabel: "₹500 OFF",
+    title: "₹200 OFF",
+    desc: "₹200 off your first outstation cab booking of ₹1,500 or more.",
+    save: "Save ₹200 on this ride.",
+    amountLabel: "₹200 OFF",
     minOrder: 1500,
-    offHint: "₹500"
+    offHint: "₹200"
   },
   {
     code: "FIRST100",
@@ -117,7 +117,7 @@ export function couponDiscountAmount(code, baseFare, trip = {}) {
   if (normalized === "CABZII500") {
     if (tripType && tripType !== "outstation") return 0;
     if (fare < 1500) return 0;
-    return Math.min(500, fare);
+    return Math.min(200, fare);
   }
   if (normalized === "FIRST100") {
     if (tripType && tripType !== "local" && tripType !== "hourly") return 0;

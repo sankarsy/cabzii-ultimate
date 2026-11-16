@@ -9,11 +9,9 @@ export default function Error({ error, reset }) {
       <p className="mt-3 text-sm text-slate-600">
         Please try again, go back to the homepage, or get a quote on WhatsApp.
       </p>
-      <pre className="mt-4 max-w-full overflow-auto rounded-lg bg-slate-100 p-3 text-left text-xs text-rose-700">
+      <p className="mt-4 max-w-full break-words text-sm font-semibold text-rose-700">
         {error?.message || String(error || "Unknown error")}
-        {error?.digest ? `\ndigest ${error.digest}` : ""}
-        {error?.stack ? `\n${error.stack}` : ""}
-      </pre>
+      </p>
       <div className="mt-6 flex flex-wrap justify-center gap-3">
         <button type="button" onClick={() => reset?.()} className="cabzii-btn cabzii-btn-primary">
           Try again

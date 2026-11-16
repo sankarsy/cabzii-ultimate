@@ -204,10 +204,11 @@ export function GraduationCap(props) {
 }
 
 export function Plane(props) {
+  const { className = "h-5 w-5", strokeWidth: _strokeWidth, ...rest } = props;
   return (
-    <OutlineIcon {...props}>
-      <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z" />
-    </OutlineIcon>
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden {...rest}>
+      <path d="M21 16v-2l-8-5V3.5A1.5 1.5 0 0 0 11.5 2 1.5 1.5 0 0 0 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" />
+    </svg>
   );
 }
 
@@ -404,6 +405,44 @@ export function LogIn(props) {
   );
 }
 
+export function LogOut(props) {
+  return (
+    <OutlineIcon {...props}>
+      <path d="m14 8 5 4-5 4" />
+      <path d="M19 12H9" />
+      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+    </OutlineIcon>
+  );
+}
+
+export function Heart(props) {
+  return (
+    <OutlineIcon {...props}>
+      <path d="M19.5 12.6 12 20l-7.5-7.4A5 5 0 1 1 12 6.1a5 5 0 1 1 7.5 6.5z" />
+    </OutlineIcon>
+  );
+}
+
+export function Link2(props) {
+  return (
+    <OutlineIcon {...props}>
+      <path d="M10 13a5 5 0 0 0 7.07 0l2.83-2.83a5 5 0 0 0-7.07-7.07L11 4.93" />
+      <path d="M14 11a5 5 0 0 0-7.07 0L4.1 13.83a5 5 0 1 0 7.07 7.07L13 19.07" />
+    </OutlineIcon>
+  );
+}
+
+export function Share2(props) {
+  return (
+    <OutlineIcon {...props}>
+      <circle cx="18" cy="5" r="3" />
+      <circle cx="6" cy="12" r="3" />
+      <circle cx="18" cy="19" r="3" />
+      <path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4" />
+    </OutlineIcon>
+  );
+}
+
 export function MessageCircle(props) {
   return (
     <OutlineIcon {...props}>
@@ -482,12 +521,10 @@ export const EyeOff = IconStub;
 export const Gem = IconStub;
 export const GripVertical = IconStub;
 export const Headphones = IconStub;
-export const Heart = IconStub;
 export const Languages = IconStub;
 export const Landmark = IconStub;
 export const Layers = IconStub;
 export const LayoutDashboard = IconStub;
-export const Link2 = IconStub;
 export const Lock = IconStub;
 export const Map = IconStub;
 export const MapPinned = MapPin;
@@ -504,7 +541,6 @@ export const PowerOff = IconStub;
 export const Radio = IconStub;
 export const RefreshCw = IconStub;
 export const Settings = IconStub;
-export const Share2 = IconStub;
 export const Shield = ShieldCheck;
 export const ShipWheel = IconStub;
 export const Sun = IconStub;

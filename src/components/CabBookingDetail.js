@@ -22,9 +22,7 @@ import {
   CheckIcon,
   HeadsetIcon,
   LockIcon,
-  MapPinIcon,
   PersonIcon,
-  RoadIcon,
   RupeeIcon,
   SeatIcon,
   ShieldIcon,
@@ -32,11 +30,8 @@ import {
   TagIcon
 } from "./icons";
 
-const PinIcon = MapPinIcon;
 
-import { resolveCabImage } from "../lib/vehicleImages";
-
-export default function CabBookingDetail({ cab, onSelectionChange, hideHeroImage = false }) {
+export default function CabBookingDetail({ cab, onSelectionChange, hideHeroImage = false, comfortable = false }) {
   const price = num(cab.price);
   const day = num(cab.dayRate);
   const hourly = num(cab.hourlyRate);
@@ -58,7 +53,6 @@ export default function CabBookingDetail({ cab, onSelectionChange, hideHeroImage
     () => buildCabChargeItems(cab, { extraKm: extraKmRate, extraHr: extraHour, nightCharge }),
     [cab, extraKmRate, extraHour, nightCharge]
   );
-  const imageSrc = resolveCabImage(cab);
   const features = Array.isArray(cab.features) ? cab.features : [];
   const hasAc = features.some((f) => /^(ac|a\/c|air\s*condition)/i.test(String(f).trim()));
   const amenityLabel = hasAc ? "AC" : features[0] ? String(features[0]) : "—";
@@ -75,7 +69,7 @@ export default function CabBookingDetail({ cab, onSelectionChange, hideHeroImage
   const visiblePackages = fareSlabs.filter((pkg) => pkg.group === serviceTab);
   const emitSelection = (pkg, tab) => {
     if (!pkg || !onSelectionChange) return;
-    onSelectionChange(selectionFromPackage(pkg, tab, cab));
+    onSelectionChange(selectionFromPackage(pkg, tab || pkg.group, cab));
   };
 
   const handleServiceTab = (tab) => {
@@ -89,7 +83,8 @@ export default function CabBookingDetail({ cab, onSelectionChange, hideHeroImage
 
   const handleSelectPackage = (pkg) => {
     setSelectedPackageId(pkg.id);
-    emitSelection(pkg, serviceTab);
+    setServiceTab(pkg.group || serviceTab);
+    emitSelection(pkg, pkg.group);
   };
 
   const imageBadges = (
@@ -109,9 +104,15 @@ export default function CabBookingDetail({ cab, onSelectionChange, hideHeroImage
   );
 
   return (
-    <article className={`overflow-hidden border border-slate-200 bg-white ${hideHeroImage ? "rounded-xl shadow-sm" : "rounded-[18px] shadow-lg"}`}>
+    <article className={`overflow-hidden bg-white ${hideHeroImage ? (comfortable ? "" : "rounded-xl border border-slate-200 shadow-sm") : "rounded-[18px] border border-slate-200 shadow-lg"}`}>
       {!hideHeroImage ? (
-        <ProductImageFrame src={imageSrc} alt={cab.imageAlt || vehiclePhotoAlt(cab)} badges={imageBadges} imageClassName="h-[200px] w-full object-contain p-2 sm:h-[220px]" />
+        <ProductImageFrame
+          illustration
+          product={cab}
+          alt={cab.imageAlt || vehiclePhotoAlt(cab)}
+          badges={imageBadges}
+          imageClassName="h-[200px] w-full sm:h-[220px]"
+        />
       ) : null}
 
       {!hideHeroImage ? (
@@ -124,14 +125,15 @@ export default function CabBookingDetail({ cab, onSelectionChange, hideHeroImage
       ) : null}
 
       <div className={hideHeroImage ? "" : "lg:grid lg:grid-cols-[1fr_300px] xl:grid-cols-[1fr_320px]"}>
-        <div className={`border-t border-slate-100 ${hideHeroImage ? "p-2.5 sm:p-3" : "p-3 sm:p-4 lg:border-r"}`}>
+        <div className={`border-t border-slate-100 ${hideHeroImage ? (comfortable ? "border-0 p-0" : "p-2.5 sm:p-3") : "p-3 sm:p-4 lg:border-r"}`}>
           <ServiceToggle serviceTab={serviceTab} setServiceTab={handleServiceTab} />
           <PackageSection
             visiblePackages={visiblePackages}
             selectedPackageId={selectedPackageId}
             onSelectPackage={handleSelectPackage}
+            comfortable={comfortable}
           />
-          <ChargesGrid items={chargeItems} compact />
+          <ChargesGrid items={chargeItems} compact={!comfortable} />
         </div>
 
         {hideHeroImage ? null : (
@@ -151,59 +153,62 @@ export default function CabBookingDetail({ cab, onSelectionChange, hideHeroImage
 
 function ServiceToggle({ serviceTab, setServiceTab }) {
   return (
-    <div className="inline-flex rounded-full border border-slate-200 bg-slate-50 p-0.5">
-      <button
-        type="button"
-        onClick={() => setServiceTab("local")}
-        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold transition sm:px-3.5 sm:py-1.5 sm:text-xs ${
-          serviceTab === "local" ? "bg-[var(--cabzii-cta)] text-white shadow-sm" : "text-slate-500 hover:text-slate-700"
-        }`}
-      >
-        <PinIcon className="h-3 w-3 text-current sm:h-3.5 sm:w-3.5" />
-        Local
-      </button>
-      <button
-        type="button"
-        onClick={() => setServiceTab("outstation")}
-        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold transition sm:px-3.5 sm:py-1.5 sm:text-xs ${
-          serviceTab === "outstation" ? "bg-[var(--cabzii-cta)] text-white shadow-sm" : "text-slate-500 hover:text-slate-700"
-        }`}
-      >
-        <RoadIcon className="h-3 w-3 text-current sm:h-3.5 sm:w-3.5" />
-        Outstation
-      </button>
+    <div className="inline-flex rounded-full bg-slate-100 p-1" role="tablist" aria-label="Trip type">
+      {[
+        { id: "local", label: "Local" },
+        { id: "outstation", label: "Outstation" }
+      ].map((tab) => {
+        const active = serviceTab === tab.id;
+        return (
+          <button
+            key={tab.id}
+            type="button"
+            role="tab"
+            aria-selected={active}
+            onClick={() => setServiceTab(tab.id)}
+            className={`cabzii-tap rounded-full px-5 py-2 text-sm font-bold transition ${
+              active
+                ? "bg-[var(--cabzii-brand)] text-white shadow-sm"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            {tab.label}
+          </button>
+        );
+      })}
     </div>
   );
 }
 
-function PackageSection({ visiblePackages, selectedPackageId, onSelectPackage }) {
+function PackageSection({ visiblePackages, selectedPackageId, onSelectPackage, comfortable = false }) {
   const few = visiblePackages.length <= 2;
 
   return (
-    <div className="mt-2.5 sm:mt-3">
-      {/* ≤2 packages: always 2-up grid so both fit on one mobile screen */}
+    <div className={comfortable ? "mt-4" : "mt-2.5 sm:mt-3"}>
       <div
         className={
-          few
-            ? "grid grid-cols-2 gap-2 pt-2"
-            : "scroll-x-touch -mx-1 flex gap-2 overflow-x-auto px-1 pb-1.5 pt-2 [-ms-overflow-style:none] [scrollbar-width:none] sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-2.5 sm:overflow-visible sm:px-0 sm:pb-0 sm:pt-1 [&::-webkit-scrollbar]:hidden"
+          comfortable
+            ? "grid grid-cols-1 gap-3 pt-1 sm:grid-cols-2"
+            : few
+              ? "grid grid-cols-2 gap-2 pt-2"
+              : "scroll-x-touch -mx-1 flex gap-2 overflow-x-auto px-1 pb-1.5 pt-2 [-ms-overflow-style:none] [scrollbar-width:none] sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-2.5 sm:overflow-visible sm:px-0 sm:pb-0 sm:pt-1 [&::-webkit-scrollbar]:hidden"
         }
       >
         {visiblePackages.map((pkg) => (
           <div
             key={pkg.id}
-            className={few ? "min-w-0" : "flex w-[min(9.5rem,calc(50%-0.35rem))] max-w-[9.5rem] shrink-0 snap-start sm:w-auto sm:max-w-none sm:min-w-0"}
+            className={comfortable || few ? "min-w-0" : "flex w-[min(9.5rem,calc(50%-0.35rem))] max-w-[9.5rem] shrink-0 snap-start sm:w-auto sm:max-w-none sm:min-w-0"}
           >
             <PackageOptionCard
               pkg={pkg}
               selected={selectedPackageId === pkg.id}
-              compact
+              compact={!comfortable}
               onSelect={() => onSelectPackage(pkg)}
             />
           </div>
         ))}
       </div>
-      <ApproxPriceNote />
+      <ApproxPriceNote className={comfortable ? "mt-3 text-xs sm:text-sm" : ""} />
     </div>
   );
 }

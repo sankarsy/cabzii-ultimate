@@ -24,7 +24,7 @@ export default function FaqSection({
       {showIntro ? <SectionIntro eyebrow={eyebrow} title={title} subtitle={subtitle} /> : null}
 
       <section
-        className={`cabzii-card overflow-hidden p-3 sm:p-4 ${showIntro || hideTitle ? "mt-3" : ""}`}
+        className={`cabzii-card overflow-hidden p-3 sm:p-4 ${showIntro ? "mt-3" : ""}`}
       >
         {showCardTitle ? <h2 className="text-xs font-semibold text-slate-900 sm:text-sm">{title}</h2> : null}
         <div className={`${scrollable ? "faq-scroll-wrap relative" : ""} ${showCardTitle ? "mt-2.5" : ""}`}>

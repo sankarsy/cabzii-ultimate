@@ -17,18 +17,18 @@ function ModeCard({ selected, title, subtitle, onSelect }) {
       type="button"
       onClick={onSelect}
       className={`flex min-h-[4.25rem] flex-1 flex-col items-start rounded-xl border px-3 py-2.5 text-left ${
-        selected ? "border-[#1a73e8] bg-[#e8f3ff]" : "border-slate-200 bg-white"
+        selected ? "border-[var(--cabzii-brand)] bg-[var(--cabzii-sky)]" : "border-slate-200 bg-white"
       }`}
     >
       <span className="flex items-center gap-2">
         <span
           className={`flex h-[18px] w-[18px] items-center justify-center rounded-full border-[1.5px] ${
-            selected ? "border-[#1a73e8]" : "border-slate-300"
+            selected ? "border-[var(--cabzii-brand)]" : "border-slate-300"
           }`}
         >
-          {selected ? <span className="h-2 w-2 rounded-full bg-[#1a73e8]" /> : null}
+          {selected ? <span className="h-2 w-2 rounded-full bg-[var(--cabzii-brand)]" /> : null}
         </span>
-        <span className={`text-[14px] font-semibold ${selected ? "text-[#1a73e8]" : "text-slate-800"}`}>{title}</span>
+        <span className={`text-[14px] font-semibold ${selected ? "text-[var(--cabzii-brand)]" : "text-slate-800"}`}>{title}</span>
       </span>
       <span className="mt-0.5 pl-[26px] text-[11px] leading-snug text-slate-500">{subtitle}</span>
     </button>
@@ -254,7 +254,7 @@ export default function CabResultsSearchSheet({ open, onClose, search }) {
           type="button"
           onClick={submit}
           disabled={search.searching}
-          className="mt-5 h-12 w-full rounded-xl bg-[#1a73e8] text-[15px] font-extrabold uppercase tracking-wide text-white hover:bg-[#1565c0] disabled:opacity-70"
+          className="mt-5 h-12 w-full rounded-xl bg-[var(--cabzii-brand)] text-[15px] font-extrabold uppercase tracking-wide text-white hover:bg-[var(--cabzii-brand-hover)] disabled:opacity-70"
         >
           {search.searching ? "…" : "Search"}
         </button>

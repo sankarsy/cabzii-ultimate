@@ -67,9 +67,7 @@ function rankingFields(form) {
 function seoPayload(form, row) {
   const base = rankingFields(form);
 
-  if (row.type === "cab") return { seoTitle: base.seoTitle, seoDescription: base.seoDescription, seo: base.seo, title: base.h1 || undefined };
-  if (row.type === "driver") return { seoTitle: base.seoTitle, seoDescription: base.seoDescription, seo: base.seo, name: base.h1 || undefined };
-  if (row.type === "tour") return { seoTitle: base.seoTitle, seoDescription: base.seoDescription, seo: base.seo, name: base.h1 || undefined };
+  if (row.type === "cab" || row.type === "driver" || row.type === "tour") return {};
   if (row.type === "blog") return { seoTitle: base.seoTitle, seoDescription: base.seoDescription, seo: base.seo, title: base.h1 || undefined };
   if (row.type === "city" || row.type === "acting-driver" || row.type === "airport") {
     return {

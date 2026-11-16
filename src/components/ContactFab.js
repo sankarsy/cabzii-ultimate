@@ -6,9 +6,10 @@ import { Phone } from "./icons/rscIcons";
 import WhatsAppIcon from "./WhatsAppIcon";
 import { useSiteSettings } from "./SiteSettingsProvider";
 import { telUrl, whatsappBookingUrl, contactPhoneFromSettings, whatsappDigitsFromSettings } from "../lib/conversion";
-import { shouldHideFloatingUi } from "../lib/floatingUi";
+import { isCatalogDetailPage, shouldHideFloatingUi } from "../lib/floatingUi";
 import { useSelectedCity } from "../lib/useSelectedCity";
 import { trackLead } from "../lib/analytics";
+import { usePastHero } from "../lib/usePastHero";
 
 /** Floating Call + WhatsApp — desktop/tablet; mobile uses StickyBookingBar. */
 export default function ContactFab() {
@@ -24,7 +25,9 @@ export default function ContactFab() {
     setSearch(typeof window !== "undefined" ? window.location.search : "");
   }, [pathname]);
 
-  if (shouldHideFloatingUi(pathname)) return null;
+  const pastHero = usePastHero();
+  if (shouldHideFloatingUi(pathname) || !pastHero) return null;
+  const onCatalogDetail = isCatalogDetailPage(pathname);
 
   const waHref = whatsappBookingUrl({
     phone: whatsappNumber,
@@ -36,10 +39,14 @@ export default function ContactFab() {
   const showWa = whatsapp?.enabled !== false && whatsappNumber;
 
   return (
-    <div className="fixed bottom-5 left-5 z-[55] hidden flex-col items-start gap-3 sm:flex">
+    <div
+      className={`fixed bottom-5 left-5 z-[55] hidden flex-col items-start gap-3 ${
+        onCatalogDetail ? "lg:flex" : "sm:flex"
+      }`}
+    >
       <a
         href={telUrl(phone)}
-        className="cabzii-tap inline-flex h-12 w-12 items-center justify-center rounded-full text-white shadow-[0_4px_20px_rgba(0,86,210,0.35)] transition hover:scale-105 hover:shadow-[0_6px_24px_rgba(0,86,210,0.45)]"
+        className="cabzii-tap inline-flex h-12 w-12 items-center justify-center rounded-xl text-white shadow-[0_4px_20px_rgba(30,64,175,0.35)] transition hover:scale-105 hover:shadow-[0_6px_24px_rgba(30,64,175,0.45)]"
         style={{ background: "var(--cabzii-gradient-brand)" }}
         aria-label="Call Cabzii to book a cab"
         title="Call us"
@@ -52,7 +59,7 @@ export default function ContactFab() {
           href={waHref}
           target="_blank"
           rel="noreferrer"
-          className="cabzii-tap inline-flex h-12 w-12 items-center justify-center rounded-full bg-[#25D366] text-white shadow-[0_4px_20px_rgba(37,211,102,0.35)] transition hover:scale-105 hover:bg-[#20BA5A]"
+          className="cabzii-tap inline-flex h-12 w-12 items-center justify-center rounded-xl bg-[#128C4A] text-white shadow-[0_4px_20px_rgba(18,140,74,0.35)] transition hover:scale-105 hover:bg-[#0f7a40]"
           aria-label="Book cab on WhatsApp"
           title="WhatsApp"
           onClick={() => trackLead("whatsapp", { source_page: pathname, cta_location: "contact_fab" })}

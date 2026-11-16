@@ -45,7 +45,7 @@ function BusesLandingContent() {
               { icon: ShieldCheck, title: "Instant confirm", desc: "SMS ticket after booking · WhatsApp support" }
             ].map((f) => (
               <div key={f.title} className="rdb-card p-4">
-                <f.icon className="mb-2 h-5 w-5 text-[#d84e55]" aria-hidden />
+                <f.icon className="mb-2 h-5 w-5 text-[var(--cabzii-brand)]" aria-hidden />
                 <p className="text-sm font-bold text-slate-900">{f.title}</p>
                 <p className="mt-0.5 text-xs text-slate-600">{f.desc}</p>
               </div>

@@ -66,8 +66,7 @@ function emptyProductFields() {
     countryOfOrigin: "India",
     speciality: "",
     condition: "",
-    taxPercent: 5,
-    seo: ""
+    taxPercent: 5
   };
 }
 
@@ -81,8 +80,7 @@ function productFieldsFromItem(item) {
     countryOfOrigin: item?.countryOfOrigin || "India",
     speciality: item?.speciality || "",
     condition: item?.condition || "",
-    taxPercent: numField(item?.taxPercent) || 5,
-    seo: item?.seo || ""
+    taxPercent: numField(item?.taxPercent) || 5
   };
 }
 
@@ -96,10 +94,7 @@ function productFieldsToPayload(form) {
     countryOfOrigin: String(form.countryOfOrigin || "India").trim() || "India",
     speciality: String(form.speciality || "").trim(),
     condition: String(form.condition || "").trim(),
-    taxPercent: numField(form.taxPercent) || 5,
-    seo: form.seo || "",
-    seoTitle: form.seoTitle || "",
-    seoDescription: form.seoDescription || ""
+    taxPercent: numField(form.taxPercent) || 5
   };
 }
 
@@ -157,8 +152,6 @@ export function emptyCabForm() {
     city: "",
     location: "",
     features: "",
-    seoTitle: "",
-    seoDescription: "",
     status: "active",
     farePackages: emptyPackages(CAB_PACKAGE_FIELDS),
     farePackageLabels: emptyLabels(CAB_PACKAGE_FIELDS)
@@ -188,8 +181,6 @@ export function cabFormFromItem(item) {
     city: item?.city || "",
     location: item?.location || "",
     features: Array.isArray(item?.features) ? item.features.join(", ") : "",
-    seoTitle: item?.seoTitle || "",
-    seoDescription: item?.seoDescription || "",
     status: item?.status === "inactive" ? "inactive" : "active",
     farePackages: packagesFromItem(item?.farePackages, CAB_PACKAGE_FIELDS),
     farePackageLabels: labelsFromItem(item?.farePackageLabels, CAB_PACKAGE_FIELDS),
@@ -273,13 +264,6 @@ export function emptyDriverForm() {
     pricingHourly: 0,
     pricingDay: 0,
     pricingExtraHour: 0,
-    seoTitle: "",
-    seoDescription: "",
-    metaKeywords: "",
-    canonicalUrl: "",
-    schemaEnabled: true,
-    faq: [{ question: "", answer: "" }],
-    enterpriseSeo: {},
     status: "active",
     farePackages: emptyPackages(DRIVER_PACKAGE_FIELDS),
     farePackageLabels: emptyLabels(DRIVER_PACKAGE_FIELDS)
@@ -310,13 +294,6 @@ export function driverFormFromItem(item) {
     pricingHourly: numField(item?.pricing?.hourly),
     pricingDay: numField(item?.pricing?.day),
     pricingExtraHour: numField(item?.pricing?.extraHour),
-    seoTitle: item?.seoTitle || "",
-    seoDescription: item?.seoDescription || "",
-    metaKeywords: item?.metaKeywords || item?.seo || "",
-    canonicalUrl: item?.canonicalUrl || "",
-    schemaEnabled: item?.schemaEnabled !== false,
-    faq: Array.isArray(item?.faq) && item.faq.length ? item.faq : [{ question: "", answer: "" }],
-    enterpriseSeo: item?.enterpriseSeo && typeof item.enterpriseSeo === "object" ? item.enterpriseSeo : {},
     status: item?.status === "inactive" ? "inactive" : "active",
     farePackages: packagesFromItem(item?.farePackages, DRIVER_PACKAGE_FIELDS),
     farePackageLabels: labelsFromItem(item?.farePackageLabels, DRIVER_PACKAGE_FIELDS)
@@ -375,15 +352,6 @@ export function driverFormToPayload(form) {
     farePackages,
     farePackageLabels,
     status: form.status === "inactive" ? "inactive" : "active",
-    metaKeywords: form.metaKeywords || form.seo || "",
-    canonicalUrl: form.canonicalUrl || "",
-    schemaEnabled: form.schemaEnabled !== false,
-    faq: Array.isArray(form.faq)
-      ? form.faq
-          .filter((f) => f?.question?.trim() || f?.answer?.trim())
-          .map((f) => ({ question: String(f.question || ""), answer: String(f.answer || "") }))
-      : [],
-    enterpriseSeo: form.enterpriseSeo && typeof form.enterpriseSeo === "object" ? form.enterpriseSeo : {},
     ...productFieldsToPayload(form)
   };
 }
@@ -426,11 +394,7 @@ export function emptyBusTripForm() {
     policyLiquor: "",
     policyPickup: "",
     status: "active",
-    slug: "",
-    enterpriseSeo: {},
-    seoTitle: "",
-    seoDescription: "",
-    seo: ""
+    slug: ""
   };
 }
 
@@ -472,11 +436,7 @@ export function busTripFormFromItem(item) {
     policyLiquor: item?.policies?.liquor || "",
     policyPickup: item?.policies?.pickupTime || "",
     status: item?.status || "active",
-    slug: item?.slug || "",
-    enterpriseSeo: item?.enterpriseSeo || {},
-    seoTitle: item?.seoTitle || "",
-    seoDescription: item?.seoDescription || "",
-    seo: item?.seo || ""
+    slug: item?.slug || ""
   };
 }
 
@@ -532,11 +492,7 @@ export function busTripFormToPayload(form) {
       pickupTime: form.policyPickup?.trim() || ""
     },
     status: form.status || "active",
-    slug: form.slug?.trim() || "",
-    enterpriseSeo: form.enterpriseSeo || {},
-    seoTitle: form.seoTitle?.trim(),
-    seoDescription: form.seoDescription?.trim(),
-    seo: form.seo?.trim()
+    slug: form.slug?.trim() || ""
   };
 }
 

@@ -30,7 +30,7 @@ export default function HeroHeadline({
           href={waHref}
           target="_blank"
           rel="noreferrer"
-          className="cabzii-tap inline-flex items-center gap-2 rounded-full bg-[#25D366] px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:brightness-105"
+          className="cabzii-tap inline-flex items-center gap-2 rounded-xl bg-[#128C4A] px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:brightness-105"
           onClick={() => trackLead("whatsapp", { cta_location: "hero_headline" })}
         >
           <WhatsAppIcon className="h-4 w-4" />
@@ -38,7 +38,7 @@ export default function HeroHeadline({
         </a>
         <a
           href={telUrl(phone)}
-          className="cabzii-tap inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-[var(--cabzii-cta)] shadow-sm hover:bg-orange-50"
+          className="cabzii-tap inline-flex items-center gap-2 rounded-xl border border-[var(--cabzii-border)] bg-white px-4 py-2.5 text-sm font-bold text-[var(--cabzii-brand)] shadow-sm hover:bg-[var(--cabzii-sky)]"
           onClick={() => trackLead("phone", { cta_location: "hero_headline" })}
         >
           <Phone className="h-4 w-4" strokeWidth={2} />
@@ -46,7 +46,7 @@ export default function HeroHeadline({
         </a>
         <Link
           href="/cabs"
-          className="cabzii-tap inline-flex items-center rounded-full px-4 py-2.5 text-sm font-bold text-white shadow-sm"
+          className="cabzii-tap inline-flex items-center rounded-xl px-4 py-2.5 text-sm font-bold text-[var(--cabzii-ink)] shadow-sm"
           style={{ background: "var(--cabzii-gradient-cta)" }}
           onClick={() => trackEvent("quote_request", { cta_location: "hero_headline" })}
         >

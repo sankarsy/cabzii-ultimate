@@ -82,7 +82,7 @@ function FilterChecks({ options, selected, onToggle }) {
                 type="checkbox"
                 checked={on}
                 onChange={() => onToggle(opt.label)}
-                className="h-4 w-4 rounded border-slate-300 text-[#1a73e8] accent-[#1a73e8]"
+                className="h-4 w-4 rounded border-slate-300 text-[var(--cabzii-brand)] accent-[var(--cabzii-brand)]"
               />
               <span className="min-w-0 flex-1 truncate">{opt.label}</span>
               <span className="shrink-0 text-[12px] text-slate-400">({opt.count})</span>
@@ -192,7 +192,7 @@ export default function MmtCabResults({
     <aside className="h-fit rounded-xl border border-slate-200 bg-white px-4 py-3">
       <div className="mb-1 flex items-center justify-between">
         <p className="text-[15px] font-extrabold text-slate-900">Filters</p>
-        <button type="button" onClick={clearAll} className="text-[11px] font-bold uppercase tracking-wide text-slate-400 hover:text-[#1a73e8]">
+        <button type="button" onClick={clearAll} className="text-[11px] font-bold uppercase tracking-wide text-slate-400 hover:text-[var(--cabzii-brand)]">
           Clear All
         </button>
       </div>
@@ -314,13 +314,13 @@ export default function MmtCabResults({
           {showCoupon ? (
             <div className="hidden items-center justify-between gap-3 overflow-hidden rounded-xl bg-gradient-to-r from-[#e8f4ff] to-[#d7ecff] px-4 py-3 lg:flex">
               <div>
-                <p className="text-[15px] font-extrabold text-[#1565c0]">Get ₹500 Off</p>
+                <p className="text-[15px] font-extrabold text-[var(--cabzii-brand)]">Get ₹200 Off</p>
                 <p className="text-[13px] text-slate-600">
                   Use coupon code: <span className="font-bold text-slate-800">CABZII500</span>
                 </p>
                 <p className="text-[11px] text-slate-500">First outstation booking</p>
               </div>
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#1a73e8] text-lg font-black text-white">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--cabzii-brand)] text-lg font-black text-white">
                 %
               </span>
             </div>
@@ -416,11 +416,11 @@ export default function MmtCabResults({
                   setMobileSheet(null);
                 }}
                 className={`flex w-full items-center justify-between rounded-xl px-3 py-3 text-left text-[15px] font-semibold ${
-                  sort === s.id ? "bg-[#e8f1fd] text-[#1a73e8]" : "text-slate-800"
+                  sort === s.id ? "bg-[var(--cabzii-sky)] text-[var(--cabzii-brand)]" : "text-slate-800"
                 }`}
               >
                 {s.label}
-                {sort === s.id ? <span className="h-2.5 w-2.5 rounded-full bg-[#1a73e8]" /> : null}
+                {sort === s.id ? <span className="h-2.5 w-2.5 rounded-full bg-[var(--cabzii-brand)]" /> : null}
               </button>
             </li>
           ))}

@@ -119,10 +119,16 @@ export default function CityHubMarketplace({
     [routedTrip, categoryFares]
   );
   const [cabs, setCabs] = useState(initialCabs);
-  const [loading, setLoading] = useState(!initialCabs.length);
+  const searchReady = isValidTripSearch(searchTrip);
+  const [loading, setLoading] = useState(searchReady && !initialCabs.length);
   const [error, setError] = useState("");
 
   useEffect(() => {
+    if (!searchReady) {
+      setLoading(false);
+      setError("");
+      return undefined;
+    }
     let cancelled = false;
     const q = new URLSearchParams({ limit: "100", page: "1", match: "0" });
     const cityName = String(trip?.from || trip?.city || city?.name || "").split(",")[0];
@@ -171,11 +177,12 @@ export default function CityHubMarketplace({
     trip?.packageId,
     trip?.roundTrip,
     initialCabs.length,
-    city?.name
+    city?.name,
+    searchReady
   ]);
 
   const fleet = cabs;
-  const showList = fleet.length > 0;
+  const showList = searchReady && fleet.length > 0;
   const cabListRef = useRef(null);
   usePassScrollToPage(cabListRef);
   const showAirport = isSeoScopeAirportCity(city.slug);
@@ -218,10 +225,10 @@ export default function CityHubMarketplace({
     });
   }
 
-  const compactMobileSearch = isValidTripSearch(searchTrip);
+  const compactMobileSearch = searchReady;
 
   return (
-    <div id="cabs" className="bg-[#f4f6fa] pb-6 lg:pb-8">
+    <div id="cabs" className="cabzii-hub-marketplace bg-[#f4f6fa] pb-6 lg:pb-8">
       {compactMobileSearch ? (
         <div className="lg:hidden">
           <CabResultsModifyBar initialTrip={searchTrip} mobileOnly />
@@ -245,7 +252,7 @@ export default function CityHubMarketplace({
           )}
         </div>
       ) : null}
-      <div className="section-shell grid gap-3 py-3 sm:gap-4 sm:py-4 lg:grid-cols-[minmax(17rem,20.5rem)_minmax(0,1fr)] lg:grid-rows-1 lg:py-5">
+      <div className="section-shell grid gap-3 py-3 sm:gap-4 sm:py-4 sm:pl-20 lg:grid-cols-[minmax(17rem,20.5rem)_minmax(0,1fr)] lg:grid-rows-1 lg:py-5 xl:pl-6">
         <aside className={`min-w-0 space-y-3 lg:row-start-1 ${compactMobileSearch ? "hidden lg:block" : ""}`}>
           <CityCabBookingWidget
             cityName={city.name}
@@ -278,12 +285,20 @@ export default function CityHubMarketplace({
           </div>
         </aside>
 
-        <div className="min-w-0 lg:row-start-1 lg:flex lg:h-0 lg:min-h-full lg:flex-col lg:overflow-hidden lg:rounded-2xl lg:border lg:border-slate-200 lg:bg-white lg:shadow-sm">
+        <div className="min-w-0 lg:row-start-1 lg:flex lg:min-h-[16rem] lg:flex-col lg:overflow-hidden lg:rounded-2xl lg:border lg:border-slate-200 lg:bg-white lg:shadow-sm xl:h-0 xl:min-h-full">
           <div
             ref={cabListRef}
             className="lg:min-h-0 lg:flex-1 lg:overflow-y-auto lg:overscroll-y-auto lg:p-4 lg:pb-8 lg:[scrollbar-width:thin] lg:[scrollbar-color:#cbd5e1_transparent]"
           >
-            {loading && !showList ? (
+            {!searchReady ? (
+              <div className="rounded-2xl border border-dashed border-slate-200 bg-white px-4 py-8 text-center text-sm text-slate-500 lg:border-0">
+                {trip?.tripType === "airport"
+                  ? "Enter pickup and airport or city drop to see fares."
+                  : trip?.tripType === "outstation"
+                    ? "Enter a destination to see outstation fares."
+                    : "Enter pickup to see fares."}
+              </div>
+            ) : loading && !showList ? (
               <div className="rounded-2xl border border-slate-200 bg-white px-4 py-8 text-center text-sm text-slate-500 lg:border-0">
                 Finding cabs for you…
               </div>

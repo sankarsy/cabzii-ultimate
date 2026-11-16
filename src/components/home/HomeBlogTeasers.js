@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Clock, CalendarDays, ArrowRight } from "../icons/rscIcons";
-import SectionIntro from "../ui/SectionIntro";
+import HomeSectionHeader from "./HomeSectionHeader";
 import { SAMPLE_BLOGS, estimateReadMinutes } from "../../lib/sampleContent";
 
 function BlogTile({ post }) {
@@ -44,22 +44,16 @@ export default function HomeBlogTeasers({ posts }) {
   const visible = (Array.isArray(posts) && posts.length ? posts : SAMPLE_BLOGS).slice(0, 3);
 
   return (
-    <section className="border-t border-slate-200 bg-white py-8 sm:py-10">
+    <section className="home-band home-band-sky">
       <div className="section-shell">
-        <div className="flex items-end justify-between gap-3">
-          <SectionIntro
-            eyebrow="Blog"
-            title="Travel guides & tips"
-            subtitle="Route guides, fare breakdowns and booking tips from the Cabzii team."
-          />
-          <Link
-            href="/blogs"
-            className="hidden shrink-0 text-sm font-semibold text-[var(--cabzii-brand)] hover:underline sm:block"
-          >
-            All articles →
-          </Link>
-        </div>
-        <div className="scroll-x-touch cabzii-scroll-bleed mt-5 flex gap-3 overflow-x-auto pb-2 sm:mx-0 sm:grid sm:grid-cols-3 sm:gap-4 sm:overflow-visible sm:px-0">
+        <HomeSectionHeader
+          eyebrow="Blog"
+          title="Travel guides & tips"
+          subtitle="Route guides, fare breakdowns and booking tips from the Cabzii team."
+          href="/blogs"
+          linkLabel="All articles →"
+        />
+        <div className="scroll-x-touch cabzii-scroll-bleed flex gap-3 overflow-x-auto pb-2 sm:mx-0 sm:grid sm:grid-cols-3 sm:gap-4 sm:overflow-visible sm:px-0">
           {visible.map((post) => (
             <BlogTile key={String(post._id ?? post.slug ?? post.title)} post={post} />
           ))}

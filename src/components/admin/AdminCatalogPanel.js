@@ -42,7 +42,6 @@ import { mergeStaticSeoCityPages } from "../../lib/seo/seoPagesCatalog";
 import imageCompression from "browser-image-compression";
 import AdminBookingEditor from "./AdminBookingEditor";
 import { AdminSeoCityPageForm, AdminSeoRouteForm, AdminSeoServiceForm } from "./AdminSeoForm";
-import { AdminProductSeoSection } from "./AdminProductSeoSection";
 import { AdminGalleryField, AdminProductImageField, parseGallery } from "./AdminProductImageField";
 import ImageUploadField from "./ImageUploadField";
 import FarePackagesEditor from "./FarePackagesEditor";
@@ -1396,7 +1395,6 @@ export default function AdminCatalogPanel({
                 </Field>
               </div>
             </div>
-            <AdminProductSeoSection form={busTripForm} onChange={setBusTripForm} pathPrefix="/buses" titleField="operator" cityField="fromCity" productNameLabel="Operator" hideProductName enterprise authToken={token} />
             {tab.sample ? (
               <button type="button" onClick={insertSample} disabled={!canEdit} className="rounded-md border border-slate-300 px-3 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-100 disabled:opacity-50">
                 Load sample bus

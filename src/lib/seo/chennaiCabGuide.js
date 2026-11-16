@@ -33,7 +33,7 @@ export function chennaiCabGuideHtml() {
 <ol>
 <li>Enter pickup in Chennai — add from, to and date.</li>
 <li>Compare Hatchback, Sedan, SUV and Tempo Traveller. Fares show before you pay.</li>
-<li>Pay 50% to confirm. Apply CABZII500 for ₹500 off the first outstation trip.</li>
+<li>Pay 50% to confirm. Apply CABZII500 for ₹200 off the first outstation trip.</li>
 <li>Get assigned driver details after confirmation.</li>
 </ol>
 

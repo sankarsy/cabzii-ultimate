@@ -16,6 +16,7 @@ import { CALL_DRIVER_SERVICES, callDriverBookHref, formatFromPrice } from "../..
 import { CALL_DRIVER_TARIFF } from "../../data/call-drivers-chennai";
 import { CLAIMS } from "../../config/claims";
 import { formatInr } from "../../lib/formatInr";
+import HomeSectionHeader from "./HomeSectionHeader";
 
 const SERVICE_ICONS = {
   local: MapPin,
@@ -45,69 +46,53 @@ export default function CallDriverHomeSection({ services: servicesProp }) {
   const localFare = `₹${formatInr(localAmount)} · ${CALL_DRIVER_TARIFF.local.minHours} hours`;
 
   return (
-    <section className="border-t border-slate-200 bg-linear-to-b from-orange-50/50 to-white py-8 sm:py-10">
+    <section className="home-band home-band-sky">
       <div className="section-shell">
-        <div className="relative mb-5 sm:mb-6">
-          <div className="text-center">
-            <p className="text-xs font-bold uppercase tracking-wider text-[var(--cabzii-cta)]">Call Driver</p>
-            <h2 className="mt-1 text-base font-bold tracking-tight text-slate-900 sm:text-xl">
-              Need a driver for your own car?
-            </h2>
-            <p className="mt-1 text-sm text-slate-600">
-              You keep the car. Cabzii sends a professional driver after booking.
-            </p>
-          </div>
-          <div className="mt-3 flex justify-center sm:absolute sm:right-0 sm:top-1/2 sm:mt-0 sm:-translate-y-1/2">
-            <Link href="/call-driver" className="text-sm font-semibold text-[var(--cabzii-cta)] hover:underline">
-              View all →
-            </Link>
-          </div>
-        </div>
+        <HomeSectionHeader
+          eyebrow="Call Driver"
+          title="Need a driver for your own car?"
+          subtitle="You keep the car. Cabzii sends a professional driver after booking."
+          href="/call-driver"
+          linkLabel="View all →"
+        />
 
-        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[var(--cabzii-shadow-card)]">
-          <div className="grid md:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
-            <div className="relative overflow-hidden bg-linear-to-br from-[var(--cabzii-brand)] to-blue-500 p-5 text-white sm:p-7">
+        <div className="overflow-hidden rounded-[22px] bg-[var(--cabzii-ink)] text-white shadow-[var(--cabzii-shadow-card)]">
+          <div className="grid gap-5 p-5 sm:gap-6 sm:p-7 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+            <div className="relative">
+              <span className="absolute -right-6 -top-8 h-28 w-28 rounded-full bg-white/10" aria-hidden />
               <span
-                className="absolute -right-6 -top-8 h-32 w-32 rounded-full bg-white/10"
-                aria-hidden
-              />
-              <span
-                className="absolute bottom-4 right-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15 ring-1 ring-white/25"
+                className="absolute bottom-2 right-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-white/15 ring-1 ring-white/25"
                 aria-hidden
               >
-                <UserRound className="h-7 w-7" strokeWidth={2} />
+                <UserRound className="h-6 w-6" strokeWidth={2} />
               </span>
-              <p className="relative text-[11px] font-bold uppercase tracking-wider text-white/80">Driver for your car</p>
-              <h3 className="relative mt-1 max-w-sm text-lg font-extrabold leading-snug sm:text-xl">
-                Local, outstation, airport, monthly &amp; valet — without hiring a cab.
-              </h3>
+              <p className="relative text-[11px] font-bold uppercase tracking-wider text-[#b9c6ee]">Driver for your car</p>
+              <p className="relative mt-2 max-w-sm text-sm text-[#d5def8]">
+                Local from <span className="font-bold text-white">{localFare}</span>
+              </p>
               <ul className="relative mt-3 flex flex-wrap gap-2">
                 <li className="inline-flex items-center gap-1 rounded-full bg-white/15 px-2.5 py-1 text-[11px] font-semibold">
                   <ShieldCheck className="h-3.5 w-3.5" strokeWidth={2.25} />
                   {CLAIMS.verifiedDrivers ? "Verified drivers" : "Assigned after booking"}
                 </li>
                 <li className="rounded-full bg-white/15 px-2.5 py-1 text-[11px] font-semibold">You keep your car</li>
-                <li className="rounded-full bg-white/15 px-2.5 py-1 text-[11px] font-semibold">Assigned after booking</li>
               </ul>
-              <div className="relative mt-5 flex flex-wrap items-center gap-3">
+              <div className="relative mt-5">
                 <Link href="/call-driver" className="cabzii-btn cabzii-btn-cta cabzii-tap min-h-11 px-5">
                   Book a Driver
                   <ChevronRight className="h-4 w-4" />
                 </Link>
-                <p className="text-sm font-bold text-white/95">Local from {localFare}</p>
               </div>
             </div>
 
-            <ol className="grid divide-y divide-slate-100 sm:grid-cols-3 sm:divide-x sm:divide-y-0 md:grid-cols-1 md:divide-x-0 md:divide-y">
+            <ol className="grid grid-cols-1 gap-2 sm:grid-cols-3">
               {STEPS.map((step) => (
-                <li key={step.n} className="flex gap-3 p-4 sm:p-5">
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-orange-50 text-sm font-extrabold text-[var(--cabzii-cta)]">
-                    {step.n}
-                  </span>
-                  <div className="min-w-0">
-                    <p className="text-sm font-bold text-slate-900">{step.title}</p>
-                    <p className="mt-0.5 text-xs leading-relaxed text-slate-600 sm:text-[13px]">{step.desc}</p>
-                  </div>
+                <li key={step.n} className="rounded-[14px] bg-white/8 p-3.5">
+                  <p className="font-[family-name:var(--font-sora)] text-[13px] font-bold text-[var(--cabzii-cta)]">
+                    Step {step.n}
+                  </p>
+                  <p className="mt-1 text-sm font-bold text-white">{step.title}</p>
+                  <p className="mt-1 text-xs leading-relaxed text-[#b9c6ee]">{step.desc}</p>
                 </li>
               ))}
             </ol>
@@ -122,9 +107,9 @@ export default function CallDriverHomeSection({ services: servicesProp }) {
               <li key={svc.id}>
                 <Link
                   href={callDriverBookHref(svc.id)}
-                  className="cabzii-tap group flex h-full flex-col rounded-xl border border-slate-200 bg-white p-3.5 shadow-sm transition hover:-translate-y-0.5 hover:border-[var(--cabzii-cta)]/35 hover:shadow-md sm:p-4"
+                  className="cabzii-tap group flex h-full flex-col rounded-2xl border border-[var(--cabzii-border)] bg-white p-3.5 shadow-sm transition hover:-translate-y-[3px] hover:border-[var(--cabzii-brand)] hover:shadow-md sm:p-4"
                 >
-                  <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-orange-50 text-[var(--cabzii-cta)]">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--cabzii-sky)] text-[var(--cabzii-brand)]">
                     <Icon className="h-5 w-5" strokeWidth={2} />
                   </span>
                   <h3 className="mt-2.5 text-[13px] font-bold leading-snug text-slate-900 sm:text-sm">{svc.shortTitle || svc.title}</h3>

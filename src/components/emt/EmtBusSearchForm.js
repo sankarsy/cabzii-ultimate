@@ -38,7 +38,7 @@ export default function EmtBusSearchForm({ emtHero = false, compact = false, ini
   return (
     <div className={compact ? "" : ""}>
       {!compact ? (
-        <p className={`mb-3 text-right text-xs font-bold ${emtHero ? "text-white/90" : "text-rose-700"}`}>
+        <p className={`mb-3 text-right text-xs font-bold ${emtHero ? "text-[#cfdbff]" : "text-[var(--cabzii-brand)]"}`}>
           India&apos;s bus tickets · AC seater & sleeper
         </p>
       ) : null}
@@ -126,8 +126,8 @@ export default function EmtBusSearchForm({ emtHero = false, compact = false, ini
                 setFrom(r.from);
                 setTo(r.to);
               }}
-              className={`rounded-full px-3 py-1 text-[11px] font-bold ${
-                emtHero ? "bg-white/15 text-white hover:bg-white/25" : "bg-rose-50 text-rose-800 hover:bg-rose-100"
+              className={`rounded-xl px-3 py-1 text-[11px] font-bold ${
+                emtHero ? "bg-white/15 text-white hover:bg-white/25" : "bg-[var(--cabzii-sky)] text-[var(--cabzii-brand)] hover:bg-[#d6e0ff]"
               }`}
             >
               {r.from} → {r.to}

@@ -22,7 +22,7 @@ export function buildCabTypes(cityName) {
       fareLabel: `From ${inr(sedanFrom)} · 4 Hrs / 40 Km`,
       capacity: "4 passengers",
       luggage: "2 bags",
-      image: "/images/fallbacks/suv.svg",
+      iconKey: "hatch",
       imageAlt: `Hatchback taxi for ${cityName} local and airport trips`
     },
     {
@@ -33,7 +33,7 @@ export function buildCabTypes(cityName) {
       fareLabel: `From ${inr(sedanFrom)} · 4 Hrs / 40 Km`,
       capacity: DZIRE.seats || "4+1",
       luggage: "3 bags",
-      image: "/images/fallbacks/suv.svg",
+      iconKey: "sedan",
       imageAlt: `Sedan taxi such as Swift Dzire in ${cityName}`
     },
     {
@@ -44,7 +44,7 @@ export function buildCabTypes(cityName) {
       fareLabel: `From ${inr(suvFrom)} · 4 Hrs / 40 Km`,
       capacity: ERTIGA?.seats || "6+1",
       luggage: "4 bags",
-      image: "/images/fallbacks/suv.svg",
+      iconKey: "mpv",
       imageAlt: `SUV taxi for family trips from ${cityName}`
     },
     {
@@ -55,7 +55,7 @@ export function buildCabTypes(cityName) {
       fareLabel: `From ${inr(tempoFrom)} · 5 Hrs / 50 Km`,
       capacity: `${TEMPO.seats || 12} seats`,
       luggage: "8 bags",
-      image: "/images/fallbacks/bus.svg",
+      iconKey: "van",
       imageAlt: `Tempo Traveller hire in ${cityName}`
     }
   ];

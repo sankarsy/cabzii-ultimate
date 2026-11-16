@@ -7,6 +7,7 @@ import { serviceFallbackPath } from "../lib/dynamicImageSeo";
 
 import { CheckIcon } from "./icons";
 import { formatInr } from "../lib/formatInr";
+import CabSilhouette from "./icons/CabSilhouette";
 
 export const CARD_ARTICLE_CLASS =
   "cabzii-card cabzii-card-interactive group relative flex h-full flex-col overflow-hidden";
@@ -25,7 +26,23 @@ export function MetaPill({ icon, label }) {
 
 const FALLBACK_PRODUCT_IMAGE = serviceFallbackPath("cab");
 
-export function ProductImageFrame({ src, alt, badges, imageClassName = "h-[110px] w-full object-cover sm:h-[128px] md:h-[118px]" }) {
+export function ProductImageFrame({
+  src,
+  alt,
+  badges,
+  imageClassName = "h-[110px] w-full object-cover sm:h-[128px] md:h-[118px]",
+  illustration = false,
+  product = null
+}) {
+  if (illustration) {
+    return (
+      <div className="relative overflow-hidden">
+        <CabSilhouette product={product} label={alt} className={`min-h-[6.5rem] ${imageClassName}`} />
+        {badges}
+      </div>
+    );
+  }
+
   const imageSrc = optimizeImageUrl(src || FALLBACK_PRODUCT_IMAGE, 640);
   return (
     <div className="relative p-1 sm:p-1.5">

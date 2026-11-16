@@ -1159,7 +1159,7 @@ export default function CallDriverBookingFlow() {
                         type="button"
                         onClick={submitQuoteRequest}
                         disabled={submitting}
-                        className="h-12 w-full rounded-xl bg-[#1a73e8] text-[15px] font-extrabold uppercase tracking-wide text-white hover:bg-[#1565c0] disabled:opacity-70"
+                        className="h-12 w-full rounded-xl bg-[var(--cabzii-brand)] text-[15px] font-extrabold uppercase tracking-wide text-white hover:bg-[var(--cabzii-brand-hover)] disabled:opacity-70"
                       >
                         {submitting ? "Sending…" : service.cta}
                       </button>
@@ -1167,7 +1167,7 @@ export default function CallDriverBookingFlow() {
                       <button
                         type="button"
                         onClick={goToCheckout}
-                        className="h-12 w-full rounded-xl bg-[#1a73e8] text-[15px] font-extrabold uppercase tracking-wide text-white hover:bg-[#1565c0]"
+                        className="h-12 w-full rounded-xl bg-[var(--cabzii-brand)] text-[15px] font-extrabold uppercase tracking-wide text-white hover:bg-[var(--cabzii-brand-hover)]"
                       >
                         Book this service
                       </button>
@@ -1178,7 +1178,7 @@ export default function CallDriverBookingFlow() {
                     type="button"
                     disabled={quoting}
                     onClick={continueToQuote}
-                    className="mt-3 h-12 w-full rounded-xl bg-[#1a73e8] text-[15px] font-extrabold uppercase tracking-wide text-white hover:bg-[#1565c0] disabled:opacity-70"
+                    className="mt-3 h-12 w-full rounded-xl bg-[var(--cabzii-brand)] text-[15px] font-extrabold uppercase tracking-wide text-white hover:bg-[var(--cabzii-brand-hover)] disabled:opacity-70"
                   >
                     {primaryLabel}
                   </button>

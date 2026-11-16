@@ -5,8 +5,18 @@ import { resolveMediaUrl } from "../../lib/media";
 import { CARD_IMAGE_WIDTH, optimizeImageUrl } from "../../lib/imageOptimize";
 import { stockImageForProduct } from "../../lib/vehicleImages";
 import { isPlaceholderProductImage } from "../../lib/dynamicImageSeo";
+import CabSilhouette from "../icons/CabSilhouette";
 
-/** Cab/driver card image — uploaded photo or type-aware local fallback. */
+function isCabProduct(product) {
+  if (!product || typeof product !== "object") return false;
+  if (product.languages || product.supportedVehicles) return false;
+  return Boolean(product.vehicleModel || product.vehicleName || product.farePackages || product.type);
+}
+
+/**
+ * Cab cards use SVG silhouettes (template fleet art).
+ * Driver / bus cards keep a photo when one is uploaded.
+ */
 export default function CatalogCardImage({
   src,
   alt,
@@ -14,22 +24,34 @@ export default function CatalogCardImage({
   className = "object-cover",
   objectPosition,
   sizes = "(max-width:640px) 100vw, (max-width:1024px) 50vw, 25vw",
-  priority = false
+  priority = false,
+  illustration = false
 }) {
-  const uploaded = resolveMediaUrl(src);
-  const fallback = stockImageForProduct(product || { title: alt });
-  const source = uploaded && !isPlaceholderProductImage(uploaded) ? uploaded : fallback;
-  const resolved = optimizeImageUrl(source, CARD_IMAGE_WIDTH);
-  const [current, setCurrent] = useState(resolved);
+  const useCabArt = illustration === true || (illustration !== false && isCabProduct(product));
+  const [current, setCurrent] = useState("");
 
   useEffect(() => {
+    if (useCabArt) return;
     const nextUploaded = resolveMediaUrl(src);
     const next =
       nextUploaded && !isPlaceholderProductImage(nextUploaded)
         ? nextUploaded
         : stockImageForProduct(product || { title: alt });
     setCurrent(optimizeImageUrl(next, CARD_IMAGE_WIDTH));
-  }, [src, alt, product]);
+  }, [src, alt, product, useCabArt]);
+
+  if (useCabArt) {
+    const safeClass = String(className || "")
+      .replace("object-cover", "")
+      .replace("object-contain", "");
+    return (
+      <CabSilhouette
+        product={product}
+        label={alt}
+        className={`absolute inset-0 h-full w-full ${safeClass}`}
+      />
+    );
+  }
 
   return (
     <img

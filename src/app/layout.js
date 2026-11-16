@@ -1,16 +1,22 @@
 import "./globals.css";
-import { Inter } from "next/font/google";
+import { Figtree, Sora } from "next/font/google";
 import { fetchSiteReviewStats } from "../lib/serverReviewStats";
 import { SITE_ICONS } from "../lib/brandAssets";
 import { DEFAULT_KEYWORDS, HOME_SEO_TITLE, SITE_URL, organizationJsonLd, taxiServiceJsonLd, websiteJsonLd } from "../lib/seo";
 
-const inter = Inter({
+const figtree = Figtree({
   subsets: ["latin"],
   weight: ["400", "600", "700"],
-  variable: "--font-inter",
+  variable: "--font-figtree",
   display: "swap",
-  preload: true,
-  adjustFontFallback: true
+  preload: true
+});
+
+const sora = Sora({
+  subsets: ["latin"],
+  weight: ["600", "700", "800"],
+  variable: "--font-sora",
+  display: "swap"
 });
 
 const siteVerification = {
@@ -77,7 +83,7 @@ export default async function RootLayout({ children }) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
       </head>
-      <body className={inter.variable} suppressHydrationWarning>
+      <body className={`${figtree.variable} ${sora.variable} cabzii-theme-blue`} suppressHydrationWarning>
         {children}
       </body>
     </html>

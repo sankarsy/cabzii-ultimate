@@ -49,23 +49,23 @@ export default function SimilarCabs({ currentCabId, cabSlug, cabType, vendor }) 
   if (!loading && similar.length === 0) return null;
 
   return (
-    <section className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm sm:rounded-2xl sm:p-4">
+    <section className="rounded-2xl border border-[var(--cabzii-border)] bg-white p-4 shadow-[var(--cabzii-shadow-card)] sm:p-5">
       <div className="flex flex-wrap items-end justify-between gap-2">
         <div>
-          <h2 className="text-xs font-semibold text-slate-900 sm:text-sm">Similar packages</h2>
-          <p className="mt-0.5 text-[11px] text-slate-600 sm:text-xs">
+          <h2 className="text-lg font-bold text-[var(--cabzii-ink)]">Similar packages</h2>
+          <p className="mt-1 text-sm text-slate-600">
             More {cabType || "cab"} options{vendor ? ` from ${vendor} and partners` : " you can book next"}.
           </p>
         </div>
-        <Link href="/cabs" className="text-[11px] font-semibold text-[var(--cabzii-cta)] hover:underline sm:text-xs">
+        <Link href="/cabs" className="text-sm font-semibold text-[var(--cabzii-brand)] hover:underline">
           View all cabs →
         </Link>
       </div>
 
       {loading ? (
-        <p className="mt-2.5 text-[11px] text-slate-500">Loading similar packages…</p>
+        <p className="mt-4 text-sm text-slate-500">Loading similar packages…</p>
       ) : (
-        <div className="mt-2.5 grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-4">
+        <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
           {similar.map((cab) => {
             const id = String(cab._id ?? cab.id);
             const slabs = buildFareSlabs(cab);
@@ -75,23 +75,24 @@ export default function SimilarCabs({ currentCabId, cabSlug, cabType, vendor }) 
               <Link
                 key={id}
                 href={catalogPublicPath(cab, "/cabs")}
-                className="group overflow-hidden rounded-lg border border-slate-200 bg-white transition hover:border-[var(--cabzii-cta)]/40 hover:shadow-sm"
+                className="group overflow-hidden rounded-xl border border-slate-200 bg-white transition hover:border-[var(--cabzii-brand)] hover:shadow-md"
               >
-                <div className="relative h-20 overflow-hidden bg-slate-50 sm:h-24">
+                <div className="relative h-24 overflow-hidden bg-[var(--cabzii-sky)] sm:h-28">
                   <CatalogCardImage
                     src={resolveCabImage(cab)}
                     alt={cab.imageAlt || vehiclePhotoAlt(cab)}
                     product={cab}
-                    sizes="160px"
-                    className="object-cover transition group-hover:scale-[1.03]"
+                    illustration
+                    sizes="200px"
+                    className="object-contain"
                   />
                 </div>
-                <div className="p-2 sm:p-2.5">
-                  <h3 className="line-clamp-1 text-[11px] font-bold text-slate-900 sm:text-xs">{name}</h3>
-                  <p className="mt-0.5 line-clamp-1 text-[10px] text-slate-500">
+                <div className="p-3">
+                  <h3 className="line-clamp-1 text-sm font-bold text-slate-900">{name}</h3>
+                  <p className="mt-0.5 line-clamp-1 text-xs text-slate-500">
                     {getCabCatalogSubtitle(cab, cab.city)}
                   </p>
-                  <p className="mt-1 text-[11px] font-bold text-[var(--cabzii-cta)] sm:text-xs">
+                  <p className="mt-2 text-sm font-bold text-[var(--cabzii-cta)]">
                     From {formatInrCurrency(fromPrice)}
                   </p>
                 </div>

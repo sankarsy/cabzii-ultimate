@@ -8,7 +8,7 @@ import { inferPassengerSeats } from "../../lib/cabSeats";
 import { formatMmtListingStamp } from "../../lib/emt/heroDates";
 import { formatInrCurrency } from "../../lib/formatInr";
 import { cabResultsHref } from "../../lib/mmtTrip";
-import { resolveCabImage } from "../../lib/vehicleImages";
+import CabSilhouette from "../icons/CabSilhouette";
 import { telUrl } from "../../lib/conversion";
 import { ORG_PHONE } from "../../lib/seo/constants";
 import OffersSheet from "../payment/OffersSheet";
@@ -154,7 +154,7 @@ export default function CabReviewBooking({
               onClick={() => setCabOpen((v) => !v)}
               className="flex w-full items-center gap-3 px-4 py-3 text-left"
             >
-              <img src={resolveCabImage(cab)} alt={vehicleName} className="h-12 w-[4.5rem] object-contain" />
+              <CabSilhouette product={cab} label={vehicleName} className="h-12 w-[4.5rem] !px-1 !py-1 rounded-xl" />
               <div className="min-w-0 flex-1">
                 <p className="text-[14px] font-extrabold text-slate-900">{vehicleName}</p>
                 <p className="text-[12px] text-slate-500">

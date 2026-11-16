@@ -101,7 +101,7 @@ export const HOME_SEO_KEYWORDS = [
   "outstation cab",
   "driver for own car"
 ];
-export const HOME_H1 = "Book cabs and acting drivers";
+export const HOME_H1 = "Book a cab in Chennai";
 export const HOME_H1_LEDE =
   "Airport taxi, local packages, outstation trips and a driver for your own car. Fares shown before you confirm.";
 

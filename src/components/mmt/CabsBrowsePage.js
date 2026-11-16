@@ -1,8 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
+import CabSilhouette from "../icons/CabSilhouette";
 import MmtCabResults from "./MmtCabResults";
 import CityCabBookingWidget from "../city-cabs/CityCabBookingWidget";
 import Breadcrumbs from "../seo/Breadcrumbs";
@@ -77,7 +77,7 @@ export default function CabsBrowsePage({ heading = "", intro = "", extraBody = "
           </h1>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-600">
             {intro ||
-              "Airport taxi, local packages and outstation cabs. Pay 50% to confirm. Fuel and driver included. Tolls extra. First outstation ₹500 off with CABZII500."}
+              "Airport taxi, local packages and outstation cabs. Pay 50% to confirm. Fuel and driver included. Tolls extra. First outstation ₹200 off with CABZII500."}
           </p>
           {extraBody ? (
             <div
@@ -120,17 +120,9 @@ export default function CabsBrowsePage({ heading = "", intro = "", extraBody = "
         </div>
         <ul className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {cabTypes.map((cab) => (
-            <li key={cab.id} className="flex gap-3 rounded-xl border border-slate-200 bg-white p-3">
-              <div className="relative h-16 w-20 shrink-0 overflow-hidden rounded-lg bg-slate-100">
-                <Image
-                  src={cab.image}
-                  alt={cab.imageAlt}
-                  width={80}
-                  height={64}
-                  loading="lazy"
-                  unoptimized={cab.image.endsWith(".svg")}
-                  className="h-full w-full object-cover"
-                />
+            <li key={cab.id} className="flex gap-3 rounded-2xl border border-[var(--cabzii-border)] bg-white p-3">
+              <div className="relative h-16 w-24 shrink-0 overflow-hidden rounded-xl">
+                <CabSilhouette iconKey={cab.iconKey} label={cab.imageAlt} className="h-full w-full !px-1 !py-1" />
               </div>
               <div className="min-w-0">
                 <h3 className="text-sm font-bold text-slate-900">{cab.name}</h3>

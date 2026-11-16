@@ -108,6 +108,7 @@ export default function MmtDriverResultCard({ driver, trip, layout = "row", cata
           src={imageSrc}
           alt={displayName}
           product={driver}
+          illustration={false}
           sizes="112px"
           className="object-cover object-top"
           objectPosition="top"

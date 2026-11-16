@@ -52,7 +52,7 @@ function suggestCopy(kind, form, name) {
     return {
       productName: `Cab booking in ${name}`,
       seoTitle: `Cab Booking in ${name} | Airport Taxi | Cabzii`.slice(0, 60),
-      seoDescription: `Book airport taxi, local package and outstation cabs in ${name}. Pay 50% now. First outstation ₹500 off (CABZII500). Tolls extra.`,
+      seoDescription: `Book airport taxi, local package and outstation cabs in ${name}. Pay 50% now. First outstation ₹200 off (CABZII500). Tolls extra.`,
       seoKeywords: `cab booking ${name.toLowerCase()}, airport taxi ${name.toLowerCase()}, outstation cab, cabzii`
     };
   }

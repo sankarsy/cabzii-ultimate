@@ -28,9 +28,9 @@ const HOME_CATEGORY_ICON_STYLES = {
 
 /* Light, colourful icon tones for the shell tabs (no dark slate icons) */
 const SHELL_ICON_TONES = {
-  cabs: "text-[var(--cabzii-cta)]",
-  drivers: "text-violet-500",
-  buses: "text-orange-500"
+  cabs: "text-current",
+  drivers: "text-current",
+  buses: "text-current"
 };
 
 export default function EmtCategoryTabs({

@@ -28,7 +28,7 @@ function formatINR(n) {
   return formatInrCurrency(n);
 }
 
-export default function MmtCabResultCard({ cab, trip, layout = "row", catalogMode = false, displayCity = "" }) {
+export default function MmtCabResultCard({ cab, trip, layout = "row", catalogMode = false, displayCity = "", compact = false }) {
   const id = String(cab._id ?? cab.id ?? "");
   const slabs = buildFareSlabs(cab);
   const catalogPerKm = catalogMode ? getCatalogPerKmFare(cab, slabs) : null;
@@ -100,11 +100,12 @@ export default function MmtCabResultCard({ cab, trip, layout = "row", catalogMod
         onClick={trackSelect}
         className="flex items-start gap-2.5 rounded-xl border border-slate-200 bg-white p-2.5 shadow-[0_1px_4px_rgba(15,23,42,0.05)] sm:items-center sm:gap-4 sm:p-4"
       >
-        <div className="relative flex h-14 w-[4.5rem] shrink-0 items-center justify-center overflow-hidden rounded-lg bg-[#fff8e8] sm:h-[88px] sm:w-[128px]">
+        <div className="relative flex h-14 w-[4.5rem] shrink-0 items-center justify-center overflow-hidden rounded-lg bg-[var(--cabzii-sky)] sm:h-[88px] sm:w-[128px]">
           <CatalogCardImage
             src={imageSrc}
             alt={imageAlt}
             product={cab}
+            illustration
             sizes="128px"
             className="object-contain p-1"
           />
@@ -127,7 +128,7 @@ export default function MmtCabResultCard({ cab, trip, layout = "row", catalogMod
           </p>
           <div className="mt-2 flex items-center justify-between gap-2 sm:hidden">
             <p className="text-[15px] font-extrabold leading-none text-slate-900">{formatINR(total)}</p>
-            <span className="inline-flex min-h-10 items-center justify-center rounded-lg bg-[var(--cabzii-cta)] px-3.5 py-2 text-[12px] font-extrabold text-white">
+            <span className="inline-flex min-h-10 items-center justify-center rounded-[10px] bg-[var(--cabzii-cta)] px-3.5 py-2 text-[12px] font-bold text-[var(--cabzii-ink)]">
               Book
             </span>
           </div>
@@ -135,7 +136,7 @@ export default function MmtCabResultCard({ cab, trip, layout = "row", catalogMod
         <div className="hidden shrink-0 flex-col items-end justify-center gap-1.5 pl-1 sm:flex">
           <p className="text-[18px] font-extrabold leading-none text-slate-900 sm:text-[20px]">{formatINR(total)}</p>
           <p className="text-[10px] text-slate-400">Incl. tax where listed</p>
-          <span className="inline-flex min-h-9 min-w-[7.25rem] items-center justify-center rounded-lg bg-[var(--cabzii-cta)] px-3 py-2 text-[12px] font-extrabold text-white hover:bg-[var(--cabzii-cta-hover)] sm:min-w-[8.25rem]">
+          <span className="inline-flex min-h-9 min-w-[7.25rem] items-center justify-center rounded-[10px] bg-[var(--cabzii-cta)] px-3 py-2 text-[12px] font-bold text-[var(--cabzii-ink)] hover:brightness-105 sm:min-w-[8.25rem]">
             Book a ride
           </span>
         </div>
@@ -153,13 +154,22 @@ export default function MmtCabResultCard({ cab, trip, layout = "row", catalogMod
         title={title}
         subtitle={subtitle}
         onNavigate={trackSelect}
+        compact={compact}
+        ctaLabel={compact ? "View" : "SELECT"}
         features={
-          <>
-            <FeatureChip icon={PersonIcon}>{seatLabel} seats</FeatureChip>
-            <FeatureChip icon={LuggageIcon}>{bags} bags</FeatureChip>
-            <FeatureChip icon={SnowflakeIcon}>AC</FeatureChip>
-            <FeatureChip icon={FuelIcon}>Fuel incl.</FeatureChip>
-          </>
+          compact ? (
+            <>
+              <FeatureChip icon={PersonIcon}>{seatLabel} seats</FeatureChip>
+              <FeatureChip icon={SnowflakeIcon}>AC</FeatureChip>
+            </>
+          ) : (
+            <>
+              <FeatureChip icon={PersonIcon}>{seatLabel} seats</FeatureChip>
+              <FeatureChip icon={LuggageIcon}>{bags} bags</FeatureChip>
+              <FeatureChip icon={SnowflakeIcon}>AC</FeatureChip>
+              <FeatureChip icon={FuelIcon}>Fuel incl.</FeatureChip>
+            </>
+          )
         }
         priceBlockProps={priceBlockProps}
       />
@@ -173,11 +183,12 @@ export default function MmtCabResultCard({ cab, trip, layout = "row", catalogMod
       className="block overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_1px_4px_rgba(15,23,42,0.06)]"
     >
       <div className="flex items-center gap-3 p-3 sm:gap-5 sm:p-4">
-        <div className="relative flex h-[72px] w-[96px] shrink-0 items-center justify-center overflow-hidden rounded-lg bg-slate-50 sm:h-[88px] sm:w-[148px]">
+        <div className="relative flex h-[72px] w-[96px] shrink-0 items-center justify-center overflow-hidden rounded-lg bg-[var(--cabzii-sky)] sm:h-[88px] sm:w-[148px]">
           <CatalogCardImage
             src={imageSrc}
             alt={imageAlt}
             product={cab}
+            illustration
             sizes="148px"
             className="object-contain p-1"
           />
@@ -194,7 +205,7 @@ export default function MmtCabResultCard({ cab, trip, layout = "row", catalogMod
           <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
             <h3 className="text-[15px] font-extrabold leading-tight text-slate-900 sm:text-[17px]">{vehicleName}</h3>
             {ratingText ? (
-              <span className="text-[13px] font-bold text-[#1a73e8]">{ratingText}/5</span>
+              <span className="text-[13px] font-bold text-[var(--cabzii-brand)]">{ratingText}/5</span>
             ) : null}
           </div>
           <p className="mt-0.5 text-[12px] text-slate-500 sm:text-[13px]">or similar</p>
@@ -212,7 +223,7 @@ export default function MmtCabResultCard({ cab, trip, layout = "row", catalogMod
               </p>
             </>
           )}
-          <span className="inline-flex min-h-11 min-w-[7.5rem] items-center justify-center rounded-lg bg-[#1a73e8] px-4 py-2 text-[12px] font-extrabold uppercase tracking-wide text-white sm:min-w-[9.5rem] sm:px-5 sm:py-2.5 sm:text-[13px]">
+          <span className="inline-flex min-h-11 min-w-[7.5rem] items-center justify-center rounded-[10px] bg-[var(--cabzii-brand)] px-4 py-2 text-[12px] font-bold tracking-wide text-white sm:min-w-[9.5rem] sm:px-5 sm:py-2.5 sm:text-[13px]">
             {catalogMode ? "View Cab" : "Select Cab"}
           </span>
         </div>

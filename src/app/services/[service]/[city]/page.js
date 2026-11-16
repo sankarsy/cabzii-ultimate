@@ -1,15 +1,17 @@
 import { notFound, permanentRedirect } from "next/navigation";
 import JsonLd from "../../../../components/seo/JsonLd";
 import ServiceLandingPage from "../../../../components/seo/ServiceLandingPage";
+import OutstationCabLandingPage from "../../../../components/city-cabs/OutstationCabLandingPage";
 import { resolveServiceForCity } from "../../../../lib/seo/cmsResolve";
 import { fetchSiteReviewStats } from "../../../../lib/serverReviewStats";
-import { fetchCatalogForCity } from "../../../../lib/serverCatalog";
+import { fetchCabsForTrip, fetchCatalogForCity, fetchCatalogList } from "../../../../lib/serverCatalog";
+import { getCityCabData } from "../../../../data/city-cabs";
+import { todayStr } from "../../../../lib/mmtTrip";
 import {
   MAIN_PAGE_CITY_SLUGS,
   MAIN_PAGE_SERVICE_SLUGS,
   breadcrumbJsonLd,
   buildPageMetadata,
-  cityBySlug,
   faqFromPairs,
   getServiceFaqs,
   servicePageJsonLd,
@@ -93,8 +95,31 @@ export default async function ServiceCityPage({ params }) {
 
   const path = servicePath(service, city);
   const faqs = getServiceFaqs(service, city);
-  const reviewStats = await fetchSiteReviewStats();
-  const cabs = await fetchCatalogForCity("cabs", city.name, 12);
+  const isOutstation = service.slug === "outstation-cab";
+  const cityHub = isOutstation ? getCityCabData(city.slug) : null;
+  const bookingTrip = isOutstation
+    ? {
+        tripType: "outstation",
+        from: city.name,
+        to: "",
+        date: todayStr(),
+        time: "09:00",
+        roundTrip: false,
+        city: city.name
+      }
+    : null;
+  const [reviewStats, cabs, testimonialRows] = await Promise.all([
+    fetchSiteReviewStats(),
+    isOutstation
+      ? bookingTrip.to
+        ? fetchCabsForTrip(bookingTrip, 100)
+        : Promise.resolve([])
+      : fetchCatalogForCity("cabs", city.name, 12),
+    isOutstation ? fetchCatalogList("testimonials", 8) : Promise.resolve([])
+  ]);
+  const quotes = (Array.isArray(testimonialRows) ? testimonialRows : [])
+    .filter((row) => row && !row.sampleReview && String(row.message || "").trim())
+    .slice(0, 2);
   const serpBadges = serviceSerpBadges(service, city);
   const jsonLd = [
     breadcrumbJsonLd([
@@ -115,6 +140,28 @@ export default async function ServiceCityPage({ params }) {
     }),
     faqFromPairs(faqs)
   ];
+
+  if (isOutstation) {
+    return (
+      <>
+        <JsonLd data={jsonLd} />
+        <OutstationCabLandingPage
+          city={city}
+          service={service}
+          extraBody={service.body}
+          faqs={faqs}
+          cabs={JSON.parse(JSON.stringify(cabs || []))}
+          quotes={JSON.parse(JSON.stringify(quotes))}
+          fromRoutes={cityHub?.fromRoutes || []}
+          places={cityHub?.places || []}
+          localAreas={cityHub?.localAreas || []}
+          bookingTrip={bookingTrip}
+          airportLabel={cityHub?.airportLinks?.[0]?.label || cityHub?.airportHeading || ""}
+          path={path}
+        />
+      </>
+    );
+  }
 
   return (
     <>

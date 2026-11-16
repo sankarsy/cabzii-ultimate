@@ -1,14 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import MmtCabResultCard from "../mmt/MmtCabResultCard";
-import MmtHomeCatalogSection, { MmtHomeCatalogScroll, MmtHomeCatalogScrollItem } from "../mmt/MmtHomeCatalogSection";
 import { extractCabList, fetchJson } from "../../lib/apiClient";
 import { sortBySelectedCity } from "../../lib/locationPriority";
 import { DEFAULT_HQ_CITY } from "../../lib/vehicleAdminConfig";
 import { HOME_CABS_FETCH, HOME_CABS_LIMIT, sortCabsForHome } from "../../lib/homeFleetSort";
-
-const HOME_FLEET_SUBTITLE = `Sedan, hatchback, MPV & SUV taxi cars · ${DEFAULT_HQ_CITY}`;
+import HomeFleetSection from "./HomeFleetSection";
 
 /** Client fallback when this host cannot seed cabs during SSR. */
 export default function HomeFleetLoader() {
@@ -45,25 +42,7 @@ export default function HomeFleetLoader() {
   return (
     <>
       {error ? <p className="section-shell text-sm text-rose-700">{error}</p> : null}
-      <MmtHomeCatalogSection
-        eyebrow="Our fleet"
-        title="Top cabs for you"
-        subtitle={HOME_FLEET_SUBTITLE}
-        viewAllHref="/cabs"
-        viewAllLabel="View all cabs"
-        loading={loading}
-        loadingLabel="Loading cabs…"
-        isEmpty={!loading && cabs.length === 0}
-        emptyMessage="No cabs yet. Start the backend and add listings in admin."
-      >
-        <MmtHomeCatalogScroll>
-          {cabs.map((cab) => (
-            <MmtHomeCatalogScrollItem key={String(cab._id ?? cab.id)}>
-              <MmtCabResultCard cab={cab} layout="card" catalogMode displayCity={cab.city || DEFAULT_HQ_CITY} />
-            </MmtHomeCatalogScrollItem>
-          ))}
-        </MmtHomeCatalogScroll>
-      </MmtHomeCatalogSection>
+      <HomeFleetSection cabs={cabs} loading={loading} isEmpty={!loading && cabs.length === 0} />
     </>
   );
 }

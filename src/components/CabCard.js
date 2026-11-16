@@ -18,14 +18,11 @@ import {
 } from "./productCardShared";
 import { ArrowRightIcon, PersonIcon, SeatIcon, SnowflakeIcon, StarFilledIcon } from "./icons";
 
-import { resolveCabImage } from "../lib/vehicleImages";
 import { formatCabSeatPill } from "../lib/cabSeats";
 import { vehiclePhotoAlt } from "../lib/catalogDisplay";
 
 export default function CabCard({ cab, onBook, bookHref }) {
   const basePrice = num(cab.price);
-
-  const imageSrc = resolveCabImage(cab);
 
   const features = Array.isArray(cab.features)
     ? cab.features
@@ -202,10 +199,11 @@ export default function CabCard({ cab, onBook, bookHref }) {
   return (
     <article className={CARD_ARTICLE_CLASS}>
       <ProductImageFrame
-        src={imageSrc}
+        illustration
+        product={cab}
         alt={cab.imageAlt || vehiclePhotoAlt(cab)}
         badges={imageBadges}
-        imageClassName="h-[100px] w-full object-cover object-top p-0 sm:h-[118px] md:h-[110px]"
+        imageClassName="h-[100px] w-full p-0 sm:h-[118px] md:h-[110px]"
       />
 
       <ProductMetaBlock title={cab.title} vendor={cab.vendor}>

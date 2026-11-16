@@ -20,6 +20,7 @@ import {
   saveChatSession
 } from "../../lib/chatbot/session";
 import { isCatalogDetailPage, shouldHideFloatingUi } from "../../lib/floatingUi";
+import { usePastHero } from "../../lib/usePastHero";
 
 function TypingDots() {
   return (
@@ -41,8 +42,11 @@ function userMessage(content) {
 
 export default function CabziiChatbot() {
   const pathname = usePathname();
+  const pastHero = usePastHero();
   const detailPage = isCatalogDetailPage(pathname);
-  const mobileBottomClass = detailPage ? "bottom-[5.75rem]" : "bottom-[4.75rem]";
+  const mobileBottomClass = detailPage
+    ? "bottom-[5.75rem] sm:bottom-[5.75rem] lg:bottom-6"
+    : "bottom-[4.75rem] sm:bottom-6";
   const settings = useSiteSettings();
   const phone = settings.contact?.phone || "+91-9944197416";
   const whatsappNumber = String(settings.contact?.whatsapp || settings.whatsappFab?.number || "9944197416").replace(/\D/g, "");
@@ -415,12 +419,12 @@ export default function CabziiChatbot() {
 
   return (
     <>
-      {!open && (
+      {!open && pastHero && (
         <button
           ref={launcherRef}
           type="button"
           onClick={handleOpen}
-          className={`cabzii-chat-launcher cabzii-tap fixed z-[60] ${mobileBottomClass} right-4 flex h-14 w-14 items-center justify-center rounded-full border-0 bg-transparent p-0 shadow-[0_8px_28px_rgba(0,86,210,0.35)] transition hover:scale-[1.05] sm:bottom-6 sm:right-5 sm:h-auto sm:w-auto sm:gap-2 sm:px-4 sm:py-3 sm:text-white sm:shadow-[0_8px_32px_rgba(0,86,210,0.4)] sm:[background:var(--cabzii-gradient-brand)]`}
+          className={`cabzii-chat-launcher cabzii-tap fixed z-[60] ${mobileBottomClass} right-4 flex h-14 w-14 items-center justify-center rounded-full border-0 bg-transparent p-0 shadow-[0_8px_28px_rgba(0,86,210,0.35)] transition hover:scale-[1.05] sm:right-5 sm:h-auto sm:w-auto sm:gap-2 sm:px-4 sm:py-3 sm:text-white sm:shadow-[0_8px_32px_rgba(0,86,210,0.4)] sm:[background:var(--cabzii-gradient-brand)]`}
           aria-label="Chat with Zii, Cabzii AI assistant"
         >
           <ZiiAvatar className="h-14 w-14 sm:hidden" />
@@ -434,7 +438,7 @@ export default function CabziiChatbot() {
       {open && (
         <div
           ref={panelRef}
-          className={`cabzii-chat-panel fixed z-[70] flex max-h-[min(640px,calc(100dvh-6rem))] w-[min(100%,24rem)] flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-[0_20px_60px_rgba(15,23,42,0.18)] sm:bottom-6 sm:right-5 ${mobileBottomClass} right-4 left-4 sm:left-auto`}
+          className={`cabzii-chat-panel fixed z-[70] flex max-h-[min(640px,calc(100dvh-6rem))] w-[min(100%,24rem)] flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-[0_20px_60px_rgba(15,23,42,0.18)] sm:right-5 ${mobileBottomClass} right-4 left-4 sm:left-auto`}
           role="dialog"
           aria-modal="true"
           aria-label="Cabzii AI chat with Zii"

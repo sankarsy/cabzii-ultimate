@@ -2,14 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Briefcase, Car, Clock, Plane } from "../icons/rscIcons";
+import { Briefcase, CarFront, Clock, Plane } from "../icons/rscIcons";
 import PlaceAutocomplete from "../PlaceAutocomplete";
 import { PickupDateTimeFields } from "../ui/NativeDateTimeField";
 import { cabResultsHref, HOURLY_PACKAGES } from "../../lib/mmtTrip";
 import { useTodayStr } from "../../lib/useTodayStr";
 
 const TRIP_TYPES = [
-  { id: "local", label: "Local Trip", shortLabel: "Local", Icon: Car },
+  { id: "local", label: "Local Trip", shortLabel: "Local", Icon: CarFront },
   { id: "outstation", label: "Outstation", shortLabel: "Outstation", Icon: Briefcase },
   { id: "hourly", label: "Hourly Rental", shortLabel: "Hourly", Icon: Clock },
   { id: "airport", label: "Airport", shortLabel: "Airport", Icon: Plane }
@@ -184,7 +184,7 @@ export default function CityCabBookingWidget({
             return (
               <label
                 key={type.id}
-                className={`flex min-h-[3.6rem] cursor-pointer flex-col items-center justify-center gap-0.5 rounded-xl border px-0.5 py-1.5 text-center transition sm:min-h-[4.5rem] sm:gap-1 sm:px-1 sm:py-2 ${
+                className={`flex min-h-[3.6rem] min-w-0 cursor-pointer flex-col items-center justify-center gap-0.5 rounded-xl border px-0.5 py-1.5 text-center transition sm:min-h-[4.5rem] sm:gap-1 sm:px-1 sm:py-2 ${
                   selected
                     ? "border-amber-300 bg-[#fff4cc] text-slate-900"
                     : "border-slate-200 bg-slate-50 text-slate-600 hover:border-slate-300"

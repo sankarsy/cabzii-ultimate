@@ -7,35 +7,30 @@ import WhatsAppIcon from "../WhatsAppIcon";
 import HeaderSearchBar from "../mmt/HeaderSearchBar";
 import { whatsappBookingUrl } from "../../lib/conversion";
 import { useSiteSettings } from "../SiteSettingsProvider";
-import { HERO_TABS } from "../../lib/emt/constants";
 import {
   BookOpen,
-  Bus,
   CarFront,
   ChevronRight,
   FileText,
   HelpCircle,
   LogIn,
+  LogOut,
   MapPin,
   MessageCircle,
+  Plane,
+  Route,
   Star,
   UserRound,
   Wallet,
   X
 } from "../icons/rscIcons";
-import { cn } from "../../lib/emt/cn";
 import { EARN_NAV } from "../../lib/brand";
+import { isSiteNavActive, SITE_NAV, siteNavHref } from "../../lib/siteNav";
 
-const PRODUCT_ICON_TONES = {
-  cabs: "text-sky-500",
-  drivers: "text-violet-500",
-  buses: "text-orange-500"
-};
-
-const PRODUCT_ICONS = {
+const SITE_NAV_ICONS = {
   cabs: CarFront,
-  drivers: UserRound,
-  buses: Bus
+  airport: Plane,
+  driver: UserRound
 };
 
 const EXPLORE_LINKS = [
@@ -44,35 +39,25 @@ const EXPLORE_LINKS = [
   { href: "/contact", label: "Contact", icon: MessageCircle },
   { href: "/faq", label: "FAQ", icon: HelpCircle },
   { href: "/blogs", label: "Blog", icon: BookOpen },
-  { href: "/track-booking", label: "Track booking", icon: MapPin },
+  { href: "/track-booking", label: "Track booking", icon: Route },
   { href: "/testimonials", label: "Reviews", icon: Star }
 ];
 
-function ProductMenuGrid({ activeTab, onSelect, onNavigate }) {
+function SiteNavLinks({ pathname, onNavigate }) {
   return (
-    <div className="cabzii-menu-products mx-3 mb-1 mt-1 grid grid-cols-4 gap-1.5" role="navigation" aria-label="Book Cabs, Driver or Buses">
-      {HERO_TABS.map((tab) => {
-        const Icon = PRODUCT_ICONS[tab.id];
-        const active = activeTab === tab.id;
+    <div role="navigation" aria-label="Cabzii">
+      {SITE_NAV.map((item) => {
+        const Icon = SITE_NAV_ICONS[item.id] || CarFront;
+        const href = siteNavHref(item);
         return (
-          <button
-            key={tab.id}
-            type="button"
-            aria-current={active ? "page" : undefined}
-            onClick={() => {
-              onSelect?.(tab.id);
-              onNavigate?.();
-            }}
-            className={cn(
-              "cabzii-tap flex flex-col items-center gap-1.5 rounded-2xl px-1 py-3 text-[11px] font-extrabold",
-              active ? "bg-sky-100 text-sky-700" : "text-slate-700"
-            )}
-          >
-            <span className={cn(PRODUCT_ICON_TONES[tab.id] || "text-sky-500")} aria-hidden>
-              {Icon ? <Icon className="h-6 w-6" strokeWidth={1.7} /> : null}
-            </span>
-            <span>{tab.shortLabel || tab.label}</span>
-          </button>
+          <DrawerLink
+            key={item.id}
+            href={href}
+            label={item.label}
+            icon={Icon}
+            active={isSiteNavActive(item, pathname)}
+            onNavigate={onNavigate}
+          />
         );
       })}
     </div>
@@ -93,11 +78,11 @@ function DrawerLink({ href, label, icon: Icon, active, onNavigate, external }) {
   const inner = (
     <>
       <span
-        className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${
+        className={`inline-flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-lg ${
           active ? "bg-white text-[var(--cabzii-brand)]" : "bg-slate-50 text-slate-500"
         }`}
       >
-        <Icon className="h-[18px] w-[18px]" strokeWidth={2} aria-hidden />
+        <Icon className="h-4 w-4" strokeWidth={2} aria-hidden />
       </span>
       <span className="min-w-0 flex-1">{label}</span>
       <ChevronRight className="h-4 w-4 shrink-0 text-slate-300" strokeWidth={2} aria-hidden />
@@ -135,8 +120,8 @@ function DrawerActionRow({ icon: Icon, label, sublabel, onClick, href, external,
 
   const content = (
     <>
-      <span className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${iconBg}`}>
-        {Icon ? <Icon className="h-[18px] w-[18px]" strokeWidth={2} aria-hidden /> : null}
+      <span className={`inline-flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-lg ${iconBg}`}>
+        {Icon ? <Icon className="h-4 w-4" strokeWidth={2} aria-hidden /> : null}
       </span>
       <span className="min-w-0 flex-1">
         <span className="block">{label}</span>
@@ -172,8 +157,6 @@ export default function MobileSideNav({
   open,
   onClose,
   pathname,
-  activeHeroTab,
-  onSelectTab,
   loggedIn,
   onLogout,
   onLoginPage
@@ -237,10 +220,42 @@ export default function MobileSideNav({
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain pb-4">
           <div className="shrink-0 border-b border-slate-100 px-4 py-3">
             <HeaderSearchBar variant="light" className="w-full" onSubmitted={onClose} />
+            {loggedIn ? (
+              <Link
+                href="/account"
+                onClick={onClose}
+                className="mt-3 flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-3"
+              >
+                <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white text-[var(--cabzii-brand)]">
+                  <UserRound className="h-5 w-5" strokeWidth={2} aria-hidden />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-[15px] font-bold text-slate-900">My account</span>
+                  <span className="text-xs font-normal text-slate-500">Trips, profile and settings</span>
+                </span>
+                <ChevronRight className="h-4 w-4 shrink-0 text-slate-300" strokeWidth={2} aria-hidden />
+              </Link>
+            ) : onLoginPage ? null : (
+              <Link
+                href="/login"
+                onClick={onClose}
+                className="mt-3 flex h-12 items-center justify-center gap-2 rounded-full bg-[var(--cabzii-brand)] text-[15px] font-bold text-white"
+              >
+                <LogIn className="h-4 w-4" strokeWidth={2} aria-hidden />
+                Login
+              </Link>
+            )}
           </div>
 
           <SectionLabel>Book</SectionLabel>
-          <ProductMenuGrid activeTab={activeHeroTab} onSelect={onSelectTab} onNavigate={onClose} />
+          <SiteNavLinks pathname={pathname} onNavigate={onClose} />
+          <DrawerLink
+            href={EARN_NAV.href}
+            label={EARN_NAV.label}
+            icon={Wallet}
+            active={pathname === EARN_NAV.href || pathname.startsWith(`${EARN_NAV.href}/`)}
+            onNavigate={onClose}
+          />
 
           <SectionLabel>Quick actions</SectionLabel>
 
@@ -254,21 +269,13 @@ export default function MobileSideNav({
             onNavigate={onClose}
           />
           <DrawerActionRow icon={CarFront} label="Book now" sublabel="Search & book cabs" href="/cabs" accent="cta" onNavigate={onClose} />
-          <DrawerActionRow
-            icon={Wallet}
-            label={EARN_NAV.label}
-            sublabel="Attach your cab or drive with Cabzii"
-            href={EARN_NAV.href}
-            accent="brand"
-            onNavigate={onClose}
-          />
 
           {loggedIn ? (
             <>
-              <DrawerActionRow icon={UserRound} label="My account" href="/account" accent="brand" onNavigate={onClose} />
-              <DrawerActionRow icon={MapPin} label="My trips" href="/my-bookings" onNavigate={onClose} />
+              <SectionLabel>Account</SectionLabel>
+              <DrawerActionRow icon={Route} label="My trips" href="/my-bookings" onNavigate={onClose} />
               <DrawerActionRow
-                icon={LogIn}
+                icon={LogOut}
                 label="Logout"
                 onClick={() => {
                   onLogout();
@@ -276,9 +283,7 @@ export default function MobileSideNav({
                 }}
               />
             </>
-          ) : onLoginPage ? null : (
-            <DrawerActionRow icon={LogIn} label="Login or Signup" sublabel="OTP · Partner · Admin" href="/login" accent="brand" onNavigate={onClose} />
-          )}
+          ) : null}
 
           <SectionLabel>Explore</SectionLabel>
           {EXPLORE_LINKS.map((item) => (

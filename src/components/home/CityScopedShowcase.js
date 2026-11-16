@@ -17,12 +17,14 @@ export default function CityScopedShowcase({ section = "services" }) {
 
   if (!cards.length) return null;
 
-  const title = section === "routes" ? `Popular routes from ${scoped.name}` : `Cab services in ${scoped.name}`;
-  const viewAllHref = section === "routes" ? `/services/outstation-cab/${scoped.slug}` : cityCabLandingPath(scoped.slug);
+  const isRoutes = section === "routes";
+  const title = isRoutes ? `Popular routes from ${scoped.name}` : `Cab services in ${scoped.name}`;
+  const viewAllHref = isRoutes ? `/services/outstation-cab/${scoped.slug}` : cityCabLandingPath(scoped.slug);
 
   return (
-    <section className="section-shell py-8 sm:py-10">
+    <section className="section-shell">
       <HomeShowcaseInteractive
+        eyebrow={isRoutes ? "Routes" : "Trip type"}
         title={title}
         viewAllHref={viewAllHref}
         viewAllLabel="View all →"

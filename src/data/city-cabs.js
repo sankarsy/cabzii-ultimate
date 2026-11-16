@@ -63,8 +63,8 @@ function buildFaqs(city) {
       answer: "No. Cancellation is time-based: more than 24 hours before pickup is a full refund after gateway deductions; 6–24 hours may attract up to 25%; under 6 hours or no-show may be up to 100%. See the cancellation policy."
     },
     {
-      question: `How do I get up to Rs 500 off on ${name} outstation cabs?`,
-      answer: "Apply coupon CABZII500 on your first outstation cab booking. The ₹500 discount is shown before you confirm payment."
+      question: `How do I get up to Rs 200 off on ${name} outstation cabs?`,
+      answer: "Apply coupon CABZII500 on your first outstation cab booking. The ₹200 discount is shown before you confirm payment."
     }
   ];
 }
@@ -153,7 +153,7 @@ export function buildCityCabData(city) {
       },
       {
         title: "Pay 50% to confirm",
-        subtitle: "Advance is 50% at booking. Apply CABZII500 for ₹500 off the first outstation trip."
+        subtitle: "Advance is 50% at booking. Apply CABZII500 for ₹200 off the first outstation trip."
       },
       {
         title: "Get driver details",

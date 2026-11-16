@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { Copy } from "../icons/rscIcons";
 import { getOfferIcon } from "../icons/heroIcons";
@@ -25,57 +24,42 @@ export default function ShowcaseCard({ card: o, section = "offers", layout = "ca
   return (
     <Link
       href={href}
-      className={`${layoutClass} group overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-[var(--emt-shadow-card)] transition-all duration-200 sm:hover:-translate-y-1 sm:hover:shadow-[var(--emt-shadow-hover)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cabzii-brand)] focus-visible:ring-offset-2`}
+      className={`${layoutClass} group overflow-hidden rounded-2xl border border-[var(--cabzii-border)] bg-white shadow-[var(--emt-shadow-card)] transition-all duration-200 sm:hover:-translate-y-[3px] sm:hover:border-[var(--cabzii-brand)] sm:hover:shadow-[var(--emt-shadow-hover)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cabzii-brand)] focus-visible:ring-offset-2`}
     >
-      <div
-        className={`relative flex min-h-[8.5rem] flex-col overflow-hidden bg-linear-to-br ${o.color || "from-[var(--cabzii-brand)] to-blue-500"} p-4 text-white`}
-      >
-        {o.image ? (
-          <>
-            <Image
-              src={o.image}
-              alt={o.title}
-              fill
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-              className="object-cover transition-transform duration-300 group-hover:scale-105"
-            />
-            <div className="absolute inset-0 bg-linear-to-t from-slate-950/80 via-slate-950/30 to-transparent" aria-hidden />
-          </>
-        ) : (
-          <span
-            className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-xl bg-white/25 text-white ring-1 ring-white/30 backdrop-blur-sm"
-            aria-hidden="true"
-          >
-            <OfferIcon className="h-[1.35rem] w-[1.35rem]" />
-          </span>
-        )}
-        <div className="relative pr-12 text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-white/95">{o.tag}</span>
-          <h3 className="home-showcase-title mt-1 text-base font-extrabold leading-snug text-white!">{o.title}</h3>
+      <div className="relative flex min-h-[6.75rem] flex-col bg-[var(--cabzii-sky)] p-3.5 sm:p-4">
+        <span
+          className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-xl bg-white text-[var(--cabzii-brand)] ring-1 ring-[var(--cabzii-border)]"
+          aria-hidden="true"
+        >
+          <OfferIcon className="h-[1.35rem] w-[1.35rem]" />
+        </span>
+        <div className="relative pr-12">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--cabzii-brand)]">{o.tag}</span>
+          <h3 className="home-showcase-title mt-1 text-base font-bold leading-snug text-[var(--cabzii-ink)]">{o.title}</h3>
         </div>
         {o.code ? (
           <span
             data-promo-code={o.code}
-            className="relative mt-auto inline-flex items-center gap-1.5 self-start rounded border-[1.5px] border-dashed border-white/60 bg-white/20 px-2.5 py-1 text-xs font-bold tracking-wider text-white backdrop-blur-sm"
+            className="relative mt-auto inline-flex items-center gap-1.5 self-start rounded-lg border border-dashed border-[var(--cabzii-brand)]/40 bg-white px-2.5 py-1 text-xs font-bold tracking-wider text-[var(--cabzii-brand)]"
             aria-label={`Promo code ${o.code}`}
           >
             {o.code}
             <Copy className="h-3.5 w-3.5 pointer-events-none" strokeWidth={2} aria-hidden />
           </span>
         ) : o.fare ? (
-          <span className="relative mt-auto inline-flex items-center self-start rounded border-[1.5px] border-dashed border-white/60 bg-white/20 px-2.5 py-1 text-xs font-bold tracking-wider text-white backdrop-blur-sm">
+          <span className="relative mt-auto inline-flex items-center self-start rounded-lg border border-dashed border-[var(--cabzii-brand)]/40 bg-white px-2.5 py-1 text-xs font-bold tracking-wider text-[var(--cabzii-brand)]">
             {approxFromLabel(o.fare)}
           </span>
         ) : null}
       </div>
 
-      <div className="flex min-h-[7.25rem] flex-col p-4">
+      <div className="flex min-h-[6.5rem] flex-col p-3.5 sm:p-4">
         <p className="line-clamp-2 text-[13px] leading-relaxed text-slate-600">{o.desc}</p>
         <div className="mt-auto flex flex-nowrap items-center justify-between gap-2 border-t border-slate-100 pt-3">
           <span className="min-w-0 flex-1 truncate text-[11px] font-medium leading-none text-slate-400">
             {validUntilLabel ? `Valid till ${validUntilLabel}` : "Fares shown before you confirm"}
           </span>
-          <span className="inline-flex shrink-0 items-center gap-0.5 whitespace-nowrap rounded-full bg-blue-50 px-2.5 py-1 text-[11px] font-extrabold tracking-wide text-[var(--cabzii-brand)]">
+          <span className="inline-flex shrink-0 items-center gap-0.5 whitespace-nowrap rounded-[10px] bg-[var(--cabzii-brand)] px-2.5 py-1.5 text-[11px] font-bold tracking-wide text-white">
             BOOK NOW
             <span aria-hidden className="transition-transform group-hover:translate-x-0.5">
               →

@@ -8,7 +8,6 @@ import PlaceAutocomplete from "../PlaceAutocomplete";
 import { SearchIcon, TwoWayIcon } from "../icons";
 import { NativeDateField, NativeTimeField } from "../ui/NativeDateTimeField";
 import { SEARCH_FIELD_ICON_CHIPS, SEARCH_FIELD_ICONS } from "../icons/heroIcons";
-import { EmtHeroPriceHint } from "../emt/EmtHeroPills";
 import { formatTime12, addDays, openNativePicker } from "../../lib/emt/heroDates";
 import { applyDistanceToTrip, fetchTripDistance } from "../../lib/fetchTripDistance";
 import { coordsForPlaceLabel } from "../../lib/indiaCityCoords";
@@ -16,6 +15,7 @@ import { cabResultsHref, HOURLY_PACKAGES, todayStr, tripNeedsDrop } from "../../
 import { writeSelectedCity } from "../../lib/locationPriority";
 import { SegmentedOption } from "../ui/RadioOption";
 import { trackEvent } from "../../lib/analytics";
+import { callDriverBookHref } from "../../lib/callDriver";
 
 const TRIP_TABS = [
   { id: "outstation", label: "Outstation" },
@@ -26,13 +26,174 @@ const TRIP_TABS = [
 
 /* Homepage services — maps onto the same tripType + roundTrip state */
 const CAB_MODE_TABS = [
-  { id: "hourly", label: "Local Cab" },
-  { id: "airport", label: "Airport Taxi" },
-  { id: "outstation", label: "Outstation" }
+  { id: "hourly", label: "Local" },
+  { id: "airport", label: "Airport" },
+  { id: "outstation", label: "Outstation" },
+  { id: "driver", label: "Driver" }
 ];
+
+function TabGlyph({ id }) {
+  const common = "h-4 w-4 shrink-0";
+  if (id === "airport") {
+    return (
+      <svg className={common} viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+        <path d="M21 16v-2l-8-5V3.5A1.5 1.5 0 0 0 11.5 2 1.5 1.5 0 0 0 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" />
+      </svg>
+    );
+  }
+  if (id === "outstation") {
+    return (
+      <svg className={common} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <circle cx="6" cy="19" r="2.25" />
+        <path d="M8.2 19h7.4a3.3 3.3 0 0 0 0-6.6H7.6a3.3 3.3 0 0 1 0-6.6H16" />
+        <circle cx="18" cy="5.8" r="2.25" />
+      </svg>
+    );
+  }
+  if (id === "driver") {
+    return (
+      <svg className={common} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <circle cx="12" cy="12" r="9" />
+        <circle cx="12" cy="12" r="2.25" />
+        <path d="M12 3.2v4.2M12 16.6v4.2M3.2 12h4.2M16.6 12h4.2" />
+      </svg>
+    );
+  }
+  return (
+    <svg className={common} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M5 12.5 6.7 8.4A2 2 0 0 1 8.6 7h6.8a2 2 0 0 1 1.9 1.4L19 12.5" />
+      <path d="M4 12.5h16v3.8a1.6 1.6 0 0 1-1.6 1.6H5.6A1.6 1.6 0 0 1 4 16.3v-3.8z" />
+      <circle cx="7.5" cy="16.2" r="1.05" />
+      <circle cx="16.5" cy="16.2" r="1.05" />
+    </svg>
+  );
+}
 
 const HERO_PLACE_INPUT =
   "h-auto min-h-[1.75rem] w-full rounded-none border-0 bg-transparent p-0 text-lg font-extrabold leading-tight text-slate-900 outline-none ring-0 placeholder:text-base placeholder:font-semibold placeholder:text-slate-400 focus:border-0 focus:bg-transparent focus:ring-0 sm:text-xl";
+
+const HERO_FI_INPUT =
+  "hero-fi-input h-12 w-full appearance-none rounded-xl border-[1.5px] border-[var(--cabzii-border)] bg-[var(--cabzii-bg)] py-[13px] pl-[42px] pr-3 text-[15px] font-semibold text-[var(--cabzii-ink)] outline-none ring-0 placeholder:font-medium placeholder:text-[#9aa8c7] focus:border-[var(--cabzii-brand)] focus:ring-0";
+
+function FieldGlyph({ name }) {
+  const common = "h-[18px] w-[18px]";
+  if (name === "clock") {
+    return (
+      <svg className={common} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
+        <circle cx="12" cy="12" r="9.5" />
+        <path d="M12 7v5.5l3.5 2" />
+      </svg>
+    );
+  }
+  if (name === "cal") {
+    return (
+      <svg className={common} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
+        <rect x="3.5" y="5" width="17" height="15.5" rx="2" />
+        <path d="M8 3.5v3M16 3.5v3M3.5 10h17" />
+      </svg>
+    );
+  }
+  if (name === "plane") {
+    return (
+      <svg className={common} viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+        <path d="M21 16v-2l-8-5V3.5A1.5 1.5 0 0 0 11.5 2 1.5 1.5 0 0 0 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" />
+      </svg>
+    );
+  }
+  if (name === "flag") {
+    return (
+      <svg className={common} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
+        <path d="M5 22V3M5 4h13l-2.5 4.5L18 13H5" />
+      </svg>
+    );
+  }
+  if (name === "steer") {
+    return (
+      <svg className={common} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <circle cx="12" cy="12" r="9" />
+        <circle cx="12" cy="12" r="2.25" />
+        <path d="M12 3.2v4.2M12 16.6v4.2M3.2 12h4.2M16.6 12h4.2" />
+      </svg>
+    );
+  }
+  return (
+    <svg className={common} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
+      <path d="M12 21s7-5.4 7-11a7 7 0 10-14 0c0 5.6 7 11 7 11z" />
+      <circle cx="12" cy="10" r="2.4" />
+    </svg>
+  );
+}
+
+function HeroFi({ label, icon, children }) {
+  return (
+    <div className="hero-fi min-w-0">
+      {label ? (
+        <label className="mb-1 block text-[13px] font-semibold text-[var(--cabzii-muted)]">{label}</label>
+      ) : null}
+      <div className="relative">
+        {icon ? (
+          <span className="pointer-events-none absolute left-3 top-1/2 z-10 -translate-y-1/2 text-[var(--cabzii-brand)]" aria-hidden>
+            <FieldGlyph name={icon} />
+          </span>
+        ) : null}
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function HeroPlaceIcon({ name }) {
+  return <FieldGlyph name={name} />;
+}
+
+function HeroPlace({ label, icon, value, onChange, onResolved, placeholder, allowCurrentLocation = true }) {
+  const LeadingIcon = function LeadingIcon() {
+    return <HeroPlaceIcon name={icon} />;
+  };
+  return (
+    <HeroFi label={label}>
+      <PlaceAutocomplete
+        label=""
+        placeholder={placeholder}
+        value={value}
+        onChange={onChange}
+        onResolved={onResolved}
+        allowCurrentLocation={allowCurrentLocation}
+        leadingIcon={LeadingIcon}
+        leadingIconClassName="text-[var(--cabzii-brand)]"
+        inputClassName={`${HERO_FI_INPUT} !pl-[42px]`}
+        className="w-full"
+      />
+    </HeroFi>
+  );
+}
+
+function HeroDateTime({ label = "Date & time", date, time, min, onDate, onTime }) {
+  const value = date && time ? `${date}T${time}` : "";
+  return (
+    <HeroFi label={label} icon="cal">
+      <input
+        type="datetime-local"
+        min={min ? `${min}T00:00` : undefined}
+        value={value}
+        onChange={(e) => {
+          const next = e.target.value;
+          if (!next) {
+            onDate("");
+            return;
+          }
+          const [day, clock] = next.split("T");
+          onDate(day);
+          if (clock) onTime(clock.slice(0, 5));
+        }}
+        className={HERO_FI_INPUT}
+        aria-label={label}
+      />
+    </HeroFi>
+  );
+}
+
+const CHENNAI_AIRPORT_LABEL = "Chennai International Airport (MAA)";
 
 function nextDayStr(dateStr) {
   if (!dateStr) return "";
@@ -53,15 +214,16 @@ export default function MmtCabSearchWidget({
   const lockedKey =
     Array.isArray(allowedTripTypes) && allowedTripTypes.length ? allowedTripTypes.join(",") : "";
   const lockedTypes = lockedKey ? lockedKey.split(",") : null;
-  const defaultType = lockedTypes?.[0] || initialTrip?.tripType || "outstation";
+  const defaultType = lockedTypes?.[0] || initialTrip?.tripType || (heroMode ? "hourly" : "outstation");
   const [tripType, setTripType] = useState(defaultType);
   const [roundTrip, setRoundTrip] = useState(false);
-  const [pickup, setPickup] = useState(defaultCity);
+  const [driverService, setDriverService] = useState("local");
+  const [pickup, setPickup] = useState(heroMode ? "" : defaultCity);
   const [drop, setDrop] = useState("");
   const [fromCoords, setFromCoords] = useState(null);
   const [toCoords, setToCoords] = useState(null);
   const [airportDirection, setAirportDirection] = useState("pickup");
-  const [packageHours, setPackageHours] = useState(8);
+  const [packageHours, setPackageHours] = useState(heroMode ? 4 : 8);
   const today = useTodayStr();
   const [date, setDate] = useState("");
   const [time, setTime] = useState("09:00");
@@ -72,7 +234,13 @@ export default function MmtCabSearchWidget({
 
   const cabMode = tripType === "outstation" ? (roundTrip ? "roundtrip" : "oneway") : tripType;
   const cabService =
-    tripType === "airport" ? "airport" : tripType === "outstation" ? "outstation" : "hourly";
+    tripType === "airport"
+      ? "airport"
+      : tripType === "outstation"
+        ? "outstation"
+        : tripType === "driver"
+          ? "driver"
+          : "hourly";
 
   function setCabMode(id) {
     if (id === "oneway") {
@@ -94,8 +262,9 @@ export default function MmtCabSearchWidget({
   }, [lockedKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
+    if (heroMode) return;
     if (today) setDate((prev) => prev || today);
-  }, [today]);
+  }, [today, heroMode]);
 
   useEffect(() => {
     if (!initialTrip?.from?.trim()) return;
@@ -146,7 +315,17 @@ export default function MmtCabSearchWidget({
 
   async function handleSearch() {
     setError(null);
-    let trip = { tripType, date, time, roundTrip, direction: airportDirection, packageHours };
+    if (tripType === "driver") {
+      if (!pickup.trim()) {
+        setError("Enter pickup location.");
+        return;
+      }
+      router.push(callDriverBookHref(driverService, { pickup: pickup.trim() }));
+      return;
+    }
+    const pickupDate = date || today || todayStr();
+    const pickupTime = time || "09:00";
+    let trip = { tripType, date: pickupDate, time: pickupTime, roundTrip, direction: airportDirection, packageHours };
 
     if (tripType === "outstation" || tripType === "local") {
       if (!pickup.trim()) {
@@ -164,24 +343,41 @@ export default function MmtCabSearchWidget({
       if (toCoords?.lat != null) trip.toLat = toCoords.lat;
       if (toCoords?.lng != null) trip.toLng = toCoords.lng;
     } else if (tripType === "airport") {
-      if (!pickup.trim() || !drop.trim()) {
-        setError("Enter airport and city locations.");
-        return;
-      }
-      if (airportDirection === "pickup") {
-        trip.from = pickup.trim();
-        trip.to = drop.trim();
+      if (heroMode) {
+        const cityAddress = pickup.trim();
+        if (!cityAddress) {
+          setError("Enter pickup or drop address.");
+          return;
+        }
+        if (airportDirection === "pickup") {
+          trip.from = CHENNAI_AIRPORT_LABEL;
+          trip.to = cityAddress;
+        } else {
+          trip.from = cityAddress;
+          trip.to = CHENNAI_AIRPORT_LABEL;
+        }
         if (fromCoords?.lat != null) trip.fromLat = fromCoords.lat;
         if (fromCoords?.lng != null) trip.fromLng = fromCoords.lng;
-        if (toCoords?.lat != null) trip.toLat = toCoords.lat;
-        if (toCoords?.lng != null) trip.toLng = toCoords.lng;
       } else {
-        trip.from = drop.trim();
-        trip.to = pickup.trim();
-        if (toCoords?.lat != null) trip.fromLat = toCoords.lat;
-        if (toCoords?.lng != null) trip.fromLng = toCoords.lng;
-        if (fromCoords?.lat != null) trip.toLat = fromCoords.lat;
-        if (fromCoords?.lng != null) trip.toLng = fromCoords.lng;
+        if (!pickup.trim() || !drop.trim()) {
+          setError("Enter airport and city locations.");
+          return;
+        }
+        if (airportDirection === "pickup") {
+          trip.from = pickup.trim();
+          trip.to = drop.trim();
+          if (fromCoords?.lat != null) trip.fromLat = fromCoords.lat;
+          if (fromCoords?.lng != null) trip.fromLng = fromCoords.lng;
+          if (toCoords?.lat != null) trip.toLat = toCoords.lat;
+          if (toCoords?.lng != null) trip.toLng = toCoords.lng;
+        } else {
+          trip.from = drop.trim();
+          trip.to = pickup.trim();
+          if (toCoords?.lat != null) trip.fromLat = toCoords.lat;
+          if (toCoords?.lng != null) trip.fromLng = toCoords.lng;
+          if (fromCoords?.lat != null) trip.toLat = fromCoords.lat;
+          if (fromCoords?.lng != null) trip.toLng = fromCoords.lng;
+        }
       }
     } else {
       if (!pickup.trim()) {
@@ -345,7 +541,45 @@ export default function MmtCabSearchWidget({
       </div>
     ) : null;
 
-  const searchFields = (
+  const driverFields = (
+    <>
+      <div className="cabzii-search-cell">
+        <span className="emt-redbus-label">SERVICE</span>
+        <select
+          value={driverService}
+          onChange={(e) => setDriverService(e.target.value)}
+          className="cabzii-field -mx-1 w-full rounded-lg border-0 bg-transparent text-base font-bold text-slate-900 focus:outline-none sm:text-lg"
+          aria-label="Driver service"
+        >
+          <option value="local">Local city trip</option>
+          <option value="outstation">Outstation per day</option>
+          <option value="airport">Airport pickup or drop</option>
+          <option value="valet">Valet</option>
+        </select>
+      </div>
+      <div className="cabzii-search-cell">
+        {heroMode ? <span className="emt-redbus-label">FROM</span> : null}
+        <PlaceAutocomplete
+          label={heroMode ? "" : "Pickup area"}
+          placeholder="Pickup area"
+          value={pickup}
+          onChange={setPickup}
+          onResolved={(area) => {
+            setFromCoords(area?.lat != null ? { lat: area.lat, lng: area.lng } : null);
+            if (area?.city) writeSelectedCity(area.city);
+          }}
+          leadingIcon={heroMode ? undefined : SEARCH_FIELD_ICONS.pickup}
+          leadingIconClassName={SEARCH_FIELD_ICON_CHIPS.pickup}
+          inputClassName={heroMode ? HERO_PLACE_INPUT : undefined}
+        />
+      </div>
+      {dateTimeCell}
+    </>
+  );
+
+  const searchFields = tripType === "driver" ? (
+    driverFields
+  ) : (
     <>
       {airportDirectionCell}
       {tripType === "hourly" ? (
@@ -472,11 +706,11 @@ export default function MmtCabSearchWidget({
       className={
         emtLayout
           ? "emt-search-submit cabzii-tap"
-          : "cabzii-btn cabzii-btn-primary cabzii-btn-sm cabzii-tap mx-auto w-auto min-w-[8.5rem] max-w-[10.5rem] justify-center px-4"
+          : "cabzii-btn cabzii-btn-cta cabzii-btn-sm cabzii-tap mx-auto w-auto min-w-[8.5rem] max-w-[10.5rem] justify-center px-4"
       }
     >
-      <SearchIcon className="h-3.5 w-3.5 text-white/90" />
-      {searching ? "Searching…" : heroMode ? "SEARCH" : "Get Fare"}
+      <SearchIcon className="h-3.5 w-3.5" />
+      {searching ? "Searching…" : heroMode ? "Search cabs" : "Get Fare"}
     </button>
   );
 
@@ -492,7 +726,8 @@ export default function MmtCabSearchWidget({
           onClick={() => setCabMode(tab.id)}
           className={`emt-cab-mode-pill cabzii-tap ${cabService === tab.id ? "emt-cab-mode-pill-active" : ""}`}
         >
-          {tab.label}
+          <TabGlyph id={tab.id} />
+          <span className="t">{tab.label}</span>
         </button>
       ))}
     </div>
@@ -577,12 +812,144 @@ export default function MmtCabSearchWidget({
       </div>
     ) : null;
 
-  const searchCard = emtLayout ? (
-    <div className={heroMode ? "emt-hero-search-card emt-cab-search-card" : ""}>
-      <div className="emt-search-wrap">
-        <div className={`emt-search-bar ${heroMode ? `emt-search-bar-cabs emt-search-bar-cabs-${cabMode}` : ""}`}>
-          {searchFields}
+  const heroFields = (
+    <>
+      {tripType === "hourly" ? (
+        <>
+          <HeroPlace
+            label="Pickup area"
+            icon="pin"
+            placeholder=""
+            value={pickup}
+            onChange={setPickup}
+            onResolved={(area) => {
+              setFromCoords(area?.lat != null ? { lat: area.lat, lng: area.lng } : null);
+              if (area?.city) writeSelectedCity(area.city);
+            }}
+          />
+          <HeroFi label="Package" icon="clock">
+            <select
+              value={packageHours}
+              onChange={(e) => setPackageHours(Number(e.target.value))}
+              className={HERO_FI_INPUT}
+              aria-label="Package"
+            >
+              {HOURLY_PACKAGES.map((p) => (
+                <option key={p.hours} value={p.hours}>
+                  {`${p.hours} hr / ${p.hours * 10} km`}
+                </option>
+              ))}
+            </select>
+          </HeroFi>
+        </>
+      ) : tripType === "airport" ? (
+        <>
+          <HeroFi label="Direction" icon="plane">
+            <select
+              value={airportDirection}
+              onChange={(e) => setAirportDirection(e.target.value)}
+              className={HERO_FI_INPUT}
+              aria-label="Airport transfer type"
+            >
+              <option value="pickup">Pickup from airport</option>
+              <option value="drop">Drop to airport</option>
+            </select>
+          </HeroFi>
+          <HeroPlace
+            label="Address"
+            icon="pin"
+            placeholder="Home, hotel or office"
+            value={pickup}
+            onChange={setPickup}
+            onResolved={(area) => {
+              setFromCoords(area?.lat != null ? { lat: area.lat, lng: area.lng } : null);
+              if (area?.city) writeSelectedCity(area.city);
+            }}
+          />
+        </>
+      ) : tripType === "driver" ? (
+        <>
+          <HeroFi label="Service" icon="steer">
+            <select
+              value={driverService}
+              onChange={(e) => setDriverService(e.target.value)}
+              className={HERO_FI_INPUT}
+              aria-label="Driver service"
+            >
+              <option value="local">Local city trip</option>
+              <option value="outstation">Outstation per day</option>
+              <option value="airport">Airport pickup or drop</option>
+              <option value="valet">Valet</option>
+            </select>
+          </HeroFi>
+          <HeroPlace
+            label="Pickup area"
+            icon="pin"
+            placeholder=""
+            value={pickup}
+            onChange={setPickup}
+            onResolved={(area) => {
+              setFromCoords(area?.lat != null ? { lat: area.lat, lng: area.lng } : null);
+              if (area?.city) writeSelectedCity(area.city);
+            }}
+          />
+        </>
+      ) : (
+        <>
+          <HeroPlace
+            label="From"
+            icon="pin"
+            placeholder="Pickup city"
+            value={pickup}
+            onChange={setPickup}
+            onResolved={(area) => {
+              setFromCoords(area?.lat != null ? { lat: area.lat, lng: area.lng } : null);
+              if (area?.city) writeSelectedCity(area.city);
+            }}
+          />
+          <HeroPlace
+            label="To"
+            icon="flag"
+            placeholder="Going to"
+            value={drop}
+            onChange={setDrop}
+            allowCurrentLocation={false}
+            onResolved={(area) => {
+              setToCoords(area?.lat != null ? { lat: area.lat, lng: area.lng } : null);
+            }}
+          />
+        </>
+      )}
+      <HeroDateTime date={date} time={time} min={today} onDate={handlePickupDate} onTime={setTime} />
+    </>
+  );
+
+  if (heroMode) {
+    return (
+      <div className="w-full">
+        <div className="emt-hero-search-card emt-cab-search-card">
+          {modeToggle}
+          <div className="emt-search-wrap hero-fields">
+            {heroFields}
+            {searchButton}
+          </div>
+          <p className="mt-3 flex items-center gap-2 text-[13px] font-medium text-[var(--cabzii-muted)]">
+            <svg className="h-4 w-4 shrink-0 text-[var(--cabzii-brand)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
+              <circle cx="12" cy="12" r="9.5" />
+              <path d="M8 9.5h.01M16 9.5h.01M8.2 14.2c1.1 1.4 2.6 2.1 3.8 2.1s2.7-.7 3.8-2.1" />
+            </svg>
+            Ride happy — fare shown before you confirm.
+          </p>
         </div>
+        {error ? <p className="cabzii-error mt-4 font-medium" role="alert">{error}</p> : null}
+      </div>
+    );
+  }
+
+  const searchCard = emtLayout ? (
+    <div>
+      <div className="emt-search-wrap">
+        <div className="emt-search-bar">{searchFields}</div>
         {searchButton}
       </div>
     </div>
@@ -597,30 +964,11 @@ export default function MmtCabSearchWidget({
 
   return (
     <div className={`w-full ${compact ? "cabzii-search-compact" : ""}`}>
-      {heroMode ? (
-        <>
-          <div className="mb-4 flex items-center justify-between gap-3">
-            {modeToggle}
-            <span className="hidden sm:block">
-              <EmtHeroPriceHint>Get fare online</EmtHeroPriceHint>
-            </span>
-          </div>
-          {searchCard}
-          <div className="mt-4 flex justify-end">
-            <p className="rounded-full border border-white/40 bg-white/10 px-3.5 py-1.5 text-xs font-bold text-white backdrop-blur-sm">
-              Pay 50% to confirm · driver follows
-            </p>
-          </div>
-        </>
-      ) : (
-        <>
-          {tripPills}
-          {subOptions}
-          {searchCard}
-        </>
-      )}
+      {tripPills}
+      {subOptions}
+      {searchCard}
 
-      {error ? <p className={`cabzii-error mt-4 ${heroMode ? "font-medium text-white" : ""}`} role="alert">{error}</p> : null}
+      {error ? <p className="cabzii-error mt-4 font-medium" role="alert">{error}</p> : null}
     </div>
   );
 }

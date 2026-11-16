@@ -61,7 +61,7 @@ export function getCabCatalogSubtitle(cab = {}, city = "") {
   const type = cab.type?.trim() || cab.category?.trim() || "Cab";
   const vendor = cab.vendor?.trim() || "Cabzii Partner";
   /* Prefer the cab's registered city so HQ inventory is not overwritten by a browsed city */
-  const shown = String(cab.city || "").trim() || String(city || "").trim();
+  const shown = (String(cab.city || "").trim() || String(city || "").trim()).replace(/\bAll India\b/gi, "Chennai");
   return shown ? `${type} · ${vendor} · ${shown}` : `${type} · ${vendor}`;
 }
 

@@ -1,13 +1,8 @@
 import CabDetailPage from "../../../components/CabDetailPage";
-import JsonLd from "../../../components/seo/JsonLd";
-import SerpRichBar from "../../../components/seo/SerpRichBar";
 import { fetchCabById } from "../../../lib/serverCatalog";
-import { fetchSiteReviewStats } from "../../../lib/serverReviewStats";
 import { catalogPublicPath } from "../../../lib/catalogProduct";
-import { cabDetailMetadata } from "../../../lib/metadataHelpers";
-import { breadcrumbJsonLd, faqFromPairs, getCabFaqs } from "../../../lib/seo";
-import { formatSerpPrice, vehicleSerpBadges } from "../../../lib/seo/serpRichData";
-
+import { getCabVehicleName } from "../../../lib/catalogDisplay";
+import { buildPageMetadata } from "../../../lib/seo";
 import { SEO_REVALIDATE_SECONDS } from "../../../lib/revalidation/constants";
 
 export const revalidate = SEO_REVALIDATE_SECONDS;
@@ -23,44 +18,26 @@ export async function generateMetadata({ params }) {
     return { title: "Cab Booking", description: "Book cabs on cabzii.in." };
   }
   const cab = await fetchCabById(id);
-  return cabDetailMetadata(cab, id).metadata;
+  if (!cab) {
+    return buildPageMetadata({
+      title: "Cab Not Found",
+      description: "This cab listing is not available on Cabzii.",
+      path: `/cabs/${id}`,
+      noindex: true
+    });
+  }
+  const name = getCabVehicleName(cab);
+  return buildPageMetadata({
+    title: name,
+    description: `Book ${name} on Cabzii. Fares shown before you confirm.`,
+    path: catalogPublicPath(cab, "/cabs"),
+    noindex: true
+  });
 }
 
 export default async function CabDetailRoutePage({ params }) {
   const id = params?.id;
   const cab = id ? await fetchCabById(id) : null;
-  const reviewStats = await fetchSiteReviewStats();
-  const { jsonLd } = cab ? cabDetailMetadata(cab, id) : { jsonLd: null };
-  // Enterprise JSON-LD already includes FAQ/breadcrumb; avoid duplicating when present
-  const hasGraph = Boolean(jsonLd?.["@graph"]);
-  const schema = cab
-    ? hasGraph
-      ? [jsonLd]
-      : [
-          breadcrumbJsonLd([
-            { name: "Home", path: "/" },
-            { name: "Cabs", path: "/cabs" },
-            { name: cab.title || "Cab", path: catalogPublicPath(cab, "/cabs") }
-          ]),
-          jsonLd,
-          faqFromPairs(getCabFaqs(cab))
-        ]
-    : null;
 
-  return (
-    <>
-      {schema ? <JsonLd data={schema} /> : null}
-      {cab ? (
-        <div className="section-shell pt-2 sm:pt-4">
-          <SerpRichBar
-            ratingValue={cab.rating || reviewStats?.ratingValue}
-            reviewCount={cab.reviewCount || reviewStats?.reviewCount}
-            priceLabel={formatSerpPrice(cab.price)}
-            badges={vehicleSerpBadges(cab)}
-          />
-        </div>
-      ) : null}
-      <CabDetailPage cabId={id} initialCab={cab ? JSON.parse(JSON.stringify(cab)) : null} />
-    </>
-  );
+  return <CabDetailPage cabId={id} initialCab={cab ? JSON.parse(JSON.stringify(cab)) : null} />;
 }

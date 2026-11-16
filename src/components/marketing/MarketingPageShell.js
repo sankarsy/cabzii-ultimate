@@ -23,31 +23,31 @@ export default function MarketingPageShell({
   return (
     <TravelLayoutClient>
       <JsonLd data={jsonLd} />
-      <div className="border-b border-slate-200 bg-gradient-to-br from-orange-50 via-white to-slate-50">
+      <div className="border-b border-[var(--cabzii-border)] bg-[var(--cabzii-sky)]">
         <div className="section-shell py-10 sm:py-14">
-          <nav className="text-xs font-medium text-slate-500" aria-label="Breadcrumb">
+          <nav className="text-xs font-medium text-[var(--cabzii-muted)]" aria-label="Breadcrumb">
             {crumbs.map((c, i) => (
               <span key={c.path}>
                 {i > 0 ? " / " : ""}
                 {i === crumbs.length - 1 ? (
-                  <span className="text-slate-700">{c.name}</span>
+                  <span className="text-[var(--cabzii-ink)]">{c.name}</span>
                 ) : (
-                  <Link href={c.path} className="text-[var(--cabzii-cta)] hover:underline">
+                  <Link href={c.path} className="text-[var(--cabzii-brand)] hover:underline">
                     {c.name}
                   </Link>
                 )}
               </span>
             ))}
           </nav>
-          <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">{title}</h1>
-          {subtitle ? <p className="mt-3 max-w-2xl text-base text-slate-600 sm:text-lg">{subtitle}</p> : null}
+          <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-[var(--cabzii-ink)] sm:text-4xl">{title}</h1>
+          {subtitle ? <p className="mt-3 max-w-2xl text-base text-[var(--cabzii-muted)] sm:text-lg">{subtitle}</p> : null}
         </div>
       </div>
       <div className="section-shell py-10 sm:py-12">
-        <div className="prose prose-slate max-w-none prose-headings:font-bold prose-a:text-[var(--cabzii-cta)]">{children}</div>
+        <div className="prose prose-slate max-w-none prose-headings:font-bold prose-a:text-[var(--cabzii-brand)]">{children}</div>
       </div>
       {faqs.length ? (
-        <section className="border-t border-slate-200 bg-white py-10">
+        <section className="border-t border-[var(--cabzii-border)] bg-white py-10">
           <div className="section-shell">
             <FaqSection title="Frequently asked questions" faqs={faqs} />
           </div>

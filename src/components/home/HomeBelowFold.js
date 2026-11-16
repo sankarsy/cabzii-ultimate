@@ -1,88 +1,72 @@
 "use client";
 
 import EmtWhyChooseUs from "../emt/EmtWhyChooseUs";
-import MmtCabResultCard from "../mmt/MmtCabResultCard";
-import MmtHomeCatalogSection, { MmtHomeCatalogScroll, MmtHomeCatalogScrollItem } from "../mmt/MmtHomeCatalogSection";
 import CallDriverHomeSection from "./CallDriverHomeSection";
 import FaqSection from "../seo/FaqSection";
 import PageHubLinks from "../seo/PageHubLinks";
 import TestimonialsSection from "../reviews/TestimonialsSection";
 import { HOME_PAGE_FAQS } from "../../lib/seo/content";
 import { resolvePageLinkGroups } from "../../lib/seo/pageLinks";
-import { DEFAULT_HQ_CITY } from "../../lib/vehicleAdminConfig";
 import HomeHowToBook from "./HomeHowToBook";
-import HomeShowcaseCarousel from "./HomeShowcaseCarousel";
 import CityScopedShowcase from "./CityScopedShowcase";
 import HomeBlogTeasers from "./HomeBlogTeasers";
 import HomeFleetLoader from "./HomeFleetLoader";
+import HomeFleetSection from "./HomeFleetSection";
+import HomeSectionHeader from "./HomeSectionHeader";
 
-const HOME_FLEET_SUBTITLE = `Sedan, hatchback, MPV & SUV taxi cars · ${DEFAULT_HQ_CITY}`;
-
-function HomeFleetGrid({ cabs }) {
-  return (
-    <MmtHomeCatalogSection
-      eyebrow="Our fleet"
-      title="Top cabs for you"
-      subtitle={HOME_FLEET_SUBTITLE}
-      viewAllHref="/cabs"
-      viewAllLabel="View all cabs"
-      loading={false}
-      isEmpty={cabs.length === 0}
-      emptyMessage="No cabs yet. Start the backend and add listings in admin."
-    >
-      <MmtHomeCatalogScroll>
-        {cabs.map((cab) => (
-          <MmtHomeCatalogScrollItem key={String(cab._id ?? cab.id)}>
-            <MmtCabResultCard cab={cab} layout="card" catalogMode displayCity={cab.city || DEFAULT_HQ_CITY} />
-          </MmtHomeCatalogScrollItem>
-        ))}
-      </MmtHomeCatalogScroll>
-    </MmtHomeCatalogSection>
-  );
-}
-
-/** Below-the-fold home sections — server-rendered so hero JS stays smaller. */
+/**
+ * Conversion order after search:
+ * cabs → how to book → trip types / routes → call driver → trust → FAQ → guides
+ */
 export default function HomeBelowFold({
   cabs = [],
-  showcase = {},
   blogs,
   callDriverServices,
   siteSettings
 }) {
   const hubGroups = resolvePageLinkGroups(siteSettings?.pageSeo?.["/"]?.pageLinks, "/", "home");
   return (
-    <>
-      <HomeShowcaseCarousel section="offers" cards={showcase.offers} />
-      <CityScopedShowcase section="services" />
-      <CityScopedShowcase section="routes" />
+    <div className="home-below">
+      {cabs.length ? <HomeFleetSection cabs={cabs} /> : <HomeFleetLoader />}
 
-      {cabs.length ? <HomeFleetGrid cabs={cabs} /> : <HomeFleetLoader />}
+      <HomeHowToBook />
+
+      <div className="home-band home-band-white">
+        <div className="home-stack">
+          <CityScopedShowcase section="services" />
+          <CityScopedShowcase section="routes" />
+        </div>
+      </div>
 
       <CallDriverHomeSection services={callDriverServices} />
-      <HomeHowToBook />
       <EmtWhyChooseUs settings={siteSettings} />
       <TestimonialsSection />
-      <HomeBlogTeasers posts={blogs} />
-      {hubGroups.length ? (
-        <section className="border-t border-slate-200 bg-slate-50 py-8 sm:py-10">
-          <div className="section-shell">
-            <PageHubLinks groups={hubGroups} />
-          </div>
-        </section>
-      ) : null}
 
-      <section className="border-t border-slate-200 bg-white py-8 sm:py-10">
+      <section className="home-band home-band-white">
         <div className="section-shell">
-          <FaqSection
+          <HomeSectionHeader
             eyebrow="Help"
             title="Frequently asked questions"
             subtitle="Quick answers about booking on cabzii.in."
+          />
+          <FaqSection
+            hideTitle
             faqs={HOME_PAGE_FAQS}
             scrollable
             scrollMaxClass="max-h-[min(18rem,48vh)] sm:max-h-[min(20rem,50vh)]"
           />
         </div>
       </section>
-    </>
+
+      <HomeBlogTeasers posts={blogs} />
+
+      {hubGroups.length ? (
+        <section className="home-band home-band-white">
+          <div className="section-shell">
+            <PageHubLinks groups={hubGroups} />
+          </div>
+        </section>
+      ) : null}
+    </div>
   );
 }

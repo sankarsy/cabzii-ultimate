@@ -1,82 +1,88 @@
 "use client";
 
-import { Sparkles } from "./icons/rscIcons";
+import { Check, Sparkles } from "./icons/rscIcons";
 import { formatInrCurrency } from "../lib/formatInr";
 import { APPROX_PRICE_LABEL } from "../lib/approxPrice";
-import { ClockIcon, ICON_SOFT_CLASS, RoadIcon, TwoWayIcon } from "./icons";
 
 export default function PackageOptionCard({ pkg, selected, onSelect, compact = false }) {
   const youPay = Number(pkg.price) > 0 ? Number(pkg.price) : Number(pkg.list) || 0;
   const isTrip = Boolean(pkg.note);
   const title = pkg.label || pkg.shortLabel;
-  const PackageIcon = pkg.group === "outstation" ? (pkg.id?.includes("twoway") ? TwoWayIcon : RoadIcon) : ClockIcon;
+  const hours = Number(pkg.includedHours) || 0;
+  const km = Number(pkg.includedKm) || 0;
+  const hasQuota = hours > 0 || km > 0;
 
   return (
     <button
       type="button"
       onClick={onSelect}
-      className={`relative flex h-full w-full min-w-0 flex-col rounded-lg border text-left transition ${
-        compact ? "px-2 py-2" : "min-h-[10rem] px-3 py-3 sm:px-4 sm:py-4"
+      aria-pressed={selected}
+      className={`relative flex h-full w-full min-w-0 flex-col overflow-hidden rounded-2xl border text-left transition ${
+        compact ? "p-3" : "p-4 sm:p-5"
       } ${
         selected
-          ? "border-[var(--cabzii-brand)] bg-blue-50/40 ring-1 ring-[var(--cabzii-brand)]/25"
-          : "border-slate-200 bg-white hover:border-slate-300"
+          ? "border-[var(--cabzii-brand)] bg-white shadow-[0_10px_28px_rgba(30,64,175,0.12)]"
+          : "border-slate-200 bg-white hover:border-[var(--cabzii-brand)]/35 hover:shadow-sm"
       }`}
     >
-      {pkg.popular ? (
-        <span
-          className={`absolute -top-2 left-1/2 flex -translate-x-1/2 items-center gap-0.5 whitespace-nowrap rounded-full bg-violet-600 font-bold uppercase tracking-wide text-white ${
-            compact ? "px-1.5 py-px text-[7px]" : "px-2 py-0.5 text-[9px]"
-          }`}
-        >
-          <Sparkles className={compact ? "h-2 w-2" : "h-2.5 w-2.5"} strokeWidth={2.5} aria-hidden />
-          Most Popular
+      {selected ? (
+        <span className="absolute right-3 top-3 inline-flex h-7 w-7 items-center justify-center overflow-hidden rounded-full bg-[var(--cabzii-brand)] text-white">
+          <Check className="h-4 w-4" strokeWidth={2.5} aria-hidden />
         </span>
       ) : null}
 
-      <span
-        className={`flex items-center gap-1 font-semibold text-slate-800 ${
-          compact ? "text-[10px] leading-tight" : "text-xs sm:text-sm"
-        }`}
-      >
-        <PackageIcon className={compact ? `h-3 w-3 shrink-0 ${ICON_SOFT_CLASS}` : `h-3.5 w-3.5 shrink-0 ${ICON_SOFT_CLASS}`} />
-        <span className="line-clamp-1 min-w-0 flex-1">{title}</span>
-      </span>
+      <div className={`flex flex-wrap items-center gap-2 ${selected ? "pr-9" : ""}`}>
+        {pkg.popular ? (
+          <span className="inline-flex items-center gap-1 rounded-full bg-[var(--cabzii-cta)] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
+            <Sparkles className="h-3 w-3" strokeWidth={2.5} aria-hidden />
+            Popular
+          </span>
+        ) : null}
+        {!hasQuota ? (
+          <span className={`font-bold text-[var(--cabzii-ink)] ${compact ? "text-sm" : "text-base"}`}>{title}</span>
+        ) : null}
+      </div>
+
+      {hasQuota ? (
+        <div className={`grid grid-cols-2 ${compact ? "mt-2 gap-2" : "mt-3 gap-3"}`}>
+          {hours > 0 ? (
+            <span className="rounded-xl bg-[var(--cabzii-sky)] px-2.5 py-2">
+              <span className="block text-[10px] font-semibold uppercase tracking-wide text-slate-500">Hours</span>
+              <span className={`font-extrabold text-[var(--cabzii-ink)] ${compact ? "text-sm" : "text-lg"}`}>{hours} hr</span>
+            </span>
+          ) : null}
+          {km > 0 ? (
+            <span className="rounded-xl bg-[var(--cabzii-sky)] px-2.5 py-2">
+              <span className="block text-[10px] font-semibold uppercase tracking-wide text-slate-500">Included</span>
+              <span className={`font-extrabold text-[var(--cabzii-ink)] ${compact ? "text-sm" : "text-lg"}`}>{km} km</span>
+            </span>
+          ) : null}
+        </div>
+      ) : null}
 
       <p
         className={`shrink-0 font-extrabold leading-none text-[var(--cabzii-cta)] ${
-          compact ? "mt-1 text-sm" : "mt-1.5 text-base sm:text-lg"
+          compact ? "mt-2.5 text-xl" : "mt-3 text-2xl"
         }`}
       >
         {formatInrCurrency(youPay)}
       </p>
-      <p className={`text-slate-400 ${compact ? "mt-0.5 text-[8px]" : "mt-0.5 text-[10px]"}`}>{APPROX_PRICE_LABEL}</p>
+      <p className="mt-0.5 text-[11px] text-slate-400">{APPROX_PRICE_LABEL}</p>
 
-      <div className={compact ? "mt-1" : "mt-1.5"}>
+      <div className={compact ? "mt-2" : "mt-3"}>
         {isTrip ? (
-          <p className={`text-slate-500 ${compact ? "text-[8px] leading-snug line-clamp-2" : "text-[10px] sm:text-xs"}`}>
-            {pkg.note}
-          </p>
+          <p className="text-xs leading-snug text-slate-500">{pkg.note}</p>
         ) : (
-          <div className={compact ? "space-y-0" : "space-y-px"}>
-            <p className={`text-slate-500 ${compact ? "text-[8px] leading-tight" : "text-[10px] sm:text-xs"}`}>
-              Extra Hr: {pkg.extraHr != null ? `${formatInrCurrency(pkg.extraHr)}/hr` : "—"}
-            </p>
-            <p className={`text-slate-500 ${compact ? "text-[8px] leading-tight" : "text-[10px] sm:text-xs"}`}>
-              Extra Km: {pkg.extraKm != null ? `${formatInrCurrency(pkg.extraKm)}/km` : "—"}
-            </p>
+          <div className="flex flex-wrap gap-1.5">
+            <span className="rounded-full bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-600">
+              Extra {pkg.extraHr != null ? `${formatInrCurrency(pkg.extraHr)}/hr` : "—"}
+            </span>
+            <span className="rounded-full bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-600">
+              Extra {pkg.extraKm != null ? `${formatInrCurrency(pkg.extraKm)}/km` : "—"}
+            </span>
           </div>
         )}
       </div>
-
-      <span
-        className={`mx-auto flex shrink-0 items-center justify-center rounded-full border-2 ${
-          compact ? "mt-1.5 h-3 w-3" : "mt-2 h-4 w-4"
-        } ${selected ? "border-[var(--cabzii-cta)] bg-[var(--cabzii-cta)]" : "border-slate-300 bg-white"}`}
-        aria-hidden
-      >
-        {selected ? <span className={`rounded-full bg-white ${compact ? "h-1 w-1" : "h-1.5 w-1.5"}`} /> : null}
-      </span>
     </button>
   );
 }

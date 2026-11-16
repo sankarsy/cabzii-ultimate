@@ -1,26 +1,22 @@
 "use client";
 
 import Link from "next/link";
-import { getTrustIcon, TRUST_ICON_STYLES } from "../icons/heroIcons";
+import { getTrustIcon } from "../icons/heroIcons";
 import { TRUST_SIGNALS } from "../../lib/trustSignals";
 
 export default function TrustStrip({ className = "" }) {
   return (
-    <section className={`border-b border-slate-200/80 bg-white ${className}`}>
+    <section className={`bg-[var(--cabzii-bg)] ${className}`}>
       <div className="section-shell py-4 sm:py-5">
-        <div className="scroll-x-touch flex items-center justify-start gap-2 overflow-x-auto pb-0.5 sm:justify-center sm:gap-3">
+        <div className="scroll-x-touch flex items-center justify-start gap-x-6 gap-y-2 overflow-x-auto pb-0.5 sm:justify-center">
           {TRUST_SIGNALS.map((item) => {
             const Icon = getTrustIcon(item.iconKey);
-            const style = TRUST_ICON_STYLES[item.iconKey] || TRUST_ICON_STYLES.verified;
             const inner = (
               <>
-                <span
-                  className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${style.iconBg} ${style.iconColor}`}
-                  aria-hidden
-                >
-                  <Icon className="h-4 w-4" />
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center text-[var(--cabzii-brand)]" aria-hidden>
+                  <Icon className="h-[18px] w-[18px]" />
                 </span>
-                <span className="whitespace-nowrap text-xs font-semibold text-slate-700 sm:text-sm">{item.label}</span>
+                <span className="whitespace-nowrap text-sm font-semibold text-[var(--cabzii-muted)]">{item.label}</span>
               </>
             );
             if (item.href) {
@@ -28,14 +24,14 @@ export default function TrustStrip({ className = "" }) {
                 <Link
                   key={item.label}
                   href={item.href}
-                  className="cabzii-trust-pill cabzii-tap hover:border-[var(--cabzii-brand)]/25 hover:bg-blue-50/50"
+                  className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--cabzii-muted)] hover:text-[var(--cabzii-ink)]"
                 >
                   {inner}
                 </Link>
               );
             }
             return (
-              <span key={item.label} className="cabzii-trust-pill">
+              <span key={item.label} className="inline-flex items-center gap-2">
                 {inner}
               </span>
             );

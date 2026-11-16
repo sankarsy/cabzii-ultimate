@@ -41,14 +41,14 @@ export function VehiclePageContent({ cab }) {
   if (!shortDesc && !longHtml && !h2s.length) return null;
 
   return (
-    <section id="page-content" className="scroll-mt-24 rounded-xl border border-slate-200 bg-white p-3 shadow-sm sm:p-4">
-      <h2 className="text-xs font-semibold text-slate-900 sm:text-sm">
+    <section id="page-content" className="scroll-mt-28 rounded-2xl border border-[var(--cabzii-border)] bg-white p-4 shadow-[var(--cabzii-shadow-card)] sm:p-5">
+      <h2 className="text-lg font-bold text-[var(--cabzii-ink)]">
         {(h2s[0] || es.h1 || cab?.h1 || `About this ${cab?.vehicleName || "cab"}`)
           .toString()
           .replace(/\bAll India\b/gi, displayCity)}
       </h2>
       {shortDesc ? (
-        <p className="mt-1.5 text-[11px] leading-relaxed text-slate-600 sm:text-sm">{shortDesc}</p>
+        <p className="mt-2 text-sm leading-relaxed text-slate-600">{shortDesc}</p>
       ) : null}
       {longHtml ? (
         <div
@@ -115,13 +115,13 @@ export default function VehicleDetailExtras({ cab, showPageContent = false }) {
   const allFeatures = [...new Set([...features, ...specFlags])];
 
   return (
-    <div className="space-y-3 sm:space-y-4">
+    <div className="space-y-4 sm:space-y-5">
       {highlights.length > 0 ? (
-        <section id="highlights" className="scroll-mt-24 rounded-xl border border-slate-200 bg-white p-3 shadow-sm sm:p-4">
-          <h2 className="text-xs font-semibold text-slate-900 sm:text-sm">Why book with Cabzii</h2>
-          <ul className="mt-2 flex flex-wrap gap-1.5">
+        <section id="highlights" className="scroll-mt-28 rounded-2xl border border-[var(--cabzii-border)] bg-white p-4 shadow-[var(--cabzii-shadow-card)] sm:p-5">
+          <h2 className="text-lg font-bold text-[var(--cabzii-ink)]">Why book with Cabzii</h2>
+          <ul className="mt-3 flex flex-wrap gap-2">
             {highlights.map((h) => (
-              <li key={h} className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-800 sm:text-[11px]">
+              <li key={h} className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800 sm:text-sm">
                 {h}
               </li>
             ))}
@@ -132,12 +132,14 @@ export default function VehicleDetailExtras({ cab, showPageContent = false }) {
       {showPageContent ? <VehiclePageContent cab={cab} /> : null}
 
       {allFeatures.length > 0 ? (
-        <section id="features" className="scroll-mt-24 rounded-xl border border-slate-200 bg-white p-3 shadow-sm sm:p-4">
-          <h2 className="text-xs font-semibold text-slate-900 sm:text-sm">Vehicle features</h2>
-          <ul className="mt-2 grid gap-1.5 sm:grid-cols-2">
+        <section id="features" className="scroll-mt-28 rounded-2xl border border-[var(--cabzii-border)] bg-white p-4 shadow-[var(--cabzii-shadow-card)] sm:p-5">
+          <h2 className="text-lg font-bold text-[var(--cabzii-ink)]">Vehicle features</h2>
+          <ul className="mt-3 grid gap-2.5 sm:grid-cols-2">
             {allFeatures.map((f) => (
-              <li key={f} className="flex items-center gap-2 text-[11px] text-slate-700 sm:text-sm">
-                <Check className="h-3.5 w-3.5 shrink-0 text-emerald-500" strokeWidth={2} />
+              <li key={f} className="flex items-center gap-2.5 text-sm text-slate-700">
+                <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-emerald-50 text-emerald-600">
+                  <Check className="h-4 w-4" strokeWidth={2} />
+                </span>
                 {f}
               </li>
             ))}
@@ -146,11 +148,11 @@ export default function VehicleDetailExtras({ cab, showPageContent = false }) {
       ) : null}
 
       {nearby.length > 0 ? (
-        <section id="nearby" className="scroll-mt-24 rounded-xl border border-slate-200 bg-white p-3 shadow-sm sm:p-4">
-          <h2 className="text-xs font-semibold text-slate-900 sm:text-sm">Areas we serve</h2>
-          <ul className="mt-2 flex flex-wrap gap-1.5">
+        <section id="nearby" className="scroll-mt-28 rounded-2xl border border-[var(--cabzii-border)] bg-white p-4 shadow-[var(--cabzii-shadow-card)] sm:p-5">
+          <h2 className="text-lg font-bold text-[var(--cabzii-ink)]">Areas we serve</h2>
+          <ul className="mt-3 flex flex-wrap gap-2">
             {nearby.map((loc) => (
-              <li key={loc} className="rounded-md bg-slate-50 px-2 py-0.5 text-[10px] font-medium text-slate-600">
+              <li key={loc} className="rounded-full bg-slate-50 px-3 py-1 text-xs font-medium text-slate-600 sm:text-sm">
                 {loc}
               </li>
             ))}
@@ -159,12 +161,12 @@ export default function VehicleDetailExtras({ cab, showPageContent = false }) {
       ) : null}
 
       {pickups.length > 0 ? (
-        <section id="pickup-locations" className="scroll-mt-24 rounded-xl border border-slate-200 bg-white p-3 shadow-sm sm:p-4">
-          <h2 className="text-xs font-semibold text-slate-900 sm:text-sm">Pickup locations</h2>
-          <ul className="mt-2 space-y-1.5">
+        <section id="pickup-locations" className="scroll-mt-28 rounded-2xl border border-[var(--cabzii-border)] bg-white p-4 shadow-[var(--cabzii-shadow-card)] sm:p-5">
+          <h2 className="text-lg font-bold text-[var(--cabzii-ink)]">Pickup locations</h2>
+          <ul className="mt-3 space-y-2.5">
             {pickups.map((loc) => (
-              <li key={loc} className="flex items-start gap-2 text-[11px] text-slate-700 sm:text-sm">
-                <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-sky-500" strokeWidth={2} />
+              <li key={loc} className="flex items-start gap-2.5 text-sm text-slate-700">
+                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[var(--cabzii-brand)]" strokeWidth={2} />
                 {loc}
               </li>
             ))}
@@ -173,9 +175,9 @@ export default function VehicleDetailExtras({ cab, showPageContent = false }) {
       ) : null}
 
       {embed ? (
-        <section id="video" className="scroll-mt-24 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-          <div className="p-3 pb-0 sm:p-4 sm:pb-0">
-            <h2 className="text-xs font-semibold text-slate-900 sm:text-sm">Vehicle video</h2>
+        <section id="video" className="scroll-mt-28 overflow-hidden rounded-2xl border border-[var(--cabzii-border)] bg-white shadow-[var(--cabzii-shadow-card)]">
+          <div className="p-4 pb-0 sm:p-5 sm:pb-0">
+            <h2 className="text-lg font-bold text-[var(--cabzii-ink)]">Vehicle video</h2>
           </div>
           <div className="aspect-video w-full p-3 pt-2 sm:p-4 sm:pt-2.5">
             <iframe
@@ -189,24 +191,24 @@ export default function VehicleDetailExtras({ cab, showPageContent = false }) {
         </section>
       ) : null}
 
-      <section id="vendor" className="scroll-mt-24 rounded-xl border border-slate-200 bg-white p-3 shadow-sm sm:p-4">
-        <h2 className="text-xs font-semibold text-slate-900 sm:text-sm">Vendor details</h2>
-        <div className="mt-2 flex items-start gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sky-100 text-[11px] font-bold text-sky-800 sm:h-9 sm:w-9 sm:text-xs">
+      <section id="vendor" className="scroll-mt-28 rounded-2xl border border-[var(--cabzii-border)] bg-white p-4 shadow-[var(--cabzii-shadow-card)] sm:p-5">
+        <h2 className="text-lg font-bold text-[var(--cabzii-ink)]">Vendor details</h2>
+        <div className="mt-3 flex items-start gap-3">
+          <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl bg-sky-100 text-sm font-bold text-sky-800">
             {(cab?.vendor || "C").slice(0, 2).toUpperCase()}
           </div>
           <div>
-            <p className="text-xs font-semibold text-slate-900 sm:text-sm">{cab?.vendor || "Cabzii Partner"}</p>
-            <p className="text-[10px] text-slate-600 sm:text-[11px]">{displayCity} · Verified fleet partner</p>
-            <p className="mt-1 inline-flex items-center gap-1 text-[10px] text-emerald-600 sm:text-[11px]">
-              <Shield className="h-3 w-3 text-emerald-500" /> Background-verified drivers
+            <p className="text-base font-semibold text-slate-900">{cab?.vendor || "Cabzii Partner"}</p>
+            <p className="text-sm text-slate-600">{displayCity} · Verified fleet partner</p>
+            <p className="mt-1 inline-flex items-center gap-1.5 text-sm text-emerald-700">
+              <Shield className="h-4 w-4 text-emerald-500" /> Background-verified drivers
             </p>
           </div>
         </div>
       </section>
 
       {faqs.length > 0 ? (
-        <section id="faqs" className="scroll-mt-24">
+        <section id="faqs" className="scroll-mt-28">
           <FaqSection
             title="FAQs"
             subtitle={`About ${cab?.vehicleName || cab?.title || "this cab"}`}

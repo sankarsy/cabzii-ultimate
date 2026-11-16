@@ -3,7 +3,7 @@ import JsonLd from "../components/seo/JsonLd";
 import { breadcrumbJsonLd, faqJsonLd, HQ_GEO, localBusinessJsonLd } from "../lib/seo";
 import { buildMetadataForPath } from "../lib/seo/resolvePageSeo";
 import { fetchSiteSettings } from "../lib/serverSiteSettings";
-import { fetchCatalogList, fetchHomeCallDriverServices, fetchHomeShowcase } from "../lib/serverCatalog";
+import { fetchCatalogList, fetchHomeCallDriverServices } from "../lib/serverCatalog";
 import { SAMPLE_BLOGS } from "../lib/sampleContent";
 import { sortBySelectedCity } from "../lib/locationPriority";
 import { DEFAULT_HQ_CITY } from "../lib/vehicleAdminConfig";
@@ -18,12 +18,9 @@ export async function generateMetadata() {
 }
 
 export default async function Page() {
-  const [initialCabs, blogRows, offers, services, routes, callDriverServices, siteSettings] = await Promise.all([
+  const [initialCabs, blogRows, callDriverServices, siteSettings] = await Promise.all([
     fetchCatalogList("cabs", 24),
     fetchCatalogList("blogs", 3),
-    fetchHomeShowcase("offers"),
-    fetchHomeShowcase("services"),
-    fetchHomeShowcase("routes"),
     fetchHomeCallDriverServices(),
     fetchSiteSettings()
   ]);
@@ -36,7 +33,6 @@ export default async function Page() {
       <JsonLd data={[breadcrumbJsonLd([{ name: "Home", path: "/" }]), faqJsonLd(), localBusinessJsonLd("Chennai", "Tamil Nadu", "/", HQ_GEO)]} />
       <MmtHomePage
         cabs={cabs}
-        showcase={{ offers, services, routes }}
         blogs={blogs}
         callDriverServices={callDriverServices}
         siteSettings={siteSettings}
