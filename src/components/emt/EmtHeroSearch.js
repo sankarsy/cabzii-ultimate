@@ -1,8 +1,6 @@
 "use client";
 
-import { useHeroSearch } from "./HeroSearchContext";
 import MmtCabSearchWidget from "../mmt/MmtCabSearchWidget";
-import EmtBusSearchForm from "./EmtBusSearchForm";
 import HeroRouteArt from "../brand/HeroRouteArt";
 import { HOME_H1, HOME_H1_LEDE } from "../../lib/seo/constants";
 
@@ -45,9 +43,8 @@ export default function EmtHeroSearch({
   seoSubheading = HOME_H1_LEDE
 }) {
   void defaultCity;
+  void defaultTab;
   void initialDriverTrip;
-  const hero = useHeroSearch();
-  const active = hero?.activeTab ?? defaultTab;
 
   return (
     <>
@@ -57,12 +54,6 @@ export default function EmtHeroSearch({
             <div>
               <h1 className="emt-hero-kicker-title">{seoHeading}</h1>
               <p className="emt-hero-kicker-lede">{seoSubheading}</p>
-              <span className="emt-hero-offer">
-                <svg className="h-[18px] w-[18px] text-[var(--cabzii-cta)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
-                  <path d="M6 4h12M6 9h12M6 14h4a4.5 4.5 0 000-9M9 14l8 7" />
-                </svg>
-                Use CABZII500 for ₹200 off your first outstation trip
-              </span>
             </div>
             <div className="route">
               <HeroRouteArt />
@@ -73,11 +64,7 @@ export default function EmtHeroSearch({
       <div className="emt-hero-search-float">
         <div className="emt-hero-inner">
           <div className="emt-hero-search-slot">
-            {active === "buses" ? (
-              <EmtBusSearchForm emtHero />
-            ) : (
-              <MmtCabSearchWidget defaultCity="" initialTrip={initialCabTrip} emtLayout heroMode />
-            )}
+            <MmtCabSearchWidget defaultCity="" initialTrip={initialCabTrip} emtLayout heroMode />
           </div>
           <div className="emt-hero-trust">
             {HERO_TRUST.map((item) => (

@@ -93,25 +93,6 @@ export function WhyGrid({ title, items, align = "center" }) {
   );
 }
 
-export function HowToSteps({ title, subtitle, steps }) {
-  if (!steps?.length) return null;
-  return (
-    <section className="section-shell py-5 sm:py-7">
-      <h2 className="text-base font-bold text-slate-900 sm:text-lg">{title}</h2>
-      {subtitle ? <p className="mt-1 text-xs text-slate-600 sm:text-sm">{subtitle}</p> : null}
-      <ol className="mt-3 grid gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
-        {steps.map((step, index) => (
-          <li key={step.title} className="rounded-xl border border-slate-200 bg-white p-3 sm:p-4">
-            <p className="text-[10px] font-bold uppercase tracking-wide text-[var(--cabzii-cta)] sm:text-xs">Step {index + 1}</p>
-            <h3 className="mt-1 text-sm font-bold text-slate-900">{step.title}</h3>
-            <p className="mt-1 text-[11px] leading-relaxed text-slate-600 sm:text-sm">{step.subtitle}</p>
-          </li>
-        ))}
-      </ol>
-    </section>
-  );
-}
-
 export function RouteFareGrid({ title, subtitle, routes }) {
   if (!routes?.length) return null;
   return (
@@ -270,5 +251,5 @@ export const CAB_TRUST = [
   { label: "Fare first", value: "Shown before you pay" },
   { label: "Included", value: "Fuel and driver" },
   { label: "Tolls", value: "Extra unless listed" },
-  { label: "Confirm", value: "50% advance" }
+  { label: "Confirm", value: "Then a driver is assigned" }
 ];

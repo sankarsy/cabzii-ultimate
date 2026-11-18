@@ -212,7 +212,7 @@ export default function MmtCabResults({
   );
 
   const catalogFilters = (
-    <aside className="h-fit rounded-xl border border-slate-200 bg-white p-4">
+    <aside className="hidden h-fit rounded-xl border border-slate-200 bg-white p-4 lg:block">
       <div className="mb-3 flex items-center justify-between">
         <p className="text-sm font-bold text-slate-900">Filters</p>
         <button type="button" onClick={clearAll} className="text-xs font-semibold text-[#d84e55] hover:underline">
@@ -267,26 +267,46 @@ export default function MmtCabResults({
   );
 
   const useCardGrid = catalogMode && listLayout !== "row" && !fasttrackLayout;
+  let lastCategory = "";
   const cards = useCardGrid ? (
     <div className="cabzii-catalog-grid pt-1">
-      {filtered.map((cab) => (
-        <div className="cabzii-catalog-item" key={String(cab._id ?? cab.id)}>
-          <MmtCabResultCard cab={cab} trip={trip} layout="card" catalogMode displayCity={displayCity} />
-        </div>
-      ))}
+      {filtered.map((cab) => {
+        const category = cabTypeBucket(cab);
+        const showHeading = catalogMode && category !== lastCategory;
+        lastCategory = category;
+        return (
+          <div className={showHeading ? "col-span-full contents" : "contents"} key={String(cab._id ?? cab.id)}>
+            {showHeading ? (
+              <h3 className="col-span-full pt-2 text-sm font-extrabold uppercase tracking-wide text-slate-500">{category}</h3>
+            ) : null}
+            <div className="cabzii-catalog-item">
+              <MmtCabResultCard cab={cab} trip={trip} layout="card" catalogMode displayCity={displayCity} />
+            </div>
+          </div>
+        );
+      })}
     </div>
   ) : (
     <div className={fasttrackLayout ? "space-y-2.5" : "space-y-3"}>
-      {filtered.map((cab) => (
-        <MmtCabResultCard
-          key={String(cab._id ?? cab.id)}
-          cab={cab}
-          trip={trip}
-          layout={fasttrackLayout ? "fasttrack" : "row"}
-          catalogMode={catalogMode}
-          displayCity={displayCity}
-        />
-      ))}
+      {filtered.map((cab) => {
+        const category = cabTypeBucket(cab);
+        const showHeading = catalogMode && category !== lastCategory;
+        lastCategory = category;
+        return (
+          <div key={String(cab._id ?? cab.id)} className="space-y-2">
+            {showHeading ? (
+              <h3 className="pt-2 text-sm font-extrabold uppercase tracking-wide text-slate-500">{category}</h3>
+            ) : null}
+            <MmtCabResultCard
+              cab={cab}
+              trip={trip}
+              layout={fasttrackLayout ? "fasttrack" : "row"}
+              catalogMode={catalogMode}
+              displayCity={displayCity}
+            />
+          </div>
+        );
+      })}
     </div>
   );
 

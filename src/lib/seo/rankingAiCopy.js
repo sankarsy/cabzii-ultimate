@@ -42,7 +42,7 @@ export function rankingMetaTemplates(ctx = {}) {
   }
   const title = `Cab Booking in ${city} | Call Taxi Online | Cabzii`.slice(0, 60);
   const description =
-    `Book ${city} call taxi and cab booking on Cabzii. City, airport and outstation cabs. Sedan, SUV and Innova. Pay 50% to confirm. Tolls extra.`.slice(
+    `Book ${city} call taxi and cab booking on Cabzii. City, airport and outstation cabs. Sedan, SUV and Innova. Tolls extra.`.slice(
       0,
       155
     );

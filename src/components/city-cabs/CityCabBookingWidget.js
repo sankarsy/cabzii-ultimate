@@ -9,9 +9,9 @@ import { cabResultsHref, HOURLY_PACKAGES } from "../../lib/mmtTrip";
 import { useTodayStr } from "../../lib/useTodayStr";
 
 const TRIP_TYPES = [
-  { id: "local", label: "Local Trip", shortLabel: "Local", Icon: CarFront },
+  { id: "local", label: "Local", shortLabel: "Local", Icon: CarFront },
   { id: "outstation", label: "Outstation", shortLabel: "Outstation", Icon: Briefcase },
-  { id: "hourly", label: "Hourly Rental", shortLabel: "Hourly", Icon: Clock },
+  { id: "hourly", label: "Hourly", shortLabel: "Hourly", Icon: Clock },
   { id: "airport", label: "Airport", shortLabel: "Airport", Icon: Plane }
 ];
 

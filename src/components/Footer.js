@@ -28,7 +28,10 @@ export default function Footer() {
           <div>
             <h4 className="text-sm font-semibold text-white">Quick Links</h4>
             <ul className="mt-3 space-y-2 text-sm text-slate-400">
-              {(footerQuickLinks || []).map((link) => (
+              {(footerQuickLinks || [])
+                .filter((link) => !/vendor login|admin login|^buses$|bus tickets/i.test(String(link.label || "")))
+                .filter((link) => !/^\/(locations|car-rental)\/?$/.test(String(link.href || "")))
+                .map((link) => (
                 <li key={link.href}>
                   <a href={link.href} className="transition hover:text-sky-400">
                     {link.label}

@@ -211,7 +211,7 @@ export default function PaymentPage({ searchParams }) {
     type === "bus"
       ? `/buses/passenger?id=${encodeURIComponent(itemId)}&seats=${encodeURIComponent(busSeats)}&boarding=${encodeURIComponent(pickup)}&dropping=${encodeURIComponent(drop)}&total=${total}&date=${encodeURIComponent(date)}`
       : type === "cab" && itemId
-      ? `/cabs/${itemId}`
+      ? `/cabs/passenger?cabId=${encodeURIComponent(itemId)}`
       : type === "driver"
         ? "/call-driver"
         : "/cabs";
@@ -489,7 +489,7 @@ export default function PaymentPage({ searchParams }) {
                   <p>Trip total: ₹{confirmedFare.tripTotal.toLocaleString("en-IN")}</p>
                   {confirmedFare.payMode === "advance" && confirmedFare.advance != null ? (
                     <>
-                      <p>Pay now (50%): ₹{confirmedFare.advance.toLocaleString("en-IN")}</p>
+                      <p>Pay now: ₹{confirmedFare.advance.toLocaleString("en-IN")}</p>
                       <p>Balance at pickup (cash): ₹{(confirmedFare.balance ?? confirmedFare.tripTotal - confirmedFare.advance).toLocaleString("en-IN")}</p>
                     </>
                   ) : (

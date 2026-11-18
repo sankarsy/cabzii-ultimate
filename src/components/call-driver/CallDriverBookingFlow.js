@@ -6,7 +6,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import PlaceAutocomplete from "../PlaceAutocomplete";
 import {
   CALL_DRIVER_AIRPORTS,
-  CALL_DRIVER_SERVICES,
   addCalendarDays,
   callDriverServiceById,
   inclusiveCalendarDays,
@@ -18,7 +17,7 @@ import { upsertEnquiry } from "../../lib/enquiryCapture";
 import { formatInrCurrency } from "../../lib/formatInr";
 import { inputBaseClass, typo } from "../../lib/typography";
 import { SEARCH_FIELD_ICONS, SEARCH_FIELD_ICON_CHIPS } from "../icons/heroIcons";
-import { NativeDateField, NativeTimeField } from "../ui/NativeDateTimeField";
+import { Check } from "../icons/rscIcons";
 import { formatEmtDate, formatTime12 } from "../../lib/emt/heroDates";
 
 const inputCls = `${inputBaseClass} max-sm:min-h-12`;
@@ -42,33 +41,24 @@ const SERVICE_HINTS = {
 function Field({ label, children, className = "", hint = "" }) {
   return (
     <label className={`block ${className}`}>
-      <span className={typo.label}>{label}</span>
+      <span className="text-[13px] font-semibold text-slate-800">{label}</span>
       <div className="mt-1.5">{children}</div>
-      {hint ? <p className="mt-1 text-[11px] leading-snug text-slate-500">{hint}</p> : null}
+      {hint ? <p className="mt-1 text-[11px] leading-snug text-slate-600">{hint}</p> : null}
     </label>
   );
 }
 
-function Section({ title, hint, children }) {
+function Section({ title, hint, children, divided = false }) {
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+    <section className={divided ? "px-4 py-5 sm:px-5" : "rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_8px_24px_rgba(15,23,42,0.06)] sm:p-5"}>
       {title ? (
         <div className="mb-4">
           <h2 className="text-[15px] font-extrabold tracking-tight text-slate-900">{title}</h2>
-          {hint ? <p className="mt-0.5 text-xs text-slate-500">{hint}</p> : null}
+          {hint ? <p className="mt-0.5 text-sm text-slate-600">{hint}</p> : null}
         </div>
       ) : null}
       <div className="space-y-4">{children}</div>
     </section>
-  );
-}
-
-function DateTimeBox({ label, children }) {
-  return (
-    <div className="relative overflow-hidden rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 focus-within:border-[var(--cabzii-brand)] focus-within:ring-2 focus-within:ring-blue-100/80 [&_input[type=date]]:text-transparent [&_input[type=time]]:text-transparent">
-      <p className={typo.label}>{label}</p>
-      <div className="relative mt-0.5 min-h-7">{children}</div>
-    </div>
   );
 }
 
@@ -88,77 +78,17 @@ function Chip({ selected, onClick, children }) {
   );
 }
 
-function ServiceRail({ serviceId, onSelect, layout = "side" }) {
-  if (layout === "tiles") {
-    return (
-      <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-6 lg:hidden">
-        {CALL_DRIVER_SERVICES.map((item) => {
-          const selected = item.id === serviceId;
-          return (
-            <button
-              key={item.id}
-              type="button"
-              onClick={() => onSelect(item.id)}
-              className={`cabzii-tap flex min-h-[3.4rem] flex-col items-center justify-center rounded-xl border px-1 py-2 text-center transition ${
-                selected
-                  ? "border-[var(--cabzii-brand)] bg-[#e8f4ff] text-slate-900"
-                  : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
-              }`}
-            >
-              <span className="text-[12px] font-bold leading-tight">{item.shortTitle}</span>
-            </button>
-          );
-        })}
-      </div>
-    );
-  }
-  return (
-    <nav className="overflow-hidden rounded-xl bg-white" aria-label="Call Driver services">
-      <p className="border-b border-slate-100 px-3.5 py-3 text-[11px] font-bold uppercase tracking-wide text-slate-500">
-        Service
-      </p>
-      <ul>
-        {CALL_DRIVER_SERVICES.map((item) => {
-          const selected = item.id === serviceId;
-          return (
-            <li key={item.id}>
-              <button
-                type="button"
-                onClick={() => onSelect(item.id)}
-                className={`cabzii-tap flex w-full items-center gap-2.5 border-l-[3px] px-3.5 py-3 text-left text-sm font-bold transition ${
-                  selected
-                    ? "border-[var(--cabzii-brand)] bg-[#e8f4ff] text-[var(--cabzii-brand)]"
-                    : "border-transparent text-slate-600 hover:bg-slate-50"
-                }`}
-              >
-                {item.shortTitle}
-              </button>
-            </li>
-          );
-        })}
-      </ul>
-    </nav>
-  );
-}
-
 function ChoiceCard({ selected, onClick, title, subtitle }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`cabzii-tap relative rounded-xl border p-3.5 text-left transition ${
-        selected
-          ? "border-[var(--cabzii-cta)] bg-orange-50 shadow-sm ring-1 ring-[var(--cabzii-cta)]"
-          : "border-slate-200 bg-white hover:border-slate-300"
+      className={`rounded-xl border p-3.5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cabzii-brand)] focus-visible:ring-offset-2 ${
+        selected ? "border-[var(--cabzii-brand)] bg-[var(--cabzii-sky)]" : "border-slate-200 bg-white hover:border-slate-300"
       }`}
     >
-      {selected ? (
-        <span className="absolute right-2.5 top-2.5 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--cabzii-brand)] text-[11px] font-black text-white">
-          ✓
-        </span>
-      ) : null}
-      <span className="block pr-6 text-sm font-bold text-slate-900">{title}</span>
-      <span className="mt-0.5 block text-[11px] leading-snug text-slate-500 sm:text-xs">{subtitle}</span>
+      <span className="block text-sm font-bold text-slate-900">{title}</span>
+      <span className="mt-0.5 block text-xs leading-snug text-slate-600">{subtitle}</span>
     </button>
   );
 }
@@ -235,7 +165,7 @@ function FareBreakdown({ quote, serviceId }) {
     <>
       <p className={typo.label}>Estimated fare</p>
       <p className="mt-1 text-3xl font-extrabold tracking-tight text-slate-900">{formatInrCurrency(quote.total)}</p>
-      <p className="mt-0.5 text-[11px] font-semibold text-slate-500">50% advance to confirm</p>
+      <p className="mt-0.5 text-[11px] font-semibold text-slate-500">Pay now to confirm</p>
       <ul className="mt-3 divide-y divide-slate-100 text-sm text-slate-600">
         {(quote.lines || []).map((line) => (
           <li key={line.label} className="flex justify-between gap-3 py-1.5">
@@ -377,17 +307,6 @@ export default function CallDriverBookingFlow() {
         ? form.pickup
         : form.airport
       : form.drop;
-
-  function switchService(id) {
-    if (id === serviceId) return;
-    const params = new URLSearchParams();
-    params.set("service", id);
-    if (form.pickup) params.set("pickup", form.pickup);
-    if (form.drop) params.set("drop", form.drop);
-    if (form.date) params.set("date", form.date);
-    if (form.pickupTime) params.set("time", form.pickupTime);
-    router.push(`/call-driver/book?${params.toString()}`);
-  }
 
   function setTravelDate(date) {
     setForm((prev) => {
@@ -640,7 +559,7 @@ export default function CallDriverBookingFlow() {
     return (
       <div className="section-shell py-12 text-center">
         <p className="text-sm text-slate-600">Select a Call Driver service to continue.</p>
-        <Link href="/call-driver" className="cabzii-btn cabzii-btn-cta cabzii-tap mt-4">
+        <Link href="/call-driver" className="mt-4 inline-flex min-h-11 items-center justify-center rounded-[10px] bg-[var(--cabzii-brand)] px-4 text-sm font-bold text-white">
           View Call Driver services
         </Link>
       </div>
@@ -659,58 +578,42 @@ export default function CallDriverBookingFlow() {
         : "See fare";
 
   return (
-    <div className="bg-[#f4f5f7] pb-28 lg:pb-10">
-      <header className="border-b border-slate-200 bg-white">
-        <div className="section-shell flex flex-wrap items-end justify-between gap-3 py-3.5 sm:py-4">
+    <div className="bg-[#f4f6fa] pb-28 lg:pb-12">
+      <div className="section-shell pt-5 sm:pl-20 sm:pt-6 xl:pl-6">
+        <div className="flex flex-wrap items-end justify-between gap-3">
           <div className="min-w-0">
-            <Link href="/call-driver" className="text-[12px] font-semibold text-[var(--cabzii-brand)]">
-              ← All Call Driver services
+            <Link href="/call-driver" className="text-sm font-semibold text-[var(--cabzii-brand)] hover:underline">
+              All Call Driver services
             </Link>
-            <h1 className="mt-1 text-[1.35rem] font-extrabold leading-tight tracking-tight text-slate-900 sm:text-[1.6rem]">
-              {service.title}
-            </h1>
-            <p className="mt-0.5 max-w-xl text-sm text-slate-600">{SERVICE_HINTS[serviceId] || service.blurb}</p>
+            <h1 className="mt-2 text-2xl font-extrabold leading-tight tracking-tight text-slate-900">{service.title}</h1>
+            <p className="mt-1 max-w-xl text-sm leading-relaxed text-slate-600">{SERVICE_HINTS[serviceId] || service.blurb}</p>
           </div>
-          <ol className="flex items-center gap-2 text-[12px] font-bold text-slate-400 sm:text-[13px]">
-            <li className={step === 1 ? "text-[var(--cabzii-brand)]" : ""}>1 Trip details</li>
-            <li aria-hidden className="text-slate-300">→</li>
-            <li className={step === 2 ? "text-[var(--cabzii-brand)]" : ""}>
-              2 {service.quoteOnly ? "Request" : "Confirm fare"}
-            </li>
-          </ol>
+          <p className="text-sm font-semibold text-slate-500">
+            <span className={step === 1 ? "text-[var(--cabzii-brand)]" : ""}>Trip</span>
+            <span className="mx-2 text-slate-300" aria-hidden>
+              ·
+            </span>
+            <span className={step === 2 ? "text-[var(--cabzii-brand)]" : ""}>{service.quoteOnly ? "Request" : "Fare"}</span>
+          </p>
         </div>
-      </header>
+      </div>
 
-      <div className="section-shell py-4 sm:py-6">
-        <div className="mx-auto w-full max-w-6xl">
-          <div className="mb-4 lg:hidden">
-            <ServiceRail serviceId={serviceId} onSelect={switchService} layout="tiles" />
-          </div>
-          {error ? (
-            <p className="mb-4 rounded-xl bg-rose-50 px-3 py-2.5 text-sm font-medium text-rose-700">{error}</p>
-          ) : null}
+      <div className="section-shell py-4 sm:pl-20 sm:py-5 xl:pl-6">
+        {error ? (
+          <p className="mb-4 rounded-xl bg-rose-50 px-3 py-2.5 text-sm font-medium text-rose-700">{error}</p>
+        ) : null}
 
-          <div className="grid items-start gap-5 lg:grid-cols-[11.5rem_minmax(0,1fr)_22.5rem]">
-            <div className="hidden lg:block">
-              <div className="sticky top-20">
-                <ServiceRail serviceId={serviceId} onSelect={switchService} />
-              </div>
-            </div>
+        <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_22rem]">
             <div className="space-y-4">
-              <section className="overflow-hidden rounded-xl bg-[#e8f4ff] px-4 py-4 sm:px-5">
-                <p className="text-[13px] font-medium text-slate-600">Call Driver · your car</p>
-                <p className="mt-1 text-[18px] font-extrabold text-slate-900">{service.title}</p>
-                <p className="mt-1 text-[13px] leading-relaxed text-slate-600">{SERVICE_HINTS[serviceId] || service.blurb}</p>
-              </section>
               {step === 1 ? (
                 <form
-                  className="space-y-4"
+                  className="divide-y divide-slate-100 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_8px_24px_rgba(15,23,42,0.06)] [&_label]:normal-case [&_label]:tracking-normal [&_label]:text-[13px] [&_label]:font-semibold [&_label]:text-slate-800"
                   onSubmit={(e) => {
                     e.preventDefault();
                     continueToQuote();
                   }}
                 >
-                  <Section title="Trip" hint="Pickup, drop, date and hours for this driver booking.">
+                  <Section divided title="Trip" hint="Pickup, drop, date and hours.">
                   {serviceId === "valet" ? (
                     <Field label="Event / location">
                       <input
@@ -807,18 +710,38 @@ export default function CallDriverBookingFlow() {
                     </Field>
                   ) : null}
 
-                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                    <DateTimeBox label={serviceId === "outstation" ? "Travel date" : "Date"}>
-                      <NativeDateField value={form.date} onChange={setTravelDate} label="" ariaLabel="Travel date" />
-                    </DateTimeBox>
-                    <DateTimeBox label="Pickup time">
-                      <NativeTimeField
-                        value={form.pickupTime}
-                        onChange={(next) => patch("pickupTime", next)}
-                        label=""
-                        ariaLabel="Pickup time"
+                  <div className={`grid grid-cols-1 gap-3 ${hourChips.length ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}>
+                    <Field label={serviceId === "outstation" ? "Travel date" : "Date"}>
+                      <input
+                        type="date"
+                        className={inputCls}
+                        value={form.date}
+                        onChange={(e) => setTravelDate(e.target.value)}
                       />
-                    </DateTimeBox>
+                    </Field>
+                    <Field label="Pickup time">
+                      <input
+                        type="time"
+                        className={inputCls}
+                        value={form.pickupTime}
+                        onChange={(e) => patch("pickupTime", e.target.value)}
+                      />
+                    </Field>
+                    {hourChips.length ? (
+                      <Field label="Hours">
+                        <select
+                          className={inputCls}
+                          value={Number(form.hours)}
+                          onChange={(e) => patch("hours", Number(e.target.value))}
+                        >
+                          {hourChips.map((h) => (
+                            <option key={h} value={h}>
+                              {h} hrs
+                            </option>
+                          ))}
+                        </select>
+                      </Field>
+                    ) : null}
                   </div>
 
                   {serviceId === "outstation" ? (
@@ -843,15 +766,15 @@ export default function CallDriverBookingFlow() {
 
                   {serviceId === "outstation" && form.tripMode !== "one_way" ? (
                     <>
-                      <DateTimeBox label="Return date">
-                        <NativeDateField
-                          value={form.returnDate}
-                          onChange={setReturnDate}
+                      <Field label="Return date">
+                        <input
+                          type="date"
+                          className={inputCls}
                           min={form.date}
-                          label=""
-                          ariaLabel="Return date"
+                          value={form.returnDate}
+                          onChange={(e) => setReturnDate(e.target.value)}
                         />
-                      </DateTimeBox>
+                      </Field>
                       <p className="text-[11px] text-slate-500">
                         {outstationDays} day{outstationDays === 1 ? "" : "s"} · {outstationDays * PER_DAY_HOURS} hrs included
                       </p>
@@ -900,31 +823,10 @@ export default function CallDriverBookingFlow() {
                     </Field>
                   ) : null}
 
-                  {hourChips.length ? (
-                    <div>
-                      <p className={typo.label}>Hours</p>
-                      <div className="mt-1.5 grid grid-cols-3 gap-2 sm:grid-cols-6">
-                        {hourChips.map((h) => (
-                          <button
-                            key={h}
-                            type="button"
-                            onClick={() => patch("hours", h)}
-                            className={`cabzii-tap min-h-11 rounded-xl text-sm font-bold ring-1 transition ${
-                              Number(form.hours) === h
-                                ? "bg-[var(--cabzii-brand)] text-white ring-[var(--cabzii-brand)]"
-                                : "bg-slate-50 text-slate-700 ring-slate-200 hover:bg-white"
-                            }`}
-                          >
-                            {h} hrs
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  ) : null}
                   </Section>
 
                   {showVehicleType ? (
-                    <Section title="Your car" hint="The driver will drive this vehicle.">
+                    <Section divided title="Your car" hint="The driver will drive this vehicle.">
                       <div className="grid grid-cols-2 gap-2">
                         <ChoiceCard
                           selected={form.vehicleType === "standard"}
@@ -951,7 +853,7 @@ export default function CallDriverBookingFlow() {
                   ) : null}
 
                   {serviceId === "outstation" && form.tripMode !== "one_way" ? (
-                    <Section title="Distance">
+                    <Section divided title="Distance">
                       <Field label="Estimated KM (optional)">
                         <input
                           type="number"
@@ -966,7 +868,7 @@ export default function CallDriverBookingFlow() {
                   ) : null}
 
                   {serviceId === "school" ? (
-                    <Section title="School schedule">
+                    <Section divided title="School schedule">
                       <div>
                         <p className={typo.label}>Shift</p>
                         <div className="mt-1.5 grid grid-cols-3 gap-2">
@@ -990,7 +892,7 @@ export default function CallDriverBookingFlow() {
                   ) : null}
 
                   {serviceId === "corporate" ? (
-                    <Section title="Requirement">
+                    <Section divided title="Requirement">
                       <div className="grid grid-cols-2 gap-3">
                         <Field label="Drivers needed">
                           <input
@@ -1032,7 +934,7 @@ export default function CallDriverBookingFlow() {
                   ) : null}
 
                   {serviceId === "valet" ? (
-                    <Section title="Valet team">
+                    <Section divided title="Valet team">
                       <Field label="Drivers">
                         <input
                           type="number"
@@ -1045,7 +947,7 @@ export default function CallDriverBookingFlow() {
                     </Section>
                   ) : null}
 
-                  <Section title="Your details" hint="Cabzii uses this to confirm the booking and assign a driver.">
+                  <Section divided title="Your details" hint="Cabzii uses this to confirm the booking and assign a driver.">
                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                       <Field label="Full name">
                         <input
@@ -1130,13 +1032,13 @@ export default function CallDriverBookingFlow() {
               ) : null}
             </div>
 
-            <aside className="hidden space-y-4 lg:block lg:sticky lg:top-20">
-              <section className="rounded-xl bg-white p-4">
+            <aside className="hidden lg:sticky lg:top-20 lg:block">
+              <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_8px_24px_rgba(15,23,42,0.06)]">
                 <FareBreakdown quote={displayQuote} serviceId={serviceId} />
                 {displayQuote && !displayQuote.quoteOnly ? (
                   <div className="mt-3 flex items-center justify-between gap-3 border-t border-slate-100 pt-3">
                     <span>
-                      <span className="block text-[14px] font-semibold text-slate-800">Pay 50% now</span>
+                      <span className="block text-[14px] font-semibold text-slate-800">Pay now</span>
                       <span className="text-[12px] text-slate-500">Pay rest to the driver</span>
                     </span>
                     <span className="text-[14px] font-bold text-slate-900">
@@ -1159,7 +1061,7 @@ export default function CallDriverBookingFlow() {
                         type="button"
                         onClick={submitQuoteRequest}
                         disabled={submitting}
-                        className="h-12 w-full rounded-xl bg-[var(--cabzii-brand)] text-[15px] font-extrabold uppercase tracking-wide text-white hover:bg-[var(--cabzii-brand-hover)] disabled:opacity-70"
+                        className="flex h-12 w-full items-center justify-center rounded-[10px] bg-[var(--cabzii-brand)] text-[15px] font-bold text-white hover:brightness-110 disabled:opacity-70"
                       >
                         {submitting ? "Sending…" : service.cta}
                       </button>
@@ -1167,7 +1069,7 @@ export default function CallDriverBookingFlow() {
                       <button
                         type="button"
                         onClick={goToCheckout}
-                        className="h-12 w-full rounded-xl bg-[var(--cabzii-brand)] text-[15px] font-extrabold uppercase tracking-wide text-white hover:bg-[var(--cabzii-brand-hover)]"
+                        className="flex h-12 w-full items-center justify-center rounded-[10px] bg-[var(--cabzii-brand)] text-[15px] font-bold text-white hover:brightness-110"
                       >
                         Book this service
                       </button>
@@ -1178,41 +1080,34 @@ export default function CallDriverBookingFlow() {
                     type="button"
                     disabled={quoting}
                     onClick={continueToQuote}
-                    className="mt-3 h-12 w-full rounded-xl bg-[var(--cabzii-brand)] text-[15px] font-extrabold uppercase tracking-wide text-white hover:bg-[var(--cabzii-brand-hover)] disabled:opacity-70"
+                    className="mt-3 flex h-12 w-full items-center justify-center rounded-[10px] bg-[var(--cabzii-brand)] text-[15px] font-bold text-white hover:brightness-110 disabled:opacity-70"
                   >
                     {primaryLabel}
                   </button>
                 )}
-              </section>
-              <section className="rounded-xl bg-white p-4">
-                <h2 className="text-[15px] font-bold text-slate-900">Included</h2>
-                <ul className="mt-2 space-y-2 text-[13px] text-slate-600">
-                  <li className="flex gap-2">
-                    <span className="mt-0.5 font-black text-emerald-600">✓</span>
-                    Professional Cabzii driver assigned after you confirm
-                  </li>
-                  <li className="flex gap-2">
-                    <span className="mt-0.5 font-black text-emerald-600">✓</span>
-                    Driver for your own car — vehicle not supplied
-                  </li>
-                  <li className="flex gap-2">
-                    <span className="mt-0.5 font-black text-emerald-600">✓</span>
-                    50% advance to confirm · balance at pickup
-                  </li>
+                <ul className="mt-4 space-y-2 border-t border-slate-100 pt-3 text-[13px] text-slate-600">
+                  {[
+                    "A driver is assigned after you confirm",
+                    "Driver for your own car — vehicle not supplied",
+                    "Pay now · balance at pickup"
+                  ].map((line) => (
+                    <li key={line} className="flex gap-2">
+                      <Check className="mt-0.5 h-4 w-4 shrink-0 text-[var(--cabzii-brand)]" strokeWidth={2} aria-hidden />
+                      {line}
+                    </li>
+                  ))}
                 </ul>
               </section>
             </aside>
           </div>
-
-        </div>
       </div>
 
-      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-slate-200 bg-white/95 px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-[0_-8px_24px_rgba(15,23,42,0.08)] backdrop-blur lg:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-slate-200 bg-white px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-[0_-8px_24px_rgba(15,23,42,0.08)] lg:hidden">
         {step === 1 ? (
           <div className="flex items-center gap-3">
             {displayQuote && !displayQuote.quoteOnly ? (
               <div className="min-w-0">
-                <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Estimate</p>
+                <p className="text-[11px] font-semibold text-slate-600">Estimate</p>
                 <p className="text-lg font-extrabold leading-none text-slate-900">{formatInrCurrency(displayQuote.total)}</p>
               </div>
             ) : null}
@@ -1220,7 +1115,7 @@ export default function CallDriverBookingFlow() {
               type="button"
               disabled={quoting}
               onClick={continueToQuote}
-              className="cabzii-btn cabzii-btn-cta cabzii-tap min-h-12 flex-1 text-base"
+              className="flex min-h-12 flex-1 items-center justify-center rounded-[10px] bg-[var(--cabzii-brand)] px-4 text-[15px] font-bold text-white disabled:opacity-70"
             >
               {quoting ? "Calculating…" : service.quoteOnly ? "Continue" : "See fare"}
             </button>
@@ -1235,12 +1130,12 @@ export default function CallDriverBookingFlow() {
                 type="button"
                 onClick={submitQuoteRequest}
                 disabled={submitting}
-                className="cabzii-btn cabzii-btn-cta cabzii-tap min-h-12 flex-[2]"
+                className="flex min-h-12 flex-[2] items-center justify-center rounded-[10px] bg-[var(--cabzii-brand)] px-4 text-[15px] font-bold text-white disabled:opacity-70"
               >
                 {submitting ? "Sending…" : service.cta}
               </button>
             ) : (
-              <button type="button" onClick={goToCheckout} className="cabzii-btn cabzii-btn-cta cabzii-tap min-h-12 flex-[2]">
+              <button type="button" onClick={goToCheckout} className="flex min-h-12 flex-[2] items-center justify-center rounded-[10px] bg-[var(--cabzii-brand)] px-4 text-[15px] font-bold text-white">
                 Book · {formatInrCurrency(quote?.total || 0)}
               </button>
             )}

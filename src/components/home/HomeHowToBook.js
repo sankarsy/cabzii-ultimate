@@ -2,20 +2,20 @@ import HomeSectionHeader from "./HomeSectionHeader";
 
 const STEPS = [
   {
-    title: "Search your trip",
-    subtitle: "Add pickup, drop and date. Choose local, airport or outstation."
+    title: "Enter pickup and drop",
+    subtitle: "Choose Local, Airport, or Outstation, then add the places and the time."
   },
   {
-    title: "Compare cabs",
-    subtitle: "Hatchback, sedan, SUV and Tempo Traveller with fares shown first."
+    title: "Verify your mobile",
+    subtitle: "Confirm the number so the driver details and fare updates reach you."
   },
   {
-    title: "Confirm your booking",
-    subtitle: "Check pickup, cab and fare, then confirm. Use CABZII500 for ₹200 off the first outstation trip."
+    title: "Choose a cab and the fare",
+    subtitle: "Hatchback, sedan, MPV, SUV, van, or bus. The fare is shown before you confirm."
   },
   {
-    title: "Get driver details",
-    subtitle: "Driver name and number on SMS or WhatsApp after confirmation."
+    title: "Book the ride",
+    subtitle: "Confirm pickup, cab, and fare. Driver name and number follow on SMS or WhatsApp."
   }
 ];
 
@@ -26,7 +26,7 @@ export default function HomeHowToBook() {
         <HomeSectionHeader
           eyebrow="Booking"
           title="How to book"
-          subtitle="Search, compare cabs, confirm the fare, then get driver details."
+          subtitle="Pickup and drop, mobile check, cab and fare, then the booking."
         />
         <ol className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {STEPS.map((step, index) => (

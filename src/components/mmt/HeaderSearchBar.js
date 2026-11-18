@@ -4,7 +4,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { resolveSiteSearchHref } from "../../lib/siteSearch";
 
-const PLACEHOLDER = "Search cabs, buses, drivers, routes...";
+const PLACEHOLDER = "City, route, or help";
 
 function SearchLineIcon({ className }) {
   return (
@@ -71,8 +71,8 @@ export default function HeaderSearchBar({
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder={compact ? "Search cabs, drivers…" : PLACEHOLDER}
-          aria-label="Search cabs, drivers, routes and more"
+          placeholder={PLACEHOLDER}
+          aria-label="Search cities, routes, and help"
           enterKeyHint="search"
           className={`min-w-0 flex-1 appearance-none border-0 bg-transparent text-slate-900 outline-none ring-0 placeholder:text-slate-400 focus:border-0 focus:ring-0 [&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-decoration]:appearance-none ${
             compact ? "text-[13px] sm:text-sm" : "text-[15px] sm:text-base"
@@ -81,7 +81,7 @@ export default function HeaderSearchBar({
         {compact ? (
           <button
             type="submit"
-            className="cabzii-tap inline-flex h-8 shrink-0 items-center justify-center rounded-full bg-[var(--cabzii-cta)] px-3.5 text-xs font-bold text-white hover:bg-[var(--cabzii-cta-hover)]"
+            className="cabzii-tap inline-flex h-8 shrink-0 items-center justify-center rounded-full bg-[var(--cabzii-cta)] px-3.5 text-xs font-bold text-[var(--cabzii-ink)] hover:bg-[var(--cabzii-cta-hover)]"
           >
             Search
           </button>

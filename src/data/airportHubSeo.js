@@ -7,7 +7,7 @@ export const AIRPORT_HUB_SEO = {
   chennai: {
     title: "Chennai Airport Cabs | Pickup & Drop | Cabzii",
     description:
-      "Book Chennai airport (MAA) pickup and drop on Cabzii. Sedan, SUV and Innova. Pay 50% to confirm. Fuel and driver included; parking and tolls extra.",
+      "Book Chennai airport (MAA) pickup and drop on Cabzii. Sedan, SUV and Innova. Fuel and driver included; parking and tolls extra.",
     keywords:
       "chennai airport taxi, chennai airport cab booking, maa airport pickup, chennai airport drop cab, airport taxi chennai",
     h1: "Chennai Airport Cabs | Cabzii Airport Pickup & Drop",
@@ -38,13 +38,13 @@ export const AIRPORT_HUB_SEO = {
   trichy: {
     title: "Trichy Airport Cabs | Pickup & Drop | Cabzii",
     description:
-      "Book Trichy airport (TRZ) pickup and drop on Cabzii. Sedan, SUV and Innova. Pay 50% to confirm. Fuel and driver included; parking and tolls extra.",
+      "Book Trichy airport (TRZ) pickup and drop on Cabzii. Sedan, SUV and Innova. Fuel and driver included; parking and tolls extra.",
     keywords:
       "trichy airport taxi, tiruchi airport cab, trz airport pickup, trichy airport drop, airport taxi trichy",
     h1: "Trichy Airport Cabs | Cabzii Airport Pickup & Drop",
     lead: "Book pickup or drop at Tiruchirappalli International Airport (TRZ). Fares show before you pay.",
     aboutCity:
-      "Tiruchirappalli International Airport (TRZ) serves Trichy / Tiruchi. Cabzii covers terminal pickup, city drops such as Srirangam and Central Bus Stand, and onward outstation from the airport city — after you confirm the fare and pay the published 50% advance.",
+      "Tiruchirappalli International Airport (TRZ) serves Trichy / Tiruchi. Cabzii covers terminal pickup, city drops such as Srirangam and Central Bus Stand, and onward outstation from the airport city — after you confirm the fare.",
     airportDetails:
       "Tiruchirappalli International Airport (TRZ). Enter TRZ or the terminal name as From for arrivals. Parking and extra km are listed on the quote.",
     drops: [
@@ -69,7 +69,7 @@ export const AIRPORT_HUB_SEO = {
   madurai: {
     title: "Madurai Airport Cabs | Pickup & Drop | Cabzii",
     description:
-      "Book Madurai airport (IXM) pickup and drop on Cabzii. Sedan, SUV and Innova. Pay 50% to confirm. Fuel and driver included; parking and tolls extra.",
+      "Book Madurai airport (IXM) pickup and drop on Cabzii. Sedan, SUV and Innova. Fuel and driver included; parking and tolls extra.",
     keywords:
       "madurai airport taxi, madurai airport cab booking, ixm airport pickup, madurai airport drop, airport taxi madurai",
     h1: "Madurai Airport Cabs | Cabzii Airport Pickup & Drop",
@@ -100,7 +100,7 @@ export const AIRPORT_HUB_SEO = {
   coimbatore: {
     title: "Coimbatore Airport Cabs | Pickup & Drop | Cabzii",
     description:
-      "Book Coimbatore airport (CJB) pickup and drop on Cabzii. Sedan, SUV and Innova. Pay 50% to confirm. Fuel and driver included; parking and tolls extra.",
+      "Book Coimbatore airport (CJB) pickup and drop on Cabzii. Sedan, SUV and Innova. Fuel and driver included; parking and tolls extra.",
     keywords:
       "coimbatore airport taxi, cjb airport cab, coimbatore airport pickup, coimbatore airport drop, airport taxi coimbatore",
     h1: "Coimbatore Airport Cabs | Cabzii Airport Pickup & Drop",
@@ -131,7 +131,7 @@ export const AIRPORT_HUB_SEO = {
   bengaluru: {
     title: "Bengaluru Airport Taxi | BLR Pickup & Drop | Cabzii",
     description:
-      "Book Kempegowda Airport (BLR) pickup and drop on Cabzii. Sedan, SUV and Innova to Whitefield, Electronic City or MG Road. Pay 50% to confirm. Parking extra.",
+      "Book Kempegowda Airport (BLR) pickup and drop on Cabzii. Sedan, SUV and Innova to Whitefield, Electronic City or MG Road. Parking extra.",
     keywords:
       "bangalore airport taxi, bengaluru airport cab, blr airport pickup, kempegowda airport taxi, airport taxi bangalore",
     h1: "Bengaluru Airport Taxi — BLR Pickup and Drop",
@@ -150,7 +150,7 @@ export const AIRPORT_HUB_SEO = {
   pondicherry: {
     title: "Pondicherry Airport Taxi | PNY Pickup | Cabzii",
     description:
-      "Book Pondicherry Airport (PNY) pickup and drop on Cabzii. Small commercial field — many visitors still arrive by road from Chennai on ECR. Pay 50% to confirm.",
+      "Book Pondicherry Airport (PNY) pickup and drop on Cabzii. Small commercial field — many visitors still arrive by road from Chennai on ECR.",
     keywords:
       "pondicherry airport taxi, puducherry airport cab, pny airport pickup, pondicherry airport drop, airport taxi pondicherry",
     h1: "Pondicherry Airport Taxi — PNY Pickup and Drop",
@@ -169,7 +169,7 @@ export const AIRPORT_HUB_SEO = {
   tirupati: {
     title: "Tirupati Airport Cabs | TIR Pickup & Drop | Cabzii",
     description:
-      "Book Tirupati airport (TIR) pickup and drop on Cabzii. Sedan, SUV and Innova to Alipiri and city hotels. Pay 50% to confirm. Parking and tolls extra.",
+      "Book Tirupati airport (TIR) pickup and drop on Cabzii. Sedan, SUV and Innova to Alipiri and city hotels. Parking and tolls extra.",
     keywords:
       "tirupati airport taxi, tir airport cab, tirupati airport pickup, tirupati airport drop, airport taxi tirupati",
     h1: "Tirupati Airport Cabs | Cabzii Airport Pickup & Drop",
@@ -188,7 +188,7 @@ export const AIRPORT_HUB_SEO = {
   vellore: {
     title: "Vellore Airport Transfer | MAA BLR TIR | Cabzii",
     description:
-      "Vellore has no commercial passenger airport. Book a Cabzii transfer to Chennai (MAA), Bengaluru (BLR) or Tirupati (TIR). Pay 50% to confirm. Tolls extra.",
+      "Vellore has no commercial passenger airport. Book a Cabzii transfer to Chennai (MAA), Bengaluru (BLR) or Tirupati (TIR). Tolls extra.",
     keywords:
       "vellore airport transfer, vellore to chennai airport cab, vellore to bangalore airport, vellore to tirupati airport, maa transfer vellore",
     h1: "Vellore Airport Transfer — Chennai, Bengaluru or Tirupati",

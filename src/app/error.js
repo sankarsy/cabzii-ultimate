@@ -1,17 +1,22 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 
 export default function Error({ error, reset }) {
+  useEffect(() => {
+    console.error(error);
+  }, [error]);
+
+  const detail = error?.message || error?.digest || "";
+
   return (
     <main className="mx-auto flex min-h-[50vh] max-w-lg flex-col items-center justify-center px-4 py-16 text-center">
       <h1 className="text-2xl font-extrabold text-slate-900">Something went wrong</h1>
       <p className="mt-3 text-sm text-slate-600">
         Please try again, go back to the homepage, or get a quote on WhatsApp.
       </p>
-      <p className="mt-4 max-w-full break-words text-sm font-semibold text-rose-700">
-        {error?.message || String(error || "Unknown error")}
-      </p>
+      {detail ? <p className="mt-4 max-w-full break-words text-sm font-semibold text-rose-700">{detail}</p> : null}
       <div className="mt-6 flex flex-wrap justify-center gap-3">
         <button type="button" onClick={() => reset?.()} className="cabzii-btn cabzii-btn-primary">
           Try again

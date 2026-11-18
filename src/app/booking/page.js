@@ -12,7 +12,7 @@ function CabTourBooking({ searchParams }) {
 
   useEffect(() => {
     if (itemType === "cab" && itemId && !searchParams?.step) {
-      router.replace(`/cabs/${encodeURIComponent(itemId)}`);
+      router.replace(`/cabs/passenger?cabId=${encodeURIComponent(itemId)}`);
     }
     if (itemType === "driver" && itemId && !searchParams?.step) {
       router.replace("/call-driver");

@@ -571,7 +571,7 @@ main h3,
 }
 .hero-route-fare {
   opacity: 0;
-  animation: hero-fare-pop 0.5s 4.2s forwards;
+  animation: hero-fare-pop 0.45s 0.2s forwards;
 }
 @keyframes hero-fare-pop {
   to {
@@ -934,70 +934,6 @@ main h3,
     color: #fff;
     background: rgba(255, 255, 255, 0.14);
   }
-}
-
-.emt-hero-feature {
-  display: inline-flex;
-  min-width: 0;
-  flex-direction: row;
-  align-items: center;
-  gap: 0.5rem;
-  border: 1px solid transparent;
-  border-radius: 9999px;
-  padding: 0.375rem 0.875rem 0.375rem 0.375rem;
-  margin: 0.1rem 0.05rem;
-  font-size: 0.6875rem;
-  font-weight: 600;
-  white-space: nowrap;
-  color: #64748b;
-  transition: color 0.15s, border-color 0.15s, background 0.15s, box-shadow 0.15s;
-}
-@media (min-width: 640px) {
-  .emt-hero-feature {
-    padding: 0.4375rem 1rem 0.4375rem 0.4375rem;
-    font-size: 0.75rem;
-  }
-}
-.emt-hero-feature:hover,
-.emt-hero-feature:focus-visible {
-  color: #334155;
-  background: #f8fafc;
-  border-color: #e2e8f0;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
-  outline: none;
-}
-.emt-hero-feature-icon {
-  display: inline-flex;
-  height: 1.75rem;
-  width: 1.75rem;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  border-radius: 9999px;
-  transition: transform 0.15s, box-shadow 0.15s;
-}
-@media (min-width: 640px) {
-  .emt-hero-feature-icon {
-    height: 1.875rem;
-    width: 1.875rem;
-  }
-}
-.emt-hero-feature:hover .emt-hero-feature-icon {
-  transform: scale(1.04);
-}
-.emt-hero-features-scroll {
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  justify-content: flex-start;
-}
-@media (min-width: 768px) {
-  .emt-hero-features-scroll {
-    justify-content: center;
-  }
-}
-.emt-hero-features-scroll::-webkit-scrollbar {
-  display: none;
 }
 
 /* EMT hero pills + search card */

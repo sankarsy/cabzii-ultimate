@@ -1,6 +1,5 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import {
   AVAILABILITY_STATUS_OPTIONS,
   BRAND_OPTIONS,
@@ -19,12 +18,6 @@ import AdminSearchSelect from "../AdminSearchSelect";
 import ImageUploadField from "../ImageUploadField";
 import VehiclePackageEditor from "./VehiclePackageEditor";
 import VehicleGalleryEditor from "./VehicleGalleryEditor";
-import VehicleSeoPreview from "./VehicleSeoPreview";
-
-const SeoRichTextEditor = dynamic(() => import("./SeoRichTextEditor"), {
-  ssr: false,
-  loading: () => <div className="h-40 animate-pulse rounded-lg border border-slate-200 bg-slate-50" />
-});
 
 function Field({ label, children, hint }) {
   return (
@@ -158,44 +151,6 @@ export default function VehicleForm({
             <Checkbox label="Featured" checked={form.featured} onChange={(v) => patch({ featured: v })} disabled={disabled} />
             <Checkbox label="Recommended" checked={form.recommended} onChange={(v) => patch({ recommended: v })} disabled={disabled} />
             <Checkbox label="Best seller" checked={form.bestseller} onChange={(v) => patch({ bestseller: v })} disabled={disabled} />
-          </div>
-
-          <div className="sm:col-span-2 space-y-3 rounded-xl border border-sky-100 bg-sky-50/40 p-3 sm:p-4">
-            <div>
-              <p className="text-sm font-bold text-slate-900">Page content</p>
-              <p className="mt-0.5 text-[11px] text-slate-600">
-                Optional copy on the public vehicle page. City, airport and acting-driver ranking lives on Google SEO pages — not on each cab package.
-              </p>
-            </div>
-            <Field label="Short description" hint="1–2 lines under the heading">
-              <textarea
-                className={`${inputCls()} min-h-[64px]`}
-                disabled={disabled}
-                value={form.shortDescription || ""}
-                onChange={(e) => patch({ shortDescription: e.target.value })}
-                placeholder="Book Honda Amaze in Chennai for airport, local and outstation trips…"
-              />
-            </Field>
-            <Field label="Page heading (H1)" hint="Optional — defaults to vehicle name">
-              <input
-                className={inputCls()}
-                disabled={disabled}
-                value={form.h1 || ""}
-                onChange={(e) => patch({ h1: e.target.value })}
-                placeholder="Honda Amaze Cab Rental in Chennai"
-              />
-            </Field>
-            <div>
-              <p className="mb-1 text-xs font-semibold text-slate-600">Full page content</p>
-              <SeoRichTextEditor
-                value={form.longSeoContent || ""}
-                disabled={disabled}
-                onChange={(html) => patch({ longSeoContent: html })}
-              />
-              <p className="mt-1 text-[11px] text-slate-500">
-                Cover seating, local rental, outstation, and airport/corporate/pilgrimage only if this vehicle actually offers them. Do not invent specs.
-              </p>
-            </div>
           </div>
         </div>
       )}
@@ -449,7 +404,6 @@ export default function VehicleForm({
               </div>
             ))}
           </div>
-          <VehicleSeoPreview form={form} />
         </div>
       )}
     </div>

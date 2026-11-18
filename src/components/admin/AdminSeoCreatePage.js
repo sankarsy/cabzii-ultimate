@@ -36,7 +36,7 @@ function suggestCopy(kind, form, name) {
     return {
       productName: `Hire Call Drivers in ${name}`,
       seoTitle: title.length <= 60 ? title : `Call Drivers in ${name} | Acting Driver | Cabzii`,
-      seoDescription: `Hire a Cabzii call driver / acting driver in ${name} for your own car — city, outstation and airport. Pay 50% to confirm. Fuel and driver included; tolls extra.`,
+      seoDescription: `Hire a Cabzii call driver / acting driver in ${name} for your own car — city, outstation and airport. Fuel and driver included; tolls extra.`,
       seoKeywords: `acting driver in ${name.toLowerCase()}, outstation acting driver, call driver ${name.toLowerCase()}, cabzii`
     };
   }
@@ -52,7 +52,7 @@ function suggestCopy(kind, form, name) {
     return {
       productName: `Cab booking in ${name}`,
       seoTitle: `Cab Booking in ${name} | Airport Taxi | Cabzii`.slice(0, 60),
-      seoDescription: `Book airport taxi, local package and outstation cabs in ${name}. Pay 50% now. First outstation ₹200 off (CABZII500). Tolls extra.`,
+      seoDescription: `Book airport taxi, local package and outstation cabs in ${name}. First outstation ₹200 off (CABZII500). Tolls extra.`,
       seoKeywords: `cab booking ${name.toLowerCase()}, airport taxi ${name.toLowerCase()}, outstation cab, cabzii`
     };
   }

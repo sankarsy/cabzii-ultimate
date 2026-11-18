@@ -6,7 +6,7 @@ import { searchPublicCatalog } from "../../lib/siteSearchCatalog";
 import CabCard from "../../components/CabCard";
 import SearchHitList from "../../components/search/SearchHitList";
 import SearchPageSearchBar from "../../components/search/SearchPageSearchBar";
-import { catalogPublicPath } from "../../lib/catalogProduct";
+import { cabBookingPath } from "../../lib/catalogProduct";
 import { getBackendUrl } from "../../lib/seo";
 
 const BACKEND_URL = getBackendUrl();
@@ -197,7 +197,7 @@ export default async function SearchPage({ searchParams }) {
                 </div>
                 <div className="mt-4 grid grid-cols-2 gap-2.5 sm:gap-3 md:grid-cols-3 lg:grid-cols-4">
                   {matchingCabs.map((cab) => (
-                    <CabCard key={String(cab._id ?? cab.id)} cab={cab} bookHref={catalogPublicPath(cab, "/cabs")} />
+                    <CabCard key={String(cab._id ?? cab.id)} cab={cab} bookHref={cabBookingPath(cab)} />
                   ))}
                 </div>
               </section>

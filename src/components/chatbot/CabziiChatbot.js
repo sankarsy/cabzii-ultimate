@@ -424,7 +424,7 @@ export default function CabziiChatbot() {
           ref={launcherRef}
           type="button"
           onClick={handleOpen}
-          className={`cabzii-chat-launcher cabzii-tap fixed z-[60] ${mobileBottomClass} right-4 flex h-14 w-14 items-center justify-center rounded-full border-0 bg-transparent p-0 shadow-[0_8px_28px_rgba(0,86,210,0.35)] transition hover:scale-[1.05] sm:right-5 sm:h-auto sm:w-auto sm:gap-2 sm:px-4 sm:py-3 sm:text-white sm:shadow-[0_8px_32px_rgba(0,86,210,0.4)] sm:[background:var(--cabzii-gradient-brand)]`}
+          className={`cabzii-chat-launcher cabzii-tap fixed z-[60] ${mobileBottomClass} right-4 hidden h-14 w-14 items-center justify-center rounded-full border-0 bg-transparent p-0 shadow-[0_8px_28px_rgba(0,86,210,0.35)] transition hover:scale-[1.05] sm:right-5 sm:flex sm:h-auto sm:w-auto sm:gap-2 sm:px-4 sm:py-3 sm:text-white sm:shadow-[0_8px_32px_rgba(0,86,210,0.4)] sm:[background:var(--cabzii-gradient-brand)]`}
           aria-label="Chat with Zii, Cabzii AI assistant"
         >
           <ZiiAvatar className="h-14 w-14 sm:hidden" />

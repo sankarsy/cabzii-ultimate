@@ -11,6 +11,6 @@ export default function Image({ params }) {
   const name = city && isMainPageCity(city.slug) ? city.name : "India";
   return cabziiOgImage({
     headline: `Taxi Service in ${name}`,
-    subline: "Outstation · Airport · Local cabs · Pay 50% to confirm"
+    subline: "Outstation · Airport · Local cabs"
   });
 }

@@ -14,7 +14,6 @@ export const CORE_INTERNAL_LINKS = [
   { href: "/chennai/outstation/chennai-to-tirupati", label: "Chennai to Tirupati", desc: "One-way and round-trip cab" },
   { href: "/call-driver", label: "Call Driver", desc: "Acting driver for your own car" },
   { href: "/acting-driver", label: "Acting driver cities", desc: "City chauffeur-on-hire pages" },
-  { href: "/locations", label: "Service locations", desc: "Pickup points by city" },
   { href: "/blogs", label: "Travel blog", desc: "Tips & route guides" }
 ];
 

@@ -4,7 +4,7 @@ import MmtCabResultCard from "../mmt/MmtCabResultCard";
 import MmtHomeCatalogSection, { MmtHomeCatalogScroll, MmtHomeCatalogScrollItem } from "../mmt/MmtHomeCatalogSection";
 import { DEFAULT_HQ_CITY } from "../../lib/vehicleAdminConfig";
 
-const HOME_FLEET_SUBTITLE = `Sedan, hatchback, MPV & SUV taxi cars · ${DEFAULT_HQ_CITY}`;
+const HOME_FLEET_SUBTITLE = `Hatchback, Sedan, Sedan Premium, MPV, Innova & Urbania · ${DEFAULT_HQ_CITY}`;
 
 export default function HomeFleetSection({ cabs = [], loading = false, isEmpty = false }) {
   return (

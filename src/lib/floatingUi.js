@@ -26,10 +26,13 @@ export function isCatalogDetailPage(pathname) {
 
 export function shouldHideFloatingUi(pathname) {
   if (!pathname) return false;
+  if (pathname === "/cabs") return true;
   return FLOATING_UI_HIDDEN_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 }
 
 /** Global mobile sticky bar — hidden on detail pages that provide their own CTA bar. */
 export function shouldHideStickyBookingBar(pathname) {
+  if (!pathname) return false;
+  if (pathname === "/cabs") return false;
   return shouldHideFloatingUi(pathname) || isCatalogDetailPage(pathname);
 }

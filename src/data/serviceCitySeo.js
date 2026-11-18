@@ -7,7 +7,7 @@ export const SERVICE_CITY_SEO = {
   chennai: {
     "outstation-cab": {
       description:
-        "Outstation cabs from Chennai on Cabzii — Tirupati, Madurai, Trichy and Coimbatore round trips. Sedan, SUV or Innova. Pay 50% to confirm. Tolls extra.",
+        "Outstation cabs from Chennai on Cabzii — Tirupati, Madurai, Trichy and Coimbatore round trips. Sedan, SUV or Innova. Tolls extra.",
       keywords: "outstation cab chennai, chennai outstation taxi, round trip cab chennai, highway cab from chennai, cabzii outstation"
     },
     "one-way-cab": {
@@ -24,7 +24,7 @@ export const SERVICE_CITY_SEO = {
   madurai: {
     "outstation-cab": {
       description:
-        "Outstation cabs from Madurai on Cabzii — Rameswaram, Kanyakumari, Trichy and Chennai round trips. Sedan, SUV or Innova. Pay 50% to confirm. Tolls extra.",
+        "Outstation cabs from Madurai on Cabzii — Rameswaram, Kanyakumari, Trichy and Chennai round trips. Sedan, SUV or Innova. Tolls extra.",
       keywords: "outstation cab madurai, madurai outstation taxi, rameswaram cab from madurai, highway cab madurai, cabzii outstation"
     },
     "one-way-cab": {
@@ -39,14 +39,14 @@ export const SERVICE_CITY_SEO = {
     },
     "airport-taxi": {
       description:
-        "Madurai Airport (IXM) pickup and drop on Cabzii. City drops to Meenakshi Temple, Anna Nagar and Mattuthavani. Pay 50% to confirm. Parking extra unless listed.",
+        "Madurai Airport (IXM) pickup and drop on Cabzii. City drops to Meenakshi Temple, Anna Nagar and Mattuthavani. Parking extra unless listed.",
       keywords: "madurai airport taxi, ixm airport cab, madurai airport pickup, madurai airport drop, cabzii airport"
     }
   },
   coimbatore: {
     "outstation-cab": {
       description:
-        "Outstation cabs from Coimbatore on Cabzii — Ooty, Palani, Madurai and Chennai round trips. Hill roads usually compare SUV. Pay 50% to confirm. Tolls extra.",
+        "Outstation cabs from Coimbatore on Cabzii — Ooty, Palani, Madurai and Chennai round trips. Hill roads usually compare SUV. Tolls extra.",
       keywords: "outstation cab coimbatore, coimbatore outstation taxi, ooty cab from coimbatore, palani cab coimbatore, cabzii outstation"
     },
     "one-way-cab": {
@@ -68,7 +68,7 @@ export const SERVICE_CITY_SEO = {
   trichy: {
     "outstation-cab": {
       description:
-        "Outstation cabs from Trichy on Cabzii — Thanjavur, Velankanni, Madurai, Chennai and Tirupati round trips. Sedan, SUV or Innova. Pay 50% to confirm. Tolls extra.",
+        "Outstation cabs from Trichy on Cabzii — Thanjavur, Velankanni, Madurai, Chennai and Tirupati round trips. Sedan, SUV or Innova. Tolls extra.",
       keywords: "outstation cab trichy, trichy outstation taxi, thanjavur cab from trichy, velankanni cab trichy, cabzii outstation"
     },
     "one-way-cab": {
@@ -83,14 +83,14 @@ export const SERVICE_CITY_SEO = {
     },
     "airport-taxi": {
       description:
-        "Trichy Airport (TRZ) pickup and drop on Cabzii. City drops to Srirangam, Central Bus Stand and Cantonment. Pay 50% to confirm. Parking extra unless listed.",
+        "Trichy Airport (TRZ) pickup and drop on Cabzii. City drops to Srirangam, Central Bus Stand and Cantonment. Parking extra unless listed.",
       keywords: "trichy airport taxi, trz airport cab, tiruchi airport pickup, trichy airport drop, cabzii airport"
     }
   },
   tirupati: {
     "outstation-cab": {
       description:
-        "Outstation cabs from Tirupati on Cabzii — Chennai and Vellore round trips after darshan. Sedan, SUV or Innova. Pay 50% to confirm. Tolls extra.",
+        "Outstation cabs from Tirupati on Cabzii — Chennai and Vellore round trips after darshan. Sedan, SUV or Innova. Tolls extra.",
       keywords: "outstation cab tirupati, tirupati outstation taxi, tirupati to chennai cab, cabzii outstation"
     },
     "one-way-cab": {
@@ -105,14 +105,14 @@ export const SERVICE_CITY_SEO = {
     },
     "airport-taxi": {
       description:
-        "Tirupati Airport (TIR) pickup and drop on Cabzii. Alipiri and city hotel drops. Pay 50% to confirm. Parking extra unless listed on the quote.",
+        "Tirupati Airport (TIR) pickup and drop on Cabzii. Alipiri and city hotel drops. Parking extra unless listed on the quote.",
       keywords: "tirupati airport taxi, tir airport cab, tirupati airport pickup, tirupati airport drop, cabzii airport"
     }
   },
   bengaluru: {
     "outstation-cab": {
       description:
-        "Outstation cabs from Bengaluru on Cabzii — Mysore, Chennai, Madurai and Tirupati round trips. Sedan, SUV or Innova. Pay 50% to confirm. Tolls extra.",
+        "Outstation cabs from Bengaluru on Cabzii — Mysore, Chennai, Madurai and Tirupati round trips. Sedan, SUV or Innova. Tolls extra.",
       keywords: "outstation cab bengaluru, bangalore outstation taxi, mysore cab from bangalore, chennai cab bengaluru, cabzii outstation"
     },
     "one-way-cab": {
@@ -127,14 +127,14 @@ export const SERVICE_CITY_SEO = {
     },
     "airport-taxi": {
       description:
-        "Kempegowda Airport (BLR) pickup and drop on Cabzii. Whitefield, Electronic City, Koramangala and Majestic drops. Pay 50% to confirm. Parking extra unless listed.",
+        "Kempegowda Airport (BLR) pickup and drop on Cabzii. Whitefield, Electronic City, Koramangala and Majestic drops. Parking extra unless listed.",
       keywords: "bangalore airport taxi, blr airport cab, bengaluru airport pickup, kempegowda airport taxi, cabzii airport"
     }
   },
   vellore: {
     "outstation-cab": {
       description:
-        "Outstation cabs from Vellore on Cabzii — Tirupati, Chennai and Bengaluru round trips. CMC and Katpadi pickups. Pay 50% to confirm. Tolls extra.",
+        "Outstation cabs from Vellore on Cabzii — Tirupati, Chennai and Bengaluru round trips. CMC and Katpadi pickups. Tolls extra.",
       keywords: "outstation cab vellore, vellore outstation taxi, vellore to tirupati cab, vellore to chennai cab, cabzii outstation"
     },
     "one-way-cab": {
@@ -156,7 +156,7 @@ export const SERVICE_CITY_SEO = {
   kodaikanal: {
     "outstation-cab": {
       description:
-        "Outstation cabs from Kodaikanal on Cabzii — Madurai, Palani and Tamil Nadu towns. Ghat-ready SUV options. Pay 50% to confirm. Tolls extra.",
+        "Outstation cabs from Kodaikanal on Cabzii — Madurai, Palani and Tamil Nadu towns. Ghat-ready SUV options. Tolls extra.",
       keywords: "outstation cab kodaikanal, kodaikanal to madurai cab, kodai outstation taxi, cabzii outstation"
     },
     "one-way-cab": {
@@ -173,7 +173,7 @@ export const SERVICE_CITY_SEO = {
   ooty: {
     "outstation-cab": {
       description:
-        "Outstation cabs from Ooty on Cabzii — Coimbatore, Coonoor, Mysore and Chennai. Ghat-ready cars. Pay 50% to confirm. Tolls extra.",
+        "Outstation cabs from Ooty on Cabzii — Coimbatore, Coonoor, Mysore and Chennai. Ghat-ready cars. Tolls extra.",
       keywords: "outstation cab ooty, ooty to coimbatore cab, udhagamandalam outstation taxi, cabzii outstation"
     },
     "one-way-cab": {
@@ -190,7 +190,7 @@ export const SERVICE_CITY_SEO = {
   pondicherry: {
     "outstation-cab": {
       description:
-        "Outstation cabs from Pondicherry on Cabzii — Chennai ECR, Tirupati and Tamil Nadu temple towns. White Town pickups. Pay 50% to confirm. Tolls extra.",
+        "Outstation cabs from Pondicherry on Cabzii — Chennai ECR, Tirupati and Tamil Nadu temple towns. White Town pickups. Tolls extra.",
       keywords: "outstation cab pondicherry, puducherry outstation taxi, pondicherry to chennai cab, ecr cab pondicherry, cabzii outstation"
     },
     "one-way-cab": {
@@ -212,7 +212,7 @@ export const SERVICE_CITY_SEO = {
   sabarimala: {
     "outstation-cab": {
       description:
-        "Outstation cabs to Sabarimala on Cabzii — Pamba and Nilakkal from Tamil Nadu and Kochi. No Sannidhanam drop. Pay 50% to confirm. Tolls extra.",
+        "Outstation cabs to Sabarimala on Cabzii — Pamba and Nilakkal from Tamil Nadu and Kochi. No Sannidhanam drop. Tolls extra.",
       keywords: "outstation cab sabarimala, sabarimalai taxi, pamba outstation cab, cabzii outstation"
     },
     "one-way-cab": {
@@ -229,7 +229,7 @@ export const SERVICE_CITY_SEO = {
   ayyappankovil: {
     "outstation-cab": {
       description:
-        "Outstation cabs to Ayyappan Kovil (Idukki) on Cabzii. Ghat-ready cars. Not a Sabarimala Sannidhanam drop. Pay 50% to confirm. Tolls extra.",
+        "Outstation cabs to Ayyappan Kovil (Idukki) on Cabzii. Ghat-ready cars. Not a Sabarimala Sannidhanam drop. Tolls extra.",
       keywords: "outstation cab ayyappan kovil, idukki ayyappa taxi, ayyappankovil outstation, cabzii"
     },
     "one-way-cab": {

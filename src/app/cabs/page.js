@@ -1,27 +1,29 @@
 import JsonLd from "../../components/seo/JsonLd";
-import CabsBrowsePage from "../../components/mmt/CabsBrowsePage";
-import PopularFleetSeo from "../../components/seo/PopularFleetSeo";
-import CabsCategorySeo from "../../components/seo/CabsCategorySeo";
-import RelatedSeoLinks from "../../components/seo/RelatedSeoLinks";
+import CityCabLandingPage from "../../components/city-cabs/CityCabLandingPage";
+import { getCityCabData } from "../../data/city-cabs";
 import { cabsCatalogJsonLd } from "../../lib/seo";
-import { fetchSiteSettings } from "../../lib/serverSiteSettings";
+import { fetchCabsForTrip, fetchCatalogList } from "../../lib/serverCatalog";
 
 export default async function CabsPage() {
-  const settings = await fetchSiteSettings();
-  const stored = settings?.pageSeo?.["/cabs"] || {};
+  const data = getCityCabData("chennai");
+  const [cabs, testimonialRows] = await Promise.all([
+    data ? fetchCabsForTrip(data.bookingTrip, 100) : Promise.resolve([]),
+    fetchCatalogList("testimonials", 8)
+  ]);
+  const quotes = (Array.isArray(testimonialRows) ? testimonialRows : [])
+    .filter((row) => row && !row.sampleReview && String(row.message || "").trim())
+    .slice(0, 2);
+
   return (
     <>
       <JsonLd data={cabsCatalogJsonLd()} />
-      <CabsBrowsePage
-        heading={stored.h1 || stored.productName || ""}
-        intro={stored.intro || ""}
-        extraBody={stored.html || ""}
-      />
-      <div className="section-shell space-y-8 pb-10">
-        <PopularFleetSeo cityName="Chennai" citySlug="chennai" />
-        <RelatedSeoLinks page="cabs" />
-      </div>
-      <CabsCategorySeo />
+      {data ? (
+        <CityCabLandingPage
+          data={{ ...data, path: "/cabs" }}
+          cabs={JSON.parse(JSON.stringify(cabs || []))}
+          quotes={JSON.parse(JSON.stringify(quotes || []))}
+        />
+      ) : null}
     </>
   );
 }

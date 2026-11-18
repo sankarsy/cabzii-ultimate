@@ -19,11 +19,10 @@ export const STATIC_PAGE_SEO_LIST = [
     type: "site",
     typeLabel: "Cabs listing",
     productName: "Book Cabs Online",
-    seoTitle: formatSerpTitle("Book Cabs Online", "Compare Dzire to Tempo"),
+    seoTitle: formatSerpTitle("Book Cabs Online", "Sedan, MPV, SUV, Van"),
     seoDescription:
-      "Compare Swift Dzire, Ertiga, Innova Crysta and Tempo Traveller on Cabzii. Airport, local and outstation fares from the published tariff before you confirm.",
-    seoKeywords:
-      "book cabs online, compare cabs, innova crysta rental, tempo traveller, dzire taxi, cabzii cabs"
+      "Book a cab by category on Cabzii: hatchback, sedan, MPV, SUV, van and bus. Airport, local and outstation fares from the published tariff before you confirm.",
+    seoKeywords: "book cabs online, sedan cab, hatchback cab, mpv cab, suv cab, van hire, bus hire, cabzii cabs"
   },
   {
     id: "site:acting-driver",
@@ -112,17 +111,6 @@ export const STATIC_PAGE_SEO_LIST = [
     seoDescription:
       "Answers about cab booking on cabzii.in — fares, airport pickup, outstation trips, acting drivers, bus tickets, payment and cancellation.",
     seoKeywords: "cab booking faq, acting driver faq, bus booking faq, cabzii help"
-  },
-  {
-    id: "site:locations",
-    path: "/locations",
-    type: "site",
-    typeLabel: "Locations hub",
-    productName: "Service Locations",
-    seoTitle: "Cab & Taxi Service Locations in South India | Cabzii",
-    seoDescription:
-      "Cabzii service areas across Chennai, Madurai, Tirupati, Trichy, Coimbatore and Vellore. Book cabs, acting drivers and bus tickets online.",
-    seoKeywords: "cab service locations, taxi near me South India, cabzii cities"
   },
   {
     id: "site:testimonials",

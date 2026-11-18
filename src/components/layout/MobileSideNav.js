@@ -3,10 +3,7 @@
 import Link from "next/link";
 import { createPortal } from "react-dom";
 import { useEffect, useState } from "react";
-import WhatsAppIcon from "../WhatsAppIcon";
 import HeaderSearchBar from "../mmt/HeaderSearchBar";
-import { whatsappBookingUrl } from "../../lib/conversion";
-import { useSiteSettings } from "../SiteSettingsProvider";
 import {
   BookOpen,
   CarFront,
@@ -15,7 +12,6 @@ import {
   HelpCircle,
   LogIn,
   LogOut,
-  MapPin,
   MessageCircle,
   Plane,
   Route,
@@ -34,7 +30,6 @@ const SITE_NAV_ICONS = {
 };
 
 const EXPLORE_LINKS = [
-  { href: "/locations", label: "Locations", icon: MapPin },
   { href: "/about", label: "About us", icon: FileText },
   { href: "/contact", label: "Contact", icon: MessageCircle },
   { href: "/faq", label: "FAQ", icon: HelpCircle },
@@ -162,14 +157,6 @@ export default function MobileSideNav({
   onLoginPage
 }) {
   const [mounted, setMounted] = useState(false);
-  const settings = useSiteSettings();
-  const whatsappNumber = String(settings.whatsappFab?.number || settings.contact?.whatsapp || "9944197416").replace(/\D/g, "");
-  const waHref = whatsappBookingUrl({
-    phone: whatsappNumber,
-    pathname,
-    searchParams: typeof window !== "undefined" ? window.location.search : "",
-    city: "Chennai"
-  });
 
   useEffect(() => {
     setMounted(true);
@@ -256,19 +243,6 @@ export default function MobileSideNav({
             active={pathname === EARN_NAV.href || pathname.startsWith(`${EARN_NAV.href}/`)}
             onNavigate={onClose}
           />
-
-          <SectionLabel>Quick actions</SectionLabel>
-
-          <DrawerActionRow
-            icon={WhatsAppIcon}
-            label="WhatsApp"
-            sublabel="Get a quote on chat"
-            href={waHref}
-            external
-            accent="green"
-            onNavigate={onClose}
-          />
-          <DrawerActionRow icon={CarFront} label="Book now" sublabel="Search & book cabs" href="/cabs" accent="cta" onNavigate={onClose} />
 
           {loggedIn ? (
             <>

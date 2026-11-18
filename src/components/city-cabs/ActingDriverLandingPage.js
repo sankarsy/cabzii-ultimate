@@ -1,64 +1,27 @@
 import CityCabFaqAccordion from "./CityCabFaqAccordion";
 import ActingDriverPackageSection from "./ActingDriverPackageSection";
 import DynamicPageHub from "../seo/DynamicPageHub";
-import {
-  AreaChips,
-  ContactNap,
-  HowToSteps,
-  LinkChips,
-  PlaceGrid,
-  WhyGrid
-} from "./CityLandingBlocks";
+import { AreaChips, ContactNap, LinkChips, PlaceGrid, WhyGrid } from "./CityLandingBlocks";
 import { airportCabBookingPath, cityCabLandingPath } from "../../lib/cityCabPaths";
 import { CALL_DRIVER_TARIFF } from "../../data/call-drivers-chennai";
 import { CALL_DRIVER_SERVICES } from "../../lib/callDriver";
-import { ORG_PHONE } from "../../lib/seo/constants";
-import { CABZII_PHONE_DIGITS, telUrl, whatsappBookingUrl } from "../../lib/conversion";
 import { CarFront, Clock3, ShieldCheck, UserRound } from "../icons/rscIcons";
 
 export default function ActingDriverLandingPage({ data, services = CALL_DRIVER_SERVICES }) {
   const { city } = data;
   const local = CALL_DRIVER_TARIFF.local;
   const outstation = CALL_DRIVER_TARIFF.outstation;
-  const waHref = whatsappBookingUrl({
-    phone: CABZII_PHONE_DIGITS,
-    message: `Hi Cabzii, I need a Call Driver / acting driver in ${city.name}.\nPickup:\nDate:\nHours:\nVehicle:`
-  });
 
   return (
-    <div>
-      <header className="border-b border-slate-200 bg-white">
-        <div className="section-shell py-4 sm:py-5">
-          <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--cabzii-cta)]">
-            Acting driver · {city.name}
-          </p>
-          <h1 className="mt-1 text-xl font-extrabold tracking-tight text-slate-900 sm:text-2xl">{data.h1}</h1>
-          <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-slate-600">{data.lead}</p>
-          <div className="mt-3 flex flex-wrap gap-2">
-            <a href={telUrl(ORG_PHONE)} className="cabzii-btn cabzii-btn-cta cabzii-tap min-h-10 px-4">
-              Call {ORG_PHONE}
-            </a>
-            <a
-              href={waHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="cabzii-btn cabzii-btn-whatsapp cabzii-tap min-h-10 px-4"
-            >
-              WhatsApp
-            </a>
-          </div>
-        </div>
-      </header>
+    <div className="bg-[#f4f6fa]">
+      <div className="section-shell pt-6 pb-1 sm:pt-8">
+        <h1 className="px-1 text-center text-lg font-extrabold leading-tight tracking-tight text-slate-900 sm:text-2xl md:text-[1.75rem]">
+          {data.h1}
+        </h1>
+        <p className="mx-auto mt-2 max-w-2xl px-1 text-center text-sm leading-relaxed text-slate-600">{data.lead}</p>
+      </div>
 
-      <section className="section-shell py-5 sm:py-7">
-        <h2 className="text-base font-extrabold text-slate-900 sm:text-lg">Book Call Driver in {city.name}</h2>
-        <p className="mt-1 text-xs text-slate-500 sm:text-sm">
-          Local, outstation, airport, monthly, corporate and valet — Cabzii assigns a driver after you confirm.
-        </p>
-        <div className="mt-4">
-          <ActingDriverPackageSection pickup={city.name} initialServices={services} />
-        </div>
-      </section>
+      <ActingDriverPackageSection pickup={city.name} initialServices={services} />
 
       <WhyGrid
         title={`Why book an acting driver in ${city.name}`}
@@ -87,11 +50,21 @@ export default function ActingDriverLandingPage({ data, services = CALL_DRIVER_S
         ]}
       />
 
-      <HowToSteps
-        title={`How to book in ${city.name}`}
-        subtitle="Choose a package, confirm the fare or request a quote, then Cabzii assigns the driver."
-        steps={data.howToBook}
-      />
+      {data.howToBook?.length ? (
+        <section className="section-shell py-8 sm:py-10">
+          <h2 className="text-lg font-bold text-slate-900 sm:text-xl">How to book in {city.name}</h2>
+          <p className="mt-1 max-w-2xl text-sm text-slate-600">
+            Choose a package, confirm the fare or request a quote, then Cabzii assigns the driver.
+          </p>
+          <ol className="mt-4 max-w-3xl list-decimal space-y-3 pl-5 text-sm leading-relaxed text-slate-700">
+            {data.howToBook.map((step) => (
+              <li key={step.title}>
+                <span className="font-bold text-slate-900">{step.title}.</span> {step.subtitle}
+              </li>
+            ))}
+          </ol>
+        </section>
+      ) : null}
 
       <article className="section-shell cabzii-seo-landing py-5 sm:py-8">
         <section className="cabzii-seo-block">

@@ -7,7 +7,7 @@ export const CITY_HUB_SEO = {
   chennai: {
     title: "Cab Booking in Chennai | Call Taxi Online | Cabzii",
     description:
-      "Book Chennai call taxi and cab booking on Cabzii. City, airport and outstation cabs. Sedan, SUV and Innova. Pay 50% to confirm. Tolls extra.",
+      "Book Chennai call taxi and cab booking on Cabzii. City, airport and outstation cabs. Sedan, SUV and Innova. Tolls extra.",
     keywords:
       "chennai cab booking, chennai call taxi, taxi service chennai, car rental chennai with driver, airport cab chennai",
     h1: "Cab Booking in Chennai",
@@ -36,7 +36,7 @@ export const CITY_HUB_SEO = {
   trichy: {
     title: "Cab Booking in Trichy | Srirangam and Airport | Cabzii",
     description:
-      "Book Trichy call taxi and cab booking on Cabzii. Rockfort, Srirangam, airport and outstation cabs. Pay 50% to confirm. Tolls extra.",
+      "Book Trichy call taxi and cab booking on Cabzii. Rockfort, Srirangam, airport and outstation cabs. Tolls extra.",
     keywords:
       "cab booking trichy, taxi service trichy, trichy airport taxi, outstation cab trichy, tiruchi cab",
     h1: "Best Cab Services in Trichy - Cabzii",
@@ -58,14 +58,14 @@ export const CITY_HUB_SEO = {
       },
       {
         title: "Butterfly Park",
-        body: "Family stop. Book date and time on this page, then pay the published advance."
+        body: "Family stop. Book date and time on this page, then confirm."
       }
     ]
   },
   madurai: {
     title: "Cab Booking in Madurai | Temple City Taxi | Cabzii",
     description:
-      "Book Madurai call taxi and cab booking on Cabzii. Airport and outstation to Rameswaram or Kanyakumari. Pay 50% to confirm. Tolls extra.",
+      "Book Madurai call taxi and cab booking on Cabzii. Airport and outstation to Rameswaram or Kanyakumari. Tolls extra.",
     keywords:
       "cab booking madurai, taxi service madurai, madurai airport taxi, outstation cab madurai, meenakshi temple cab",
     h1: "Best Cab Services in Madurai - Cabzii",
@@ -94,7 +94,7 @@ export const CITY_HUB_SEO = {
   coimbatore: {
     title: "Cab Booking in Coimbatore | Ooty and Airport | Cabzii",
     description:
-      "Book Coimbatore call taxi and cab booking on Cabzii. Airport and outstation to Ooty, Tiruppur or Palani. Pay 50% to confirm. Tolls extra.",
+      "Book Coimbatore call taxi and cab booking on Cabzii. Airport and outstation to Ooty, Tiruppur or Palani. Tolls extra.",
     keywords:
       "cab booking coimbatore, taxi service coimbatore, coimbatore airport taxi, outstation cab coimbatore, ooty cab from coimbatore",
     h1: "Best Cab Services in Coimbatore - Cabzii",
@@ -123,7 +123,7 @@ export const CITY_HUB_SEO = {
   bengaluru: {
     title: "Cab Booking in Bengaluru | Airport Taxi | Cabzii",
     description:
-      "Book cabs in Bengaluru on Cabzii — BLR airport, Whitefield, Electronic City and outstation to Mysore or Chennai. Pay 50% to confirm. Tolls extra.",
+      "Book cabs in Bengaluru on Cabzii — BLR airport, Whitefield, Electronic City and outstation to Mysore or Chennai. Tolls extra.",
     keywords:
       "cab booking bengaluru, cab booking bangalore, airport taxi bangalore, outstation cab bengaluru, whitefield taxi",
     h1: "Cab Booking in Bengaluru — Airport and Outstation",
@@ -152,7 +152,7 @@ export const CITY_HUB_SEO = {
   tirupati: {
     title: "Cab Booking in Tirupati | Airport and Darshan | Cabzii",
     description:
-      "Book Tirupati cabs on Cabzii — Alipiri, city hotels and TIR airport. Sedan, SUV and Innova. Pay 50% to confirm. Fuel and driver included; tolls extra.",
+      "Book Tirupati cabs on Cabzii — Alipiri, city hotels and TIR airport. Sedan, SUV and Innova. Fuel and driver included; tolls extra.",
     keywords:
       "cab booking tirupati, tirupati taxi, tirupati airport cab, alipiri cab, darshan taxi tirupati",
     h1: "Cab Booking in Tirupati",
@@ -210,7 +210,7 @@ export const CITY_HUB_SEO = {
   kodaikanal: {
     title: "Cab Booking in Kodaikanal | Hill Taxi | Cabzii",
     description:
-      "Book Kodaikanal call taxi and cab booking on Cabzii — lake, Coaker’s Walk and ghat transfers from Madurai. No airport here. Pay 50% to confirm. Tolls extra.",
+      "Book Kodaikanal call taxi and cab booking on Cabzii — lake, Coaker’s Walk and ghat transfers from Madurai. No airport here. Tolls extra.",
     keywords:
       "cab booking kodaikanal, kodaikanal taxi, kodai cab, madurai to kodaikanal cab, hill station taxi kodaikanal",
     h1: "Cab Booking in Kodaikanal — Lake and Ghat Taxi",
@@ -239,7 +239,7 @@ export const CITY_HUB_SEO = {
   ooty: {
     title: "Cab Booking in Ooty | Hill Station Taxi | Cabzii",
     description:
-      "Book Ooty call taxi and cab booking on Cabzii — Charing Cross, Botanical Garden, Coonoor and CJB ghat transfers. No airport here. Pay 50% to confirm. Tolls extra.",
+      "Book Ooty call taxi and cab booking on Cabzii — Charing Cross, Botanical Garden, Coonoor and CJB ghat transfers. No airport here. Tolls extra.",
     keywords:
       "cab booking ooty, ooty taxi, udhagamandalam cab, coimbatore to ooty cab, hill station taxi ooty",
     h1: "Cab Booking in Ooty — Town and Ghat Taxi",
@@ -268,7 +268,7 @@ export const CITY_HUB_SEO = {
   pondicherry: {
     title: "Cab Booking in Pondicherry | White Town | Cabzii",
     description:
-      "Book Pondicherry cabs on Cabzii — White Town, Promenade, Auroville and ECR from Chennai. Pay 50% to confirm. Sedan, SUV and Innova. Tolls extra.",
+      "Book Pondicherry cabs on Cabzii — White Town, Promenade, Auroville and ECR from Chennai. Sedan, SUV and Innova. Tolls extra.",
     keywords:
       "cab booking pondicherry, taxi puducherry, white town cab, auroville taxi, chennai to pondicherry cab",
     h1: "Cab Booking in Pondicherry — White Town and ECR",
@@ -297,7 +297,7 @@ export const CITY_HUB_SEO = {
   sabarimala: {
     title: "Cab Booking Sabarimala | Pamba Taxi | Cabzii",
     description:
-      "Book Sabarimala cab booking on Cabzii — Pamba, Nilakkal and Erumeli. No shrine-road taxi. No airport here. Pay 50% to confirm. Tolls extra.",
+      "Book Sabarimala cab booking on Cabzii — Pamba, Nilakkal and Erumeli. No shrine-road taxi. No airport here. Tolls extra.",
     keywords:
       "sabarimala taxi, sabarimalai cab, pamba taxi, nilakkal cab, ayyappa temple cab, cabzii sabarimala",
     h1: "Cab Booking in Sabarimala — Pamba and Nilakkal",
@@ -326,7 +326,7 @@ export const CITY_HUB_SEO = {
   ayyappankovil: {
     title: "Cab Booking Ayyappan Kovil | Idukki Taxi | Cabzii",
     description:
-      "Book Ayyappan Kovil cab booking on Cabzii — Idukki Ayyappa temple, not Sabarimala Sannidhanam. No airport here. Pay 50% to confirm. Tolls extra.",
+      "Book Ayyappan Kovil cab booking on Cabzii — Idukki Ayyappa temple, not Sabarimala Sannidhanam. No airport here. Tolls extra.",
     keywords:
       "ayyappan kovil taxi, ayyappankovil cab, idukki ayyappa temple cab, ayyappan koil taxi, cabzii",
     h1: "Cab Booking in Ayyappan Kovil — Idukki",

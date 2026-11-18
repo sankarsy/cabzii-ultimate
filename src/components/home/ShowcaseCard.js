@@ -56,9 +56,13 @@ export default function ShowcaseCard({ card: o, section = "offers", layout = "ca
       <div className="flex min-h-[6.5rem] flex-col p-3.5 sm:p-4">
         <p className="line-clamp-2 text-[13px] leading-relaxed text-slate-600">{o.desc}</p>
         <div className="mt-auto flex flex-nowrap items-center justify-between gap-2 border-t border-slate-100 pt-3">
-          <span className="min-w-0 flex-1 truncate text-[11px] font-medium leading-none text-slate-400">
-            {validUntilLabel ? `Valid till ${validUntilLabel}` : "Fares shown before you confirm"}
-          </span>
+          {validUntilLabel ? (
+            <span className="min-w-0 flex-1 truncate text-[11px] font-medium leading-none text-slate-400">
+              {`Valid till ${validUntilLabel}`}
+            </span>
+          ) : (
+            <span className="min-w-0 flex-1" />
+          )}
           <span className="inline-flex shrink-0 items-center gap-0.5 whitespace-nowrap rounded-[10px] bg-[var(--cabzii-brand)] px-2.5 py-1.5 text-[11px] font-bold tracking-wide text-white">
             BOOK NOW
             <span aria-hidden className="transition-transform group-hover:translate-x-0.5">

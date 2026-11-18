@@ -13,10 +13,9 @@ import { SEO_REVALIDATE_SECONDS } from "../lib/revalidation/constants";
 import { classifyCityHub, classifyRoute, classifyServiceCity } from "../lib/seo/indexation";
 import { airportCabBookingPath, cityCabLandingPath, actingDriverLandingPath, isAirportCabBookingCity, isActingDriverHubCity, seoCityPublicPath, callDriverCityPath } from "../lib/cityCabPaths";
 import { isKeepAirportCity, isKeepRouteSlug, isKeepSeoCity, KEEP_ACTING_DRIVER_CITY_SLUGS } from "../lib/seo/keepLivePages";
-import { catalogPublicPath } from "../lib/catalogProduct";
 import { isLiveApiHostProtected } from "../lib/liveApiHostGuard";
 import { resolveProductImageSeo } from "../lib/dynamicImageSeo";
-import { dedupeSitemapEntries, isPublishedBlogPost, isPublishedCatalogItem } from "../lib/seo/sitemapUtils";
+import { dedupeSitemapEntries, isPublishedBlogPost } from "../lib/seo/sitemapUtils";
 
 const HERO_IMAGE = `${SITE_URL}/images/hero-banner.svg`;
 
@@ -60,7 +59,6 @@ export default async function sitemap() {
     { url: `${base}/earn`, lastModified: now, changeFrequency: "weekly", priority: 0.9, images: [HERO_IMAGE] },
     { url: `${base}/acting-driver`, lastModified: now, changeFrequency: "weekly", priority: 0.9, images: [HERO_IMAGE] },
     { url: `${base}/cab-booking`, lastModified: now, changeFrequency: "weekly", priority: 0.88, images: [HERO_IMAGE] },
-    { url: `${base}/car-rental`, lastModified: now, changeFrequency: "weekly", priority: 0.9, images: [HERO_IMAGE] },
     { url: `${base}/services`, lastModified: now, changeFrequency: "weekly", priority: 0.88, images: [HERO_IMAGE] },
     { url: `${base}/routes`, lastModified: now, changeFrequency: "weekly", priority: 0.88, images: [HERO_IMAGE] },
     { url: `${base}/blogs`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
@@ -68,7 +66,6 @@ export default async function sitemap() {
     { url: `${base}/contact`, lastModified: now, changeFrequency: "monthly", priority: 0.75 },
     { url: `${base}/faq`, lastModified: now, changeFrequency: "monthly", priority: 0.78 },
     { url: `${base}/track-booking`, lastModified: now, changeFrequency: "monthly", priority: 0.65 },
-    { url: `${base}/locations`, lastModified: now, changeFrequency: "weekly", priority: 0.85 },
     { url: `${base}/testimonials`, lastModified: now, changeFrequency: "weekly", priority: 0.75 },
     { url: `${base}/terms-and-conditions`, lastModified: now, changeFrequency: "yearly", priority: 0.4 },
     { url: `${base}/legal-declaration`, lastModified: now, changeFrequency: "yearly", priority: 0.4 },
@@ -136,8 +133,7 @@ export default async function sitemap() {
     ];
   });
 
-  const [cabs, blogPosts, cmsServices, cmsRoutes, cmsLandings, cmsCityPages] = await Promise.all([
-    fetchAllIds("/cabs"),
+  const [blogPosts, cmsServices, cmsRoutes, cmsLandings, cmsCityPages] = await Promise.all([
     fetchAllIds("/blogs"),
     fetchAllIds("/seo-services"),
     fetchAllIds("/seo-routes"),
@@ -225,20 +221,6 @@ export default async function sitemap() {
     })
     .filter(Boolean);
 
-  const cabRoutes = cabs
-    .filter(isPublishedCatalogItem)
-    .slice(0, 24)
-    .map((item) => {
-      const image = sitemapImageFromProduct(item, "cab");
-      return {
-        url: `${base}${catalogPublicPath(item, "/cabs")}`,
-        lastModified: item.updatedAt ? new Date(item.updatedAt) : now,
-        changeFrequency: "weekly",
-        priority: 0.7,
-        ...(image ? { images: [image] } : {})
-      };
-    });
-
   const blogRoutes = blogPosts
     .filter(isPublishedBlogPost)
     .slice(0, 24)
@@ -285,7 +267,6 @@ export default async function sitemap() {
     ...staticRoutePages,
     ...outstationHubPages,
     ...cmsRoutePages,
-    ...cabRoutes,
     ...blogRoutes,
     ...landingRoutes
   ]);

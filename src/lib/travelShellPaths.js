@@ -9,7 +9,6 @@ export const TRAVEL_SHELL_PREFIXES = [
   "/login",
   "/my-bookings",
   "/search",
-  "/locations",
   "/booking",
   "/account",
   "/cab-booking",

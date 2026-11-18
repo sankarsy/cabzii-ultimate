@@ -70,7 +70,7 @@ export default function AirportSeoArticle({
             <a href={TEL} className="font-bold text-slate-900 hover:underline">
               {PHONE}
             </a>
-            . After you pay the published 50% advance, Cabzii shares the assigned driver, fare and pickup slot. This is
+            . After you confirm, Cabzii shares the assigned driver, fare and pickup slot. This is
             not a walk-up airport taxi counter.
           </p>
         </section>
@@ -166,7 +166,7 @@ export default function AirportSeoArticle({
             <li>Email: {ORG_EMAIL}</li>
           </ul>
           <p className="mt-2">
-            Choose pickup or drop, select the vehicle, confirm the time, pay 50% to lock the booking. There is no
+            Choose pickup or drop, select the vehicle, confirm the time, confirm the booking. There is no
             separate Cabzii app — bookmark {SITE} on your phone.
           </p>
         </section>

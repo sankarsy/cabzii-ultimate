@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useTodayStr, HydrateSafeDate } from "../../lib/useTodayStr";
 import { useRouter } from "next/navigation";
+import { Car, MapPin, UserRound } from "lucide-react";
 import { X } from "../icons/rscIcons";
 import PlaceAutocomplete from "../PlaceAutocomplete";
 import { SearchIcon, TwoWayIcon } from "../icons";
@@ -26,47 +27,28 @@ const TRIP_TABS = [
 
 /* Homepage services — maps onto the same tripType + roundTrip state */
 const CAB_MODE_TABS = [
-  { id: "hourly", label: "Local" },
+  { id: "local", label: "Local" },
   { id: "airport", label: "Airport" },
   { id: "outstation", label: "Outstation" },
   { id: "driver", label: "Driver" }
 ];
 
+const TAB_ICONS = {
+  local: Car,
+  outstation: MapPin,
+  driver: UserRound
+};
+
 function TabGlyph({ id }) {
-  const common = "h-4 w-4 shrink-0";
   if (id === "airport") {
     return (
-      <svg className={common} viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+      <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
         <path d="M21 16v-2l-8-5V3.5A1.5 1.5 0 0 0 11.5 2 1.5 1.5 0 0 0 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" />
       </svg>
     );
   }
-  if (id === "outstation") {
-    return (
-      <svg className={common} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-        <circle cx="6" cy="19" r="2.25" />
-        <path d="M8.2 19h7.4a3.3 3.3 0 0 0 0-6.6H7.6a3.3 3.3 0 0 1 0-6.6H16" />
-        <circle cx="18" cy="5.8" r="2.25" />
-      </svg>
-    );
-  }
-  if (id === "driver") {
-    return (
-      <svg className={common} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-        <circle cx="12" cy="12" r="9" />
-        <circle cx="12" cy="12" r="2.25" />
-        <path d="M12 3.2v4.2M12 16.6v4.2M3.2 12h4.2M16.6 12h4.2" />
-      </svg>
-    );
-  }
-  return (
-    <svg className={common} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <path d="M5 12.5 6.7 8.4A2 2 0 0 1 8.6 7h6.8a2 2 0 0 1 1.9 1.4L19 12.5" />
-      <path d="M4 12.5h16v3.8a1.6 1.6 0 0 1-1.6 1.6H5.6A1.6 1.6 0 0 1 4 16.3v-3.8z" />
-      <circle cx="7.5" cy="16.2" r="1.05" />
-      <circle cx="16.5" cy="16.2" r="1.05" />
-    </svg>
-  );
+  const Icon = TAB_ICONS[id] || Car;
+  return <Icon className="h-5 w-5 shrink-0" strokeWidth={2} aria-hidden />;
 }
 
 const HERO_PLACE_INPUT =
@@ -214,12 +196,12 @@ export default function MmtCabSearchWidget({
   const lockedKey =
     Array.isArray(allowedTripTypes) && allowedTripTypes.length ? allowedTripTypes.join(",") : "";
   const lockedTypes = lockedKey ? lockedKey.split(",") : null;
-  const defaultType = lockedTypes?.[0] || initialTrip?.tripType || (heroMode ? "hourly" : "outstation");
+  const defaultType = lockedTypes?.[0] || initialTrip?.tripType || "outstation";
   const [tripType, setTripType] = useState(defaultType);
   const [roundTrip, setRoundTrip] = useState(false);
   const [driverService, setDriverService] = useState("local");
-  const [pickup, setPickup] = useState(heroMode ? "" : defaultCity);
-  const [drop, setDrop] = useState("");
+  const [pickup, setPickup] = useState(initialTrip?.from || (heroMode ? "Chennai" : defaultCity));
+  const [drop, setDrop] = useState(initialTrip?.to || (heroMode ? "Tirupati" : ""));
   const [fromCoords, setFromCoords] = useState(null);
   const [toCoords, setToCoords] = useState(null);
   const [airportDirection, setAirportDirection] = useState("pickup");
@@ -238,9 +220,11 @@ export default function MmtCabSearchWidget({
       ? "airport"
       : tripType === "outstation"
         ? "outstation"
-        : tripType === "driver"
-          ? "driver"
-          : "hourly";
+        : tripType === "local"
+          ? "local"
+          : tripType === "driver"
+            ? "driver"
+            : "hourly";
 
   function setCabMode(id) {
     if (id === "oneway") {
@@ -250,6 +234,9 @@ export default function MmtCabSearchWidget({
       setTripType("outstation");
       setRoundTrip(true);
       setReturnDate((prev) => prev || nextDayStr(date));
+    } else if (id === "local") {
+      setTripType("local");
+      setRoundTrip(false);
     } else if (id === "outstation") {
       setTripType("outstation");
     } else {
@@ -262,9 +249,8 @@ export default function MmtCabSearchWidget({
   }, [lockedKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    if (heroMode) return;
     if (today) setDate((prev) => prev || today);
-  }, [today, heroMode]);
+  }, [today]);
 
   useEffect(() => {
     if (!initialTrip?.from?.trim()) return;
@@ -332,7 +318,7 @@ export default function MmtCabSearchWidget({
         setError("Enter pickup location.");
         return;
       }
-      if (tripType === "outstation" && !drop.trim()) {
+      if ((tripType === "outstation" || tripType === "local") && !drop.trim()) {
         setError("Enter drop location.");
         return;
       }
@@ -662,7 +648,7 @@ export default function MmtCabSearchWidget({
               inputClassName={heroMode ? HERO_PLACE_INPUT : undefined}
             />
           </div>
-          {tripType === "outstation" ? (
+          {tripType === "outstation" || tripType === "local" ? (
             <>
               {heroMode ? (
                 <div className="emt-search-swap-cell hidden sm:flex">
@@ -856,9 +842,9 @@ export default function MmtCabSearchWidget({
             </select>
           </HeroFi>
           <HeroPlace
-            label="Address"
+            label="Stop"
             icon="pin"
-            placeholder="Home, hotel or office"
+            placeholder="Hotel, home, or Chennai Airport (MAA)"
             value={pickup}
             onChange={setPickup}
             onResolved={(area) => {
@@ -934,11 +920,12 @@ export default function MmtCabSearchWidget({
             {searchButton}
           </div>
           <p className="mt-3 flex items-center gap-2 text-[13px] font-medium text-[var(--cabzii-muted)]">
-            <svg className="h-4 w-4 shrink-0 text-[var(--cabzii-brand)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
-              <circle cx="12" cy="12" r="9.5" />
-              <path d="M8 9.5h.01M16 9.5h.01M8.2 14.2c1.1 1.4 2.6 2.1 3.8 2.1s2.7-.7 3.8-2.1" />
+            <svg className="h-4 w-4 shrink-0 text-[var(--cabzii-cta)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
+              <path d="M6 4h12M6 9h12M6 14h4a4.5 4.5 0 000-9M9 14l8 7" />
             </svg>
-            Ride happy — fare shown before you confirm.
+            {tripType === "outstation"
+              ? "Use CABZII500 for ₹200 off your first outstation trip."
+              : "Fares shown before you confirm."}
           </p>
         </div>
         {error ? <p className="cabzii-error mt-4 font-medium" role="alert">{error}</p> : null}

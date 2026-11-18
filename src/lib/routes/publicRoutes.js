@@ -11,6 +11,8 @@ import { resolveDroppedSeoRedirect } from "../seo/keepLivePages";
 
 export const PUBLIC_ROUTE_REDIRECTS = {
   "/cars": "/cabs",
+  "/locations": "/cabs",
+  "/car-rental": "/cab-booking",
   "/blog": "/blogs",
   "/bangalore": "/cabs",
   "/cab-booking/bangalore": "/cabs",
@@ -54,19 +56,6 @@ const VEHICLE_SLUG_MAP = {
   "tempo-traveller": "tempo"
 };
 
-/** SEO-friendly /cars/{vehicle} → catalog cab detail slug. */
-const CAR_PAGE_SLUGS = {
-  "innova-crysta": "mpv-toyota-innova-crysta",
-  "toyota-innova-crysta": "mpv-toyota-innova-crysta",
-  "toyota-innova": "mpv-toyota-innova-crysta",
-  "swift-dzire": "swift-dzire",
-  "maruti-dzire": "swift-dzire",
-  "maruti-dzire-cab": "swift-dzire",
-  "tempo-traveller": "tempo-traveller",
-  "ertiga": "ertiga",
-  "honda-amaze": "honda-amaze"
-};
-
 export function resolvePublicRouteRedirect(pathname) {
   if (PUBLIC_ROUTE_REDIRECTS[pathname]) {
     return PUBLIC_ROUTE_REDIRECTS[pathname];
@@ -100,14 +89,9 @@ export function resolvePublicRouteRedirect(pathname) {
   if (legacyCityHub) return cityCabLandingPath(legacyCityHub[1]);
   const cabSuffix = String(pathname || "").match(/^\/([a-z0-9-]+)\/outstation\/([a-z0-9-]+)-to-([a-z0-9-]+)-cab\/?$/);
   if (cabSuffix) return outstationPath(cabSuffix[1], cabSuffix[3]);
-  const carsMatch = pathname.match(/^\/cars\/([^/]+)\/?$/);
-  if (carsMatch) {
-    const slug = carsMatch[1].toLowerCase();
-    const cabSlug = CAR_PAGE_SLUGS[slug] || slug;
-    return `/cabs/${cabSlug}`;
+  if (/^\/cars\/([^/]+)\/?$/.test(pathname) || /^\/car\/([^/]+)\/?$/.test(pathname)) {
+    return "/cabs";
   }
-  const carMatch = pathname.match(/^\/car\/([^/]+)\/?$/);
-  if (carMatch) return `/cabs/${carMatch[1]}`;
   const vehicleMatch = pathname.match(/^\/vehicle\/([^/]+)\/?$/);
   if (vehicleMatch) {
     const query = VEHICLE_SLUG_MAP[vehicleMatch[1].toLowerCase()] || vehicleMatch[1];

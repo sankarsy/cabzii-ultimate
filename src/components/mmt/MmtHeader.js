@@ -90,7 +90,7 @@ export default function MmtHeader({ hideOnMobile = false, hidden = false }) {
                 <Link
                   href={EARN_NAV.href}
                   aria-current={earnActive ? "page" : undefined}
-                  className={`text-[13px] font-semibold no-underline transition lg:text-[15px] ${
+                  className={`hidden text-[13px] font-semibold no-underline transition lg:inline lg:text-[15px] ${
                     earnActive ? "text-white" : "text-[#d6e0ff] hover:text-white"
                   }`}
                 >

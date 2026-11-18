@@ -8,7 +8,7 @@ const TARIFF_TERMS = [
   "Rates may change with diesel or petrol price fluctuations. Please confirm the latest price before booking.",
   "Cancellation charges apply if the vehicle has already left the garage or in case of a no-show.",
   "Vehicle model and facilities are subject to availability.",
-  "50% advance payment is required at booking.",
+  "The fare is shown before you confirm.",
   "Standing AC is limited to 10 minutes.",
   "Additional standing AC charges: Sedan ₹500 per 30 minutes; Premium Sedan/Van ₹1,000 per 30 minutes; Bus ₹2,000 per 30 minutes.",
   "Customers are responsible for interior stains, odour, spillage, vomiting, urination, alcohol spills, food spills and other damage.",

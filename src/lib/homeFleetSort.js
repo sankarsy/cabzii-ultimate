@@ -1,5 +1,5 @@
 /** Smaller cars first, then family MPVs, SUVs and group vans. */
-export const HOME_BODY_CLASS_ORDER = ["sedan", "hatchback", "mpv", "suv", "tempo", "other"];
+export const HOME_BODY_CLASS_ORDER = ["hatchback", "sedan", "mpv", "suv", "tempo", "other"];
 export const HOME_CABS_LIMIT = 8;
 export const HOME_CABS_FETCH = 24;
 

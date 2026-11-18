@@ -22,7 +22,7 @@ export default function HeroRouteArt() {
         Chennai
       </text>
       <circle cx="338" cy="54" r="11" fill="#FF7A1A" stroke="#1E40AF" strokeWidth="3" />
-      <text x="338" y="28" textAnchor="middle" fill="#ffffff" fontWeight="700" fontSize="15">
+      <text x="338" y="14" textAnchor="middle" fill="#ffffff" fontWeight="700" fontSize="15">
         Tirupati
       </text>
       <g className="hero-route-fare">
@@ -32,13 +32,16 @@ export default function HeroRouteArt() {
         </text>
       </g>
       <g>
-        <g transform="translate(-44 -35) scale(0.55)">
-          <path d="M8 52V43c0-4 3-6 8-7l26-4c6-9 14-14 26-14h24c12 0 20 8 28 16l20 4c8 2 12 5 12 11v3z" fill="#ffffff" />
-          <path d="M48 32c5-7 10-10 20-10h10v10zM84 22h8c9 0 15 6 21 12H84z" fill="#C5D8F5" />
-          <circle cx="42" cy="52" r="10" fill="#111827" />
-          <circle cx="42" cy="52" r="4" fill="#E8EEF8" />
-          <circle cx="122" cy="52" r="10" fill="#111827" />
-          <circle cx="122" cy="52" r="4" fill="#E8EEF8" />
+        <g transform="translate(-30 -46) scale(0.55)">
+          <path d="M12 56V28c0-8 6-12 14-12h36l16 16h18c6 2 10 8 8 16v8H12z" fill="#ffffff" />
+          <path d="M22 42V22h28v20z" fill="#7EAEDE" />
+          <path d="M54 22h12l14 16H54z" fill="#A9C8F0" />
+          <path d="M16 36h6v3H16z" fill="#E23B32" />
+          <path d="M90 34h8v3H90z" fill="#F7F9FC" />
+          <circle cx="32" cy="52" r="8" fill="#141820" />
+          <circle cx="32" cy="52" r="3.2" fill="#d7dee9" />
+          <circle cx="78" cy="52" r="8" fill="#141820" />
+          <circle cx="78" cy="52" r="3.2" fill="#d7dee9" />
         </g>
         <animateMotion dur="4s" fill="freeze" rotate="0" calcMode="spline" keyTimes="0;1" keySplines=".4 0 .2 1">
           <mpath href="#hero-route-path" />

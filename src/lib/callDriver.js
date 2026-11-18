@@ -84,6 +84,13 @@ export function callDriverBookHref(serviceId, extras = {}) {
   return `/call-driver/book?${q.toString()}`;
 }
 
+export function callDriverFareLabel(service) {
+  const from = formatFromPrice(service?.fromPrice);
+  if (service?.quoteOnly) return service.id === "corporate" ? "Corporate quote" : "Request a quote";
+  if (service?.id === "outstation" && from) return `${from}/day`;
+  return from || "Fare shown before you confirm";
+}
+
 export function formatFromPrice(fromPrice) {
   const n = Number(fromPrice);
   if (!Number.isFinite(n) || n <= 0) return "";

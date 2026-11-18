@@ -30,7 +30,7 @@ function buildAirportFaqs(city, airport) {
   return [
     {
       question: `How do I book a cab from ${name} Airport?`,
-      answer: `Open this page, keep Airport selected, set ${airport?.name || `${name} Airport`} as From and your city drop as To, compare vehicles, then pay 50% to confirm. Driver details follow after booking.`
+      answer: `Open this page, keep Airport selected, set ${airport?.name || `${name} Airport`} as From and your city drop as To, compare vehicles, then confirm. Driver details follow after booking.`
     },
     {
       question: `Can I book a cab to ${name} Airport for a departure?`,
@@ -50,7 +50,7 @@ function buildAirportFaqs(city, airport) {
     },
     {
       question: `Is the driver contact shared before the ride from ${code || name}?`,
-      answer: "Yes. After you pay the published 50% advance and the booking is confirmed, Cabzii shares assigned driver details on SMS or WhatsApp."
+      answer: "Yes. After the booking is confirmed, Cabzii shares assigned driver details on SMS or WhatsApp."
     }
   ];
 }
@@ -94,7 +94,7 @@ export function buildAirportCabData(city) {
     title: clampText(seeded?.title || `${name} Airport Cabs | Pickup & Drop | ${SITE_NAME}`, 60),
     description: clampText(
       seeded?.description ||
-        `Book ${airport.name} pickup and drop on Cabzii. Pay 50% to confirm. Fuel and driver included; parking and tolls extra.`,
+        `Book ${airport.name} pickup and drop on Cabzii. Fuel and driver included; parking and tolls extra.`,
       155
     ),
     keywords: seeded?.keywords || "",
@@ -134,8 +134,8 @@ export function buildAirportCabData(city) {
         subtitle: "Fares, seats and luggage show before you pay. Parking and tolls are extra unless listed."
       },
       {
-        title: "Pay 50% and get driver details",
-        subtitle: "Advance is 50% at booking. After confirmation you receive assigned driver details on SMS or WhatsApp. Share flight time if the wait matters."
+        title: "Confirm and get driver details",
+        subtitle: "After confirmation you receive assigned driver details on SMS or WhatsApp. Share flight time if the wait matters."
       }
     ],
     faqs: buildAirportFaqs(city, airport),

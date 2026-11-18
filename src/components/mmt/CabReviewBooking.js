@@ -289,7 +289,7 @@ export default function CabReviewBooking({
             ) : null}
             <div className="hidden p-3 lg:block">
               <p className="mb-2 text-center text-[11px] text-slate-500">
-                Pay {formatInrCurrency(payable)} now (50% advance). Balance in cash at pickup.
+                Pay {formatInrCurrency(payable)} now. Balance in cash at pickup.
               </p>
               <button
                 type="button"
@@ -309,7 +309,7 @@ export default function CabReviewBooking({
           <div className="min-w-0 flex-1">
             <p className="text-[15px] font-extrabold leading-none text-slate-900">{formatInrCurrency(netTotal)}</p>
             <p className="mt-1 text-[11px] text-slate-500">
-              Pay {formatInrCurrency(payable)} now · 50% advance
+              Pay {formatInrCurrency(payable)} now
             </p>
           </div>
           <button

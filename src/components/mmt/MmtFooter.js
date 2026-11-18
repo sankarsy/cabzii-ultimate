@@ -29,7 +29,6 @@ const COLUMNS = [
     links: [
       { label: "Outstation Cabs", href: "/cabs" },
       { label: "Airport Taxi Chennai", href: "/chennai/airport-cab-booking" },
-      { label: "Bus tickets", href: "/buses" },
       { label: "Hire a Driver", href: "/call-driver" },
       { label: "Cab Booking Chennai", href: "/chennai" },
       { label: "Cab rental tariff", href: "/tariff" }
@@ -40,7 +39,6 @@ const COLUMNS = [
     links: [
       { label: "About Cabzii", href: "/about" },
       { label: "FAQ", href: "/faq" },
-      { label: "Service locations", href: "/locations" },
       { label: "Travel blog", href: "/blogs" },
       { label: "Leave a review", href: "/testimonials#write-review" },
       { label: "Earn with Cabzii", href: "/earn" }
@@ -52,9 +50,7 @@ const COLUMNS = [
       { label: "Contact & support", href: "/contact" },
       { label: "Cancellation policy", href: "/cancellation-policy" },
       { label: "Terms & conditions", href: "/terms-and-conditions" },
-      { label: "Legal", href: "/legal-declaration" },
-      { label: "Vendor login", href: "/login?role=partner" },
-      { label: "Admin login", href: "/login?role=admin" }
+      { label: "Legal", href: "/legal-declaration" }
     ]
   }
 ];
@@ -125,7 +121,7 @@ export default function MmtFooter() {
 
         <div className="mt-6 grid grid-cols-2 gap-x-4 gap-y-5 border-t border-white/10 pt-5 sm:mt-8 sm:gap-8 sm:pt-8 md:grid-cols-4">
           {columns.map((col) => (
-            <div key={col.title}>
+            <div key={col.title} className={col.title === "Popular routes" ? "hidden sm:block" : undefined}>
               <h3 className="mb-1.5 text-[10px] font-bold uppercase tracking-wide text-white sm:mb-3 sm:text-xs sm:tracking-wider">
                 {col.title}
               </h3>

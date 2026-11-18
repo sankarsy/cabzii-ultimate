@@ -26,18 +26,20 @@ export function cabIllustrationKey(cab = {}) {
   ) {
     return "hatch";
   }
-  if (/premium|city|etios|ciaz|verna/.test(blob)) return "sedan";
+  if (/\bpremium\b|\bciaz\b|\bverna\b/.test(blob)) return "premium";
   const bucket = cabTypeBucket(cab);
-  if (bucket === "Van") return "van";
+  if (bucket === "Bus" || bucket === "Van") return "van";
+  if (bucket === "MPV") return "mpv";
   if (bucket === "Hatchback") return "hatch";
   if (bucket === "SUV") return /innova|crysta/i.test(blob) ? "innova" : "mpv";
   return "sedan";
 }
 
 export const CAB_ILLUSTRATION_TONE = {
-  hatch: "#3F6FE8",
+  hatch: "#F4F7FB",
   sedan: "#1E40AF",
-  mpv: "#FFFFFF",
-  innova: "#8B97B5",
-  van: "#1E40AF"
+  premium: "#C5CEDA",
+  mpv: "#F7F8FA",
+  innova: "#8E98AA",
+  van: "#F4F7FB"
 };

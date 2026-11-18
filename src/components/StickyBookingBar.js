@@ -1,18 +1,15 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import WhatsAppIcon from "./WhatsAppIcon";
 import { useSiteSettings } from "./SiteSettingsProvider";
-import { CarFront, Phone } from "./icons/rscIcons";
+import { Phone } from "./icons/rscIcons";
 import { telUrl, whatsappBookingUrl, contactPhoneFromSettings, whatsappDigitsFromSettings } from "../lib/conversion";
 import { shouldHideStickyBookingBar } from "../lib/floatingUi";
-import { trackEvent, trackLead } from "../lib/analytics";
+import { trackLead } from "../lib/analytics";
 
-const CabIcon = CarFront;
-
-/** Mobile-only sticky bottom bar — Call · WhatsApp · Get Quote. */
+/** Mobile-only sticky bottom bar — Call and WhatsApp. */
 export default function StickyBookingBar() {
   const pathname = usePathname();
   const settings = useSiteSettings();
@@ -37,7 +34,7 @@ export default function StickyBookingBar() {
     <>
       <div className="h-[calc(3.65rem+env(safe-area-inset-bottom,0px))] sm:hidden" aria-hidden />
       <nav
-        className="fixed inset-x-0 bottom-0 z-50 grid grid-cols-3 gap-px border-t border-slate-200/90 bg-white/92 pb-[env(safe-area-inset-bottom,0px)] shadow-[0_-8px_30px_rgba(15,23,42,0.1)] backdrop-blur-md sm:hidden"
+        className="fixed inset-x-0 bottom-0 z-50 grid grid-cols-2 gap-px border-t border-slate-200/90 bg-white/92 pb-[env(safe-area-inset-bottom,0px)] shadow-[0_-8px_30px_rgba(15,23,42,0.1)] backdrop-blur-md sm:hidden"
         aria-label="Quick booking"
       >
         <a
@@ -60,16 +57,6 @@ export default function StickyBookingBar() {
           <WhatsAppIcon className="h-5 w-5" />
           <span>WhatsApp</span>
         </a>
-        <Link
-          href="/cabs"
-          className="cabzii-sticky-bar-item cabzii-tap text-white"
-          style={{ background: "var(--cabzii-gradient-brand)" }}
-          aria-label="Get a cab quote"
-          onClick={() => trackEvent("quote_request", { source_page: pathname, cta_location: "sticky_bar" })}
-        >
-          <CabIcon className="h-5 w-5" aria-hidden />
-          <span>Get Quote</span>
-        </Link>
       </nav>
     </>
   );

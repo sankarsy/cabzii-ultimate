@@ -1,10 +1,14 @@
 import { getCabVehicleName } from "./catalogDisplay";
 import { estimateDurationMin } from "./openRouteService";
 
-/** Compact cars first, then family, then group vans. */
-export const CAB_TYPE_ORDER = ["Hatchback", "Sedan", "SUV", "Van"];
+/** Compact cars first, then family, then group vehicles. */
+export const CAB_TYPE_ORDER = ["Hatchback", "Sedan", "MPV", "SUV", "Van", "Bus"];
 
 export function cabTypeBucket(cab = {}) {
+  const category = String(cab.category || "").trim();
+  const named = CAB_TYPE_ORDER.find((type) => type.toLowerCase() === category.toLowerCase());
+  if (named) return named;
+
   const blob = [
     cab.type,
     cab.category,
@@ -18,13 +22,15 @@ export function cabTypeBucket(cab = {}) {
     .filter(Boolean)
     .join(" ")
     .toLowerCase();
-  if (/tempo|traveller|urbania|mini\s*bus|\bbus\b|\bvan\b|coach/.test(blob)) return "Van";
+  if (/\bbus\b|mini\s*bus|coach/.test(blob) && !/tempo|traveller/.test(blob)) return "Bus";
+  if (/tempo|traveller|urbania|\bvan\b/.test(blob)) return "Van";
   if (
-    /innova|crysta|ertiga|xylo|xuv|fortuner|hycross|scorpio|harrier|safari|creta|seltos|carens|brezza|nexon|bolero|rumion|xl6|\bsuv\b|\bmpv\b|\bmuv\b/.test(
-      blob
-    )
+    /crysta|fortuner|xuv|scorpio|harrier|safari|creta|seltos|brezza|nexon|\bsuv\b/.test(blob)
   ) {
     return "SUV";
+  }
+  if (/ertiga|carens|innova|rumion|xl6|hycross|\bmpv\b|\bmuv\b/.test(blob)) {
+    return "MPV";
   }
   if (
     /hatch|wagon|alto|i10|i20|celerio|tiago|punch|baleno|santro|figo|polo|jazz|ignis|glanza|kiger|magnite/.test(blob) ||
@@ -34,7 +40,8 @@ export function cabTypeBucket(cab = {}) {
   }
   if (/sedan|dzire|etios|amaze|xcent|verna|ciaz|\baura\b|\bcity\b|slavia|virtus/.test(blob)) return "Sedan";
   const type = String(cab.type || "").trim();
-  if (/suv|mpv|muv/i.test(type)) return "SUV";
+  if (/^mpv$|^muv$/i.test(type)) return "MPV";
+  if (/suv/i.test(type)) return "SUV";
   if (/hatch/i.test(type)) return "Hatchback";
   if (/sedan/i.test(type)) return "Sedan";
   if (/van|tempo/i.test(type)) return "Van";
@@ -72,7 +79,7 @@ export function countBy(list, keyFn) {
   return map;
 }
 
-/** One representative cab per Hatchback / Sedan / SUV / Van — FastTrack-style category list. */
+/** One representative cab per Hatchback, Sedan, MPV, SUV, Van and Bus. */
 export function oneCabPerCategory(cabs = []) {
   const picked = new Map();
   for (const cab of cabs) {

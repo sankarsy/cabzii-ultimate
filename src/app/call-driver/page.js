@@ -50,6 +50,7 @@ export default async function CallDriverPage() {
         city={{ slug: "chennai", name: "Chennai" }}
         intro={page.intro}
         sections={page.sections}
+        faqs={CHENNAI_DRIVER_FAQS.map(([question, answer]) => ({ question, answer }))}
       />
     </>
   );

@@ -1,19 +1,15 @@
 /**
- * Light Lucide icons for home hero, category tabs, themes, and feature chips.
+ * Light Lucide icons for trust badges, offer cards, and search fields.
  */
 import {
-  BookOpen,
-  Bus,
   Car,
-  CarTaxiFront,
   CircleUser,
   MapPin,
   Plane,
   Route,
   ShieldCheck,
   Sparkles,
-  Star,
-  Umbrella
+  Star
 } from "./rscIcons";
 
 function wrapLucide(Icon, defaultStroke = 1.5) {
@@ -21,51 +17,6 @@ function wrapLucide(Icon, defaultStroke = 1.5) {
     return <Icon className={className} strokeWidth={strokeWidth} fill="none" aria-hidden {...props} />;
   };
 }
-
-function OutlineIcon({ className = "h-5 w-5", strokeWidth = 1.6, children }) {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={strokeWidth}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
-    >
-      {children}
-    </svg>
-  );
-}
-
-function DriverOutlineIcon(props) {
-  return (
-    <OutlineIcon {...props}>
-      <circle cx="12" cy="12" r="9" />
-      <circle cx="12" cy="10" r="2.7" />
-      <path d="M7.15 18.55c.95-2.45 2.75-3.8 4.85-3.8s3.9 1.35 4.85 3.8" />
-    </OutlineIcon>
-  );
-}
-
-/** Category tabs: Cabs, Hire a Driver, Buses */
-export const HERO_TAB_ICONS = {
-  buses: wrapLucide(Bus, 1.6),
-  cabs: wrapLucide(CarTaxiFront, 1.6),
-  drivers: DriverOutlineIcon
-};
-
-/** Bottom hero feature row */
-export const HERO_FEATURE_ICONS = {
-  deals: wrapLucide(Sparkles),
-  locations: wrapLucide(MapPin),
-  airport: wrapLucide(Plane),
-  packages: wrapLucide(Umbrella),
-  routes: wrapLucide(Route),
-  blog: wrapLucide(BookOpen),
-  driver: wrapLucide(CircleUser)
-};
 
 /** Trust strip + hero trust badges */
 export const TRUST_ICONS = {

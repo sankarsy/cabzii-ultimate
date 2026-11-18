@@ -20,14 +20,10 @@ export const DEFAULT_SITE_SETTINGS = {
   footerQuickLinks: [
     { label: "Home", href: "/" },
     { label: "Cabs", href: "/cabs" },
-    { label: "Buses", href: "/buses" },
     { label: "Call Driver", href: "/call-driver" },
     { label: "Blog", href: "/blogs" },
     { label: "Reviews", href: "/testimonials" },
-    { label: "Locations", href: "/locations" },
-    { label: "Earn with Cabzii", href: "/earn" },
-    { label: "Vendor login", href: "/login?role=partner" },
-    { label: "Admin login", href: "/login?role=admin" }
+    { label: "Earn with Cabzii", href: "/earn" }
   ],
   footerLegalLinks: [
     { label: "Terms and Conditions", href: "/terms-and-conditions" },

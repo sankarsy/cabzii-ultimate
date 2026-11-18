@@ -206,14 +206,14 @@ export function suggestCmsCopy(type, city) {
     return {
       productName: `${label} in ${name}`,
       seoTitle: `${label} ${name} | Book Online | Cabzii`.slice(0, 60),
-      seoDescription: `Book ${label.toLowerCase()} in ${name} with AC cabs and transparent fares on cabzii.in. Pay 50% to confirm. Tolls extra.`,
+      seoDescription: `Book ${label.toLowerCase()} in ${name} with AC cabs and transparent fares on cabzii.in. Tolls extra.`,
       seoKeywords: `${label.toLowerCase()} ${lower}, cab booking ${lower}, cabzii`
     };
   }
   return {
     productName: `${name} Cab Booking`,
     seoTitle: `Cab Booking in ${name} | Call Taxi Online | Cabzii`.slice(0, 60),
-    seoDescription: `Book ${name} call taxi and cab booking on Cabzii. City, airport and outstation cabs. Sedan, SUV and Innova. Pay 50% to confirm. Tolls extra.`,
+    seoDescription: `Book ${name} call taxi and cab booking on Cabzii. City, airport and outstation cabs. Sedan, SUV and Innova. Tolls extra.`,
     seoKeywords: `cab booking ${lower}, ${lower} call taxi, ${lower} taxi, taxi service ${lower}, cabzii`
   };
 }

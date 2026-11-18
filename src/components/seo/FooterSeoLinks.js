@@ -12,7 +12,6 @@ const QUICK_PILLS = [
   { href: "/cabs", label: "Cabs" },
   { href: "/tariff", label: "Tariff" },
   { href: "/call-driver", label: "Call Driver" },
-  { href: "/locations", label: "Locations" },
   { href: "/blogs", label: "Blog" }
 ];
 

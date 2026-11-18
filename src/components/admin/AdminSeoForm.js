@@ -267,7 +267,7 @@ export function AdminSeoCityPageForm({ form, onChange, authToken = "" }) {
         </div>
         <div className="sm:col-span-2">
           <Field label="FAQs" hint="One per line: Question | Answer">
-            <textarea className={inputCls()} rows={6} value={form.faqsText || ""} onChange={(e) => set({ faqsText: e.target.value })} placeholder={"How do I book a cab in Chennai? | Enter pickup and drop, choose a vehicle, pay 50% to confirm."} />
+            <textarea className={inputCls()} rows={6} value={form.faqsText || ""} onChange={(e) => set({ faqsText: e.target.value })} placeholder={"How do I book a cab in Chennai? | Enter pickup and drop, choose a vehicle, confirm the booking."} />
           </Field>
         </div>
         <div className="sm:col-span-2">

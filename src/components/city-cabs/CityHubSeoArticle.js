@@ -55,8 +55,8 @@ export default function CityHubSeoArticle({ city, aboutCity = "", extraBody = ""
           <h3 className="text-base font-bold text-slate-900">Cabzii Call Taxi in {name} – Book a Cab Anytime</h3>
           <p className="mt-2">
             Getting a call taxi in {name} should not be a hassle. Book a Cabzii cab when you need one — weekday, weekend,
-            airport drop, or an outstation trip. Enter pickup and drop on this page, choose the vehicle, and pay the
-            published 50% advance to confirm. Driver details are sent on WhatsApp or SMS after confirmation. Cabzii is a
+            airport drop, or an outstation trip. Enter pickup and drop on this page, choose the vehicle, and confirm.
+            Driver details are sent on WhatsApp or SMS after confirmation. Cabzii is a
             cab booking and call taxi service in {name}, not a station-only transfer counter.
           </p>
           <p className="mt-2">
@@ -141,7 +141,7 @@ export default function CityHubSeoArticle({ city, aboutCity = "", extraBody = ""
           <ol className="mt-2 list-decimal space-y-1 pl-5">
             <li>Share your pickup and drop location</li>
             <li>Choose your vehicle and check the fare</li>
-            <li>Pay 50% to confirm</li>
+            <li>Confirm the booking</li>
           </ol>
           <p className="mt-2">
             You get driver details after confirmation, and clear pricing before you pay. Call the Cabzii call taxi {name}{" "}

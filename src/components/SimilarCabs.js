@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { buildFareSlabs, num } from "../lib/cabFare";
-import { catalogPublicPath } from "../lib/catalogProduct";
+import { cabBookingPath } from "../lib/catalogProduct";
 import { getCabCatalogSubtitle, getCabVehicleName, vehiclePhotoAlt } from "../lib/catalogDisplay";
 import { formatInrCurrency } from "../lib/formatInr";
 import { resolveCabImage } from "../lib/vehicleImages";
@@ -74,7 +74,7 @@ export default function SimilarCabs({ currentCabId, cabSlug, cabType, vendor }) 
             return (
               <Link
                 key={id}
-                href={catalogPublicPath(cab, "/cabs")}
+                href={cabBookingPath(cab)}
                 className="group overflow-hidden rounded-xl border border-slate-200 bg-white transition hover:border-[var(--cabzii-brand)] hover:shadow-md"
               >
                 <div className="relative h-24 overflow-hidden bg-[var(--cabzii-sky)] sm:h-28">

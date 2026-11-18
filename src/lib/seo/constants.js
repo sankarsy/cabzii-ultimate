@@ -103,7 +103,7 @@ export const HOME_SEO_KEYWORDS = [
 ];
 export const HOME_H1 = "Book a cab in Chennai";
 export const HOME_H1_LEDE =
-  "Airport taxi, local packages, outstation trips and a driver for your own car. Fares shown before you confirm.";
+  "Outstation cabs from Chennai, including Tirupati. Airport taxi, hourly packages, and a driver for your own car. Fares shown before you confirm.";
 
 function normalizePath(path) {
   if (!path || path === "/") return "/";

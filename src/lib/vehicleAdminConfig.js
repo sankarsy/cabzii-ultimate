@@ -1,5 +1,5 @@
 import { SITE_URL } from "./seo/constants";
-import { buildEnterpriseSeoPayload, emptyEnterpriseSeoFields } from "./vehicleEnterpriseSeo";
+import { emptyEnterpriseSeoFields } from "./vehicleEnterpriseSeo";
 
 export const PACKAGE_TYPES = [
   { value: "local_4hr", label: "Local 4Hr / 40Km" },
@@ -54,23 +54,7 @@ export const FEATURE_PRESETS = [
 ];
 
 /** Vehicle / cab type presets — searchable in admin (still allow custom). */
-export const VEHICLE_CATEGORY_OPTIONS = [
-  "Sedan",
-  "SUV",
-  "MUV",
-  "Hatchback",
-  "Luxury",
-  "Premium Sedan",
-  "Innova",
-  "Innova Crysta",
-  "Ertiga",
-  "Dzire",
-  "Honda Amaze",
-  "Tempo Traveller",
-  "Mini Bus",
-  "Bus",
-  "Electric"
-];
+export const VEHICLE_CATEGORY_OPTIONS = ["Hatchback", "Sedan", "MPV", "SUV", "Van", "Bus"];
 
 export const FUEL_TYPE_OPTIONS = ["Petrol", "Diesel", "CNG", "Electric", "Hybrid"];
 
@@ -378,7 +362,6 @@ export function vehicleToPayload(form) {
     }));
 
   const cover = images.find((img) => img.type === "cover") || images[0];
-  const enterpriseSeo = buildEnterpriseSeoPayload(form);
 
   return {
     title: form.title,
@@ -447,19 +430,10 @@ export function vehicleToPayload(form) {
     images,
     image: cover?.url || form.image || "",
     gallery: images.map((img) => img.url),
-    seoTitle: form.seoTitle || "",
-    seoDescription: form.seoDescription || "",
-    seo: form.seo || "",
-    metaKeywords: form.metaKeywords || "",
-    canonicalUrl: form.canonicalUrl || "",
-    schemaEnabled: form.schemaEnabled !== false,
-    faq: (form.faq || []).filter((f) => f.question?.trim() || f.answer?.trim()),
-    breadcrumb: form.breadcrumb || "",
     slug: form.slug || "",
     productCode: form.productCode || "",
     imageAlt: form.imageAlt || "",
     imageTitle: form.imageTitle || "",
-    enterpriseSeo,
     reviewCount: num(form.reviewCount),
     ...(rating != null && rating > 0 ? { rating } : {})
   };

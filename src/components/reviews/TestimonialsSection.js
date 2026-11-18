@@ -36,6 +36,8 @@ export default function TestimonialsSection() {
     };
   }, []);
 
+  if (!loaded || cards.length === 0) return null;
+
   return (
     <section className="home-band home-band-sky">
       <div className="section-shell">
@@ -46,22 +48,11 @@ export default function TestimonialsSection() {
           linkLabel="Leave a review →"
         />
 
-        {!loaded ? (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className="h-40 animate-pulse rounded-xl bg-slate-100" />
-            <div className="h-40 animate-pulse rounded-xl bg-slate-100" />
-          </div>
-        ) : cards.length ? (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {cards.map((item) => (
-              <TestimonialCard key={String(item._id ?? item.id ?? item.name)} item={item} />
-            ))}
-          </div>
-        ) : (
-          <p className="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
-            Customer reviews coming soon.
-          </p>
-        )}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {cards.map((item) => (
+            <TestimonialCard key={String(item._id ?? item.id ?? item.name)} item={item} />
+          ))}
+        </div>
       </div>
     </section>
   );

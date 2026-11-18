@@ -34,12 +34,16 @@ export default function HomeBelowFold({
       <div className="home-band home-band-white">
         <div className="home-stack">
           <CityScopedShowcase section="services" />
-          <CityScopedShowcase section="routes" />
+          <div className="hidden sm:block">
+            <CityScopedShowcase section="routes" />
+          </div>
         </div>
       </div>
 
       <CallDriverHomeSection services={callDriverServices} />
-      <EmtWhyChooseUs settings={siteSettings} />
+      <div className="hidden sm:block">
+        <EmtWhyChooseUs settings={siteSettings} />
+      </div>
       <TestimonialsSection />
 
       <section className="home-band home-band-white">
@@ -58,10 +62,12 @@ export default function HomeBelowFold({
         </div>
       </section>
 
-      <HomeBlogTeasers posts={blogs} />
+      <div className="hidden sm:block">
+        <HomeBlogTeasers posts={blogs} />
+      </div>
 
       {hubGroups.length ? (
-        <section className="home-band home-band-white">
+        <section className="home-band home-band-white hidden sm:block">
           <div className="section-shell">
             <PageHubLinks groups={hubGroups} />
           </div>

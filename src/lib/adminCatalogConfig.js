@@ -684,7 +684,7 @@ export const CATALOG_TABS = {
       slug: "outstation-acting-driver-chennai",
       h1: "Outstation acting driver from Chennai",
       seoTitle: "Outstation Acting Driver Chennai | Cabzii",
-      seoDescription: "Hire an outstation acting driver from Chennai for your own car. Pay 50% to confirm. Fuel and driver included; tolls extra.",
+      seoDescription: "Hire an outstation acting driver from Chennai for your own car. Fuel and driver included; tolls extra.",
       seo: "outstation acting driver, acting driver in chennai, call driver chennai",
       published: true
     },

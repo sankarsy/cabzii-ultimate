@@ -2,13 +2,11 @@
 
 import { Link2, MessageCircle, Share2 } from "../icons/rscIcons";
 import { toast } from "react-toastify";
-import { catalogPublicPath } from "../../lib/catalogProduct";
+import { cabBookingPath } from "../../lib/catalogProduct";
 
 export default function VehicleShareButtons({ cab, compact = false, variant = "pills" }) {
-  const url =
-    typeof window !== "undefined"
-      ? `${window.location.origin}${catalogPublicPath(cab, "/cabs")}`
-      : catalogPublicPath(cab, "/cabs");
+  const path = cabBookingPath(cab);
+  const url = typeof window !== "undefined" ? `${window.location.origin}${path}` : path;
   const text = `Book ${cab?.vehicleName || cab?.title || "cab"} on Cabzii`;
 
   const copyLink = async () => {

@@ -10,7 +10,7 @@ export const CHENNAI_GUIDE_LEAD =
 export const CHENNAI_GUIDE_FAQS = [
   [
     "How do I book a cab in Chennai?",
-    "Open /cab-booking/chennai, enter pickup and drop, choose local, airport or outstation, compare Hatchback, Sedan, SUV or Tempo Traveller, then pay the published 50% advance. Driver details follow after confirmation."
+    "Open /cab-booking/chennai, enter pickup and drop, choose local, airport or outstation, compare Hatchback, Sedan, SUV or Tempo Traveller, then confirm. Driver details follow after confirmation."
   ],
   [
     "Are package fares exact?",
@@ -29,11 +29,11 @@ export const CHENNAI_GUIDE_FAQS = [
 export function chennaiCabGuideHtml() {
   return `
 <h2>How cab booking in Chennai works</h2>
-<p>Use the form on <a href="/cab-booking/chennai">cab booking Chennai</a>. Enter pickup and drop, choose local, hourly, airport or outstation, then compare vehicles. Pay 50% to confirm. Driver details follow on SMS or WhatsApp. Call <a href="tel:+919944197416">+91-9944197416</a> or email support@cabzii.com. There is no separate Cabzii app required.</p>
+<p>Use the form on <a href="/cab-booking/chennai">cab booking Chennai</a>. Enter pickup and drop, choose local, hourly, airport or outstation, then compare vehicles. Driver details follow on SMS or WhatsApp. Call <a href="tel:+919944197416">+91-9944197416</a> or email support@cabzii.com. There is no separate Cabzii app required.</p>
 <ol>
 <li>Enter pickup in Chennai — add from, to and date.</li>
 <li>Compare Hatchback, Sedan, SUV and Tempo Traveller. Fares show before you pay.</li>
-<li>Pay 50% to confirm. Apply CABZII500 for ₹200 off the first outstation trip.</li>
+<li>Apply CABZII500 for ₹200 off the first outstation trip.</li>
 <li>Get assigned driver details after confirmation.</li>
 </ol>
 

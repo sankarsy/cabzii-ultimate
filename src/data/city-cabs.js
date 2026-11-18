@@ -27,7 +27,7 @@ function buildTitle(cityName, seeded) {
 function buildDescription(cityName, seeded) {
   if (seeded?.description) return clampText(seeded.description, 155);
   return clampText(
-    `Book outstation, airport and local cabs in ${cityName}. Pay 50% now. Fuel and driver included. Tolls extra unless listed.`,
+    `Book outstation, airport and local cabs in ${cityName}. Fuel and driver included. Tolls extra unless listed.`,
     155
   );
 }
@@ -38,13 +38,13 @@ function buildFaqs(city) {
   const airportAnswer = cityHasCommercialAirport(city.slug)
     ? `Yes. Choose Airport in the booking form, set ${airport.name} as pickup or drop, then compare fares. Tolls, parking and extra km are listed on the quote — they are not assumed included.`
     : airport?.note
-      ? `${airport.note} Use the Airport trip type and pay 50% to confirm. Cancellation follows the published time-based policy.`
+      ? `${airport.note} Use the Airport trip type and confirm. Cancellation follows the published time-based policy.`
       : `Book a cab from ${name} to the nearest commercial airport on Cabzii. Fares are shown before you pay.`;
 
   return [
     {
       question: `How can I book a round-trip cab from ${name}?`,
-      answer: `Select Round-trip, enter your destination and dates, choose Hatchback, Sedan, SUV or Tempo Traveller, then pay 50% to confirm. Driver details follow after booking.`
+      answer: `Select Round-trip, enter your destination and dates, choose Hatchback, Sedan, SUV or Tempo Traveller, then confirm. Driver details follow after booking.`
     },
     {
       question: `Are toll charges included in the ${name} cab fare?`,
@@ -55,8 +55,8 @@ function buildFaqs(city) {
       answer: airportAnswer
     },
     {
-      question: `What is the advance payment for a ${name} taxi booking?`,
-      answer: "50% advance is required at booking. The remaining amount is paid as shown on the booking confirmation."
+      question: `When is a driver assigned for a ${name} taxi?`,
+      answer: "A driver is assigned after you confirm the fare. Details follow on SMS or WhatsApp."
     },
     {
       question: `Is cancellation free on Cabzii ${name} cabs?`,
@@ -152,8 +152,8 @@ export function buildCityCabData(city) {
         subtitle: "Fares, seats and luggage show on the results page before you pay."
       },
       {
-        title: "Pay 50% to confirm",
-        subtitle: "Advance is 50% at booking. Apply CABZII500 for ₹200 off the first outstation trip."
+        title: "Confirm the booking",
+        subtitle: "Apply CABZII500 for ₹200 off the first outstation trip."
       },
       {
         title: "Get driver details",

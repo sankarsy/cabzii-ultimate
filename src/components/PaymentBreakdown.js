@@ -187,7 +187,7 @@ export default function PaymentBreakdown({
               </div>
             ) : null}
             <div className="flex items-center justify-between border-t border-[var(--cabzii-cta)]/20 pt-2">
-              <dt className="font-semibold text-slate-900">Pay now (50%)</dt>
+              <dt className="font-semibold text-slate-900">Pay now</dt>
               <dd className={`font-bold text-[var(--cabzii-cta)] ${compact ? "text-base" : "text-xl"}`}>{inr(total)}</dd>
             </div>
             <div className="flex items-center justify-between text-slate-600">

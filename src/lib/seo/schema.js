@@ -1,7 +1,6 @@
 import { HOME_PAGE_FAQS } from "./content";
 import { badgesToSchemaProperties, SITE_SITELINKS } from "./serpRichData";
 import { absoluteImageUrl } from "../imageOptimize";
-import { cityCabLandingPath } from "../cityCabPaths";
 import {
   SITE_URL,
   SITE_NAME,
@@ -228,7 +227,7 @@ export function organizationJsonLd(reviewStats) {
     },
     image: SITE_LOGO,
     description:
-      "Cabzii (cabzii.in) is an UrbanWolf Technologies brand. Book chauffeur-driven cabs, airport taxi, outstation trips, acting drivers and bus tickets from Chennai across South India. Fares shown before you confirm.",
+      "Cabzii (cabzii.in) is an UrbanWolf Technologies brand. Book chauffeur-driven cabs, airport taxi, outstation trips and acting drivers from Chennai across South India. Fares shown before you confirm.",
     email: ORG_EMAIL,
     telephone: ORG_PHONE,
     areaServed: { "@type": "Country", name: "India" },
@@ -312,7 +311,7 @@ export function taxiServiceJsonLd() {
     ],
     url: SITE_URL,
     description:
-      "Online cab, airport taxi, outstation, acting driver and bus ticket booking from Chennai across South India. Fares shown before you confirm."
+      "Online cab, airport taxi, outstation and acting driver booking from Chennai across South India. Fares shown before you confirm."
   };
 }
 
@@ -469,9 +468,9 @@ export function cabsCatalogJsonLd() {
   return {
     "@context": "https://schema.org",
     "@type": "Product",
-    name: "Book Cabs & Taxis Online — Dzire Tour S, Wagon R, Bolero, Innova",
+    name: "Book Cabs Online — Sedan, Hatchback, MPV, SUV, Van, Bus",
     description:
-      "Book Swift Dzire Tour S, Wagon R, Bolero, Ertiga, Toyota Innova Crysta and Tempo Traveller. Cab booking, car rental and taxi hire with published fares on cabzii.in.",
+      "Book a cab by category on Cabzii. Sedan, hatchback, MPV, SUV, van and bus, with published airport, local and outstation fares.",
     url,
     image: DEFAULT_OG_IMAGE,
     brand: { "@type": "Brand", name: SITE_NAME },
@@ -609,24 +608,6 @@ export function blogListingJsonLd(posts = []) {
       url: `${SITE_URL}/blog/${post.slug}`,
       ...(post.updatedAt ? { dateModified: post.updatedAt } : {}),
       ...(post.publishedAt ? { datePublished: post.publishedAt } : {})
-    }))
-  };
-}
-
-/** Service cities hub — links to /cab-booking/{city}. */
-export function locationsIndexJsonLd(cities) {
-  const list = cities || [];
-  return {
-    "@context": "https://schema.org",
-    "@type": "ItemList",
-    name: "Cabzii cab booking cities",
-    url: `${SITE_URL}/locations`,
-    numberOfItems: list.length,
-    itemListElement: list.map((city, i) => ({
-      "@type": "ListItem",
-      position: i + 1,
-      name: `Cab booking ${city.name}`,
-      url: `${SITE_URL}${cityCabLandingPath(city.slug)}`
     }))
   };
 }

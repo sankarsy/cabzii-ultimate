@@ -189,36 +189,6 @@ export const ICON_REGISTRY = {
   nfc: FastTagIcon
 };
 
-/** Home hero travel tabs — see heroIcons.js (Remix flat icons) */
-export { HERO_TAB_ICONS } from "./heroIcons";
-
-/** Per-tab icon colors — light pastel circles */
-export const HOME_CATEGORY_ICON_STYLES = {
-  cabs: {
-    active: "bg-sky-50 text-sky-500 ring-1 ring-sky-100",
-    idle: "bg-slate-50/80 text-slate-500 ring-1 ring-slate-200"
-  },
-  drivers: {
-    active: "bg-violet-50 text-violet-500 ring-1 ring-violet-100",
-    idle: "bg-slate-50/80 text-slate-500 ring-1 ring-slate-200"
-  },
-  buses: {
-    active: "bg-orange-50 text-orange-500 ring-1 ring-orange-100",
-    idle: "bg-slate-50/80 text-slate-500 ring-1 ring-slate-200"
-  }
-};
-
-/** Bottom hero feature row — soft icon chips */
-export const HERO_FEATURE_ICON_STYLES = {
-  deals: "bg-orange-50 text-orange-400 ring-1 ring-orange-100",
-  locations: "bg-rose-50 text-rose-400 ring-1 ring-rose-100",
-  airport: "bg-sky-50 text-sky-400 ring-1 ring-sky-100",
-  packages: "bg-violet-50 text-violet-400 ring-1 ring-violet-100",
-  routes: "bg-emerald-50 text-emerald-400 ring-1 ring-emerald-100",
-  blog: "bg-blue-50 text-blue-400 ring-1 ring-blue-100",
-  driver: "bg-violet-50 text-violet-400 ring-1 ring-violet-100"
-};
-
 export function getIcon(iconKey) {
   return ICON_REGISTRY[iconKey] || null;
 }

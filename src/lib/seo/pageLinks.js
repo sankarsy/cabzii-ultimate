@@ -144,7 +144,7 @@ function cityHubLink(hub) {
 function liveOutstationRouteLinks(citySlug = "chennai", limit = 8) {
   return routeLinksForCity(citySlug, limit).map((item) => ({
     ...item,
-    hint: "Fares shown before you confirm",
+    hint: "",
     children: []
   }));
 }

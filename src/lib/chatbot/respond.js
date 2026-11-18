@@ -5,7 +5,7 @@ const QUICK_LINKS = {
   tirupati: "/chennai/outstation/chennai-to-tirupati",
   booking: "/cabs",
   testimonials: "/testimonials",
-  locations: "/locations",
+  locations: "/contact",
   cancellation: "/cancellation-policy"
 };
 

@@ -14,7 +14,7 @@ export const HOME_PAGE_FAQS = [
   ],
   [
     "How do I book car rental near me on Cabzii?",
-    "Open cabzii.in, choose Local Cab, enter your pickup area, compare hourly packages (including 4hr/40km and 8hr/80km) and confirm — no app required."
+    "Open cabzii.in, choose Hourly, enter your pickup area, compare packages (including 4hr/40km and 8hr/80km) and confirm — no app required."
   ],
   [
     "How do I book an outstation cab on Cabzii?",
@@ -30,7 +30,7 @@ export const HOME_PAGE_FAQS = [
   ],
   [
     "How do I hire an acting driver?",
-    "Open the Drivers tab or visit Acting Driver pages, pick your city and package (hourly, daily or outstation), then book like a regular cab trip."
+    "Choose Driver on the home page, or open Call Driver, pick your city and package, then book."
   ],
   [
     "Are fares shown upfront before I pay?",
@@ -47,10 +47,6 @@ export const HOME_PAGE_FAQS = [
   [
     "Do you offer one-way cabs (e.g. Chennai to Tirupati)?",
     "Yes. Search outstation one-way routes or browse route pages like Chennai–Tirupati for upfront sedan and SUV fares."
-  ],
-  [
-    "Can I book bus tickets on cabzii.in?",
-    "Yes. Open Buses, enter from and to cities, compare AC seater and sleeper options, pick seats and boarding, then confirm. Fares are shown before you pay."
   ],
   [
     "How do I cancel or change my booking?",

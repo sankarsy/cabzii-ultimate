@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { buildFareSlabs, formatRating } from "../../lib/cabFare";
 import { resolveCabTripFare } from "../../lib/distanceFare";
-import { catalogPublicPath } from "../../lib/catalogProduct";
 import {
   getCabCatalogSubtitle,
   getCabDisplaySubtitle,
@@ -15,7 +14,8 @@ import {
 import { formatCabSeatLabel, inferPassengerSeats } from "../../lib/cabSeats";
 import { cabFuelBadgeClass, cabFuelLabel, cabTypeBucket } from "../../lib/cabListing";
 import { resolveCabImage } from "../../lib/vehicleImages";
-import { cabSlabForTrip, tripToSearchQuery } from "../../lib/mmtTrip";
+import { cabSlabForTrip } from "../../lib/mmtTrip";
+import { cabBookingPath } from "../../lib/catalogProduct";
 import { FuelIcon, LuggageIcon, PersonIcon, SnowflakeIcon } from "../icons/rscIcons";
 import CatalogCardImage from "./CatalogCardImage";
 import CatalogVehicleCard, { FeatureChip } from "../ui/CatalogVehicleCard";
@@ -52,13 +52,7 @@ export default function MmtCabResultCard({ cab, trip, layout = "row", catalogMod
   const ratingText = formatRating(cab);
   const fuelLabel = cabFuelLabel(cab);
 
-  const href = catalogMode
-    ? catalogPublicPath(cab, "/cabs")
-    : `/cabs/passenger?${(() => {
-        const detailParams = tripToSearchQuery(trip);
-        detailParams.set("cabId", id);
-        return detailParams.toString();
-      })()}`;
+  const href = cabBookingPath(cab, trip, displayCity);
 
   const trackSelect = () => {
     trackEvent("vehicle_selected", {
@@ -72,6 +66,7 @@ export default function MmtCabResultCard({ cab, trip, layout = "row", catalogMod
 
   const title = catalogMode ? vehicleName : getCabDisplayTitle(cab, trip);
   const subtitle = catalogMode ? getCabCatalogSubtitle(cab, displayCity) : getCabDisplaySubtitle(cab, trip);
+  const models = String(cab.examples || "").trim();
 
   const priceBlockProps = {
     originalPrice: total,
@@ -122,6 +117,7 @@ export default function MmtCabResultCard({ cab, trip, layout = "row", catalogMod
             ) : null}
           </div>
           <p className="mt-0.5 text-[11px] text-slate-500 sm:text-[12px]">{typeLabel}</p>
+          {models ? <p className="mt-0.5 text-[11px] font-semibold text-slate-700 sm:text-[12px]">{models}</p> : null}
           <p className="mt-1 text-[11px] leading-snug text-slate-600 sm:text-[12px]">{kmLine}</p>
           <p className="mt-0.5 text-[11px] leading-snug text-slate-500 sm:text-[12px]">
             Time-based cancellation. Driver assigned after you confirm.
@@ -153,9 +149,10 @@ export default function MmtCabResultCard({ cab, trip, layout = "row", catalogMod
         imageProduct={cab}
         title={title}
         subtitle={subtitle}
+        meta={models ? <p className="line-clamp-2 text-[13px] font-semibold leading-snug text-slate-700">{models}</p> : null}
         onNavigate={trackSelect}
         compact={compact}
-        ctaLabel={compact ? "View" : "SELECT"}
+        ctaLabel="Book now"
         features={
           compact ? (
             <>
@@ -208,7 +205,7 @@ export default function MmtCabResultCard({ cab, trip, layout = "row", catalogMod
               <span className="text-[13px] font-bold text-[var(--cabzii-brand)]">{ratingText}/5</span>
             ) : null}
           </div>
-          <p className="mt-0.5 text-[12px] text-slate-500 sm:text-[13px]">or similar</p>
+          <p className="mt-0.5 text-[12px] text-slate-500 sm:text-[13px]">{models || "or similar"}</p>
           <p className="mt-1 text-[12px] font-medium text-slate-600 sm:text-[13px]">AC · {passengerSeats} Seats</p>
         </div>
 
@@ -224,7 +221,7 @@ export default function MmtCabResultCard({ cab, trip, layout = "row", catalogMod
             </>
           )}
           <span className="inline-flex min-h-11 min-w-[7.5rem] items-center justify-center rounded-[10px] bg-[var(--cabzii-brand)] px-4 py-2 text-[12px] font-bold tracking-wide text-white sm:min-w-[9.5rem] sm:px-5 sm:py-2.5 sm:text-[13px]">
-            {catalogMode ? "View Cab" : "Select Cab"}
+            Select Cab
           </span>
         </div>
       </div>

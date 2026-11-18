@@ -34,7 +34,7 @@ const WHY_ITEMS = [
   {
     icon: Smartphone,
     title: "Easy Booking",
-    body: "Pick From and To, choose a cab type, pay 50% to confirm. Call or WhatsApp if you need help."
+    body: "Pick From and To, choose a cab type, confirm the booking. Call or WhatsApp if you need help."
   }
 ];
 

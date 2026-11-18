@@ -102,7 +102,7 @@ export default function OutstationCabLandingPage({
           {
             icon: CalendarCheck,
             title: "Confirm, then assign",
-            body: "Pay the published 50% advance. A driver is assigned for that trip after confirmation."
+            body: "A driver is assigned for that trip after you confirm."
           },
           {
             icon: Smartphone,

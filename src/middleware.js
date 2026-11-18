@@ -43,6 +43,10 @@ export function middleware(request) {
     return new NextResponse(null, { status: 404 });
   }
 
+  if (/^\/cabs\/[^/]+$/.test(pathname) && pathname !== "/cabs/passenger" && pathname !== "/cabs/results") {
+    return NextResponse.redirect(new URL("/cabs", request.url), 301);
+  }
+
   if (pathname === "/cabs/results") {
     const pretty = prettyPublicCabRedirect(request.nextUrl.searchParams);
     if (pretty) return NextResponse.redirect(new URL(pretty, request.url), 307);
